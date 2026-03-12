@@ -141,11 +141,6 @@
   }
 }
 
-/* Smooth scroll behavior */
-html {
-  scroll-behavior: smooth;
-}
-
 /* Glass morphism effect */
 @layer components {
   .glass {
