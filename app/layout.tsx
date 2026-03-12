@@ -7,8 +7,10 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
+  title: 'Tai Do - Custom Web Design for Small Businesses',
+  description:
+    'Award-winning web design for small business owners and entrepreneurs. Beautiful, high-converting websites that help you grow online.',
+  keywords: 'web design, custom websites, small business, portfolio, design agency',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -26,6 +28,13 @@ export const metadata: Metadata = {
       },
     ],
     apple: '/apple-icon.png',
+  },
+  openGraph: {
+    title: 'Tai Do - Custom Web Design for Small Businesses',
+    description:
+      'Award-winning web design for small business owners and entrepreneurs.',
+    type: 'website',
+    locale: 'en_US',
   },
 }
 
