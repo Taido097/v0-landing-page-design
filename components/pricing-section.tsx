@@ -65,21 +65,20 @@ export function PricingSection() {
   }, []);
 
   return (
-    <section id="pricing" className="py-20 bg-secondary/30">
+    <section id="pricing" className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-16">
-          <p className="text-accent font-semibold mb-4">Pricing</p>
-          <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-6">
-            Simple, Transparent Pricing
+        <div className="mb-16">
+          <h2 className="text-5xl sm:text-6xl font-light text-black leading-tight mb-6 max-w-3xl">
+            Simple Pricing
           </h2>
-          <p className="text-lg text-foreground/60 max-w-2xl mx-auto">
-            Choose the perfect plan for your business. All plans include our commitment to quality and customer success.
+          <p className="text-lg text-gray-700 max-w-2xl font-light">
+            Choose the right plan for your business. All include quality work and our full support.
           </p>
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
+        <div className="grid md:grid-cols-3 gap-8 mb-16">
           {plans.map((plan, index) => (
             <div
               key={plan.name}
@@ -90,42 +89,45 @@ export function PricingSection() {
               }`}
               style={{ transitionDelay: `${index * 100}ms` }}
             >
-              <GlassCard
-                className={`h-full flex flex-col ${
-                  plan.highlighted ? 'ring-2 ring-accent scale-105' : ''
+              <div
+                className={`h-full flex flex-col p-8 border rounded-none ${
+                  plan.highlighted ? 'border-black bg-black text-white' : 'border-gray-300 bg-white'
                 }`}
               >
                 {plan.highlighted && (
-                  <div className="mb-4 inline-block px-3 py-1 rounded-full bg-accent/20 text-accent text-xs font-semibold w-fit">
+                  <div className="mb-4 inline-block px-3 py-1 bg-white text-black text-xs font-semibold w-fit rounded-none">
                     Most Popular
                   </div>
                 )}
 
-                <div className="mb-6">
-                  <h3 className="text-2xl font-bold text-foreground mb-2">
+                <div className="mb-8">
+                  <h3 className={`text-2xl font-light mb-2 ${plan.highlighted ? 'text-white' : 'text-black'}`}>
                     {plan.name}
                   </h3>
-                  <p className="text-foreground/60 text-sm">{plan.description}</p>
+                  <p className={`text-sm ${plan.highlighted ? 'text-gray-300' : 'text-gray-600'}`}>
+                    {plan.description}
+                  </p>
                 </div>
 
-                <div className="mb-6">
-                  <div className="text-4xl font-bold text-foreground">
+                <div className="mb-8">
+                  <div className={`text-4xl font-light ${plan.highlighted ? 'text-white' : 'text-black'}`}>
                     {plan.price}
                   </div>
                   {plan.price !== 'Custom' && (
-                    <p className="text-foreground/60 text-sm mt-2">one-time project</p>
+                    <p className={`text-sm mt-2 ${plan.highlighted ? 'text-gray-400' : 'text-gray-600'}`}>
+                      one-time project
+                    </p>
                   )}
                 </div>
 
                 {/* Features List */}
                 <div className="mb-8 space-y-3 flex-grow">
                   {plan.features.map((feature) => (
-                    <div
-                      key={feature}
-                      className="flex items-start gap-3"
-                    >
-                      <Check className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
-                      <span className="text-foreground/80 text-sm">{feature}</span>
+                    <div key={feature} className="flex items-start gap-3">
+                      <Check className={`w-5 h-5 flex-shrink-0 mt-0.5 ${plan.highlighted ? 'text-white' : 'text-black'}`} />
+                      <span className={`text-sm ${plan.highlighted ? 'text-gray-200' : 'text-gray-700'}`}>
+                        {feature}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -133,45 +135,41 @@ export function PricingSection() {
                 {/* CTA Button */}
                 <Button
                   asChild
-                  variant={plan.highlighted ? 'default' : 'outline'}
-                  className={`w-full rounded-full ${
+                  className={`w-full py-6 text-base font-medium rounded-none ${
                     plan.highlighted
-                      ? 'bg-accent hover:bg-accent/90 text-white'
-                      : ''
+                      ? 'bg-white text-black hover:bg-gray-100'
+                      : 'bg-black text-white hover:bg-gray-800'
                   }`}
                 >
-                  <Link
-                    href={plan.ctaLink || '#cta'}
-                    className="gap-2"
-                  >
+                  <Link href={plan.ctaLink || '#cta'} className="gap-2">
                     {plan.ctaText || 'Get Started'}
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                 </Button>
-              </GlassCard>
+              </div>
             </div>
           ))}
         </div>
 
         {/* FAQ */}
-        <div className="mt-20 pt-20 border-t border-border">
-          <h3 className="text-2xl font-bold text-foreground text-center mb-12">
+        <div className="pt-16 border-t border-gray-300">
+          <h3 className="text-3xl font-light text-black text-center mb-12">
             Questions?
           </h3>
-          <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 max-w-3xl mx-auto">
             <div>
-              <h4 className="font-semibold text-foreground mb-2">
+              <h4 className="font-medium text-black mb-3">
                 Do you offer payment plans?
               </h4>
-              <p className="text-foreground/70 text-sm">
+              <p className="text-gray-700 text-sm leading-relaxed font-light">
                 Yes! We offer flexible payment plans for projects over $2,000. Let's discuss what works best for you.
               </p>
             </div>
             <div>
-              <h4 className="font-semibold text-foreground mb-2">
+              <h4 className="font-medium text-black mb-3">
                 What's included in support?
               </h4>
-              <p className="text-foreground/70 text-sm">
+              <p className="text-gray-700 text-sm leading-relaxed font-light">
                 Support includes bug fixes, minor updates, and consultation during the included period.
               </p>
             </div>

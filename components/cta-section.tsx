@@ -13,61 +13,57 @@ export function CTASection() {
   }, []);
 
   return (
-    <section id="cta" className="py-20 bg-gradient-to-b from-white to-secondary/20">
+    <section id="cta" className="py-24 bg-white border-t border-gray-300">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div
           className={`text-center transition-all duration-1000 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}
         >
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
-            Ready to Transform Your Online Presence?
+          <h2 className="text-5xl sm:text-6xl lg:text-7xl font-light text-black mb-6 leading-tight">
+            Ready to start?
           </h2>
 
-          <p className="text-lg sm:text-xl text-foreground/70 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Let's create a beautiful, high-converting website for your business. Get a free consultation to discuss your project.
+          <p className="text-lg sm:text-xl text-gray-700 mb-12 max-w-2xl mx-auto leading-relaxed font-light">
+            Let's create a beautiful, high-converting website for your business. Get a free consultation today.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Button
               asChild
-              size="lg"
-              className="bg-accent hover:bg-accent/90 text-white rounded-full px-8 h-12"
+              className="bg-black hover:bg-gray-800 text-white px-8 py-6 text-base font-medium rounded-none"
             >
               <Link href="/contact" className="gap-2">
-                Start Your Project
-                <ArrowRight className="w-5 h-5" />
+                Get Started <ArrowRight className="w-4 h-4" />
               </Link>
             </Button>
             <Button
               asChild
-              variant="outline"
-              size="lg"
-              className="rounded-full px-8 h-12 border-foreground/20 hover:bg-secondary"
+              className="border border-black text-black hover:bg-black hover:text-white px-8 py-6 text-base font-medium rounded-none bg-white"
             >
-              <a href="tel:+1234567890">Call Us: (123) 456-7890</a>
+              <a href="tel:+1234567890">Call Us</a>
             </Button>
           </div>
 
           {/* Trust Signals */}
-          <div className="mt-16 pt-12 border-t border-border">
-            <p className="text-foreground/60 text-sm font-medium mb-6">
-              Join 50+ businesses that trust us with their online success
+          <div className="mt-16 pt-16 border-t border-gray-300">
+            <p className="text-gray-700 text-sm font-light mb-8">
+              Trusted by 50+ small business owners and entrepreneurs
             </p>
-            <div className="flex flex-wrap justify-center gap-6 items-center">
+            <div className="flex flex-wrap justify-center gap-12 items-center">
               <div className="text-center">
-                <div className="text-2xl font-bold text-foreground">100%</div>
-                <p className="text-xs text-foreground/60">Custom Design</p>
+                <div className="text-4xl font-light text-black mb-2">100%</div>
+                <p className="text-sm text-gray-600 font-light">Custom Design</p>
               </div>
-              <div className="w-px h-8 bg-border" />
+              <div className="w-px h-10 bg-gray-300 hidden sm:block" />
               <div className="text-center">
-                <div className="text-2xl font-bold text-foreground">Fast</div>
-                <p className="text-xs text-foreground/60">2-4 Week Turnaround</p>
+                <div className="text-4xl font-light text-black mb-2">2-4</div>
+                <p className="text-sm text-gray-600 font-light">Week Turnaround</p>
               </div>
-              <div className="w-px h-8 bg-border" />
+              <div className="w-px h-10 bg-gray-300 hidden sm:block" />
               <div className="text-center">
-                <div className="text-2xl font-bold text-foreground">Support</div>
-                <p className="text-xs text-foreground/60">30-90 Days Included</p>
+                <div className="text-4xl font-light text-black mb-2">∞</div>
+                <p className="text-sm text-gray-600 font-light">Ongoing Support</p>
               </div>
             </div>
           </div>

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { GlassCard } from '@/components/glass-card';
 import { ArrowRight } from 'lucide-react';
 
 const projects = [
@@ -11,7 +10,6 @@ const projects = [
     title: 'Photography Studio',
     category: 'Portfolio Website',
     description: 'Beautiful portfolio site for a photography business with image gallery and booking system.',
-    tags: ['Next.js', 'Tailwind', 'Gallery'],
     image: '/portfolio-photography.jpg',
   },
   {
@@ -19,7 +17,6 @@ const projects = [
     title: 'Auto Repair Shop',
     category: 'Service Business',
     description: 'Complete web solution for an auto repair business with service listings and appointment booking.',
-    tags: ['React', 'Appointment System', 'Mobile'],
     image: '/portfolio-auto-repair.jpg',
   },
   {
@@ -27,7 +24,6 @@ const projects = [
     title: 'Salon & Spa',
     category: 'Beauty Business',
     description: 'Modern website for a beauty salon with staff profiles, services, and online booking integration.',
-    tags: ['Booking System', 'Responsive', 'Modern Design'],
     image: '/portfolio-salon.jpg',
   },
   {
@@ -35,7 +31,6 @@ const projects = [
     title: 'Restaurant Website',
     category: 'Food & Beverage',
     description: 'Elegant restaurant site with menu showcase, reservations, and location integration.',
-    tags: ['Menu System', 'Reservations', 'Tailwind CSS'],
     image: '/portfolio-restaurant.jpg',
   },
 ];
@@ -48,21 +43,20 @@ export function PortfolioSection() {
   }, []);
 
   return (
-    <section id="portfolio" className="py-20 bg-white">
+    <section id="portfolio" className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-16">
-          <p className="text-accent font-semibold mb-4">Our Work</p>
-          <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-6">
-            Featured Projects
+        <div className="mb-16">
+          <h2 className="text-5xl sm:text-6xl font-light text-black leading-tight mb-6 max-w-3xl">
+            Work We're Proud Of
           </h2>
-          <p className="text-lg text-foreground/60 max-w-2xl mx-auto">
-            Check out some of our recent work. Each project is custom-built to meet our clients' unique needs and goals.
+          <p className="text-lg text-gray-700 max-w-2xl font-light">
+            Each website is custom-built to help businesses grow online and convert customers.
           </p>
         </div>
 
         {/* Portfolio Grid */}
-        <div className="grid md:grid-cols-2 gap-6 mb-12">
+        <div className="grid md:grid-cols-2 gap-8 mb-16">
           {projects.map((project, index) => (
             <div
               key={project.id}
@@ -73,55 +67,42 @@ export function PortfolioSection() {
               }`}
               style={{ transitionDelay: `${index * 100}ms` }}
             >
-              <GlassCard>
-                <div className="space-y-4">
-                  {/* Project Image */}
-                  <div className="aspect-video rounded-lg overflow-hidden bg-gradient-to-br from-accent/20 to-accent/5 relative">
-                    <Image
-                      src={project.image}
-                      alt={project.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
+              <div className="space-y-6">
+                {/* Project Image */}
+                <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 relative">
+                  <Image
+                    src={project.image}
+                    alt={project.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
 
-                  <div className="space-y-2">
-                    <p className="text-sm text-accent font-semibold">{project.category}</p>
-                    <h3 className="text-xl font-bold text-foreground">
-                      {project.title}
-                    </h3>
-                    <p className="text-foreground/70 text-sm leading-relaxed">
-                      {project.description}
-                    </p>
-                  </div>
-
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-2 pt-4">
-                    {project.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="inline-block px-3 py-1 rounded-full bg-secondary text-xs font-medium text-foreground/70"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* View More */}
-                  <button className="w-full mt-4 py-2 px-4 rounded-lg bg-accent/10 hover:bg-accent/20 text-accent font-semibold transition-colors flex items-center justify-center gap-2 group">
-                    View Case Study
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                {/* Project Info */}
+                <div className="space-y-3">
+                  <p className="text-sm text-gray-600 uppercase tracking-wider font-medium">
+                    {project.category}
+                  </p>
+                  <h3 className="text-2xl font-light text-black">
+                    {project.title}
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed font-light">
+                    {project.description}
+                  </p>
+                  <button className="inline-flex items-center gap-2 text-black font-medium hover:gap-3 transition-all pt-2">
+                    View Project
+                    <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
-              </GlassCard>
+              </div>
             </div>
           ))}
         </div>
 
         {/* CTA */}
-        <div className="text-center pt-8">
-          <button className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-accent hover:bg-accent/90 text-white font-semibold transition-colors">
-            See All Projects
+        <div className="text-center pt-8 border-t border-gray-200">
+          <button className="inline-flex items-center gap-2 px-8 py-3 bg-black hover:bg-gray-800 text-white font-medium transition-colors rounded-none">
+            See All Work
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
