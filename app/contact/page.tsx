@@ -31,12 +31,22 @@ export default function ContactPage() {
     setIsSubmitting(true);
 
     try {
-      // TODO: Integrate with email service (SendGrid, Mailgun, etc.)
-      console.log('Form submitted:', formData);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setSubmitStatus('success');
-      setFormData({ name: '', email: '', company: '', message: '' });
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        setFormData({ name: '', email: '', company: '', message: '' });
+      } else {
+        setSubmitStatus('error');
+      }
     } catch (error) {
+      console.error('Contact form error:', error);
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
@@ -51,7 +61,7 @@ export default function ContactPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-foreground/70 hover:text-foreground transition-colors"
+            className="inline-flex items-center gap-2 text-gray-700 hover:text-black transition-colors text-sm font-light"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Home
@@ -59,39 +69,39 @@ export default function ContactPage() {
         </div>
 
         {/* Hero */}
-        <section className="bg-gradient-to-b from-white to-secondary/20 py-16">
+        <section className="bg-white py-20 border-b border-gray-300">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-5xl sm:text-6xl font-bold text-foreground mb-4">
-              Let's Work Together
+            <h1 className="text-6xl sm:text-7xl font-light text-black mb-6">
+              Let's Talk
             </h1>
-            <p className="text-xl text-foreground/60 max-w-2xl mx-auto">
-              Have a project in mind? We'd love to hear about it. Get in touch and let's create something amazing.
+            <p className="text-lg text-gray-700 max-w-2xl mx-auto font-light">
+              Have a project in mind? We'd love to hear about it. Tell us more and we'll be in touch soon.
             </p>
           </div>
         </section>
 
         {/* Content */}
-        <section className="py-20 flex-grow">
+        <section className="py-24 flex-grow">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-3 gap-12">
+            <div className="grid lg:grid-cols-3 gap-16">
               {/* Contact Info */}
-              <div className="space-y-8">
+              <div className="space-y-12">
                 <div>
-                  <h2 className="text-2xl font-bold text-foreground mb-8">
-                    Get In Touch
+                  <h2 className="text-3xl font-light text-black mb-8">
+                    Contact Info
                   </h2>
 
                   {/* Contact Methods */}
-                  <div className="space-y-6">
+                  <div className="space-y-8">
                     <div className="flex gap-4">
-                      <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
-                        <Mail className="w-5 h-5 text-accent" />
+                      <div className="flex-shrink-0">
+                        <Mail className="w-5 h-5 text-black" />
                       </div>
                       <div>
-                        <p className="font-semibold text-foreground">Email</p>
+                        <p className="font-medium text-black text-sm uppercase tracking-wider">Email</p>
                         <a
                           href="mailto:hello@taido.com"
-                          className="text-foreground/70 hover:text-foreground transition-colors"
+                          className="text-gray-700 hover:text-black transition-colors font-light"
                         >
                           hello@taido.com
                         </a>
@@ -99,14 +109,14 @@ export default function ContactPage() {
                     </div>
 
                     <div className="flex gap-4">
-                      <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
-                        <Phone className="w-5 h-5 text-accent" />
+                      <div className="flex-shrink-0">
+                        <Phone className="w-5 h-5 text-black" />
                       </div>
                       <div>
-                        <p className="font-semibold text-foreground">Phone</p>
+                        <p className="font-medium text-black text-sm uppercase tracking-wider">Phone</p>
                         <a
                           href="tel:+1234567890"
-                          className="text-foreground/70 hover:text-foreground transition-colors"
+                          className="text-gray-700 hover:text-black transition-colors font-light"
                         >
                           (123) 456-7890
                         </a>
@@ -114,12 +124,12 @@ export default function ContactPage() {
                     </div>
 
                     <div className="flex gap-4">
-                      <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
-                        <MapPin className="w-5 h-5 text-accent" />
+                      <div className="flex-shrink-0">
+                        <MapPin className="w-5 h-5 text-black" />
                       </div>
                       <div>
-                        <p className="font-semibold text-foreground">Location</p>
-                        <p className="text-foreground/70">
+                        <p className="font-medium text-black text-sm uppercase tracking-wider">Location</p>
+                        <p className="text-gray-700 font-light">
                           Remote - Working with clients worldwide
                         </p>
                       </div>
@@ -128,9 +138,9 @@ export default function ContactPage() {
                 </div>
 
                 {/* Response Time */}
-                <div className="p-4 rounded-lg bg-secondary">
-                  <p className="text-sm text-foreground/60">
-                    <span className="font-semibold text-foreground">
+                <div className="p-6 border border-gray-300 rounded-none bg-white">
+                  <p className="text-sm text-gray-700 font-light">
+                    <span className="font-medium text-black">
                       Response Time:
                     </span>{' '}
                     We typically respond within 24 hours
@@ -143,13 +153,13 @@ export default function ContactPage() {
                 onSubmit={handleSubmit}
                 className="lg:col-span-2 space-y-6"
               >
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
+                <div className="grid sm:grid-cols-2 gap-6">
+                  <div className="space-y-3">
                     <label
                       htmlFor="name"
-                      className="text-sm font-medium text-foreground"
+                      className="text-sm font-medium text-black uppercase tracking-wider"
                     >
-                      Full Name *
+                      Full Name
                     </label>
                     <Input
                       id="name"
@@ -159,15 +169,15 @@ export default function ContactPage() {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      className="rounded-lg"
+                      className="rounded-none border-gray-300"
                     />
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <label
                       htmlFor="email"
-                      className="text-sm font-medium text-foreground"
+                      className="text-sm font-medium text-black uppercase tracking-wider"
                     >
-                      Email *
+                      Email
                     </label>
                     <Input
                       id="email"
@@ -177,15 +187,15 @@ export default function ContactPage() {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="rounded-lg"
+                      className="rounded-none border-gray-300"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <label
                     htmlFor="company"
-                    className="text-sm font-medium text-foreground"
+                    className="text-sm font-medium text-black uppercase tracking-wider"
                   >
                     Company/Business
                   </label>
@@ -196,16 +206,16 @@ export default function ContactPage() {
                     placeholder="Your business name"
                     value={formData.company}
                     onChange={handleChange}
-                    className="rounded-lg"
+                    className="rounded-none border-gray-300"
                   />
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <label
                     htmlFor="message"
-                    className="text-sm font-medium text-foreground"
+                    className="text-sm font-medium text-black uppercase tracking-wider"
                   >
-                    Project Details *
+                    Project Details
                   </label>
                   <Textarea
                     id="message"
@@ -215,21 +225,21 @@ export default function ContactPage() {
                     onChange={handleChange}
                     required
                     rows={6}
-                    className="rounded-lg resize-none"
+                    className="rounded-none border-gray-300 resize-none"
                   />
                 </div>
 
                 {submitStatus === 'success' && (
-                  <div className="p-4 rounded-lg bg-green-50 border border-green-200">
-                    <p className="text-green-800">
+                  <div className="p-4 border border-green-300 bg-green-50 rounded-none">
+                    <p className="text-green-900 text-sm font-light">
                       Thanks for reaching out! We'll be in touch soon.
                     </p>
                   </div>
                 )}
 
                 {submitStatus === 'error' && (
-                  <div className="p-4 rounded-lg bg-red-50 border border-red-200">
-                    <p className="text-red-800">
+                  <div className="p-4 border border-red-300 bg-red-50 rounded-none">
+                    <p className="text-red-900 text-sm font-light">
                       Something went wrong. Please try again.
                     </p>
                   </div>
@@ -238,12 +248,12 @@ export default function ContactPage() {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-accent hover:bg-accent/90 text-white rounded-lg h-12"
+                  className="w-full bg-black hover:bg-gray-800 text-white rounded-none h-12 font-medium"
                 >
                   {isSubmitting ? 'Sending...' : 'Send Message'}
                 </Button>
 
-                <p className="text-xs text-foreground/50">
+                <p className="text-xs text-gray-600 font-light">
                   We respect your privacy. No spam, ever.
                 </p>
               </form>
