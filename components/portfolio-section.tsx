@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
 const projects = [
   {
     id: 1,
+    slug: 'photography-studio',
     title: 'Photography Studio',
     category: 'Portfolio Website',
     description: 'Beautiful portfolio site for a photography business with image gallery and booking system.',
@@ -14,6 +16,7 @@ const projects = [
   },
   {
     id: 2,
+    slug: 'auto-repair-shop',
     title: 'Auto Repair Shop',
     category: 'Service Business',
     description: 'Complete web solution for an auto repair business with service listings and appointment booking.',
@@ -21,6 +24,7 @@ const projects = [
   },
   {
     id: 3,
+    slug: 'salon-spa',
     title: 'Salon & Spa',
     category: 'Beauty Business',
     description: 'Modern website for a beauty salon with staff profiles, services, and online booking integration.',
@@ -28,6 +32,7 @@ const projects = [
   },
   {
     id: 4,
+    slug: 'restaurant-website',
     title: 'Restaurant Website',
     category: 'Food & Beverage',
     description: 'Elegant restaurant site with menu showcase, reservations, and location integration.',
@@ -89,10 +94,13 @@ export function PortfolioSection() {
                   <p className="text-gray-700 leading-relaxed font-light">
                     {project.description}
                   </p>
-                  <button className="inline-flex items-center gap-2 text-black font-medium hover:gap-3 transition-all pt-2">
+                  <Link 
+                    href={`/portfolio/${project.slug}`}
+                    className="inline-flex items-center gap-2 text-black font-medium hover:gap-3 transition-all pt-2"
+                  >
                     View Project
                     <ArrowRight className="w-4 h-4" />
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
