@@ -20,7 +20,7 @@ export function Header() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="font-bold text-lg text-black">
-          Tai Do
+          DesignedbyTD
         </Link>
 
         {/* Desktop Navigation */}
