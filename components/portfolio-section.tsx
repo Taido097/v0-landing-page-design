@@ -13,6 +13,9 @@ const projects = [
     category: 'Portfolio Website',
     description: 'Beautiful portfolio site for a photography business with image gallery and booking system.',
     image: '/portfolio-photography.jpg',
+    style: 'dark', // Dark, elegant, gallery-focused
+    accent: '#ffffff',
+    bg: '#000000',
   },
   {
     id: 2,
@@ -21,6 +24,9 @@ const projects = [
     category: 'Service Business',
     description: 'Complete web solution for an auto repair business with service listings and appointment booking.',
     image: '/portfolio-auto-repair.jpg',
+    style: 'bold', // Bold, trustworthy, industrial
+    accent: '#f97316',
+    bg: '#0f172a',
   },
   {
     id: 3,
@@ -29,6 +35,9 @@ const projects = [
     category: 'Beauty Business',
     description: 'Modern website for a beauty salon with staff profiles, services, and online booking integration.',
     image: '/portfolio-salon.jpg',
+    style: 'elegant', // Soft, luxurious, rose gold
+    accent: '#c9a87c',
+    bg: '#faf8f5',
   },
   {
     id: 4,
@@ -37,6 +46,9 @@ const projects = [
     category: 'Food & Beverage',
     description: 'Elegant restaurant site with menu showcase, reservations, and location integration.',
     image: '/portfolio-restaurant.jpg',
+    style: 'warm', // Warm, earthy, elegant typography
+    accent: '#d4a574',
+    bg: '#1a1a1a',
   },
 ];
 
@@ -72,15 +84,70 @@ export function PortfolioSection() {
               }`}
               style={{ transitionDelay: `${index * 100}ms` }}
             >
-              <div className="space-y-6">
-                {/* Project Image */}
-                <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 relative">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    className="object-cover"
-                  />
+              <div className="space-y-6 group">
+                {/* Styled Website Preview Card */}
+                <div 
+                  className="aspect-[4/3] rounded-lg overflow-hidden relative shadow-lg hover:shadow-2xl transition-shadow duration-300"
+                  style={{ backgroundColor: project.bg }}
+                >
+                  {/* Mini Browser Chrome */}
+                  <div className="flex items-center gap-1.5 px-3 py-2 bg-black/20">
+                    <div className="w-2 h-2 rounded-full bg-red-400" />
+                    <div className="w-2 h-2 rounded-full bg-yellow-400" />
+                    <div className="w-2 h-2 rounded-full bg-green-400" />
+                    <div className="flex-1 mx-4 h-4 bg-white/10 rounded text-[8px] text-white/50 flex items-center px-2">
+                      {project.slug}.com
+                    </div>
+                  </div>
+
+                  {/* Website Preview Content */}
+                  <div className="relative h-full">
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      fill
+                      className="object-cover opacity-60"
+                    />
+                    
+                    {/* Style Overlay */}
+                    <div className="absolute inset-0 flex flex-col justify-center items-center p-6">
+                      {project.style === 'dark' && (
+                        <div className="text-center text-white">
+                          <p className="text-[10px] tracking-[0.3em] opacity-70 mb-1">PORTFOLIO</p>
+                          <h4 className="text-2xl font-light tracking-widest">GALLERY</h4>
+                        </div>
+                      )}
+                      {project.style === 'bold' && (
+                        <div className="text-center">
+                          <div className="w-12 h-12 mx-auto mb-2 rounded-full flex items-center justify-center" style={{ backgroundColor: project.accent }}>
+                            <span className="text-white font-bold">M</span>
+                          </div>
+                          <h4 className="text-xl font-bold text-white">TRUSTED SERVICE</h4>
+                          <button className="mt-3 px-4 py-1.5 text-xs font-medium rounded" style={{ backgroundColor: project.accent, color: '#fff' }}>
+                            Book Now
+                          </button>
+                        </div>
+                      )}
+                      {project.style === 'elegant' && (
+                        <div className="text-center text-[#3d3d3d]">
+                          <p className="text-lg font-light tracking-[0.2em]" style={{ color: project.accent }}>LUXE</p>
+                          <h4 className="text-xl font-light italic mt-1">Beauty & Wellness</h4>
+                          <button className="mt-3 px-6 py-2 text-xs tracking-wider text-white" style={{ backgroundColor: project.accent }}>
+                            BOOK
+                          </button>
+                        </div>
+                      )}
+                      {project.style === 'warm' && (
+                        <div className="text-center text-white">
+                          <p className="text-[10px] tracking-[0.3em] opacity-70 mb-1">FARM TO TABLE</p>
+                          <h4 className="text-2xl font-serif" style={{ color: project.accent }}>Harvest Table</h4>
+                          <button className="mt-3 px-4 py-1.5 text-xs tracking-wider" style={{ backgroundColor: project.accent, color: '#1a1a1a' }}>
+                            RESERVE
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 {/* Project Info */}
