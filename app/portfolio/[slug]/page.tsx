@@ -3,12 +3,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, ExternalLink, Clock, Users, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  PhotographyPreview,
-  AutoRepairPreview,
-  SalonPreview,
-  RestaurantPreview,
-} from '@/components/website-previews';
 
 const projects = [
   {
@@ -209,19 +203,6 @@ export default async function ProjectPage({
                 </Link>
               </Button>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Website Preview */}
-      <section className="py-16 bg-gray-100">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-light text-black mb-8 text-center">Website Design</h2>
-          <div className="shadow-2xl">
-            {slug === 'photography-studio' && <PhotographyPreview />}
-            {slug === 'auto-repair-shop' && <AutoRepairPreview />}
-            {slug === 'salon-spa' && <SalonPreview />}
-            {slug === 'restaurant-website' && <RestaurantPreview />}
           </div>
         </div>
       </section>
