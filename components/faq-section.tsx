@@ -6,39 +6,39 @@ import { ChevronDown } from 'lucide-react';
 const faqs = [
   {
     id: 1,
-    question: 'How long does a website project take?',
+    question: "How long does a website project take?",
     answer:
-      'Most projects take 2-4 weeks from start to launch. The timeline depends on the complexity of your project, the number of pages, and how quickly you can provide feedback. We'll give you a detailed timeline during our initial consultation.',
+      "Most projects take 2-4 weeks from start to launch. The timeline depends on the complexity of your project, the number of pages, and how quickly you can provide feedback. We'll give you a detailed timeline during our initial consultation.",
   },
   {
     id: 2,
-    question: 'What's included in your web design service?',
+    question: "What's included in your web design service?",
     answer:
-      'Our services include custom design, responsive development, SEO optimization, form integration, and 30-90 days of support. We handle everything from concept to launch, ensuring your website is beautiful and functional.',
+      "Our services include custom design, responsive development, SEO optimization, form integration, and 30-90 days of support. We handle everything from concept to launch, ensuring your website is beautiful and functional.",
   },
   {
     id: 3,
-    question: 'Do you provide ongoing support after launch?',
+    question: "Do you provide ongoing support after launch?",
     answer:
-      'Yes! All projects include 30-90 days of free support. After that, we offer maintenance packages for updates, security patches, and new features. You can always reach out if you need help.',
+      "Yes! All projects include 30-90 days of free support. After that, we offer maintenance packages for updates, security patches, and new features. You can always reach out if you need help.",
   },
   {
     id: 4,
-    question: 'Can you redesign my existing website?',
+    question: "Can you redesign my existing website?",
     answer:
-      'Absolutely. Whether you need a complete redesign or just an update, we can help. We'll analyze your current site and create something that better serves your business goals and customers.',
+      "Absolutely. Whether you need a complete redesign or just an update, we can help. We'll analyze your current site and create something that better serves your business goals and customers.",
   },
   {
     id: 5,
-    question: 'Do you handle e-commerce or booking systems?',
+    question: "Do you handle e-commerce or booking systems?",
     answer:
-      'Yes, we specialize in building e-commerce sites, booking systems, and custom functionality. We can integrate Shopify, Stripe, calendars, appointment systems, and more.',
+      "Yes, we specialize in building e-commerce sites, booking systems, and custom functionality. We can integrate Shopify, Stripe, calendars, appointment systems, and more.",
   },
   {
     id: 6,
-    question: 'What if I need revisions after launch?',
+    question: "What if I need revisions after launch?",
     answer:
-      'We include revisions during the design and development process. After launch, minor updates are covered under your support period. Larger changes can be quoted separately.',
+      "We include revisions during the design and development process. After launch, minor updates are covered under your support period. Larger changes can be quoted separately.",
   },
 ];
 
