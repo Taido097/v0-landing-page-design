@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, ExternalLink, Clock, Users, TrendingUp } from 'lucide-react';
+import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { LaptopMockup } from '@/components/laptop-mockup';
 
 const projects = [
   {
@@ -138,15 +138,12 @@ export default async function ProjectPage({
       <section className="pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-start">
-            {/* Project Image */}
-            <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 relative">
-              <Image
-                src={project.image}
-                alt={project.title}
-                fill
-                className="object-cover"
-              />
-            </div>
+            {/* Laptop Mockup */}
+            <LaptopMockup
+              image={project.image}
+              alt={project.title}
+              projectTitle={project.title}
+            />
 
             {/* Project Info */}
             <div className="space-y-8">
