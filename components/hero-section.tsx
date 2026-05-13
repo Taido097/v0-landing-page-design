@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 
 export function HeroSection() {
   const [isVisible, setIsVisible] = useState(false);
@@ -16,8 +15,7 @@ export function HeroSection() {
   return (
     <section className="min-h-screen pt-28 pb-16 flex flex-col items-center justify-center bg-gradient-to-b from-white to-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
-          {/* Left Content */}
+        <div className="max-w-4xl mx-auto">
           <div
             className={`space-y-7 transition-all duration-1000 ${
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
@@ -73,15 +71,6 @@ export function HeroSection() {
             </div>
           </div>
 
-          {/* Hero Image */}
-          <div
-            className={`relative h-[420px] sm:h-[520px] rounded-2xl overflow-hidden shadow-xl ring-1 ring-black/5 transition-all duration-1000 delay-300 ${
-              isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-            }`}
-          >
-            <Image src="/hero-image.jpg" alt="Web Design" fill className="object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
-          </div>
         </div>
       </div>
     </section>
