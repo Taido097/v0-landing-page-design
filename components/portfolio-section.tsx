@@ -74,13 +74,22 @@ export function PortfolioSection() {
             >
               <div className="space-y-6">
                 {/* Project Image */}
-                <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 relative">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    className="object-cover"
-                  />
+                <div className="aspect-square rounded-lg bg-gray-100 p-3 sm:p-4">
+                  <div className="h-full w-full rounded-xl border border-gray-300 bg-gray-900 p-2 sm:p-3 shadow-sm">
+                    <div
+                      className="h-full w-full overflow-y-auto rounded-md bg-white scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+                      aria-label={`${project.title} preview`}
+                    >
+                      <div className="relative min-h-[150%] w-full">
+                        <Image
+                          src={project.image}
+                          alt={project.title}
+                          fill
+                          className="object-cover object-top"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Project Info */}
