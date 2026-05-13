@@ -43,8 +43,30 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const schemaData = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Tai Do',
+    url: 'https://taido.com',
+    description:
+      'Award-winning custom web design for small business owners and entrepreneurs',
+    image: 'https://taido.com/og-image.png',
+    contactPoint: {
+      '@type': 'ContactPoint',
+      telephone: '+1-123-456-7890',
+      contactType: 'Customer Service',
+      email: 'hello@taido.com',
+    },
+  };
+
   return (
     <html lang="en" data-scroll-behavior="smooth">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
+        />
+      </head>
       <body className="font-sans antialiased">
         {children}
         <Analytics />
