@@ -13,7 +13,7 @@ export function CTASection() {
   }, []);
 
   return (
-    <section id="cta" className="py-24 bg-white border-t border-gray-300">
+    <section id="cta" className="py-24 bg-white border-t border-gray-300 scroll-mt-24">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div
           className={`text-center transition-all duration-1000 ${
@@ -25,7 +25,7 @@ export function CTASection() {
           </h2>
 
           <p className="text-lg sm:text-xl text-gray-700 mb-12 max-w-2xl mx-auto leading-relaxed font-light">
-            Let's create a beautiful, high-converting website for your business. Get a free consultation today.
+            Let's create a clean, professional website that helps customers understand your business and contact you faster.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
@@ -41,14 +41,14 @@ export function CTASection() {
               asChild
               className="border border-black text-black hover:bg-black hover:text-white px-8 py-6 text-base font-medium rounded-none bg-white"
             >
-              <a href="tel:+1234567890">Call Us</a>
+              <a href="mailto:designedbytd.studio@gmail.com">Email Me</a>
             </Button>
           </div>
 
           {/* Trust Signals */}
           <div className="mt-16 pt-16 border-t border-gray-300">
             <p className="text-gray-700 text-sm font-light mb-8">
-              Trusted by 50+ small business owners and entrepreneurs
+              Website design for local businesses and entrepreneurs
             </p>
             <div className="flex flex-wrap justify-center gap-12 items-center">
               <div className="text-center">
