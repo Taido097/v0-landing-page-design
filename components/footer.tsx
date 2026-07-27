@@ -9,27 +9,26 @@ export function Footer() {
       title: 'Navigation',
       links: [
         { label: 'Home', href: '/' },
-        { label: 'Portfolio', href: '#portfolio' },
-        { label: 'Pricing', href: '#pricing' },
-        { label: 'Contact', href: '/contact' },
+        { label: 'Portfolio', href: '/#portfolio' },
+        { label: 'Services', href: '/#services' },
+        { label: 'Pricing', href: '/#pricing' },
+        { label: 'FAQ', href: '/#faq' },
       ],
     },
     {
       title: 'Company',
       links: [
-        { label: 'About', href: '#about' },
-        { label: 'Services', href: '#services' },
-        { label: 'Blog', href: '/blog' },
-        { label: 'FAQs', href: '/faqs' },
+        { label: 'About', href: '/#about' },
+        { label: 'Contact', href: '/contact' },
+        { label: 'Email', href: 'mailto:designedbytd.studio@gmail.com' },
       ],
     },
     {
-      title: 'Legal',
+      title: 'Get Started',
       links: [
-        { label: 'Privacy Policy', href: '/privacy' },
-        { label: 'Terms of Service', href: '/terms' },
-        { label: 'Cookies', href: '/cookies' },
-        { label: 'Contact', href: '/contact' },
+        { label: 'Request a Website', href: '/contact' },
+        { label: 'View Work', href: '/#portfolio' },
+        { label: 'See Pricing', href: '/#pricing' },
       ],
     },
   ];
@@ -42,33 +41,19 @@ export function Footer() {
           {/* Branding */}
           <div className="space-y-4">
             <Link href="/" className="font-bold text-lg">
-              Tai Do
+              DesignedbyTD Studio
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed font-light">
-              Custom web design for small business owners who want to grow online.
+              Custom web design for local business owners who want a clean, professional website.
             </p>
-            <div className="flex gap-4 pt-4">
+            <div className="flex flex-col gap-2 pt-4">
               <a
-                href="#"
-                aria-label="Twitter"
+                href="mailto:designedbytd.studio@gmail.com"
                 className="text-gray-400 hover:text-white transition-colors text-sm"
               >
-                Twitter
+                designedbytd.studio@gmail.com
               </a>
-              <a
-                href="#"
-                aria-label="LinkedIn"
-                className="text-gray-400 hover:text-white transition-colors text-sm"
-              >
-                LinkedIn
-              </a>
-              <a
-                href="#"
-                aria-label="Instagram"
-                className="text-gray-400 hover:text-white transition-colors text-sm"
-              >
-                Instagram
-              </a>
+              <p className="text-gray-500 text-sm">Orange County, CA</p>
             </div>
           </div>
 
@@ -95,7 +80,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-gray-500 text-sm font-light">
-            © {currentYear} Tai Do. All rights reserved.
+            © {currentYear} DesignedbyTD Studio. All rights reserved.
           </p>
 
           <a
