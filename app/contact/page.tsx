@@ -7,7 +7,9 @@ import { Footer } from '@/components/footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Mail, Phone, MapPin, ArrowLeft } from 'lucide-react';
+import { Mail, MapPin, ArrowLeft } from 'lucide-react';
+
+const CONTACT_EMAIL = 'designedbytd.studio@gmail.com';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -16,8 +18,7 @@ export default function ContactPage() {
     company: '',
     message: '',
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success'>('idle');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -26,31 +27,17 @@ export default function ContactPage() {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+    const subject = encodeURIComponent(`Website request from ${formData.name}`);
+    const body = encodeURIComponent(
+      `Name: ${formData.name}\nEmail: ${formData.email}\nBusiness: ${formData.company || 'Not provided'}\n\nProject Details:\n${formData.message}`
+    );
 
-      if (response.ok) {
-        setSubmitStatus('success');
-        setFormData({ name: '', email: '', company: '', message: '' });
-      } else {
-        setSubmitStatus('error');
-      }
-    } catch (error) {
-      console.error('Contact form error:', error);
-      setSubmitStatus('error');
-    } finally {
-      setIsSubmitting(false);
-    }
+    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+    setSubmitStatus('success');
+    setFormData({ name: '', email: '', company: '', message: '' });
   };
 
   return (
@@ -75,7 +62,7 @@ export default function ContactPage() {
               Let's Talk
             </h1>
             <p className="text-lg text-gray-700 max-w-2xl mx-auto font-light">
-              Have a project in mind? We'd love to hear about it. Tell us more and we'll be in touch soon.
+              Tell me what kind of website you need. This form will open your email app with the message ready to send.
             </p>
           </div>
         </section>
@@ -100,25 +87,10 @@ export default function ContactPage() {
                       <div>
                         <p className="font-medium text-black text-sm uppercase tracking-wider">Email</p>
                         <a
-                          href="mailto:hello@taido.com"
+                          href={`mailto:${CONTACT_EMAIL}`}
                           className="text-gray-700 hover:text-black transition-colors font-light"
                         >
-                          hello@taido.com
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-4">
-                      <div className="flex-shrink-0">
-                        <Phone className="w-5 h-5 text-black" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-black text-sm uppercase tracking-wider">Phone</p>
-                        <a
-                          href="tel:+1234567890"
-                          className="text-gray-700 hover:text-black transition-colors font-light"
-                        >
-                          (123) 456-7890
+                          {CONTACT_EMAIL}
                         </a>
                       </div>
                     </div>
@@ -130,7 +102,7 @@ export default function ContactPage() {
                       <div>
                         <p className="font-medium text-black text-sm uppercase tracking-wider">Location</p>
                         <p className="text-gray-700 font-light">
-                          Remote - Working with clients worldwide
+                          Orange County, CA
                         </p>
                       </div>
                     </div>
@@ -143,7 +115,7 @@ export default function ContactPage() {
                     <span className="font-medium text-black">
                       Response Time:
                     </span>{' '}
-                    We typically respond within 24 hours
+                    I typically respond within 24 hours.
                   </p>
                 </div>
               </div>
@@ -165,7 +137,7 @@ export default function ContactPage() {
                       id="name"
                       name="name"
                       type="text"
-                      placeholder="John Doe"
+                      placeholder="Your name"
                       value={formData.name}
                       onChange={handleChange}
                       required
@@ -183,7 +155,7 @@ export default function ContactPage() {
                       id="email"
                       name="email"
                       type="email"
-                      placeholder="john@example.com"
+                      placeholder="you@example.com"
                       value={formData.email}
                       onChange={handleChange}
                       required
@@ -220,7 +192,7 @@ export default function ContactPage() {
                   <Textarea
                     id="message"
                     name="message"
-                    placeholder="Tell us about your project, goals, and budget..."
+                    placeholder="Tell me what kind of website you want..."
                     value={formData.message}
                     onChange={handleChange}
                     required
@@ -232,29 +204,20 @@ export default function ContactPage() {
                 {submitStatus === 'success' && (
                   <div className="p-4 border border-green-300 bg-green-50 rounded-none">
                     <p className="text-green-900 text-sm font-light">
-                      Thanks for reaching out! We'll be in touch soon.
-                    </p>
-                  </div>
-                )}
-
-                {submitStatus === 'error' && (
-                  <div className="p-4 border border-red-300 bg-red-50 rounded-none">
-                    <p className="text-red-900 text-sm font-light">
-                      Something went wrong. Please try again.
+                      Your email app should open with the message ready to send. If it does not open, email me directly at {CONTACT_EMAIL}.
                     </p>
                   </div>
                 )}
 
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
                   className="w-full bg-black hover:bg-gray-800 text-white rounded-none h-12 font-medium"
                 >
-                  {isSubmitting ? 'Sending...' : 'Send Message'}
+                  Open Email to Send
                 </Button>
 
                 <p className="text-xs text-gray-600 font-light">
-                  We respect your privacy. No spam, ever.
+                  This opens your email app so you can review the message before sending.
                 </p>
               </form>
             </div>
