@@ -2,58 +2,55 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { GlassCard } from '@/components/glass-card';
 import { Check, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 const plans = [
   {
     name: 'Starter',
-    price: '$1,500',
-    description: 'Perfect for small businesses just getting online',
+    price: '$500+',
+    description: 'Perfect for a simple local business website',
     features: [
       'Up to 5 pages',
       'Mobile responsive',
       'Contact form',
-      'Basic SEO',
-      'SSL certificate',
-      '30 days of support',
+      'Basic SEO setup',
+      'Fast loading layout',
+      'Simple launch support',
     ],
     highlighted: false,
   },
   {
     name: 'Professional',
-    price: '$3,500',
-    description: 'Great for established businesses wanting to scale',
+    price: '$1,000+',
+    description: 'Great for businesses that want a stronger online presence',
     features: [
-      'Up to 15 pages',
-      'E-commerce ready',
-      'Advanced SEO',
-      'Blog setup',
-      'Booking system',
-      'Analytics integration',
-      '90 days of support',
-      'Monthly updates included',
+      'Up to 10 pages',
+      'Custom homepage design',
+      'Service pages',
+      'Contact form',
+      'Google Maps link',
+      'SEO-friendly structure',
+      'Mobile responsive',
+      'Post-launch support',
     ],
     highlighted: true,
   },
   {
-    name: 'Enterprise',
+    name: 'Custom',
     price: 'Custom',
-    description: 'For complex projects requiring custom solutions',
+    description: 'For booking, e-commerce, or more advanced features',
     features: [
-      'Unlimited pages',
-      'Full e-commerce suite',
+      'Custom page count',
+      'Booking or request forms',
       'Custom integrations',
-      'Advanced analytics',
-      'Team collaboration',
+      'Advanced sections',
+      'Ongoing updates',
       'Priority support',
-      '6+ months of support',
-      'Ongoing maintenance',
     ],
     highlighted: false,
-    ctaText: 'Book a Call',
-    ctaLink: '#contact',
+    ctaText: 'Ask for Quote',
+    ctaLink: '/contact',
   },
 ];
 
@@ -65,7 +62,7 @@ export function PricingSection() {
   }, []);
 
   return (
-    <section id="pricing" className="py-24 bg-white">
+    <section id="pricing" className="py-24 bg-white scroll-mt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-16">
@@ -73,7 +70,7 @@ export function PricingSection() {
             Simple Pricing
           </h2>
           <p className="text-lg text-gray-700 max-w-2xl font-light">
-            Choose the right plan for your business. All include quality work and our full support.
+            Choose the right starting point for your business. Every package is adjusted based on what the website needs.
           </p>
         </div>
 
@@ -115,7 +112,7 @@ export function PricingSection() {
                   </div>
                   {plan.price !== 'Custom' && (
                     <p className={`text-sm mt-2 ${plan.highlighted ? 'text-gray-400' : 'text-gray-600'}`}>
-                      one-time project
+                      starting price
                     </p>
                   )}
                 </div>
@@ -141,7 +138,7 @@ export function PricingSection() {
                       : 'bg-black text-white hover:bg-gray-800'
                   }`}
                 >
-                  <Link href={plan.ctaLink || '#cta'} className="gap-2">
+                  <Link href={plan.ctaLink || '/contact'} className="gap-2">
                     {plan.ctaText || 'Get Started'}
                     <ArrowRight className="w-4 h-4" />
                   </Link>
@@ -162,7 +159,7 @@ export function PricingSection() {
                 Do you offer payment plans?
               </h4>
               <p className="text-gray-700 text-sm leading-relaxed font-light">
-                Yes! We offer flexible payment plans for projects over $2,000. Let's discuss what works best for you.
+                Yes. Payment plans can be discussed depending on the project size and timeline.
               </p>
             </div>
             <div>
@@ -170,7 +167,7 @@ export function PricingSection() {
                 What's included in support?
               </h4>
               <p className="text-gray-700 text-sm leading-relaxed font-light">
-                Support includes bug fixes, minor updates, and consultation during the included period.
+                Support can include bug fixes, small text changes, and help after the website goes live.
               </p>
             </div>
           </div>
