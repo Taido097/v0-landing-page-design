@@ -20,13 +20,13 @@ const steps = [
     number: 3,
     title: 'Development',
     description:
-      'Our developers build a fast, secure, and fully responsive website. Every detail is optimized for performance and SEO.',
+      'We build a fast, secure, and fully responsive website. Every detail is optimized for performance and a smooth customer experience.',
   },
   {
     number: 4,
     title: 'Launch & Support',
     description:
-      'We launch your site and stick around. You get 30-90 days of free support to ensure everything runs smoothly.',
+      'We launch your site and stick around. You get support after launch to make sure everything runs smoothly.',
   },
 ];
 
@@ -38,7 +38,7 @@ export function HowWeWorkSection() {
   }, []);
 
   return (
-    <section className="py-24 bg-white border-t border-gray-300">
+    <section id="services" className="py-24 bg-white border-t border-gray-300">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-16">
@@ -46,7 +46,7 @@ export function HowWeWorkSection() {
             How We Work
           </h2>
           <p className="text-lg text-gray-700 max-w-2xl font-light">
-            Our proven process ensures your website is built right, on time, and within budget.
+            Our process keeps your website simple, clear, and built around helping customers contact your business.
           </p>
         </div>
 
@@ -80,7 +80,7 @@ export function HowWeWorkSection() {
                   {/* Checkmark */}
                   <div className="flex items-center gap-2 text-black">
                     <CheckCircle className="w-4 h-4" />
-                    <span className="text-xs font-medium uppercase tracking-wider">Complete</span>
+                    <span className="text-xs font-medium uppercase tracking-wider">Included</span>
                   </div>
                 </div>
               </div>
@@ -89,9 +89,9 @@ export function HowWeWorkSection() {
         </div>
 
         {/* Why Choose Us */}
-        <div className="mt-20 pt-20 border-t border-gray-300">
+        <div id="about" className="mt-20 pt-20 border-t border-gray-300 scroll-mt-24">
           <h3 className="text-3xl font-light text-black mb-8">
-            Why Choose Tai Do?
+            Why Choose DesignedbyTD Studio?
           </h3>
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-4">
@@ -102,7 +102,7 @@ export function HowWeWorkSection() {
                 <div>
                   <h4 className="font-medium text-black mb-1">Custom Designs Only</h4>
                   <p className="text-gray-700 text-sm font-light">
-                    No templates. Every design is created specifically for your business.
+                    No random templates. Every design is created to match the business and make it easy for customers to take action.
                   </p>
                 </div>
               </div>
@@ -113,7 +113,7 @@ export function HowWeWorkSection() {
                 <div>
                   <h4 className="font-medium text-black mb-1">Fast Turnaround</h4>
                   <p className="text-gray-700 text-sm font-light">
-                    Most projects are delivered in 2-4 weeks. You get your site live quickly.
+                    Most simple business websites can be designed and launched quickly, so you can start using it with customers.
                   </p>
                 </div>
               </div>
@@ -126,7 +126,7 @@ export function HowWeWorkSection() {
                 <div>
                   <h4 className="font-medium text-black mb-1">Ongoing Support</h4>
                   <p className="text-gray-700 text-sm font-light">
-                    Free support for 30-90 days after launch. We're here when you need us.
+                    After launch, you can get help with small updates, text changes, and improvements.
                   </p>
                 </div>
               </div>
@@ -135,9 +135,9 @@ export function HowWeWorkSection() {
                   <CheckCircle className="w-5 h-5 text-black" />
                 </div>
                 <div>
-                  <h4 className="font-medium text-black mb-1">Results-Driven</h4>
+                  <h4 className="font-medium text-black mb-1">Built for Local Businesses</h4>
                   <p className="text-gray-700 text-sm font-light">
-                    Every decision is made to help your website convert visitors into customers.
+                    The goal is not just a pretty site. The goal is to help customers trust you, call you, and request your service.
                   </p>
                 </div>
               </div>
