@@ -9,10 +9,11 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navLinks = [
-    { href: '#portfolio', label: 'Portfolio' },
-    { href: '#pricing', label: 'Pricing' },
-    { href: '#testimonials', label: 'Testimonials' },
-    { href: '#about', label: 'About' },
+    { href: '/#portfolio', label: 'Portfolio' },
+    { href: '/#services', label: 'Services' },
+    { href: '/#pricing', label: 'Pricing' },
+    { href: '/#faq', label: 'FAQ' },
+    { href: '/#about', label: 'About' },
   ];
 
   return (
@@ -20,19 +21,19 @@ export function Header() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="font-bold text-lg text-black">
-          DesignedbyTD
+          DesignedbyTD Studio
         </Link>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-12">
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.href}
               href={link.href}
               className="text-gray-700 hover:text-black transition-colors duration-200 text-sm font-light"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </div>
 
@@ -42,7 +43,7 @@ export function Header() {
             asChild
             className="bg-black hover:bg-gray-800 text-white px-6 py-2 text-sm font-medium rounded-none"
           >
-            <Link href="#cta">Start Free</Link>
+            <Link href="/contact">Start Free</Link>
           </Button>
         </div>
 
@@ -65,20 +66,20 @@ export function Header() {
         <div className="md:hidden border-t border-gray-200 bg-white animate-slide-up">
           <div className="max-w-7xl mx-auto px-4 py-4 space-y-4">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsMenuOpen(false)}
                 className="block py-2 text-gray-700 hover:text-black transition-colors duration-200 text-sm font-light"
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
             <Button
               asChild
               className="w-full bg-black hover:bg-gray-800 text-white rounded-none text-sm font-medium py-6"
             >
-              <Link href="#cta" onClick={() => setIsMenuOpen(false)}>
+              <Link href="/contact" onClick={() => setIsMenuOpen(false)}>
                 Start Free
               </Link>
             </Button>
