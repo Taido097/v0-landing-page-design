@@ -1,103 +1,31 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Calendar, CheckCircle, MapPin, Menu, Phone, Sparkles, Star } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Calendar,
+  Camera,
+  Car,
+  CheckCircle,
+  Clock,
+  MapPin,
+  Menu,
+  Scissors,
+  Sparkles,
+  Star,
+  Utensils,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const projects = [
-  {
-    slug: 'photography-studio',
-    title: 'Photography Studio',
-    category: 'Portfolio Website',
-    client: 'Sarah Chen Photography',
-    duration: '3 weeks',
-    year: '2024',
-    accent: 'from-stone-950 via-zinc-800 to-stone-700',
-    softAccent: 'bg-stone-100',
-    badge: 'Luxury portrait + wedding photography',
-    heroTitle: 'Timeless photos for modern love stories.',
-    heroText: 'A premium photography website demo with a cinematic hero, gallery preview, booking call-to-action, and trust-building client experience.',
-    cta: 'Book a Session',
-    services: ['Wedding Photography', 'Portrait Sessions', 'Brand Shoots'],
-    stats: [
-      { value: '150%', label: 'More bookings' },
-      { value: '3x', label: 'More inquiries' },
-      { value: '45%', label: 'Higher engagement' },
-    ],
-    previewCards: ['Editorial', 'Wedding', 'Portrait'],
-    testimonial: 'The site feels premium, simple, and easy for clients to book from.',
-  },
-  {
-    slug: 'auto-repair-shop',
-    title: 'Auto Repair Shop',
-    category: 'Service Business',
-    client: 'Mike\'s Auto Care',
-    duration: '2 weeks',
-    year: '2024',
-    accent: 'from-slate-950 via-red-950 to-zinc-900',
-    softAccent: 'bg-red-50',
-    badge: 'Fast service + online appointment requests',
-    heroTitle: 'Auto repair that gets drivers back on the road.',
-    heroText: 'A clean auto repair website demo with service cards, emergency CTA, reviews, and an appointment request flow.',
-    cta: 'Schedule Service',
-    services: ['Brake Repair', 'Oil Change', 'Engine Diagnostics'],
-    stats: [
-      { value: '200%', label: 'More appointments' },
-      { value: '85%', label: 'Online bookings' },
-      { value: '4.9', label: 'Review rating' },
-    ],
-    previewCards: ['Repair', 'Diagnostics', 'Maintenance'],
-    testimonial: 'Customers understand our services fast and can request help right away.',
-  },
-  {
-    slug: 'salon-spa',
-    title: 'Salon & Spa',
-    category: 'Beauty Business',
-    client: 'Luxe Beauty Lounge',
-    duration: '4 weeks',
-    year: '2023',
-    accent: 'from-neutral-950 via-pink-950 to-rose-900',
-    softAccent: 'bg-rose-50',
-    badge: 'Beauty booking + premium brand experience',
-    heroTitle: 'A polished beauty experience before they walk in.',
-    heroText: 'A modern salon website demo with service menus, staff highlights, gift-card CTA, and booking-focused design.',
-    cta: 'Book Appointment',
-    services: ['Hair Styling', 'Facials', 'Lash Services'],
-    stats: [
-      { value: '120%', label: 'Revenue increase' },
-      { value: '60%', label: 'Repeat bookings' },
-      { value: '$15K', label: 'Gift card sales' },
-    ],
-    previewCards: ['Hair', 'Skin', 'Lashes'],
-    testimonial: 'The design finally matches the experience clients get inside the salon.',
-  },
-  {
-    slug: 'restaurant-website',
-    title: 'Restaurant Website',
-    category: 'Food & Beverage',
-    client: 'Harvest Table Restaurant',
-    duration: '3 weeks',
-    year: '2023',
-    accent: 'from-zinc-950 via-amber-950 to-orange-900',
-    softAccent: 'bg-amber-50',
-    badge: 'Menu showcase + reservation-focused layout',
-    heroTitle: 'A restaurant website that makes people hungry.',
-    heroText: 'A warm restaurant website demo with menu highlights, location details, reservation CTA, and private event inquiry sections.',
-    cta: 'Reserve a Table',
-    services: ['Dinner Menu', 'Private Events', 'Catering'],
-    stats: [
-      { value: '180%', label: 'More reservations' },
-      { value: '40%', label: 'Larger parties' },
-      { value: '5x', label: 'Event inquiries' },
-    ],
-    previewCards: ['Seasonal', 'Events', 'Menu'],
-    testimonial: 'The website captures the feeling of the restaurant and drives reservations.',
-  },
+  { slug: 'photography-studio' },
+  { slug: 'auto-repair-shop' },
+  { slug: 'salon-spa' },
+  { slug: 'restaurant-website' },
 ];
 
 export async function generateStaticParams() {
-  return projects.map((project) => ({
-    slug: project.slug,
-  }));
+  return projects.map((project) => ({ slug: project.slug }));
 }
 
 export default async function ProjectPage({
@@ -106,202 +34,342 @@ export default async function ProjectPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const project = projects.find((p) => p.slug === slug);
 
-  if (!project) {
+  if (!projects.some((project) => project.slug === slug)) {
     notFound();
   }
 
   return (
     <div className="min-h-screen bg-white text-black">
       <style>{`
-        @keyframes floatSlow {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-14px); }
-        }
         @keyframes fadeUp {
           from { opacity: 0; transform: translateY(24px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes shine {
-          from { transform: translateX(-120%); }
-          to { transform: translateX(120%); }
+        @keyframes floatSlow {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-14px); }
         }
-        .demo-fade-up { animation: fadeUp .8s ease both; }
-        .demo-float { animation: floatSlow 4s ease-in-out infinite; }
-        .demo-shine::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(110deg, transparent 20%, rgba(255,255,255,.22) 45%, transparent 70%);
-          animation: shine 3.8s ease-in-out infinite;
+        @keyframes slideLoop {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
         }
+        @keyframes glowPulse {
+          0%, 100% { opacity: .45; transform: scale(1); }
+          50% { opacity: .9; transform: scale(1.08); }
+        }
+        .fade-up { animation: fadeUp .8s ease both; }
+        .float-slow { animation: floatSlow 4s ease-in-out infinite; }
+        .slide-loop { animation: slideLoop 16s linear infinite; }
+        .glow-pulse { animation: glowPulse 4s ease-in-out infinite; }
       `}</style>
 
-      <div className={`relative overflow-hidden bg-gradient-to-br ${project.accent} text-white`}>
-        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_20%_20%,white,transparent_28%),radial-gradient(circle_at_80%_0%,white,transparent_24%),radial-gradient(circle_at_60%_90%,white,transparent_20%)]" />
+      {slug === 'photography-studio' && <PhotographyDemo />}
+      {slug === 'auto-repair-shop' && <AutoRepairDemo />}
+      {slug === 'salon-spa' && <SalonDemo />}
+      {slug === 'restaurant-website' && <RestaurantDemo />}
+    </div>
+  );
+}
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Link
-            href="/#portfolio"
-            className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors text-sm font-light mb-12"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Portfolio
-          </Link>
+function BackLink({ color = 'text-gray-700 hover:text-black' }: { color?: string }) {
+  return (
+    <Link href="/#portfolio" className={`inline-flex items-center gap-2 text-sm font-light transition-colors ${color}`}>
+      <ArrowLeft className="h-4 w-4" />
+      Back to Portfolio
+    </Link>
+  );
+}
 
-          <div className="grid lg:grid-cols-2 gap-12 items-center pb-20">
-            <div className="demo-fade-up space-y-8">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.22em] text-white/80 backdrop-blur">
-                <Sparkles className="w-4 h-4" />
-                {project.badge}
+function BrowserDots() {
+  return (
+    <div className="flex gap-2">
+      <span className="h-3 w-3 rounded-full bg-red-400" />
+      <span className="h-3 w-3 rounded-full bg-yellow-400" />
+      <span className="h-3 w-3 rounded-full bg-green-400" />
+    </div>
+  );
+}
+
+function PhotographyDemo() {
+  return (
+    <main className="bg-[#f5f0e8] text-[#16130f]">
+      <section className="relative min-h-screen overflow-hidden px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <BackLink />
+          <div className="grid items-center gap-12 py-16 lg:grid-cols-[.9fr_1.1fr] lg:py-24">
+            <div className="fade-up space-y-8">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#b7a98f] px-4 py-2 text-xs uppercase tracking-[0.26em] text-[#7a6a50]">
+                <Camera className="h-4 w-4" />
+                Luxury photography demo
               </div>
-
-              <div>
-                <p className="text-white/60 text-sm uppercase tracking-[0.28em] mb-4">{project.category}</p>
-                <h1 className="text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight">
-                  {project.heroTitle}
-                </h1>
-              </div>
-
-              <p className="text-lg sm:text-xl text-white/75 leading-relaxed max-w-xl font-light">
-                {project.heroText}
+              <h1 className="text-6xl font-light leading-[0.88] tracking-tight sm:text-7xl lg:text-8xl">
+                Stories told in light, texture, and emotion.
+              </h1>
+              <p className="max-w-xl text-lg font-light leading-relaxed text-[#625743]">
+                This demo feels like a premium photography brand with a cinematic landing page, editorial image blocks, and a booking path that feels elegant instead of salesy.
               </p>
-
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button asChild className="bg-white text-black hover:bg-white/90 rounded-none px-8 py-6 text-base">
-                  <Link href="/contact">
-                    Start a Similar Demo <ArrowRight className="w-4 h-4 ml-2" />
-                  </Link>
+              <div className="flex flex-col gap-4 sm:flex-row">
+                <Button asChild className="rounded-none bg-[#16130f] px-8 py-6 text-white hover:bg-[#2b251c]">
+                  <Link href="/contact">Build This Style <ArrowRight className="ml-2 h-4 w-4" /></Link>
                 </Button>
-                <a href="#live-demo" className="inline-flex items-center justify-center border border-white/30 px-8 py-3 text-white hover:bg-white/10 transition-colors">
-                  View Live Preview
+                <a href="#photo-gallery" className="inline-flex items-center justify-center border border-[#16130f] px-8 py-3 font-medium hover:bg-[#16130f] hover:text-white">
+                  View Gallery Flow
                 </a>
               </div>
             </div>
 
-            <div className="demo-fade-up demo-float lg:pl-8" style={{ animationDelay: '.15s' }}>
-              <div className="relative demo-shine overflow-hidden rounded-[2rem] border border-white/20 bg-white/10 p-4 shadow-2xl backdrop-blur">
-                <div className="rounded-[1.4rem] bg-white text-black overflow-hidden shadow-2xl">
-                  <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4">
-                    <div className="flex gap-2">
-                      <span className="w-3 h-3 rounded-full bg-red-400" />
-                      <span className="w-3 h-3 rounded-full bg-yellow-400" />
-                      <span className="w-3 h-3 rounded-full bg-green-400" />
+            <div className="float-slow relative min-h-[560px]">
+              <div className="absolute left-4 top-12 h-72 w-48 rounded-t-full bg-[#d8c6a3] shadow-2xl sm:h-96 sm:w-64" />
+              <div className="absolute right-4 top-0 h-96 w-60 rounded-t-full bg-[#2d2a24] shadow-2xl sm:w-80" />
+              <div className="absolute bottom-10 left-1/2 h-80 w-60 -translate-x-1/2 rounded-t-full bg-[#b48b63] shadow-2xl sm:h-96 sm:w-72" />
+              <div className="absolute left-1/2 top-1/2 w-[90%] -translate-x-1/2 -translate-y-1/2 rounded-[2rem] border border-white/60 bg-white/70 p-5 shadow-2xl backdrop-blur">
+                <div className="mb-5 flex items-center justify-between">
+                  <BrowserDots />
+                  <span className="text-xs text-[#7a6a50]">sarahchenphoto.com</span>
+                  <Menu className="h-4 w-4" />
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  {['Weddings', 'Portraits', 'Editorials'].map((item, index) => (
+                    <div key={item} className="aspect-[3/5] rounded-t-full bg-gradient-to-b from-[#16130f] to-[#c5a37a] p-4 text-white shadow-lg" style={{ marginTop: `${index * 28}px` }}>
+                      <p className="text-xs uppercase tracking-widest opacity-80">0{index + 1}</p>
+                      <p className="mt-32 text-sm font-medium">{item}</p>
                     </div>
-                    <div className="text-xs text-gray-500">{project.client.toLowerCase().replaceAll(' ', '')}.com</div>
-                    <Menu className="w-4 h-4 text-gray-400" />
-                  </div>
-
-                  <div className={`${project.softAccent} p-6 sm:p-8`}>
-                    <div className="grid grid-cols-3 gap-3 mb-6">
-                      {project.previewCards.map((card, index) => (
-                        <div key={card} className="aspect-[4/5] rounded-2xl bg-white border border-black/5 p-3 flex flex-col justify-end shadow-sm">
-                          <div className="h-16 rounded-xl bg-gradient-to-br from-black/80 to-black/30 mb-3" />
-                          <p className="text-xs font-medium">{card}</p>
-                          <p className="text-[10px] text-gray-500">0{index + 1}</p>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="rounded-2xl bg-white p-5 shadow-sm border border-black/5">
-                      <p className="text-xs uppercase tracking-widest text-gray-500 mb-2">Featured CTA</p>
-                      <h2 className="text-2xl font-light mb-4">{project.cta}</h2>
-                      <div className="grid sm:grid-cols-3 gap-3">
-                        {project.services.map((service) => (
-                          <div key={service} className="rounded-xl border border-gray-200 p-3 text-sm">
-                            <CheckCircle className="w-4 h-4 mb-2" />
-                            {service}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <main id="live-demo" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-        <section className="grid lg:grid-cols-3 gap-8 mb-24">
-          {project.stats.map((stat, index) => (
-            <div key={stat.label} className="demo-fade-up border border-gray-200 p-8 rounded-none bg-white" style={{ animationDelay: `${index * 0.1}s` }}>
-              <div className="text-5xl font-light mb-3">{stat.value}</div>
-              <p className="text-gray-600 font-light">{stat.label}</p>
+      <section id="photo-gallery" className="overflow-hidden border-y border-[#d2c4aa] bg-[#16130f] py-10 text-white">
+        <div className="slide-loop flex w-[200%] gap-6 whitespace-nowrap text-4xl font-light uppercase tracking-[0.18em] text-white/80">
+          <span>Wedding Gallery</span><span>•</span><span>Brand Portraits</span><span>•</span><span>Client Booking</span><span>•</span><span>Editorial Style</span><span>•</span>
+          <span>Wedding Gallery</span><span>•</span><span>Brand Portraits</span><span>•</span><span>Client Booking</span><span>•</span><span>Editorial Style</span><span>•</span>
+        </div>
+      </section>
+
+      <section className="mx-auto grid max-w-7xl gap-8 px-4 py-24 sm:px-6 lg:grid-cols-3 lg:px-8">
+        {['Full-screen gallery', 'Session inquiry form', 'Soft luxury branding'].map((item) => (
+          <div key={item} className="rounded-t-[4rem] border border-[#d2c4aa] bg-white/50 p-8">
+            <Sparkles className="mb-8 h-5 w-5" />
+            <h2 className="text-2xl font-light">{item}</h2>
+            <p className="mt-4 font-light leading-relaxed text-[#625743]">Built to make the business feel premium before the customer ever sends an inquiry.</p>
+          </div>
+        ))}
+      </section>
+    </main>
+  );
+}
+
+function AutoRepairDemo() {
+  return (
+    <main className="bg-[#0b0f14] text-white">
+      <section className="relative overflow-hidden px-4 py-8 sm:px-6 lg:px-8">
+        <div className="absolute right-0 top-0 h-80 w-80 rounded-full bg-red-600/30 blur-3xl glow-pulse" />
+        <div className="mx-auto max-w-7xl">
+          <BackLink color="text-white/70 hover:text-white" />
+          <div className="grid items-center gap-12 py-16 lg:grid-cols-2 lg:py-24">
+            <div className="fade-up space-y-8">
+              <div className="inline-flex items-center gap-2 rounded-full border border-red-500/40 bg-red-500/10 px-4 py-2 text-xs uppercase tracking-[0.26em] text-red-100">
+                <Car className="h-4 w-4" />
+                Auto repair demo
+              </div>
+              <h1 className="text-6xl font-black uppercase leading-[0.9] tracking-tighter sm:text-7xl lg:text-8xl">
+                Fast repairs. Clear prices. Easy booking.
+              </h1>
+              <p className="max-w-xl text-lg leading-relaxed text-white/70">
+                This demo is built like a real shop website: urgent CTA, service menu, trust badges, diagnostics section, and a simple appointment request flow.
+              </p>
+              <div className="grid grid-cols-3 gap-3 pt-4">
+                {['Brakes', 'Oil', 'Engine'].map((service) => (
+                  <div key={service} className="border border-white/10 bg-white/5 p-4 text-center">
+                    <CheckCircle className="mx-auto mb-2 h-5 w-5 text-red-400" />
+                    <p className="text-sm">{service}</p>
+                  </div>
+                ))}
+              </div>
+              <Button asChild className="rounded-none bg-red-600 px-8 py-6 text-white hover:bg-red-700">
+                <Link href="/contact">Make an Auto Demo <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              </Button>
+            </div>
+
+            <div className="fade-up rounded-[2rem] border border-white/10 bg-white p-4 text-black shadow-2xl">
+              <div className="rounded-[1.5rem] bg-[#111827] p-5 text-white">
+                <div className="mb-6 flex items-center justify-between">
+                  <BrowserDots />
+                  <span className="text-xs text-white/50">mikesautocare.com</span>
+                  <Clock className="h-4 w-4 text-red-400" />
+                </div>
+                <div className="rounded-2xl bg-red-600 p-6">
+                  <p className="text-xs uppercase tracking-widest text-red-100">Same-day service</p>
+                  <h2 className="mt-3 text-4xl font-black uppercase">Need repair today?</h2>
+                  <p className="mt-3 text-red-50">Request a quote in under 60 seconds.</p>
+                </div>
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  {['Vehicle issue', 'Preferred time', 'Phone number', 'Submit request'].map((field, index) => (
+                    <div key={field} className="rounded-xl border border-white/10 bg-white/10 p-4">
+                      <p className="text-xs text-white/40">Step 0{index + 1}</p>
+                      <p className="mt-1 font-medium">{field}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-white/10 bg-white/[0.03] px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-4">
+          {[
+            ['4.9★', 'Google rating'],
+            ['24 hr', 'Fast response'],
+            ['200%', 'More appointments'],
+            ['85%', 'Online requests'],
+          ].map(([value, label]) => (
+            <div key={label} className="border border-white/10 p-6">
+              <p className="text-4xl font-black text-red-400">{value}</p>
+              <p className="mt-2 text-white/60">{label}</p>
             </div>
           ))}
-        </section>
+        </div>
+      </section>
+    </main>
+  );
+}
 
-        <section className="grid lg:grid-cols-2 gap-12 items-start mb-24">
-          <div className="space-y-6">
-            <p className="text-sm uppercase tracking-[0.24em] text-gray-500">Interactive Demo Layout</p>
-            <h2 className="text-5xl sm:text-6xl font-light leading-tight">
-              Built to feel like a real client website, not a flat sample.
-            </h2>
-            <p className="text-lg text-gray-700 font-light leading-relaxed">
-              This project page now shows a polished website preview with animated hero sections, service blocks, credibility stats, and a clear conversion path. It is designed so prospects can imagine what their own business website could look like.
-            </p>
-          </div>
-
-          <div className="border border-gray-200 rounded-[2rem] p-6 bg-gray-50">
-            <div className="space-y-4">
-              {project.services.map((service, index) => (
-                <div key={service} className="flex items-center justify-between rounded-2xl bg-white border border-gray-200 p-5">
-                  <div>
-                    <p className="font-medium">{service}</p>
-                    <p className="text-sm text-gray-500">Clean section with CTA and trust copy</p>
-                  </div>
-                  <span className="text-sm text-gray-400">0{index + 1}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="grid md:grid-cols-3 gap-6 mb-24">
-          <div className="border border-gray-200 p-6 rounded-none">
-            <Calendar className="w-5 h-5 mb-4" />
-            <p className="text-sm uppercase tracking-wider text-gray-500 mb-2">Timeline</p>
-            <p className="text-2xl font-light">{project.duration}</p>
-          </div>
-          <div className="border border-gray-200 p-6 rounded-none">
-            <Star className="w-5 h-5 mb-4" />
-            <p className="text-sm uppercase tracking-wider text-gray-500 mb-2">Client</p>
-            <p className="text-2xl font-light">{project.client}</p>
-          </div>
-          <div className="border border-gray-200 p-6 rounded-none">
-            <MapPin className="w-5 h-5 mb-4" />
-            <p className="text-sm uppercase tracking-wider text-gray-500 mb-2">Launch Year</p>
-            <p className="text-2xl font-light">{project.year}</p>
-          </div>
-        </section>
-
-        <section className="relative overflow-hidden bg-black text-white p-8 sm:p-12 lg:p-16 rounded-[2rem]">
-          <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_80%_20%,white,transparent_24%)]" />
-          <div className="relative grid lg:grid-cols-2 gap-10 items-center">
-            <div>
-              <p className="text-white/50 text-sm uppercase tracking-[0.24em] mb-4">Demo Result</p>
-              <h2 className="text-4xl sm:text-5xl font-light leading-tight mb-6">
-                Ready to turn this into a client-ready website?
-              </h2>
-              <p className="text-white/70 font-light leading-relaxed">
-                “{project.testimonial}”
+function SalonDemo() {
+  return (
+    <main className="bg-[#fff5f8] text-[#241019]">
+      <section className="px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <BackLink />
+          <div className="grid items-center gap-12 py-16 lg:grid-cols-[1.05fr_.95fr] lg:py-24">
+            <div className="fade-up space-y-8">
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#241019] px-4 py-2 text-xs uppercase tracking-[0.26em] text-white">
+                <Scissors className="h-4 w-4" />
+                Salon + spa demo
+              </div>
+              <h1 className="text-6xl font-light leading-[0.92] tracking-tight sm:text-7xl lg:text-8xl">
+                Beauty booking that feels soft, premium, and modern.
+              </h1>
+              <p className="max-w-xl text-lg font-light leading-relaxed text-[#7a5360]">
+                This one is designed for salons, lash techs, spas, med spas, and beauty studios. It focuses on services, staff, online booking, and gift-card sales.
               </p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4 lg:justify-end">
-              <Button asChild className="bg-white text-black hover:bg-white/90 rounded-none px-8 py-6">
-                <Link href="/contact">Start Your Project</Link>
+              <Button asChild className="rounded-full bg-[#241019] px-8 py-6 text-white hover:bg-[#3b1d2a]">
+                <Link href="/contact">Create a Beauty Demo <ArrowRight className="ml-2 h-4 w-4" /></Link>
               </Button>
-              <a href="tel:+17140000000" className="inline-flex items-center justify-center border border-white/25 px-8 py-3 hover:bg-white/10 transition-colors">
-                <Phone className="w-4 h-4 mr-2" />
-                Call / Text
-              </a>
+            </div>
+
+            <div className="float-slow rounded-[3rem] bg-white p-5 shadow-2xl">
+              <div className="rounded-[2.5rem] bg-gradient-to-br from-[#ffe0ea] via-white to-[#f6c5d4] p-6">
+                <div className="mb-8 flex items-center justify-between">
+                  <span className="font-serif text-2xl italic">Luxe Beauty</span>
+                  <span className="rounded-full bg-white px-4 py-2 text-xs">Book Now</span>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  {['Hair', 'Skin', 'Lashes', 'Bridal'].map((service, index) => (
+                    <div key={service} className="rounded-[2rem] bg-white/80 p-5 shadow-sm" style={{ transform: `translateY(${index % 2 ? 28 : 0}px)` }}>
+                      <Sparkles className="mb-8 h-5 w-5 text-[#b84b6b]" />
+                      <h2 className="text-2xl font-light">{service}</h2>
+                      <p className="mt-2 text-sm text-[#7a5360]">View services</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-12 rounded-[2rem] bg-[#241019] p-6 text-white">
+                  <p className="text-sm text-white/60">Next available</p>
+                  <p className="mt-2 text-3xl font-light">Today at 3:30 PM</p>
+                </div>
+              </div>
             </div>
           </div>
-        </section>
-      </main>
-    </div>
+        </div>
+      </section>
+
+      <section className="mx-auto grid max-w-7xl gap-6 px-4 pb-24 sm:px-6 md:grid-cols-3 lg:px-8">
+        {['Service menu', 'Staff profiles', 'Booking CTA'].map((item) => (
+          <div key={item} className="rounded-[2rem] border border-[#f0bfd0] bg-white p-8">
+            <Star className="mb-6 h-5 w-5 text-[#b84b6b]" />
+            <h2 className="text-3xl font-light">{item}</h2>
+            <p className="mt-4 font-light text-[#7a5360]">A soft layout that makes the business feel high-end and easy to book.</p>
+          </div>
+        ))}
+      </section>
+    </main>
+  );
+}
+
+function RestaurantDemo() {
+  return (
+    <main className="bg-[#120b06] text-[#fff7ea]">
+      <section className="relative overflow-hidden px-4 py-8 sm:px-6 lg:px-8">
+        <div className="absolute -right-24 top-24 h-96 w-96 rounded-full bg-amber-500/20 blur-3xl glow-pulse" />
+        <div className="mx-auto max-w-7xl">
+          <BackLink color="text-white/70 hover:text-white" />
+          <div className="grid items-center gap-12 py-16 lg:grid-cols-[.9fr_1.1fr] lg:py-24">
+            <div className="fade-up space-y-8">
+              <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/30 bg-amber-300/10 px-4 py-2 text-xs uppercase tracking-[0.26em] text-amber-100">
+                <Utensils className="h-4 w-4" />
+                Restaurant website demo
+              </div>
+              <h1 className="font-serif text-6xl italic leading-[0.95] tracking-tight sm:text-7xl lg:text-8xl">
+                Make visitors hungry before they arrive.
+              </h1>
+              <p className="max-w-xl text-lg font-light leading-relaxed text-white/70">
+                This demo feels like a real restaurant site with a warm hero, menu highlights, reservation CTA, location section, and private event inquiry path.
+              </p>
+              <div className="flex flex-col gap-4 sm:flex-row">
+                <Button asChild className="rounded-none bg-amber-400 px-8 py-6 text-black hover:bg-amber-300">
+                  <Link href="/contact">Build Restaurant Demo <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                </Button>
+                <a href="#menu" className="inline-flex items-center justify-center border border-white/25 px-8 py-3 hover:bg-white/10">View Menu Design</a>
+              </div>
+            </div>
+
+            <div className="grid gap-5 sm:grid-cols-2">
+              <div className="float-slow rounded-t-full bg-gradient-to-b from-amber-300 to-orange-900 p-8 pt-28 text-black shadow-2xl">
+                <p className="text-sm uppercase tracking-widest">Chef special</p>
+                <h2 className="mt-3 font-serif text-4xl italic">Seasonal Tasting</h2>
+                <p className="mt-16 text-sm">Reserve tonight</p>
+              </div>
+              <div className="space-y-5 pt-12">
+                {['Dinner Menu', 'Private Events', 'Catering'].map((item) => (
+                  <div key={item} className="rounded-3xl border border-white/10 bg-white/10 p-6 backdrop-blur">
+                    <h3 className="font-serif text-2xl italic">{item}</h3>
+                    <p className="mt-2 text-sm text-white/60">Explore options</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="menu" className="border-y border-white/10 bg-[#fff7ea] px-4 py-24 text-[#120b06] sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2">
+          <div>
+            <p className="text-sm uppercase tracking-[0.24em] text-orange-800">Menu preview</p>
+            <h2 className="mt-4 font-serif text-6xl italic">A menu layout that sells the experience.</h2>
+          </div>
+          <div className="space-y-5">
+            {[
+              ['Roasted Sea Bass', '$34'],
+              ['Truffle Mushroom Pasta', '$28'],
+              ['Citrus Olive Cake', '$12'],
+            ].map(([dish, price]) => (
+              <div key={dish} className="flex items-center justify-between border-b border-orange-900/20 py-5">
+                <div>
+                  <h3 className="font-serif text-2xl italic">{dish}</h3>
+                  <p className="text-sm text-orange-900/60">Seasonal ingredients • chef selected</p>
+                </div>
+                <p className="text-xl">{price}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }
