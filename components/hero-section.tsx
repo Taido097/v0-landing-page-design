@@ -13,7 +13,7 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="min-h-screen pt-28 pb-16 flex flex-col items-center justify-center bg-gradient-to-b from-white to-gray-50">
+    <section id="hero" className="min-h-screen pt-28 pb-16 flex flex-col items-center justify-center bg-gradient-to-b from-white to-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="max-w-4xl mx-auto">
           <div
@@ -41,7 +41,7 @@ export function HeroSection() {
                 size="lg"
                 className="bg-black hover:bg-gray-800 text-white px-8 py-6 text-base font-medium"
               >
-                <Link href="#cta" className="flex items-center gap-2">
+                <Link href="/contact" className="flex items-center gap-2">
                   Start Free <ArrowRight className="w-4 h-4" />
                 </Link>
               </Button>
@@ -51,7 +51,7 @@ export function HeroSection() {
                 size="lg"
                 className="px-8 py-6 text-base font-medium border-black text-black hover:bg-black hover:text-white"
               >
-                <Link href="#portfolio">View Work</Link>
+                <Link href="/#portfolio">View Work</Link>
               </Button>
             </div>
 
@@ -61,12 +61,12 @@ export function HeroSection() {
                 <div className="text-gray-600 text-xs sm:text-sm mt-1">Websites Created</div>
               </div>
               <div>
-                <div className="text-2xl sm:text-3xl font-semibold text-black">$2M+</div>
-                <div className="text-gray-600 text-xs sm:text-sm mt-1">Revenue Generated</div>
+                <div className="text-2xl sm:text-3xl font-semibold text-black">2-4</div>
+                <div className="text-gray-600 text-xs sm:text-sm mt-1">Week Turnaround</div>
               </div>
               <div>
-                <div className="text-2xl sm:text-3xl font-semibold text-black">98%</div>
-                <div className="text-gray-600 text-xs sm:text-sm mt-1">Client Satisfaction</div>
+                <div className="text-2xl sm:text-3xl font-semibold text-black">100%</div>
+                <div className="text-gray-600 text-xs sm:text-sm mt-1">Custom Design</div>
               </div>
             </div>
           </div>
