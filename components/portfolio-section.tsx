@@ -48,7 +48,7 @@ export function PortfolioSection() {
   }, []);
 
   return (
-    <section id="portfolio" className="py-24 bg-white">
+    <section id="portfolio" className="py-24 bg-white scroll-mt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-16">
@@ -109,10 +109,10 @@ export function PortfolioSection() {
 
         {/* CTA */}
         <div className="text-center pt-8 border-t border-gray-200">
-          <button className="inline-flex items-center gap-2 px-8 py-3 bg-black hover:bg-gray-800 text-white font-medium transition-colors rounded-none">
-            See All Work
+          <Link href="/contact" className="inline-flex items-center gap-2 px-8 py-3 bg-black hover:bg-gray-800 text-white font-medium transition-colors rounded-none">
+            Start Your Website
             <ArrowRight className="w-4 h-4" />
-          </button>
+          </Link>
         </div>
       </div>
     </section>
