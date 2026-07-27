@@ -8,37 +8,37 @@ const faqs = [
     id: 1,
     question: "How long does a website project take?",
     answer:
-      "Most projects take 2-4 weeks from start to launch. The timeline depends on the complexity of your project, the number of pages, and how quickly you can provide feedback. We'll give you a detailed timeline during our initial consultation.",
+      "Most simple business websites take 2-4 weeks from start to launch. The timeline depends on the number of pages, features, and how quickly feedback is provided.",
   },
   {
     id: 2,
     question: "What's included in your web design service?",
     answer:
-      "Our services include custom design, responsive development, SEO optimization, form integration, and 30-90 days of support. We handle everything from concept to launch, ensuring your website is beautiful and functional.",
+      "A typical project can include custom design, mobile responsive pages, contact form setup, basic SEO structure, launch support, and help after the website goes live.",
   },
   {
     id: 3,
     question: "Do you provide ongoing support after launch?",
     answer:
-      "Yes! All projects include 30-90 days of free support. After that, we offer maintenance packages for updates, security patches, and new features. You can always reach out if you need help.",
+      "Yes. After launch, you can get help with small updates, text changes, bug fixes, and improvements as your business grows.",
   },
   {
     id: 4,
     question: "Can you redesign my existing website?",
     answer:
-      "Absolutely. Whether you need a complete redesign or just an update, we can help. We'll analyze your current site and create something that better serves your business goals and customers.",
+      "Yes. If your current website looks outdated or does not clearly explain your services, we can redesign it into something cleaner and easier for customers to use.",
   },
   {
     id: 5,
-    question: "Do you handle e-commerce or booking systems?",
+    question: "Can you add forms or booking links?",
     answer:
-      "Yes, we specialize in building e-commerce sites, booking systems, and custom functionality. We can integrate Shopify, Stripe, calendars, appointment systems, and more.",
+      "Yes. We can add contact forms, quote request forms, booking links, Google Maps, phone buttons, and other features that make it easier for customers to reach you.",
   },
   {
     id: 6,
-    question: "What if I need revisions after launch?",
+    question: "Can I request revisions?",
     answer:
-      "We include revisions during the design and development process. After launch, minor updates are covered under your support period. Larger changes can be quoted separately.",
+      "Yes. Revisions are part of the design process so the final website feels right for your business before launch.",
   },
 ];
 
@@ -50,7 +50,7 @@ export function FAQSection() {
   };
 
   return (
-    <section className="py-24 bg-white border-t border-gray-300">
+    <section id="faq" className="py-24 bg-white border-t border-gray-300 scroll-mt-24">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-16">
@@ -58,7 +58,7 @@ export function FAQSection() {
             Common Questions
           </h2>
           <p className="text-lg text-gray-700 max-w-2xl font-light">
-            Have questions about our process? Here are answers to the most common ones.
+            Have questions about the process? Here are answers to the most common ones.
           </p>
         </div>
 
@@ -95,7 +95,7 @@ export function FAQSection() {
         {/* CTA */}
         <div className="mt-16 pt-16 border-t border-gray-300 text-center">
           <p className="text-gray-700 mb-6 font-light">
-            Still have questions? We're here to help.
+            Still have questions? Send a quick message.
           </p>
           <a
             href="/contact"
