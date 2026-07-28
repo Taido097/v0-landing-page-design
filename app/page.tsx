@@ -12,23 +12,27 @@ import { CTASection } from '@/components/cta-section';
 import { Footer } from '@/components/footer';
 
 export const metadata = {
-  title: 'Designed by TD | Custom Web Design in Orange County',
+  title: 'Affordable Website Design in Orange County | Designed by TD',
   description:
-    'Designed by TD creates modern, mobile-friendly websites for small businesses in Orange County, California. View services, pricing, and recent work.',
+    'Affordable local website design for small businesses in Orange County, California. Custom mobile-friendly websites starting at $500 from Designed by TD.',
   keywords: [
+    'website design Orange County',
+    'affordable website design Orange County',
+    'cheap website design Orange County',
+    'local website designer',
+    'website builder near me',
+    'small business website designer',
+    'Orange County web designer',
     'Designed by TD',
     'DesignedbyTD Studio',
-    'Orange County web designer',
-    'small business web design',
-    'custom website design',
   ],
   alternates: {
     canonical: 'https://designedbytd.com/',
   },
   openGraph: {
-    title: 'Designed by TD | Custom Web Design in Orange County',
+    title: 'Affordable Website Design in Orange County | Designed by TD',
     description:
-      'Modern, mobile-friendly websites for small businesses in Orange County, California.',
+      'Custom, mobile-friendly websites for Orange County small businesses, with packages starting at $500.',
     type: 'website',
     url: 'https://designedbytd.com/',
     siteName: 'Designed by TD',
