@@ -38,48 +38,39 @@ export function HowWeWorkSection() {
   }, []);
 
   return (
-    <section id="services" className="py-24 bg-white border-t border-gray-300">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
+    <section id="process" className="border-t border-gray-300 bg-white py-24">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mb-16">
-          <h2 className="text-5xl sm:text-6xl font-light text-black leading-tight mb-6 max-w-3xl">
+          <h2 className="mb-6 max-w-3xl text-5xl font-light leading-tight text-black sm:text-6xl">
             How We Work
           </h2>
-          <p className="text-lg text-gray-700 max-w-2xl font-light">
+          <p className="max-w-2xl text-lg font-light text-gray-700">
             Our process keeps your website simple, clear, and built around helping customers contact your business.
           </p>
         </div>
 
-        {/* Steps */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {steps.map((step, index) => (
             <div
               key={step.number}
               className={`transition-all duration-1000 ${
-                isVisible
-                  ? 'opacity-100 translate-y-0'
-                  : 'opacity-0 translate-y-10'
+                isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
               }`}
               style={{ transitionDelay: `${index * 100}ms` }}
             >
-              <div className="relative p-6 border border-gray-300 rounded-none h-full flex flex-col">
-                {/* Step number */}
-                <div className="absolute -top-4 -left-4 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center text-sm font-bold">
+              <div className="relative flex h-full flex-col rounded-none border border-gray-300 p-6">
+                <div className="absolute -left-4 -top-4 flex h-8 w-8 items-center justify-center rounded-full bg-black text-sm font-bold text-white">
                   {step.number}
                 </div>
 
-                {/* Content */}
                 <div className="pt-2">
-                  <h3 className="text-xl font-medium text-black mb-3">
-                    {step.title}
-                  </h3>
-                  <p className="text-gray-700 text-sm leading-relaxed font-light mb-6 flex-grow">
+                  <h3 className="mb-3 text-xl font-medium text-black">{step.title}</h3>
+                  <p className="mb-6 flex-grow text-sm font-light leading-relaxed text-gray-700">
                     {step.description}
                   </p>
 
-                  {/* Checkmark */}
                   <div className="flex items-center gap-2 text-black">
-                    <CheckCircle className="w-4 h-4" />
+                    <CheckCircle className="h-4 w-4" />
                     <span className="text-xs font-medium uppercase tracking-wider">Included</span>
                   </div>
                 </div>
@@ -88,31 +79,28 @@ export function HowWeWorkSection() {
           ))}
         </div>
 
-        {/* Why Choose Us */}
-        <div id="about" className="mt-20 pt-20 border-t border-gray-300 scroll-mt-24">
-          <h3 className="text-3xl font-light text-black mb-8">
-            Why Choose DesignedbyTD Studio?
-          </h3>
-          <div className="grid md:grid-cols-2 gap-8">
+        <div id="about" className="mt-20 scroll-mt-24 border-t border-gray-300 pt-20">
+          <h3 className="mb-8 text-3xl font-light text-black">Why Choose DesignedbyTD Studio?</h3>
+          <div className="grid gap-8 md:grid-cols-2">
             <div className="space-y-4">
               <div className="flex gap-4">
                 <div className="flex-shrink-0 pt-1">
-                  <CheckCircle className="w-5 h-5 text-black" />
+                  <CheckCircle className="h-5 w-5 text-black" />
                 </div>
                 <div>
-                  <h4 className="font-medium text-black mb-1">Custom Designs Only</h4>
-                  <p className="text-gray-700 text-sm font-light">
+                  <h4 className="mb-1 font-medium text-black">Custom Designs Only</h4>
+                  <p className="text-sm font-light text-gray-700">
                     No random templates. Every design is created to match the business and make it easy for customers to take action.
                   </p>
                 </div>
               </div>
               <div className="flex gap-4">
                 <div className="flex-shrink-0 pt-1">
-                  <CheckCircle className="w-5 h-5 text-black" />
+                  <CheckCircle className="h-5 w-5 text-black" />
                 </div>
                 <div>
-                  <h4 className="font-medium text-black mb-1">Fast Turnaround</h4>
-                  <p className="text-gray-700 text-sm font-light">
+                  <h4 className="mb-1 font-medium text-black">Fast Turnaround</h4>
+                  <p className="text-sm font-light text-gray-700">
                     Most simple business websites can be designed and launched quickly, so you can start using it with customers.
                   </p>
                 </div>
@@ -121,22 +109,22 @@ export function HowWeWorkSection() {
             <div className="space-y-4">
               <div className="flex gap-4">
                 <div className="flex-shrink-0 pt-1">
-                  <CheckCircle className="w-5 h-5 text-black" />
+                  <CheckCircle className="h-5 w-5 text-black" />
                 </div>
                 <div>
-                  <h4 className="font-medium text-black mb-1">Ongoing Support</h4>
-                  <p className="text-gray-700 text-sm font-light">
+                  <h4 className="mb-1 font-medium text-black">Ongoing Support</h4>
+                  <p className="text-sm font-light text-gray-700">
                     After launch, you can get help with small updates, text changes, and improvements.
                   </p>
                 </div>
               </div>
               <div className="flex gap-4">
                 <div className="flex-shrink-0 pt-1">
-                  <CheckCircle className="w-5 h-5 text-black" />
+                  <CheckCircle className="h-5 w-5 text-black" />
                 </div>
                 <div>
-                  <h4 className="font-medium text-black mb-1">Built for Local Businesses</h4>
-                  <p className="text-gray-700 text-sm font-light">
+                  <h4 className="mb-1 font-medium text-black">Built for Local Businesses</h4>
+                  <p className="text-sm font-light text-gray-700">
                     The goal is not just a pretty site. The goal is to help customers trust you, call you, and request your service.
                   </p>
                 </div>
