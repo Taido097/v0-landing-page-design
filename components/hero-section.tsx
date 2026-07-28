@@ -54,21 +54,18 @@ const projects: Project[] = [
 export function HeroSection() {
   const [isVisible, setIsVisible] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
 
   useEffect(() => {
-    if (isPaused) return;
-
     const timer = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % projects.length);
     }, 5200);
 
     return () => window.clearInterval(timer);
-  }, [isPaused]);
+  }, []);
 
   const previousIndex = (activeIndex - 1 + projects.length) % projects.length;
   const nextIndex = (activeIndex + 1) % projects.length;
@@ -91,8 +88,6 @@ export function HeroSection() {
     <section
       id="hero"
       onMouseMove={handlePointerMove}
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
       className="showcase-hero relative min-h-screen overflow-hidden bg-black pb-10 pt-28 text-white"
     >
       <style>{`
@@ -183,7 +178,7 @@ export function HeroSection() {
           fill
           priority
           sizes="100vw"
-          className="showcase-background object-cover opacity-35 blur-[5px] transition-opacity duration-700"
+          className="showcase-background object-cover opacity-40 blur-[5px] transition-opacity duration-700"
         />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(255,255,255,.08),transparent_34%),linear-gradient(to_bottom,rgba(0,0,0,.36),rgba(0,0,0,.82)_62%,#000)]" />
         <div className="absolute inset-0 opacity-[0.12] [background-image:linear-gradient(rgba(255,255,255,.18)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.18)_1px,transparent_1px)] [background-size:72px_72px] [mask-image:linear-gradient(to_bottom,black,transparent_65%)]" />
@@ -206,7 +201,7 @@ export function HeroSection() {
             <span className="font-semibold">impossible to ignore.</span>
           </h1>
 
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/68 sm:text-lg">
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/70 sm:text-lg">
             Custom websites with strong visuals, smooth interactions, and clear calls-to-action—built to make small businesses look established online.
           </p>
 
@@ -232,7 +227,7 @@ export function HeroSection() {
             <button
               type="button"
               onClick={() => setActiveIndex(previousIndex)}
-              className="showcase-left-card block w-full text-left opacity-65 transition-opacity duration-300 hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+              className="group showcase-left-card block w-full text-left opacity-70 transition-opacity duration-300 hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
               aria-label={`Show ${projects[previousIndex].name}`}
             >
               <WebsiteCard project={projects[previousIndex]} position="side" />
@@ -240,7 +235,7 @@ export function HeroSection() {
           </div>
 
           <div className="showcase-center-wrap absolute left-1/2 top-0 z-30 w-[88%] transition-transform duration-200 sm:w-[72%] lg:w-[55%]">
-            <div className="showcase-center-card">
+            <div key={activeProject.name} className="showcase-center-card">
               <Link
                 href={activeProject.href}
                 className="group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
@@ -255,7 +250,7 @@ export function HeroSection() {
             <button
               type="button"
               onClick={() => setActiveIndex(nextIndex)}
-              className="showcase-right-card block w-full text-left opacity-65 transition-opacity duration-300 hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+              className="group showcase-right-card block w-full text-left opacity-70 transition-opacity duration-300 hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
               aria-label={`Show ${projects[nextIndex].name}`}
             >
               <WebsiteCard project={projects[nextIndex]} position="side" />
@@ -264,7 +259,7 @@ export function HeroSection() {
         </div>
 
         <div className="relative z-40 -mt-1 flex flex-col items-center gap-4 pb-3 sm:flex-row sm:justify-between">
-          <p className="text-xs uppercase tracking-[0.22em] text-white/45">
+          <p className="text-xs uppercase tracking-[0.22em] text-white/50">
             Click the side previews to explore · Click the center to open
           </p>
           <div className="flex items-center gap-2" aria-label="Choose featured demo">
@@ -302,7 +297,7 @@ function WebsiteCard({ project, position }: { project: Project; position: 'cente
           <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
           <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
         </div>
-        <span className="max-w-[58%] truncate text-[9px] uppercase tracking-[0.2em] text-white/35 sm:text-[10px]">
+        <span className="max-w-[58%] truncate text-[9px] uppercase tracking-[0.2em] text-white/40 sm:text-[10px]">
           {project.name.replaceAll(' ', '').toLowerCase()}.com
         </span>
       </div>
@@ -327,7 +322,7 @@ function WebsiteCard({ project, position }: { project: Project; position: 'cente
         </div>
 
         <div className={`absolute inset-x-0 bottom-0 text-white ${isCenter ? 'p-6 sm:p-8' : 'p-5'}`}>
-          <p className="text-[9px] uppercase tracking-[0.26em] text-white/55 sm:text-[10px]">{project.category}</p>
+          <p className="text-[9px] uppercase tracking-[0.26em] text-white/60 sm:text-[10px]">{project.category}</p>
           <h2 className={`mt-3 max-w-xl font-light leading-[1.02] ${isCenter ? 'text-3xl sm:text-4xl lg:text-5xl' : 'text-xl sm:text-2xl'}`}>
             {project.headline}
           </h2>
