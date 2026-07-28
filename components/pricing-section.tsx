@@ -18,7 +18,7 @@ const plans = [
       'Fast loading layout',
       'Simple launch support',
     ],
-    highlighted: false,
+    highlighted: true,
   },
   {
     name: 'Professional',
@@ -34,7 +34,7 @@ const plans = [
       'Mobile responsive',
       'Post-launch support',
     ],
-    highlighted: true,
+    highlighted: false,
   },
   {
     name: 'Custom',
@@ -93,7 +93,7 @@ export function PricingSection() {
               >
                 {plan.highlighted && (
                   <div className="mb-4 inline-block px-3 py-1 bg-white text-black text-xs font-semibold w-fit rounded-none">
-                    Most Popular
+                    Most Chosen
                   </div>
                 )}
 
