@@ -9,28 +9,28 @@ import { PricingSection } from '@/components/pricing-section';
 import { TestimonialsSection } from '@/components/testimonials-section';
 import { FAQSection } from '@/components/faq-section';
 import { CTASection } from '@/components/cta-section';
+import { SeoServicesSection } from '@/components/seo-services-section';
 import { Footer } from '@/components/footer';
 
 export const metadata = {
-  title: 'Affordable Website Design in Orange County | Designed by TD',
+  title: 'Affordable Web Designer in Orange County | Designed by TD',
   description:
-    'Affordable local website design for small businesses in Orange County, California. Custom mobile-friendly websites starting at $500 from Designed by TD.',
+    'Affordable website design for Orange County small businesses. Custom, mobile-friendly websites starting at $500. Get a free website quote from Designed by TD.',
   keywords: [
-    'website design Orange County',
-    'affordable website design Orange County',
-    'cheap website design Orange County',
-    'local website designer',
-    'website builder near me',
-    'small business website designer',
-    'Orange County web designer',
+    'website designer Orange County',
+    'affordable web design Orange County',
+    'small business website design',
+    'local web designer near me',
+    'website builder Orange County',
+    'custom website design',
+    'web design starting at $500',
     'Designed by TD',
-    'DesignedbyTD Studio',
   ],
   alternates: {
     canonical: 'https://designedbytd.com/',
   },
   openGraph: {
-    title: 'Affordable Website Design in Orange County | Designed by TD',
+    title: 'Affordable Web Designer in Orange County | Designed by TD',
     description:
       'Custom, mobile-friendly websites for Orange County small businesses, with packages starting at $500.',
     type: 'website',
@@ -48,6 +48,7 @@ export default function Home() {
         <HeroSection />
         <TrustSection />
         <VisualServicesSection />
+        <SeoServicesSection />
         <PortfolioSection />
         <HowWeWorkSection />
         <CaseStudiesSection />
