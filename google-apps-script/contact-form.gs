@@ -1,23 +1,21 @@
 const SPREADSHEET_ID = '1yMJoyYozpwjdd5TsciXGOKTgjcqDb9vgw_zO1eCs7DE';
 const SHEET_NAME = 'Website Leads';
 const NOTIFICATION_EMAIL = 'designedbytd.studio@gmail.com';
-const WEBHOOK_SECRET = 'PASTE_THE_SAME_SECRET_USED_IN_VERCEL';
 
 function doPost(e) {
   try {
     const payload = JSON.parse((e.postData && e.postData.contents) || '{}');
 
-    if (WEBHOOK_SECRET && payload.secret !== WEBHOOK_SECRET) {
-      return jsonResponse({ success: false, error: 'Unauthorized request.' });
-    }
-
     const name = clean(payload.name);
     const email = clean(payload.email).toLowerCase();
+    const phone = clean(payload.phone);
     const company = clean(payload.company) || 'Not provided';
     const message = clean(payload.message);
-    const submittedAt = payload.submittedAt ? new Date(payload.submittedAt) : new Date();
+    const submittedAt = payload.submittedAt
+      ? new Date(payload.submittedAt)
+      : new Date();
 
-    if (!name || !email || !message) {
+    if (!name || !email || !phone || !message) {
       return jsonResponse({
         success: false,
         error: 'Missing required contact information.',
@@ -37,12 +35,15 @@ function doPost(e) {
       submittedAt,
       safeCell(name),
       safeCell(email),
+      safeCell(phone),
       safeCell(company),
       safeCell(message),
       'New',
     ]);
 
-    sheet.getRange(sheet.getLastRow(), 1).setNumberFormat('M/d/yyyy h:mm AM/PM');
+    sheet
+      .getRange(sheet.getLastRow(), 1)
+      .setNumberFormat('M/d/yyyy h:mm AM/PM');
 
     MailApp.sendEmail({
       to: NOTIFICATION_EMAIL,
@@ -51,6 +52,7 @@ function doPost(e) {
       body: [
         `Name: ${name}`,
         `Email: ${email}`,
+        `Phone: ${phone}`,
         `Business: ${company}`,
         '',
         'Project details:',
@@ -58,7 +60,7 @@ function doPost(e) {
         '',
         'This lead was also saved in your Google Sheet.',
       ].join('\n'),
-      htmlBody: buildEmailHtml(name, email, company, message),
+      htmlBody: buildEmailHtml(name, email, phone, company, message),
       name: 'DesignedbyTD Website',
     });
 
@@ -85,26 +87,27 @@ function setupSheet() {
 
   ensureHeader(sheet);
   sheet.setFrozenRows(1);
-  sheet.autoResizeColumns(1, 6);
+  sheet.autoResizeColumns(1, 7);
 }
 
 function ensureHeader(sheet) {
-  if (sheet.getLastRow() === 0) {
-    sheet.appendRow([
-      'Submitted At',
-      'Name',
-      'Email',
-      'Business',
-      'Project Details',
-      'Status',
-    ]);
+  const headers = [
+    'Submitted At',
+    'Name',
+    'Email',
+    'Phone',
+    'Business',
+    'Project Details',
+    'Status',
+  ];
 
-    const header = sheet.getRange(1, 1, 1, 6);
-    header.setFontWeight('bold');
-    header.setBackground('#111111');
-    header.setFontColor('#ffffff');
-    sheet.setFrozenRows(1);
-  }
+  sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+
+  const header = sheet.getRange(1, 1, 1, headers.length);
+  header.setFontWeight('bold');
+  header.setBackground('#111111');
+  header.setFontColor('#ffffff');
+  sheet.setFrozenRows(1);
 }
 
 function clean(value) {
@@ -125,9 +128,10 @@ function escapeHtml(value) {
     .replace(/'/g, '&#039;');
 }
 
-function buildEmailHtml(name, email, company, message) {
+function buildEmailHtml(name, email, phone, company, message) {
   const safeName = escapeHtml(name);
   const safeEmail = escapeHtml(email);
+  const safePhone = escapeHtml(phone);
   const safeCompany = escapeHtml(company);
   const safeMessage = escapeHtml(message).replace(/\n/g, '<br>');
 
@@ -140,6 +144,7 @@ function buildEmailHtml(name, email, company, message) {
       <div style="border:1px solid #e5e5e5;border-top:0;padding:28px;">
         <p><strong>Name:</strong> ${safeName}</p>
         <p><strong>Email:</strong> <a href="mailto:${safeEmail}">${safeEmail}</a></p>
+        <p><strong>Phone:</strong> <a href="tel:${safePhone}">${safePhone}</a></p>
         <p><strong>Business:</strong> ${safeCompany}</p>
         <p style="margin-top:24px;"><strong>Project details:</strong></p>
         <div style="background:#f7f7f7;border:1px solid #ececec;padding:18px;">${safeMessage}</div>
