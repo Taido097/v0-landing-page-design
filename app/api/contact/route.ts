@@ -21,6 +21,24 @@ function escapeHtml(value: string) {
     .replaceAll("'", '&#039;');
 }
 
+function getFriendlyResendError(message: string, status: number) {
+  const normalized = message.toLowerCase();
+
+  if (normalized.includes('testing emails') || normalized.includes('own email address')) {
+    return 'Resend testing mode can only send to the email address used for your Resend account. Make sure designedbytd.studio@gmail.com is the email on that Resend account, or verify your own domain.';
+  }
+
+  if (normalized.includes('invalid api key') || status === 401) {
+    return 'The Resend API key was rejected. Create a new key in Resend, replace RESEND_API_KEY in Vercel, and redeploy.';
+  }
+
+  if (normalized.includes('domain') && normalized.includes('not verified')) {
+    return 'The sender domain is not verified in Resend. Use onboarding@resend.dev for testing or verify your own domain.';
+  }
+
+  return 'Your message could not be sent. Please try again.';
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as Record<string, unknown>;
@@ -83,6 +101,8 @@ export async function POST(request: NextRequest) {
       headers: {
         Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'User-Agent': 'DesignedbyTD-Studio/1.0',
         'Idempotency-Key': crypto.randomUUID(),
       },
       body: JSON.stringify({
@@ -128,12 +148,25 @@ export async function POST(request: NextRequest) {
       }),
     });
 
-    const result = (await response.json()) as { id?: string; message?: string };
+    const result = (await response.json()) as {
+      id?: string;
+      message?: string;
+      name?: string;
+    };
 
     if (!response.ok) {
-      console.error('Resend contact email error:', result);
+      console.error('Resend contact email error:', {
+        status: response.status,
+        result,
+      });
+
       return NextResponse.json(
-        { error: 'Your message could not be sent. Please try again.' },
+        {
+          error: getFriendlyResendError(
+            result.message || result.name || 'Unknown Resend error',
+            response.status
+          ),
+        },
         { status: 502 }
       );
     }
