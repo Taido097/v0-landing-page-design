@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
 
+const GOOGLE_SHEETS_WEBHOOK_URL =
+  'https://script.google.com/macros/s/AKfycbxa4nGPu0rEGVfOsFxbjAAALgnvKHymqbPA7d0Z5bUXzdtBu3KgJtJd_2QaEz4MoRvbmQ/exec';
+
 function normalize(value: unknown) {
   return typeof value === 'string' ? value.trim() : '';
 }
@@ -27,7 +30,7 @@ function getWebhookError(
   }
 
   if (status === 404) {
-    return 'The Google Apps Script URL is incorrect or the deployment was deleted. Copy the Web app URL ending in /exec and replace GOOGLE_SHEETS_WEBHOOK_URL in Vercel.';
+    return 'The Google Apps Script deployment URL is no longer active. Deploy the script again and use the new Web app URL ending in /exec.';
   }
 
   return 'Your message could not be saved. Please try again in a moment.';
@@ -76,21 +79,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Trim copied values so hidden line breaks from the Vercel editor do not
-    // become part of the Apps Script URL or shared secret.
-    const webhookUrl = normalize(process.env.GOOGLE_SHEETS_WEBHOOK_URL);
     const webhookSecret = normalize(process.env.CONTACT_WEBHOOK_SECRET);
-
-    if (!webhookUrl) {
-      console.error('GOOGLE_SHEETS_WEBHOOK_URL is not configured.');
-      return NextResponse.json(
-        {
-          error:
-            'The contact form is being connected to Google Sheets. Please try again shortly.',
-        },
-        { status: 503 }
-      );
-    }
 
     if (!webhookSecret) {
       console.error('CONTACT_WEBHOOK_SECRET is not configured.');
@@ -103,7 +92,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const response = await fetch(webhookUrl, {
+    const response = await fetch(GOOGLE_SHEETS_WEBHOOK_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -126,11 +115,9 @@ export async function POST(request: NextRequest) {
     const contentType = response.headers.get('content-type') || '';
     const responseText = await response.text();
     let result: { success?: boolean; error?: string; message?: string } = {};
-    let isJson = false;
 
     try {
       result = JSON.parse(responseText) as typeof result;
-      isJson = true;
     } catch {
       console.error('Google Sheets webhook returned a non-JSON response:', {
         status: response.status,
