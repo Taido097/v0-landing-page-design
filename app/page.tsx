@@ -12,16 +12,27 @@ import { CTASection } from '@/components/cta-section';
 import { Footer } from '@/components/footer';
 
 export const metadata = {
-  title: 'Tai Do - Custom Web Design for Small Businesses',
+  title: 'Designed by TD | Custom Web Design in Orange County',
   description:
-    'Award-winning web design for small business owners and entrepreneurs. Beautiful, high-converting websites that help you grow online.',
-  keywords: 'web design, custom websites, small business, portfolio, services',
+    'Designed by TD creates modern, mobile-friendly websites for small businesses in Orange County, California. View services, pricing, and recent work.',
+  keywords: [
+    'Designed by TD',
+    'DesignedbyTD Studio',
+    'Orange County web designer',
+    'small business web design',
+    'custom website design',
+  ],
+  alternates: {
+    canonical: 'https://designedbytd.com/',
+  },
   openGraph: {
-    title: 'Tai Do - Custom Web Design for Small Businesses',
+    title: 'Designed by TD | Custom Web Design in Orange County',
     description:
-      'Award-winning web design for small business owners and entrepreneurs.',
+      'Modern, mobile-friendly websites for small businesses in Orange County, California.',
     type: 'website',
-    url: 'https://taido.com',
+    url: 'https://designedbytd.com/',
+    siteName: 'Designed by TD',
+    images: ['/icon.png'],
   },
 };
 
