@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export const runtime = 'nodejs';
 
 const GOOGLE_SHEETS_WEBHOOK_URL =
-  'https://script.google.com/macros/s/AKfycbxa4nGPu0rEGVfOsFxbjAAALgnvKHymqbPA7d0Z5bUXzdtBu3KgJtJd_2QaEz4MoRvbmQ/exec';
+  'https://script.google.com/macros/s/AKfycbyKxLFo41Vih-jeK38l2DfEl09MZ_lqZdD1O9tGAuP-CK_dRjGj6aGE-MxpIorLt02_6w/exec';
 
 function normalize(value: unknown) {
   return typeof value === 'string' ? value.trim() : '';
