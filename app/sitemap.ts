@@ -1,20 +1,26 @@
-import type { MetadataRoute } from 'next'
+import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const lastModified = new Date()
+  const baseUrl = 'https://designedbytd.com';
 
   return [
     {
-      url: 'https://designedbytd.com/',
-      lastModified,
-      changeFrequency: 'monthly',
+      url: baseUrl,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
       priority: 1,
     },
     {
-      url: 'https://designedbytd.com/contact',
-      lastModified,
-      changeFrequency: 'yearly',
-      priority: 0.7,
+      url: `${baseUrl}/orange-county-web-design`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.9,
     },
-  ]
+    {
+      url: `${baseUrl}/contact`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+  ];
 }
