@@ -1,6 +1,7 @@
 import { Header } from '@/components/header';
 import { HeroSection } from '@/components/hero-section';
 import { TrustSection } from '@/components/trust-section';
+import { VisualServicesSection } from '@/components/visual-services-section';
 import { PortfolioSection } from '@/components/portfolio-section';
 import { HowWeWorkSection } from '@/components/how-we-work-section';
 import { CaseStudiesSection } from '@/components/case-studies-section';
@@ -31,6 +32,7 @@ export default function Home() {
       <main className="flex flex-col">
         <HeroSection />
         <TrustSection />
+        <VisualServicesSection />
         <PortfolioSection />
         <HowWeWorkSection />
         <CaseStudiesSection />
