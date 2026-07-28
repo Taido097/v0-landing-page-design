@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { InteractiveBusinessDemo } from '@/components/interactive-business-demo';
+import { SalonSpaDemo } from '@/components/salon-spa-demo';
 
 const slugs = [
   'photography-studio',
@@ -21,6 +22,10 @@ export default async function ProjectPage({
 
   if (!slugs.includes(slug)) {
     notFound();
+  }
+
+  if (slug === 'salon-spa') {
+    return <SalonSpaDemo />;
   }
 
   return <InteractiveBusinessDemo slug={slug} />;
