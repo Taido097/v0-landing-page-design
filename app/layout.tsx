@@ -3,38 +3,69 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+const _geist = Geist({ subsets: ['latin'] })
+const _geistMono = Geist_Mono({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Tai Do - Custom Web Design for Small Businesses',
+  metadataBase: new URL('https://designedbytd.com'),
+  title: {
+    default: 'Designed by TD | Custom Web Design in Orange County',
+    template: '%s | Designed by TD',
+  },
   description:
-    'Award-winning web design for small business owners and entrepreneurs. Beautiful, high-converting websites that help you grow online.',
-  keywords: 'web design, custom websites, small business, portfolio, design agency',
-  generator: 'v0.app',
+    'Designed by TD creates modern, mobile-friendly websites for small businesses in Orange County, California.',
+  keywords: [
+    'Designed by TD',
+    'DesignedbyTD Studio',
+    'Orange County web designer',
+    'small business web design',
+    'custom website design',
+  ],
+  applicationName: 'Designed by TD',
+  authors: [{ name: 'Tai Do', url: 'https://designedbytd.com' }],
+  creator: 'Designed by TD',
+  publisher: 'Designed by TD',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
+  alternates: {
+    canonical: '/',
+  },
   icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
+    icon: '/icon.png',
+    apple: '/icon.png',
   },
   openGraph: {
-    title: 'Tai Do - Custom Web Design for Small Businesses',
+    title: 'Designed by TD | Custom Web Design in Orange County',
     description:
-      'Award-winning web design for small business owners and entrepreneurs.',
+      'Modern, mobile-friendly websites for small businesses in Orange County, California.',
     type: 'website',
     locale: 'en_US',
+    url: 'https://designedbytd.com',
+    siteName: 'Designed by TD',
+    images: [
+      {
+        url: '/icon.png',
+        width: 512,
+        height: 512,
+        alt: 'Designed by TD logo',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Designed by TD | Custom Web Design in Orange County',
+    description:
+      'Modern, mobile-friendly websites for small businesses in Orange County, California.',
+    images: ['/icon.png'],
   },
 }
 
@@ -45,19 +76,20 @@ export default function RootLayout({
 }>) {
   const schemaData = {
     '@context': 'https://schema.org',
-    '@type': 'Organization',
-    name: 'Tai Do',
-    url: 'https://taido.com',
+    '@type': 'ProfessionalService',
+    name: 'Designed by TD',
+    alternateName: 'DesignedbyTD Studio',
+    url: 'https://designedbytd.com',
+    logo: 'https://designedbytd.com/icon.png',
+    image: 'https://designedbytd.com/icon.png',
     description:
-      'Award-winning custom web design for small business owners and entrepreneurs',
-    image: 'https://taido.com/og-image.png',
-    contactPoint: {
-      '@type': 'ContactPoint',
-      telephone: '+1-123-456-7890',
-      contactType: 'Customer Service',
-      email: 'hello@taido.com',
+      'Custom website design for small businesses in Orange County, California.',
+    email: 'designedbytd.studio@gmail.com',
+    areaServed: {
+      '@type': 'AdministrativeArea',
+      name: 'Orange County, California',
     },
-  };
+  }
 
   return (
     <html lang="en" data-scroll-behavior="smooth">
