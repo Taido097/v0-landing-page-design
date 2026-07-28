@@ -6,6 +6,33 @@ function normalize(value: unknown) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+function getWebhookError(
+  responseText: string,
+  status: number,
+  contentType: string
+) {
+  const normalized = responseText.toLowerCase();
+
+  if (
+    contentType.includes('text/html') ||
+    normalized.includes('accounts.google.com') ||
+    normalized.includes('sign in') ||
+    normalized.includes('authorization required')
+  ) {
+    return 'The Google Apps Script web app is not publicly accessible. Open Apps Script, go to Deploy → Manage deployments → Edit, set Execute as “Me” and Who has access to “Anyone,” then deploy a new version.';
+  }
+
+  if (normalized.includes('script function not found')) {
+    return 'The Google Apps Script deployment does not contain the doPost function. Save the script and deploy a new version.';
+  }
+
+  if (status === 404) {
+    return 'The Google Apps Script URL is incorrect or the deployment was deleted. Copy the Web app URL ending in /exec and replace GOOGLE_SHEETS_WEBHOOK_URL in Vercel.';
+  }
+
+  return 'Your message could not be saved. Please try again in a moment.';
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as Record<string, unknown>;
@@ -49,8 +76,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
-    const webhookSecret = process.env.CONTACT_WEBHOOK_SECRET || '';
+    // Trim copied values so hidden line breaks from the Vercel editor do not
+    // become part of the Apps Script URL or shared secret.
+    const webhookUrl = normalize(process.env.GOOGLE_SHEETS_WEBHOOK_URL);
+    const webhookSecret = normalize(process.env.CONTACT_WEBHOOK_SECRET);
 
     if (!webhookUrl) {
       console.error('GOOGLE_SHEETS_WEBHOOK_URL is not configured.');
@@ -58,6 +87,17 @@ export async function POST(request: NextRequest) {
         {
           error:
             'The contact form is being connected to Google Sheets. Please try again shortly.',
+        },
+        { status: 503 }
+      );
+    }
+
+    if (!webhookSecret) {
+      console.error('CONTACT_WEBHOOK_SECRET is not configured.');
+      return NextResponse.json(
+        {
+          error:
+            'CONTACT_WEBHOOK_SECRET is missing in Vercel. Add the exact same secret used in Google Apps Script and redeploy.',
         },
         { status: 503 }
       );
@@ -83,14 +123,19 @@ export async function POST(request: NextRequest) {
       }),
     });
 
+    const contentType = response.headers.get('content-type') || '';
     const responseText = await response.text();
     let result: { success?: boolean; error?: string; message?: string } = {};
+    let isJson = false;
 
     try {
       result = JSON.parse(responseText) as typeof result;
+      isJson = true;
     } catch {
       console.error('Google Sheets webhook returned a non-JSON response:', {
         status: response.status,
+        contentType,
+        finalUrl: response.url,
         responseText: responseText.slice(0, 500),
       });
     }
@@ -98,6 +143,8 @@ export async function POST(request: NextRequest) {
     if (!response.ok || result.success !== true) {
       console.error('Google Sheets contact webhook error:', {
         status: response.status,
+        contentType,
+        finalUrl: response.url,
         result,
       });
 
@@ -105,7 +152,7 @@ export async function POST(request: NextRequest) {
         {
           error:
             result.error ||
-            'Your message could not be saved. Please try again in a moment.',
+            getWebhookError(responseText, response.status, contentType),
         },
         { status: 502 }
       );
