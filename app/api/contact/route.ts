@@ -17,12 +17,11 @@ function getWebhookError(
   const normalized = responseText.toLowerCase();
 
   if (
-    contentType.includes('text/html') ||
     normalized.includes('accounts.google.com') ||
     normalized.includes('sign in') ||
     normalized.includes('authorization required')
   ) {
-    return 'The Google Apps Script web app is not publicly accessible. Open Apps Script, go to Deploy → Manage deployments → Edit, set Execute as “Me” and Who has access to “Anyone,” then deploy a new version.';
+    return 'The Google Apps Script web app is not publicly accessible. Set Execute as “Me” and Who has access to “Anyone,” then deploy a new version.';
   }
 
   if (normalized.includes('script function not found')) {
@@ -33,6 +32,10 @@ function getWebhookError(
     return 'The Google Apps Script deployment URL is no longer active. Deploy the script again and use the new Web app URL ending in /exec.';
   }
 
+  if (contentType.includes('text/html')) {
+    return 'Google returned an unexpected web page instead of accepting the form. Check the Apps Script deployment permissions and deploy a new version.';
+  }
+
   return 'Your message could not be saved. Please try again in a moment.';
 }
 
@@ -41,23 +44,31 @@ export async function POST(request: NextRequest) {
     const body = (await request.json()) as Record<string, unknown>;
     const name = normalize(body.name);
     const email = normalize(body.email).toLowerCase();
+    const phone = normalize(body.phone);
     const company = normalize(body.company);
     const message = normalize(body.message);
     const website = normalize(body.website);
 
-    // Honeypot field: silently accept bot submissions without saving them.
     if (website) {
       return NextResponse.json({ success: true }, { status: 200 });
     }
 
-    if (!name || !email || !message) {
+    if (!name || !email || !phone || !message) {
       return NextResponse.json(
-        { error: 'Please complete your name, email, and project details.' },
+        {
+          error:
+            'Please complete your name, required email, phone number, and project details.',
+        },
         { status: 400 }
       );
     }
 
-    if (name.length > 100 || company.length > 150 || message.length > 5000) {
+    if (
+      name.length > 100 ||
+      phone.length > 30 ||
+      company.length > 150 ||
+      message.length > 5000
+    ) {
       return NextResponse.json(
         { error: 'One or more fields are too long.' },
         { status: 400 }
@@ -79,16 +90,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const webhookSecret = normalize(process.env.CONTACT_WEBHOOK_SECRET);
-
-    if (!webhookSecret) {
-      console.error('CONTACT_WEBHOOK_SECRET is not configured.');
+    const phoneDigits = phone.replace(/\D/g, '');
+    if (phoneDigits.length < 7 || phoneDigits.length > 15) {
       return NextResponse.json(
-        {
-          error:
-            'CONTACT_WEBHOOK_SECRET is missing in Vercel. Add the exact same secret used in Google Apps Script and redeploy.',
-        },
-        { status: 503 }
+        { error: 'Please enter a valid phone number.' },
+        { status: 400 }
       );
     }
 
@@ -105,9 +111,9 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         name,
         email,
+        phone,
         company,
         message,
-        secret: webhookSecret,
         submittedAt: new Date().toISOString(),
       }),
     });
