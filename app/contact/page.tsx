@@ -7,7 +7,13 @@ import { Footer } from '@/components/footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, CheckCircle2, Loader2, Mail, MapPin } from 'lucide-react';
+import {
+  ArrowLeft,
+  CheckCircle2,
+  Loader2,
+  Mail,
+  MapPin,
+} from 'lucide-react';
 
 const CONTACT_EMAIL = 'designedbytd.studio@gmail.com';
 
@@ -16,6 +22,7 @@ type SubmitStatus = 'idle' | 'loading' | 'success' | 'error';
 const emptyForm = {
   name: '',
   email: '',
+  phone: '',
   company: '',
   message: '',
   website: '',
@@ -26,7 +33,9 @@ export default function ContactPage() {
   const [submitStatus, setSubmitStatus] = useState<SubmitStatus>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setFormData((current) => ({
       ...current,
       [event.target.name]: event.target.value,
@@ -46,16 +55,19 @@ export default function ContactPage() {
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
 
-      const result = (await response.json()) as { error?: string; message?: string };
+      const result = (await response.json()) as {
+        error?: string;
+        message?: string;
+      };
 
       if (!response.ok) {
-        throw new Error(result.error || 'Your message could not be sent. Please try again.');
+        throw new Error(
+          result.error || 'Your message could not be sent. Please try again.'
+        );
       }
 
       setSubmitStatus('success');
@@ -90,7 +102,8 @@ export default function ContactPage() {
               Let&apos;s Talk
             </h1>
             <p className="mx-auto max-w-2xl text-lg font-light text-gray-700">
-              Tell me about your business and the website you need. Click send once and your request will be delivered directly to me.
+              Tell me about your business and the website you need. Click send
+              once and your request will be delivered directly to me.
             </p>
           </div>
         </section>
@@ -100,13 +113,17 @@ export default function ContactPage() {
             <div className="grid gap-16 lg:grid-cols-3">
               <div className="space-y-12">
                 <div>
-                  <h2 className="mb-8 text-3xl font-light text-black">Contact Info</h2>
+                  <h2 className="mb-8 text-3xl font-light text-black">
+                    Contact Info
+                  </h2>
 
                   <div className="space-y-8">
                     <div className="flex gap-4">
                       <Mail className="h-5 w-5 shrink-0 text-black" />
                       <div>
-                        <p className="text-sm font-medium uppercase tracking-wider text-black">Email</p>
+                        <p className="text-sm font-medium uppercase tracking-wider text-black">
+                          Email
+                        </p>
                         <a
                           href={`mailto:${CONTACT_EMAIL}`}
                           className="font-light text-gray-700 transition-colors hover:text-black"
@@ -119,8 +136,12 @@ export default function ContactPage() {
                     <div className="flex gap-4">
                       <MapPin className="h-5 w-5 shrink-0 text-black" />
                       <div>
-                        <p className="text-sm font-medium uppercase tracking-wider text-black">Location</p>
-                        <p className="font-light text-gray-700">Orange County, CA</p>
+                        <p className="text-sm font-medium uppercase tracking-wider text-black">
+                          Location
+                        </p>
+                        <p className="font-light text-gray-700">
+                          Orange County, CA
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -153,8 +174,11 @@ export default function ContactPage() {
 
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div className="space-y-3">
-                    <label htmlFor="name" className="text-sm font-medium uppercase tracking-wider text-black">
-                      Full Name
+                    <label
+                      htmlFor="name"
+                      className="text-sm font-medium uppercase tracking-wider text-black"
+                    >
+                      Full Name *
                     </label>
                     <Input
                       id="name"
@@ -171,8 +195,11 @@ export default function ContactPage() {
                   </div>
 
                   <div className="space-y-3">
-                    <label htmlFor="email" className="text-sm font-medium uppercase tracking-wider text-black">
-                      Email
+                    <label
+                      htmlFor="email"
+                      className="text-sm font-medium uppercase tracking-wider text-black"
+                    >
+                      Email *
                     </label>
                     <Input
                       id="email"
@@ -189,26 +216,56 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <label htmlFor="company" className="text-sm font-medium uppercase tracking-wider text-black">
-                    Company/Business
-                  </label>
-                  <Input
-                    id="company"
-                    name="company"
-                    type="text"
-                    placeholder="Your business name"
-                    value={formData.company}
-                    onChange={handleChange}
-                    maxLength={150}
-                    autoComplete="organization"
-                    className="rounded-none border-gray-300"
-                  />
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <div className="space-y-3">
+                    <label
+                      htmlFor="phone"
+                      className="text-sm font-medium uppercase tracking-wider text-black"
+                    >
+                      Phone Number *
+                    </label>
+                    <Input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      placeholder="(714) 555-0123"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      required
+                      minLength={7}
+                      maxLength={30}
+                      autoComplete="tel"
+                      className="rounded-none border-gray-300"
+                    />
+                  </div>
+
+                  <div className="space-y-3">
+                    <label
+                      htmlFor="company"
+                      className="text-sm font-medium uppercase tracking-wider text-black"
+                    >
+                      Company/Business
+                    </label>
+                    <Input
+                      id="company"
+                      name="company"
+                      type="text"
+                      placeholder="Your business name"
+                      value={formData.company}
+                      onChange={handleChange}
+                      maxLength={150}
+                      autoComplete="organization"
+                      className="rounded-none border-gray-300"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-3">
-                  <label htmlFor="message" className="text-sm font-medium uppercase tracking-wider text-black">
-                    Project Details
+                  <label
+                    htmlFor="message"
+                    className="text-sm font-medium uppercase tracking-wider text-black"
+                  >
+                    Project Details *
                   </label>
                   <Textarea
                     id="message"
@@ -231,16 +288,22 @@ export default function ContactPage() {
                   >
                     <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-green-700" />
                     <div>
-                      <p className="font-medium text-green-950">Your request was sent.</p>
+                      <p className="font-medium text-green-950">
+                        Your request was sent.
+                      </p>
                       <p className="mt-1 text-sm font-light text-green-900">
-                        Thank you. I received your information and will respond as soon as possible.
+                        Thank you. I received your information and will respond
+                        as soon as possible.
                       </p>
                     </div>
                   </div>
                 )}
 
                 {submitStatus === 'error' && (
-                  <div role="alert" className="border border-red-300 bg-red-50 p-4">
+                  <div
+                    role="alert"
+                    className="border border-red-300 bg-red-50 p-4"
+                  >
                     <p className="text-sm text-red-900">{errorMessage}</p>
                   </div>
                 )}
@@ -261,7 +324,8 @@ export default function ContactPage() {
                 </Button>
 
                 <p className="text-xs font-light text-gray-600">
-                  Your message is sent securely from this website. No email app or extra sending step is required.
+                  Fields marked with * are required. Your message is sent
+                  securely from this website.
                 </p>
               </form>
             </div>
