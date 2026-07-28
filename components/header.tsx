@@ -1,12 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function Header() {
+  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 48);
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [pathname]);
 
   const navLinks = [
     { href: '/#portfolio', label: 'Portfolio' },
@@ -16,69 +30,72 @@ export function Header() {
     { href: '/#about', label: 'About' },
   ];
 
+  const isHome = pathname === '/';
+  const isTransparent = isHome && !isScrolled && !isMenuOpen;
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="font-bold text-lg text-black">
+    <header
+      className={`fixed inset-x-0 top-0 z-50 border-b text-white transition-all duration-500 ${
+        isTransparent
+          ? 'border-transparent bg-transparent'
+          : 'border-white/10 bg-black/90 shadow-[0_12px_35px_rgba(0,0,0,.24)] backdrop-blur-xl'
+      }`}
+    >
+      <nav
+        className={`mx-auto flex max-w-7xl items-center justify-between px-4 transition-all duration-500 sm:px-6 lg:px-8 ${
+          isScrolled ? 'py-3' : 'py-5'
+        }`}
+      >
+        <Link href="/" className="text-lg font-bold tracking-tight text-white">
           DesignedbyTD Studio
         </Link>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-12">
+        <div className="hidden items-center gap-10 md:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-gray-700 hover:text-black transition-colors duration-200 text-sm font-light"
+              className="text-sm font-medium text-white/75 transition-colors duration-200 hover:text-white"
             >
               {link.label}
             </Link>
           ))}
         </div>
 
-        {/* Desktop CTA Button */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden items-center md:flex">
           <Button
             asChild
-            className="bg-black hover:bg-gray-800 text-white px-6 py-2 text-sm font-medium rounded-none"
+            className="rounded-md border border-white bg-white px-6 py-2 text-sm font-semibold text-black hover:bg-white/90"
           >
             <Link href="/contact">Start Free</Link>
           </Button>
         </div>
 
-        {/* Mobile Menu Button */}
         <button
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="md:hidden p-2 hover:bg-gray-100 rounded-none transition-colors"
+          type="button"
+          onClick={() => setIsMenuOpen((open) => !open)}
+          className="rounded-md p-2 text-white transition-colors hover:bg-white/10 md:hidden"
           aria-label="Toggle menu"
+          aria-expanded={isMenuOpen}
         >
-          {isMenuOpen ? (
-            <X className="w-5 h-5 text-black" />
-          ) : (
-            <Menu className="w-5 h-5 text-black" />
-          )}
+          {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </nav>
 
-      {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden border-t border-gray-200 bg-white animate-slide-up">
-          <div className="max-w-7xl mx-auto px-4 py-4 space-y-4">
+        <div className="border-t border-white/10 bg-black/95 backdrop-blur-xl md:hidden">
+          <div className="mx-auto max-w-7xl space-y-2 px-4 py-5">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsMenuOpen(false)}
-                className="block py-2 text-gray-700 hover:text-black transition-colors duration-200 text-sm font-light"
+                className="block rounded-md px-3 py-3 text-sm font-medium text-white/75 transition hover:bg-white/10 hover:text-white"
               >
                 {link.label}
               </Link>
             ))}
-            <Button
-              asChild
-              className="w-full bg-black hover:bg-gray-800 text-white rounded-none text-sm font-medium py-6"
-            >
+            <Button asChild className="mt-3 w-full rounded-md bg-white py-6 text-black hover:bg-white/90">
               <Link href="/contact" onClick={() => setIsMenuOpen(false)}>
                 Start Free
               </Link>
