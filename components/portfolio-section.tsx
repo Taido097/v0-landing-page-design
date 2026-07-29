@@ -14,18 +14,31 @@ const previewThemes = [
   'bg-[#efe1c8]',
 ];
 
+function getImageKey(image: string) {
+  try {
+    const url = new URL(image, 'https://designedbytd.com');
+    return url.pathname.toLowerCase();
+  } catch {
+    return image.split('?')[0].toLowerCase();
+  }
+}
+
 export function PortfolioSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const activeProduct = serviceProducts[activeIndex];
 
   const previewImages = [
-    activeProduct.image,
     ...(activeProduct.demos ?? []).map((demo) => demo.image),
-  ].filter((image, index, images) => image && images.indexOf(image) === index);
+    activeProduct.image,
+  ].filter((image, index, images) => {
+    if (!image) return false;
+    const imageKey = getImageKey(image);
+    return images.findIndex((candidate) => getImageKey(candidate) === imageKey) === index;
+  });
 
   const mainImage = previewImages[0];
-  const backImage = previewImages[1] ?? previewImages[0];
-  const sideImage = previewImages[2] ?? previewImages[1] ?? previewImages[0];
+  const backImage = previewImages[1];
+  const sideImage = previewImages[2];
 
   return (
     <section
@@ -77,23 +90,27 @@ export function PortfolioSection() {
               </span>
             </div>
 
-            <div className="absolute left-[4%] top-[24%] z-0 hidden h-[48%] w-[42%] -rotate-[7deg] overflow-hidden rounded-[1.7rem] border-[6px] border-white/80 shadow-[0_30px_70px_rgba(0,0,0,.2)] sm:block">
-              <img
-                src={backImage}
-                alt={`${activeProduct.title} supporting visual`}
-                className="h-full w-full object-cover"
-              />
-              <div className="pointer-events-none absolute inset-0 bg-black/10" />
-            </div>
+            {backImage && (
+              <div className="absolute left-[4%] top-[24%] z-0 hidden h-[48%] w-[42%] -rotate-[7deg] overflow-hidden rounded-[1.7rem] border-[6px] border-white/80 shadow-[0_30px_70px_rgba(0,0,0,.2)] sm:block">
+                <img
+                  src={backImage}
+                  alt={`${activeProduct.title} supporting visual`}
+                  className="h-full w-full object-cover"
+                />
+                <div className="pointer-events-none absolute inset-0 bg-black/10" />
+              </div>
+            )}
 
-            <div className="absolute right-[3%] top-[18%] z-10 hidden h-[51%] w-[40%] rotate-[6deg] overflow-hidden rounded-[1.7rem] border-[6px] border-white/85 shadow-[0_30px_70px_rgba(0,0,0,.18)] sm:block">
-              <img
-                src={sideImage}
-                alt={`${activeProduct.title} secondary visual`}
-                className="h-full w-full object-cover"
-              />
-              <div className="pointer-events-none absolute inset-0 bg-black/5" />
-            </div>
+            {sideImage && (
+              <div className="absolute right-[3%] top-[18%] z-10 hidden h-[51%] w-[40%] rotate-[6deg] overflow-hidden rounded-[1.7rem] border-[6px] border-white/85 shadow-[0_30px_70px_rgba(0,0,0,.18)] sm:block">
+                <img
+                  src={sideImage}
+                  alt={`${activeProduct.title} secondary visual`}
+                  className="h-full w-full object-cover"
+                />
+                <div className="pointer-events-none absolute inset-0 bg-black/5" />
+              </div>
+            )}
 
             <Link
               href={`/services/${activeProduct.slug}`}
