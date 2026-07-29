@@ -53,6 +53,24 @@ export const serviceProducts: ServiceProduct[] = [
         category: 'Beauty and appointments',
         image: '/portfolio-salon.jpg',
       },
+      {
+        title: 'Home services website',
+        category: 'Contractor and repair',
+        image:
+          'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1500&q=88',
+      },
+      {
+        title: 'Dental office website',
+        category: 'Healthcare business',
+        image:
+          'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1500&q=88',
+      },
+      {
+        title: 'Cleaning company website',
+        category: 'Local service company',
+        image:
+          'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1500&q=88',
+      },
     ],
   },
   {
@@ -80,19 +98,37 @@ export const serviceProducts: ServiceProduct[] = [
         title: 'Modern apparel shop',
         category: 'Fashion store',
         image:
-          'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1400&q=88',
+          'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1500&q=88',
       },
       {
         title: 'Product-focused storefront',
         category: 'Lifestyle products',
         image:
-          'https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=1400&q=88',
+          'https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=1500&q=88',
       },
       {
         title: 'Clean beauty store',
         category: 'Beauty and wellness',
         image:
-          'https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=1400&q=88',
+          'https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=1500&q=88',
+      },
+      {
+        title: 'Home goods shop',
+        category: 'Home and decor',
+        image:
+          'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1500&q=88',
+      },
+      {
+        title: 'Jewelry storefront',
+        category: 'Accessories',
+        image:
+          'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1500&q=88',
+      },
+      {
+        title: 'Specialty food shop',
+        category: 'Food products',
+        image:
+          'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1500&q=88',
       },
     ],
   },
@@ -125,12 +161,30 @@ export const serviceProducts: ServiceProduct[] = [
         title: 'Consultation booking',
         category: 'Professional services',
         image:
-          'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1400&q=88',
+          'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1500&q=88',
       },
       {
         title: 'Service appointment site',
         category: 'Local service business',
         image: '/portfolio-auto-repair.jpg',
+      },
+      {
+        title: 'Wellness appointment site',
+        category: 'Health and wellness',
+        image:
+          'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1500&q=88',
+      },
+      {
+        title: 'Fitness class booking',
+        category: 'Fitness studio',
+        image:
+          'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1500&q=88',
+      },
+      {
+        title: 'Clinic scheduling website',
+        category: 'Healthcare appointments',
+        image:
+          'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1500&q=88',
       },
     ],
   },
@@ -159,7 +213,7 @@ export const serviceProducts: ServiceProduct[] = [
         title: 'Website quote form',
         category: 'Creative services',
         image:
-          'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1400&q=88',
+          'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1500&q=88',
       },
       {
         title: 'Local service inquiry',
@@ -170,7 +224,25 @@ export const serviceProducts: ServiceProduct[] = [
         title: 'Project request system',
         category: 'Business services',
         image:
-          'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1400&q=88',
+          'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1500&q=88',
+      },
+      {
+        title: 'Property estimate form',
+        category: 'Home services',
+        image:
+          'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1500&q=88',
+      },
+      {
+        title: 'Consultation request',
+        category: 'Professional services',
+        image:
+          'https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1500&q=88',
+      },
+      {
+        title: 'Campaign landing page',
+        category: 'Lead generation',
+        image:
+          'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1500&q=88',
       },
     ],
   },
@@ -203,12 +275,30 @@ export const serviceProducts: ServiceProduct[] = [
         title: 'Interior design showcase',
         category: 'Design business',
         image:
-          'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1400&q=88',
+          'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1500&q=88',
       },
       {
         title: 'Beauty work gallery',
         category: 'Salon and beauty',
         image: '/portfolio-salon.jpg',
+      },
+      {
+        title: 'Architecture portfolio',
+        category: 'Architecture studio',
+        image:
+          'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1500&q=88',
+      },
+      {
+        title: 'Creative direction work',
+        category: 'Brand and design',
+        image:
+          'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1500&q=88',
+      },
+      {
+        title: 'Event photography gallery',
+        category: 'Events and lifestyle',
+        image:
+          'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1500&q=88',
       },
     ],
   },
@@ -237,7 +327,7 @@ export const serviceProducts: ServiceProduct[] = [
         title: 'Business advice blog',
         category: 'Professional content',
         image:
-          'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1400&q=88',
+          'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1500&q=88',
       },
       {
         title: 'Food and restaurant journal',
@@ -248,6 +338,24 @@ export const serviceProducts: ServiceProduct[] = [
         title: 'Creative studio stories',
         category: 'Portfolio content',
         image: '/portfolio-photography.jpg',
+      },
+      {
+        title: 'Wellness publication',
+        category: 'Health and lifestyle',
+        image:
+          'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1500&q=88',
+      },
+      {
+        title: 'Travel editorial',
+        category: 'Travel stories',
+        image:
+          'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1500&q=88',
+      },
+      {
+        title: 'Design magazine',
+        category: 'Creative editorial',
+        image:
+          'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1500&q=88',
       },
     ],
   },
