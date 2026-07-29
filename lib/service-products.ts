@@ -221,12 +221,6 @@ export const serviceProducts: ServiceProduct[] = [
         image: '/portfolio-auto-repair.jpg',
       },
       {
-        title: 'Project request system',
-        category: 'Business services',
-        image:
-          'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1500&q=88',
-      },
-      {
         title: 'Property estimate form',
         category: 'Home services',
         image:
@@ -237,12 +231,6 @@ export const serviceProducts: ServiceProduct[] = [
         category: 'Professional services',
         image:
           'https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1500&q=88',
-      },
-      {
-        title: 'Campaign landing page',
-        category: 'Lead generation',
-        image:
-          'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1500&q=88',
       },
     ],
   },
@@ -299,63 +287,6 @@ export const serviceProducts: ServiceProduct[] = [
         category: 'Events and lifestyle',
         image:
           'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1500&q=88',
-      },
-    ],
-  },
-  {
-    slug: 'blog',
-    title: 'Blog',
-    label: 'Content website',
-    description:
-      'Includes article pages, categories, a clean reading layout, mobile design, and search-friendly content organization.',
-    image:
-      'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1400&q=88',
-    previewTitle: 'Share useful ideas and build trust over time.',
-    heroTitle: 'A clean blog that helps your business share knowledge and get found.',
-    heroDescription:
-      'Publish helpful articles, updates, and business news in an organized layout. A blog can give customers more reasons to trust your business and create more pages for search engines to discover.',
-    features: [
-      'Blog home and article pages',
-      'Categories and content organization',
-      'Readable desktop and mobile layout',
-      'Featured images and author details',
-      'Search-friendly page structure',
-      'Calls to action inside articles',
-    ],
-    demos: [
-      {
-        title: 'Business advice blog',
-        category: 'Professional content',
-        image:
-          'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1500&q=88',
-      },
-      {
-        title: 'Food and restaurant journal',
-        category: 'Hospitality content',
-        image: '/portfolio-restaurant.jpg',
-      },
-      {
-        title: 'Creative studio stories',
-        category: 'Portfolio content',
-        image: '/portfolio-photography.jpg',
-      },
-      {
-        title: 'Wellness publication',
-        category: 'Health and lifestyle',
-        image:
-          'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1500&q=88',
-      },
-      {
-        title: 'Travel editorial',
-        category: 'Travel stories',
-        image:
-          'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1500&q=88',
-      },
-      {
-        title: 'Design magazine',
-        category: 'Creative editorial',
-        image:
-          'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1500&q=88',
       },
     ],
   },
