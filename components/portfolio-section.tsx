@@ -8,14 +8,16 @@ const products = [
   {
     title: 'Custom Website',
     label: 'Local business website',
-    description: 'A clean, responsive website designed around your brand and customers.',
+    description:
+      'Includes a custom home page, service pages, mobile-friendly design, contact form, and basic search setup.',
     image: '/portfolio-auto-repair.jpg',
     previewTitle: 'Make a strong first impression online.',
   },
   {
     title: 'eCommerce',
     label: 'Online store',
-    description: 'Product pages, secure checkout, and an easy shopping experience.',
+    description:
+      'Includes product pages, collections, shopping cart, secure checkout, payment setup, and a simple mobile shopping experience.',
     image:
       'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1400&q=88',
     previewTitle: 'Turn your products into an online storefront.',
@@ -23,14 +25,16 @@ const products = [
   {
     title: 'Scheduling',
     label: 'Booking website',
-    description: 'Let customers choose a service and request an appointment online.',
+    description:
+      'Includes service options, available times, appointment requests, customer details, and booking confirmation for your business.',
     image: '/portfolio-salon.jpg',
     previewTitle: 'Make booking simple for you and your customers.',
   },
   {
     title: 'Lead Capture',
     label: 'Inquiry system',
-    description: 'Collect contact details and organize new customer requests in one place.',
+    description:
+      'Includes custom inquiry forms, required contact fields, email notifications, and organized lead tracking in Google Sheets.',
     image:
       'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1400&q=88',
     previewTitle: 'Turn website visitors into real inquiries.',
@@ -38,14 +42,16 @@ const products = [
   {
     title: 'Portfolio',
     label: 'Showcase website',
-    description: 'Present your best work with a polished, image-focused layout.',
+    description:
+      'Includes project galleries, featured work, service information, testimonials, and a clear way for visitors to contact you.',
     image: '/portfolio-photography.jpg',
     previewTitle: 'Let your work speak before the first conversation.',
   },
   {
     title: 'Blog',
     label: 'Content website',
-    description: 'Publish updates, useful articles, and business news in a clear layout.',
+    description:
+      'Includes article pages, categories, a clean reading layout, mobile design, and search-friendly content organization.',
     image:
       'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1400&q=88',
     previewTitle: 'Share useful ideas and build trust over time.',
@@ -81,7 +87,7 @@ export function PortfolioSection() {
             Website products built around your business.
           </h2>
           <p className="mt-5 max-w-2xl text-base font-light leading-7 text-black/60 sm:text-lg">
-            Hover over a website type to see how it could look and work for your customers.
+            Hover over a website type to see the sample and what is included.
           </p>
         </div>
 
@@ -129,10 +135,13 @@ export function PortfolioSection() {
                         {activeProduct.previewTitle}
                       </h3>
                       <div className="mt-6 flex flex-wrap items-center gap-3">
-                        <span className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-xs font-medium text-black">
+                        <Link
+                          href="/contact"
+                          className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-xs font-medium text-black transition hover:gap-3"
+                        >
                           Get started
                           <ArrowRight className="h-3.5 w-3.5" />
-                        </span>
+                        </Link>
                         <span className="rounded-full border border-white/30 px-4 py-2.5 text-xs text-white/80">
                           Mobile ready
                         </span>
@@ -149,27 +158,33 @@ export function PortfolioSection() {
               const isActive = index === activeIndex;
 
               return (
-                <button
+                <div
                   key={product.title}
-                  type="button"
                   onMouseEnter={() => setActiveIndex(index)}
-                  onFocus={() => setActiveIndex(index)}
-                  onClick={() => setActiveIndex(index)}
-                  aria-pressed={isActive}
-                  className={`group w-full cursor-pointer border-b border-black/15 py-5 text-left transition sm:py-6 ${
-                    isActive ? 'text-black' : 'text-black/30 hover:text-black/65'
-                  }`}
+                  className="border-b border-black/15"
                 >
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="text-3xl font-light tracking-[-0.035em] sm:text-4xl lg:text-[2.7rem]">
-                      {product.title}
-                    </span>
-                    <ArrowRight
-                      className={`h-5 w-5 shrink-0 transition duration-300 ${
-                        isActive ? 'translate-x-0 opacity-100' : '-translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-60'
-                      }`}
-                    />
-                  </div>
+                  <button
+                    type="button"
+                    onFocus={() => setActiveIndex(index)}
+                    onClick={() => setActiveIndex(index)}
+                    aria-expanded={isActive}
+                    className={`group w-full cursor-pointer py-5 text-left transition sm:py-6 ${
+                      isActive ? 'text-black' : 'text-black/30 hover:text-black/65'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-3xl font-light tracking-[-0.035em] sm:text-4xl lg:text-[2.7rem]">
+                        {product.title}
+                      </span>
+                      <ArrowRight
+                        className={`h-5 w-5 shrink-0 transition duration-300 ${
+                          isActive
+                            ? 'translate-x-0 opacity-100'
+                            : '-translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-60'
+                        }`}
+                      />
+                    </div>
+                  </button>
 
                   <div
                     className={`grid transition-all duration-300 ${
@@ -177,12 +192,19 @@ export function PortfolioSection() {
                     }`}
                   >
                     <div className="overflow-hidden">
-                      <p className="max-w-xl pt-4 text-sm font-light leading-6 text-black/60 sm:text-base">
-                        {product.description}
+                      <p className="max-w-xl pb-6 text-sm font-light leading-6 text-black/60 sm:text-base">
+                        {product.description}{' '}
+                        <Link
+                          href="/contact"
+                          className="inline-flex items-center gap-1 font-medium text-black underline decoration-black/25 underline-offset-4 transition hover:decoration-black"
+                        >
+                          Get started
+                          <ArrowRight className="h-3.5 w-3.5" />
+                        </Link>
                       </p>
                     </div>
                   </div>
-                </button>
+                </div>
               );
             })}
 
