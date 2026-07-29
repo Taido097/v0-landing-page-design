@@ -1,16 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { GlassCard } from '@/components/glass-card';
 import { Star } from 'lucide-react';
 
 const testimonials = [
   {
     id: 1,
     name: 'Sarah Johnson',
-    role: 'Owner, Sarah\'s Photography',
+    role: "Owner, Sarah's Photography",
     content:
-      'Tai completely transformed my online presence. My website is beautiful, loads fast, and I\'ve gotten more inquiries than ever before. Highly recommended!',
+      "Tai completely transformed my online presence. My website is beautiful, loads fast, and I've gotten more inquiries than ever before. Highly recommended!",
     rating: 5,
   },
   {
@@ -32,7 +31,7 @@ const testimonials = [
   {
     id: 4,
     name: 'James Thompson',
-    role: 'Owner, Thompson\'s Restaurant',
+    role: "Owner, Thompson's Restaurant",
     content:
       'Working with Tai was seamless. They understood our vision and created a website that truly represents our brand. Our online reservations increased by 40%.',
     rating: 5,
@@ -49,7 +48,6 @@ export function TestimonialsSection() {
   return (
     <section id="testimonials" className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="mb-16">
           <h2 className="text-5xl sm:text-6xl font-light text-black leading-tight mb-6 max-w-3xl">
             Loved by Small Business Owners
@@ -59,8 +57,7 @@ export function TestimonialsSection() {
           </p>
         </div>
 
-        {/* Testimonials Grid */}
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
+        <div className="grid md:grid-cols-2 gap-8">
           {testimonials.map((testimonial, index) => (
             <div
               key={testimonial.id}
@@ -72,19 +69,16 @@ export function TestimonialsSection() {
               style={{ transitionDelay: `${index * 100}ms` }}
             >
               <div className="p-8 border border-gray-300 rounded-none h-full flex flex-col">
-                {/* Rating */}
                 <div className="flex gap-1 mb-6">
                   {[...Array(testimonial.rating)].map((_, i) => (
                     <Star key={i} className="w-4 h-4 fill-black text-black" />
                   ))}
                 </div>
 
-                {/* Content */}
                 <p className="text-gray-800 mb-8 leading-relaxed flex-grow font-light">
-                  "{testimonial.content}"
+                  &quot;{testimonial.content}&quot;
                 </p>
 
-                {/* Author */}
                 <div className="pt-6 border-t border-gray-300">
                   <p className="font-medium text-black">{testimonial.name}</p>
                   <p className="text-sm text-gray-600 mt-1 font-light">
@@ -94,36 +88,6 @@ export function TestimonialsSection() {
               </div>
             </div>
           ))}
-        </div>
-
-        {/* Stats */}
-        <div className="pt-16 border-t border-gray-300">
-          <div className="grid md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-4xl md:text-5xl font-light text-black mb-3">
-                50+
-              </div>
-              <p className="text-gray-700 font-light">Happy Clients</p>
-            </div>
-            <div>
-              <div className="text-4xl md:text-5xl font-light text-black mb-3">
-                98%
-              </div>
-              <p className="text-gray-700 font-light">Satisfaction</p>
-            </div>
-            <div>
-              <div className="text-4xl md:text-5xl font-light text-black mb-3">
-                $2M+
-              </div>
-              <p className="text-gray-700 font-light">Revenue Generated</p>
-            </div>
-            <div>
-              <div className="text-4xl md:text-5xl font-light text-black mb-3">
-                5+
-              </div>
-              <p className="text-gray-700 font-light">Years in Business</p>
-            </div>
-          </div>
         </div>
       </div>
     </section>
