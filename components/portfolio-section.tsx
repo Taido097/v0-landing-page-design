@@ -3,64 +3,11 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-
-const products = [
-  {
-    title: 'Custom Website',
-    label: 'Local business website',
-    description:
-      'Includes a custom home page, service pages, mobile-friendly design, contact form, and basic search setup.',
-    image: '/portfolio-auto-repair.jpg',
-    previewTitle: 'Make a strong first impression online.',
-  },
-  {
-    title: 'eCommerce',
-    label: 'Online store',
-    description:
-      'Includes product pages, collections, shopping cart, secure checkout, payment setup, and a simple mobile shopping experience.',
-    image:
-      'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1400&q=88',
-    previewTitle: 'Turn your products into an online storefront.',
-  },
-  {
-    title: 'Scheduling',
-    label: 'Booking website',
-    description:
-      'Includes service options, available times, appointment requests, customer details, and booking confirmation for your business.',
-    image: '/portfolio-salon.jpg',
-    previewTitle: 'Make booking simple for you and your customers.',
-  },
-  {
-    title: 'Lead Capture',
-    label: 'Inquiry system',
-    description:
-      'Includes custom inquiry forms, required contact fields, email notifications, and organized lead tracking in Google Sheets.',
-    image:
-      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1400&q=88',
-    previewTitle: 'Turn website visitors into real inquiries.',
-  },
-  {
-    title: 'Portfolio',
-    label: 'Showcase website',
-    description:
-      'Includes project galleries, featured work, service information, testimonials, and a clear way for visitors to contact you.',
-    image: '/portfolio-photography.jpg',
-    previewTitle: 'Let your work speak before the first conversation.',
-  },
-  {
-    title: 'Blog',
-    label: 'Content website',
-    description:
-      'Includes article pages, categories, a clean reading layout, mobile design, and search-friendly content organization.',
-    image:
-      'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1400&q=88',
-    previewTitle: 'Share useful ideas and build trust over time.',
-  },
-];
+import { serviceProducts } from '@/lib/service-products';
 
 export function PortfolioSection() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const activeProduct = products[activeIndex];
+  const activeProduct = serviceProducts[activeIndex];
 
   return (
     <section
@@ -136,10 +83,10 @@ export function PortfolioSection() {
                       </h3>
                       <div className="mt-6 flex flex-wrap items-center gap-3">
                         <Link
-                          href="/contact"
+                          href={`/services/${activeProduct.slug}`}
                           className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-xs font-medium text-black transition hover:gap-3"
                         >
-                          Get started
+                          Explore service
                           <ArrowRight className="h-3.5 w-3.5" />
                         </Link>
                         <span className="rounded-full border border-white/30 px-4 py-2.5 text-xs text-white/80">
@@ -154,7 +101,7 @@ export function PortfolioSection() {
           </div>
 
           <div className="border-t border-black/15">
-            {products.map((product, index) => {
+            {serviceProducts.map((product, index) => {
               const isActive = index === activeIndex;
 
               return (
@@ -195,10 +142,10 @@ export function PortfolioSection() {
                       <p className="max-w-xl pb-6 text-sm font-light leading-6 text-black/60 sm:text-base">
                         {product.description}{' '}
                         <Link
-                          href="/contact"
+                          href={`/services/${product.slug}`}
                           className="inline-flex items-center gap-1 font-medium text-black underline decoration-black/25 underline-offset-4 transition hover:decoration-black"
                         >
-                          Get started
+                          View service
                           <ArrowRight className="h-3.5 w-3.5" />
                         </Link>
                       </p>
@@ -210,10 +157,10 @@ export function PortfolioSection() {
 
             <div className="pt-8">
               <Link
-                href="/contact"
+                href={`/services/${activeProduct.slug}`}
                 className="inline-flex items-center gap-3 rounded-full bg-black px-6 py-3 text-sm font-medium text-white transition hover:gap-4 hover:bg-black/80"
               >
-                Start your website
+                Explore {activeProduct.title}
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
