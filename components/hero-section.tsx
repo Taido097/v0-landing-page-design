@@ -193,7 +193,7 @@ export function HeroSection() {
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/70 sm:text-lg">
-            Custom websites with strong visuals, smooth interactions, and clear calls-to-action—built to make small businesses look established online.
+            Modern websites built to turn visitors into customers.
           </p>
 
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
