@@ -1,117 +1,95 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import {
+  ArrowRight,
+  CalendarDays,
+  Images,
+  LayoutTemplate,
+  Newspaper,
+  ShoppingBag,
+  UtensilsCrossed,
+} from 'lucide-react';
 
-const projects = [
+const products = [
   {
-    id: 1,
-    slug: 'photography-studio',
-    title: 'Photography Studio',
-    category: 'Portfolio Website',
-    description: 'Beautiful portfolio site for a photography business with image gallery and booking system.',
-    image: '/portfolio-photography.jpg',
+    title: 'Custom Website',
+    description: 'A polished website built around your business and brand.',
+    icon: LayoutTemplate,
   },
   {
-    id: 2,
-    slug: 'auto-repair-shop',
-    title: 'Auto Repair Shop',
-    category: 'Service Business',
-    description: 'Complete web solution for an auto repair business with service listings and appointment booking.',
-    image: '/portfolio-auto-repair.jpg',
+    title: 'eCommerce Store',
+    description: 'Product pages, online checkout, and a simple shopping experience.',
+    icon: ShoppingBag,
   },
   {
-    id: 3,
-    slug: 'salon-spa',
-    title: 'Salon & Spa',
-    category: 'Beauty Business',
-    description: 'Modern website for a beauty salon with staff profiles, services, and online booking integration.',
-    image: '/portfolio-salon.jpg',
+    title: 'Booking System',
+    description: 'Let customers request appointments or reserve a time online.',
+    icon: CalendarDays,
   },
   {
-    id: 4,
-    slug: 'restaurant-website',
     title: 'Restaurant Website',
-    category: 'Food & Beverage',
-    description: 'Elegant restaurant site with menu showcase, reservations, and location integration.',
-    image: '/portfolio-restaurant.jpg',
+    description: 'Show your menu, hours, location, and reservation options.',
+    icon: UtensilsCrossed,
+  },
+  {
+    title: 'Blog Website',
+    description: 'Publish updates, useful content, and business news with ease.',
+    icon: Newspaper,
+  },
+  {
+    title: 'Online Portfolio',
+    description: 'Present your best work in a clean, visual layout.',
+    icon: Images,
   },
 ];
 
 export function PortfolioSection() {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
-
   return (
-    <section id="portfolio" className="py-24 bg-white scroll-mt-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-16">
-          <h2 className="text-5xl sm:text-6xl font-light text-black leading-tight mb-6 max-w-3xl">
-            Work We're Proud Of
-          </h2>
-          <p className="text-lg text-gray-700 max-w-2xl font-light">
-            Each website is custom-built to help businesses grow online and convert customers.
+    <section id="portfolio" className="scroll-mt-24 border-y border-gray-200 bg-white py-20 sm:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-12 grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+          <div>
+            <p className="mb-4 text-xs font-medium uppercase tracking-[0.24em] text-gray-500">
+              Website products
+            </p>
+            <h2 className="max-w-3xl text-4xl font-light leading-tight text-black sm:text-5xl lg:text-6xl">
+              Built for the way your business works.
+            </h2>
+          </div>
+
+          <p className="max-w-xl text-base font-light leading-7 text-gray-600 lg:justify-self-end">
+            Choose the website type you need. Every project is customized to fit your business.
           </p>
         </div>
 
-        {/* Portfolio Grid */}
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
-          {projects.map((project, index) => (
-            <div
-              key={project.id}
-              className={`transition-all duration-1000 ${
-                isVisible
-                  ? 'opacity-100 translate-y-0'
-                  : 'opacity-0 translate-y-10'
-              }`}
-              style={{ transitionDelay: `${index * 100}ms` }}
-            >
-              <div className="space-y-6">
-                {/* Project Image */}
-                <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 relative">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
+        <div className="grid border-l border-t border-gray-200 sm:grid-cols-2 lg:grid-cols-3">
+          {products.map((product) => {
+            const Icon = product.icon;
 
-                {/* Project Info */}
-                <div className="space-y-3">
-                  <p className="text-sm text-gray-600 uppercase tracking-wider font-medium">
-                    {project.category}
-                  </p>
-                  <h3 className="text-2xl font-light text-black">
-                    {project.title}
-                  </h3>
-                  <p className="text-gray-700 leading-relaxed font-light">
-                    {project.description}
-                  </p>
-                  <Link 
-                    href={`/portfolio/${project.slug}`}
-                    className="inline-flex items-center gap-2 text-black font-medium hover:gap-3 transition-all pt-2"
-                  >
-                    View Project
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
+            return (
+              <div
+                key={product.title}
+                className="group min-h-52 border-b border-r border-gray-200 p-7 transition-colors hover:bg-gray-50 sm:p-8"
+              >
+                <Icon className="mb-10 h-6 w-6 stroke-[1.5] text-black" />
+                <h3 className="mb-3 text-xl font-medium text-black">{product.title}</h3>
+                <p className="max-w-sm text-sm font-light leading-6 text-gray-600">
+                  {product.description}
+                </p>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        {/* CTA */}
-        <div className="text-center pt-8 border-t border-gray-200">
-          <Link href="/contact" className="inline-flex items-center gap-2 px-8 py-3 bg-black hover:bg-gray-800 text-white font-medium transition-colors rounded-none">
-            Start Your Website
-            <ArrowRight className="w-4 h-4" />
+        <div className="mt-10 flex flex-col gap-4 border-t border-gray-200 pt-8 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm font-light text-gray-600">
+            Not sure which option fits? Tell me what your business needs.
+          </p>
+          <Link
+            href="/contact"
+            className="inline-flex items-center gap-2 text-sm font-medium text-black transition-all hover:gap-3"
+          >
+            Start your website
+            <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </div>
