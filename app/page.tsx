@@ -1,15 +1,11 @@
 import { Header } from '@/components/header';
 import { HeroSection } from '@/components/hero-section';
-import { TrustSection } from '@/components/trust-section';
-import { VisualServicesSection } from '@/components/visual-services-section';
 import { PortfolioSection } from '@/components/portfolio-section';
 import { HowWeWorkSection } from '@/components/how-we-work-section';
 import { CaseStudiesSection } from '@/components/case-studies-section';
 import { PricingSection } from '@/components/pricing-section';
 import { TestimonialsSection } from '@/components/testimonials-section';
-import { FAQSection } from '@/components/faq-section';
 import { CTASection } from '@/components/cta-section';
-import { SeoServicesSection } from '@/components/seo-services-section';
 import { Footer } from '@/components/footer';
 
 export const metadata = {
@@ -46,15 +42,11 @@ export default function Home() {
       <Header />
       <main className="flex flex-col">
         <HeroSection />
-        <TrustSection />
-        <VisualServicesSection />
-        <SeoServicesSection />
         <PortfolioSection />
         <HowWeWorkSection />
         <CaseStudiesSection />
         <PricingSection />
         <TestimonialsSection />
-        <FAQSection />
         <CTASection />
       </main>
       <Footer />
