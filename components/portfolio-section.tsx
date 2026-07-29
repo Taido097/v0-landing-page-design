@@ -17,10 +17,6 @@ const previewThemes = [
 export function PortfolioSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const activeProduct = serviceProducts[activeIndex];
-  const demos = activeProduct.demos ?? [];
-  const mainDemo = demos[0];
-  const backDemo = demos[1] ?? demos[0];
-  const sideDemo = demos[2] ?? demos[0];
 
   return (
     <section
@@ -28,18 +24,18 @@ export function PortfolioSection() {
       className="scroll-mt-24 overflow-hidden border-y border-black/10 bg-[#f4f2ed] py-20 sm:py-24"
     >
       <style>{`
-        @keyframes layeredPreviewIn {
-          from { opacity: 0; transform: translateY(18px) scale(.985); }
+        @keyframes directPreviewIn {
+          from { opacity: 0; transform: translateY(14px) scale(.99); }
           to { opacity: 1; transform: translateY(0) scale(1); }
         }
         @keyframes serviceCopyIn {
-          from { opacity: 0; transform: translateX(12px); }
+          from { opacity: 0; transform: translateX(10px); }
           to { opacity: 1; transform: translateX(0); }
         }
-        .layered-preview-in { animation: layeredPreviewIn .5s ease both; }
-        .service-copy-in { animation: serviceCopyIn .35s ease both; }
+        .direct-preview-in { animation: directPreviewIn .45s ease both; }
+        .service-copy-in { animation: serviceCopyIn .32s ease both; }
         @media (prefers-reduced-motion: reduce) {
-          .layered-preview-in, .service-copy-in { animation: none; }
+          .direct-preview-in, .service-copy-in { animation: none; }
         }
       `}</style>
 
@@ -54,119 +50,97 @@ export function PortfolioSection() {
             </h2>
           </div>
           <p className="max-w-xl text-base font-light leading-7 text-black/60 lg:justify-self-end sm:text-lg">
-            Hover over a service to preview the design direction, what is included, and the full service page.
+            Hover to preview a service. Click any card to view everything included.
           </p>
         </div>
 
-        <div className="grid overflow-hidden rounded-[2rem] border border-black/10 bg-white shadow-[0_28px_90px_rgba(25,22,18,.08)] lg:grid-cols-[1.13fr_.87fr] sm:rounded-[2.5rem]">
-          <div
-            key={`preview-${activeProduct.slug}`}
-            className={`layered-preview-in relative min-h-[500px] overflow-hidden p-5 sm:min-h-[650px] sm:p-8 lg:min-h-[720px] ${previewThemes[activeIndex % previewThemes.length]}`}
+        <div className="grid gap-8 lg:grid-cols-[1.05fr_.95fr] lg:items-start lg:gap-10">
+          <Link
+            key={activeProduct.slug}
+            href={`/services/${activeProduct.slug}`}
+            className={`direct-preview-in group relative min-h-[460px] overflow-hidden rounded-[2rem] border border-black/10 shadow-[0_28px_80px_rgba(25,22,18,.12)] sm:min-h-[620px] ${previewThemes[activeIndex % previewThemes.length]}`}
+            aria-label={`View ${activeProduct.title} service`}
           >
-            <div className="relative z-30 flex items-center justify-between gap-4">
-              <span className="rounded-full border border-black/10 bg-white/70 px-4 py-2 text-[10px] font-medium uppercase tracking-[0.2em] text-black/50 backdrop-blur-md">
-                DesignedbyTD preview
+            <img
+              src={activeProduct.image}
+              alt={`${activeProduct.title} service preview`}
+              className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.035]"
+            />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/80" />
+
+            <div className="absolute left-5 top-5 rounded-full border border-white/30 bg-black/20 px-4 py-2 text-[10px] font-medium uppercase tracking-[0.2em] text-white backdrop-blur-md sm:left-7 sm:top-7">
+              DesignedbyTD preview
+            </div>
+
+            <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-9">
+              <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-white/65">
+                {activeProduct.label}
+              </p>
+              <h3 className="mt-3 max-w-2xl text-4xl font-medium leading-[1.02] tracking-[-0.04em] sm:text-5xl">
+                {activeProduct.previewTitle}
+              </h3>
+              <span className="mt-6 inline-flex items-center gap-3 rounded-full bg-white px-5 py-3 text-sm font-medium text-black">
+                View service
+                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </span>
-              <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-black/35">
-                0{activeIndex + 1} / 0{serviceProducts.length}
-              </span>
             </div>
+          </Link>
 
-            <div className="absolute left-[4%] top-[22%] z-0 hidden w-[40%] -rotate-[7deg] overflow-hidden rounded-[1.3rem] border border-black/10 bg-[#171717] shadow-[0_30px_70px_rgba(0,0,0,.2)] sm:block">
-              <div className="flex h-9 items-center gap-1.5 border-b border-white/10 px-3">
-                <span className="h-1.5 w-1.5 rounded-full bg-white/25" />
-                <span className="h-1.5 w-1.5 rounded-full bg-white/25" />
-                <span className="h-1.5 w-1.5 rounded-full bg-white/25" />
-              </div>
-              <img
-                src={backDemo?.image ?? activeProduct.image}
-                alt={`${activeProduct.title} supporting sample`}
-                className="aspect-[3/4] w-full object-cover opacity-75"
-              />
-            </div>
-
-            <div className="absolute right-[3%] top-[17%] z-10 hidden w-[38%] rotate-[6deg] overflow-hidden rounded-[1.3rem] border border-black/10 bg-white shadow-[0_30px_70px_rgba(0,0,0,.18)] sm:block">
-              <div className="flex h-9 items-center gap-1.5 border-b border-black/10 px-3">
-                <span className="h-1.5 w-1.5 rounded-full bg-black/15" />
-                <span className="h-1.5 w-1.5 rounded-full bg-black/15" />
-                <span className="h-1.5 w-1.5 rounded-full bg-black/15" />
-              </div>
-              <img
-                src={sideDemo?.image ?? activeProduct.image}
-                alt={`${activeProduct.title} secondary sample`}
-                className="aspect-[3/4] w-full object-cover"
-              />
-            </div>
-
-            <div className="absolute inset-x-[7%] bottom-[7%] z-20 overflow-hidden rounded-[1.7rem] border border-black/10 bg-white p-2 shadow-[0_35px_90px_rgba(0,0,0,.23)] sm:inset-x-[12%] sm:bottom-[8%] sm:rounded-[2rem] sm:p-3">
-              <div className="flex h-11 items-center justify-between border-b border-black/8 px-3 sm:h-12 sm:px-4">
-                <div className="flex gap-1.5" aria-hidden="true">
-                  <span className="h-2 w-2 rounded-full bg-black/15" />
-                  <span className="h-2 w-2 rounded-full bg-black/15" />
-                  <span className="h-2 w-2 rounded-full bg-black/15" />
-                </div>
-                <span className="rounded-full bg-black/[.04] px-4 py-1.5 text-[9px] uppercase tracking-[.16em] text-black/40">
-                  {activeProduct.label}
-                </span>
-              </div>
-
-              <div className="relative overflow-hidden rounded-b-[1.35rem] sm:rounded-b-[1.6rem]">
-                <img
-                  src={mainDemo?.image ?? activeProduct.image}
-                  alt={`${activeProduct.title} main sample website`}
-                  className="aspect-[16/11] w-full object-cover"
-                />
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent p-5 pt-24 text-white sm:p-8 sm:pt-32">
-                  <p className="text-[9px] font-medium uppercase tracking-[0.22em] text-white/60">
-                    {activeProduct.label}
-                  </p>
-                  <p className="mt-3 max-w-xl text-2xl font-medium leading-tight tracking-[-0.025em] sm:text-4xl">
-                    {activeProduct.previewTitle}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col border-t border-black/10 bg-[#fbfaf7] p-6 sm:p-9 lg:border-l lg:border-t-0 lg:p-10 xl:p-12">
-            <div className="border-t border-black/12">
+          <div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
               {serviceProducts.map((product, index) => {
                 const isActive = index === activeIndex;
 
                 return (
-                  <button
+                  <Link
                     key={product.slug}
-                    type="button"
+                    href={`/services/${product.slug}`}
                     onMouseEnter={() => setActiveIndex(index)}
                     onFocus={() => setActiveIndex(index)}
-                    onClick={() => setActiveIndex(index)}
-                    aria-pressed={isActive}
-                    className={`group flex w-full items-center justify-between gap-5 border-b border-black/12 px-1 py-4 text-left transition sm:py-5 ${
+                    aria-current={isActive ? 'true' : undefined}
+                    className={`group flex min-h-28 items-center gap-4 rounded-[1.35rem] border p-3.5 transition duration-300 sm:p-4 ${
                       isActive
-                        ? 'my-2 rounded-xl border-b-transparent bg-black px-4 text-white shadow-[0_14px_35px_rgba(0,0,0,.12)]'
-                        : 'text-black/45 hover:text-black'
+                        ? 'border-black bg-black text-white shadow-[0_16px_40px_rgba(0,0,0,.14)]'
+                        : 'border-black/10 bg-white text-black hover:-translate-y-0.5 hover:border-black/25 hover:shadow-[0_12px_32px_rgba(0,0,0,.08)]'
                     }`}
                   >
-                    <span className="text-xl font-medium tracking-[-0.025em] sm:text-2xl">
-                      {product.title}
-                    </span>
-                    <ArrowRight
-                      className={`h-4 w-4 shrink-0 transition ${
+                    <div className="relative h-20 w-24 shrink-0 overflow-hidden rounded-xl sm:h-24 sm:w-28">
+                      <img
+                        src={product.image}
+                        alt={`${product.title} service`}
+                        className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                      />
+                      <div className="pointer-events-none absolute inset-0 bg-black/5" />
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <p className={`text-[9px] font-medium uppercase tracking-[0.18em] ${isActive ? 'text-white/45' : 'text-black/35'}`}>
+                        {product.label}
+                      </p>
+                      <p className="mt-2 text-xl font-medium tracking-[-0.025em] sm:text-2xl">
+                        {product.title}
+                      </p>
+                    </div>
+
+                    <span
+                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition ${
                         isActive
-                          ? 'translate-x-0 text-white'
-                          : '-translate-x-1 text-black/20 group-hover:translate-x-0 group-hover:text-black'
+                          ? 'border-white/25 bg-white text-black'
+                          : 'border-black/12 bg-[#f7f5f0] text-black group-hover:bg-black group-hover:text-white'
                       }`}
-                    />
-                  </button>
+                    >
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </span>
+                  </Link>
                 );
               })}
             </div>
 
-            <div key={`copy-${activeProduct.slug}`} className="service-copy-in mt-8 sm:mt-10">
+            <div key={`copy-${activeProduct.slug}`} className="service-copy-in mt-7 rounded-[1.5rem] border border-black/10 bg-white p-6 sm:p-7">
               <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-black/35">
                 What is included
               </p>
-              <p className="mt-4 text-base font-light leading-7 text-black/65 sm:text-lg">
+              <p className="mt-4 text-base font-light leading-7 text-black/65">
                 {activeProduct.description}
               </p>
 
@@ -174,7 +148,7 @@ export function PortfolioSection() {
                 {activeProduct.features.slice(0, 3).map((feature) => (
                   <span
                     key={feature}
-                    className="rounded-full border border-black/10 bg-white px-3 py-2 text-xs font-light text-black/55"
+                    className="rounded-full border border-black/10 bg-[#f7f5f0] px-3 py-2 text-xs font-light text-black/55"
                   >
                     {feature}
                   </span>
@@ -183,9 +157,9 @@ export function PortfolioSection() {
 
               <Link
                 href={`/services/${activeProduct.slug}`}
-                className="group mt-7 inline-flex items-center gap-3 rounded-full bg-black px-6 py-3.5 text-sm font-medium text-white transition hover:bg-black/80"
+                className="group mt-6 inline-flex items-center gap-3 rounded-full bg-black px-6 py-3.5 text-sm font-medium text-white transition hover:bg-black/80"
               >
-                View service
+                View {activeProduct.title}
                 <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </Link>
             </div>
