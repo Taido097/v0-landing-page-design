@@ -81,7 +81,7 @@ export function PortfolioSection() {
             Website products built around your business.
           </h2>
           <p className="mt-5 max-w-2xl text-base font-light leading-7 text-black/60 sm:text-lg">
-            Choose a website type to see how it could look and work for your customers.
+            Hover over a website type to see how it could look and work for your customers.
           </p>
         </div>
 
@@ -152,9 +152,11 @@ export function PortfolioSection() {
                 <button
                   key={product.title}
                   type="button"
+                  onMouseEnter={() => setActiveIndex(index)}
+                  onFocus={() => setActiveIndex(index)}
                   onClick={() => setActiveIndex(index)}
                   aria-pressed={isActive}
-                  className={`group w-full border-b border-black/15 py-5 text-left transition sm:py-6 ${
+                  className={`group w-full cursor-pointer border-b border-black/15 py-5 text-left transition sm:py-6 ${
                     isActive ? 'text-black' : 'text-black/30 hover:text-black/65'
                   }`}
                 >
