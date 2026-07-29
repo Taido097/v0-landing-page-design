@@ -2,7 +2,6 @@ import { Header } from '@/components/header';
 import { HeroSection } from '@/components/hero-section';
 import { PortfolioSection } from '@/components/portfolio-section';
 import { HowWeWorkSection } from '@/components/how-we-work-section';
-import { CaseStudiesSection } from '@/components/case-studies-section';
 import { PricingSection } from '@/components/pricing-section';
 import { TestimonialsSection } from '@/components/testimonials-section';
 import { FAQSection } from '@/components/faq-section';
@@ -45,7 +44,6 @@ export default function Home() {
         <HeroSection />
         <PortfolioSection />
         <HowWeWorkSection />
-        <CaseStudiesSection />
         <PricingSection />
         <TestimonialsSection />
         <FAQSection />
