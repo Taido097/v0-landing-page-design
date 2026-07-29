@@ -188,10 +188,8 @@ export function HeroSection() {
             Designed for real businesses
           </p>
 
-          <h1 className="mt-6 text-5xl font-light leading-[0.92] tracking-[-0.045em] sm:text-6xl lg:text-7xl">
-            Your website should feel
-            <br />
-            <span className="font-semibold">impossible to ignore.</span>
+          <h1 className="mt-6 text-5xl font-semibold leading-[0.92] tracking-[-0.045em] sm:text-6xl lg:text-7xl">
+            Make every visit count.
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/70 sm:text-lg">
