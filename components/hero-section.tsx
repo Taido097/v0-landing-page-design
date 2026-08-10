@@ -52,12 +52,7 @@ const projects: Project[] = [
 ];
 
 export function HeroSection() {
-  const [isVisible, setIsVisible] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -169,7 +164,6 @@ export function HeroSection() {
           src={activeProject.image}
           alt=""
           fill
-          priority
           sizes="100vw"
           className="showcase-background object-cover opacity-40 blur-[5px] transition-opacity duration-700"
         />
@@ -178,11 +172,7 @@ export function HeroSection() {
       </div>
 
       <div className="relative mx-auto w-full max-w-[1500px] px-4 sm:px-6 lg:px-8">
-        <div
-          className={`mx-auto max-w-4xl text-center transition-all duration-1000 ${
-            isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-          }`}
-        >
+        <div className="mx-auto max-w-4xl text-center">
           <h1 className="text-5xl font-semibold leading-[0.92] tracking-[-0.045em] sm:text-6xl lg:text-7xl">
             Make every visit count.
           </h1>
@@ -204,11 +194,7 @@ export function HeroSection() {
           </div>
         </div>
 
-        <div
-          className={`relative mt-10 h-[330px] flex-none transition-all delay-200 duration-1000 sm:h-[400px] lg:h-[460px] ${
-            isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'
-          }`}
-        >
+        <div className="relative mt-10 h-[330px] flex-none sm:h-[400px] lg:h-[460px]">
           <div className="showcase-left-wrap absolute -left-[29%] top-14 z-10 w-[59%] transition-transform duration-200 sm:-left-[12%] sm:w-[46%] lg:left-[1%] lg:top-20 lg:w-[32%]">
             <button
               type="button"
