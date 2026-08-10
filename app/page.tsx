@@ -7,6 +7,8 @@ import { FAQSection } from '@/components/faq-section';
 import { CTASection } from '@/components/cta-section';
 import { Footer } from '@/components/footer';
 
+export const dynamic = 'force-static';
+
 export const metadata = {
   title: 'Affordable Web Designer in Orange County | Designed by TD',
   description:
