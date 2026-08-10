@@ -1,13 +1,9 @@
 'use client'
 
 import { useEffect } from 'react'
-import { usePathname } from 'next/navigation'
 
 export function EcommerceGalleryAutoScroll() {
-  const pathname = usePathname()
-
   useEffect(() => {
-    if (pathname !== '/services/ecommerce') return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     const gallery = document.querySelector<HTMLElement>(
@@ -83,7 +79,7 @@ export function EcommerceGalleryAutoScroll() {
       gallery.style.scrollSnapType = ''
       gallery.style.scrollBehavior = ''
     }
-  }, [pathname])
+  }, [])
 
   return null
 }
