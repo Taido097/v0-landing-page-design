@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
@@ -36,7 +37,7 @@ export function PortfolioSection() {
     return images.findIndex((candidate) => getImageKey(candidate) === imageKey) === index;
   });
 
-  const mainImage = previewImages[0];
+  const mainImage = previewImages[0] ?? activeProduct.image;
   const backImage = previewImages[1];
   const sideImage = previewImages[2];
 
@@ -92,10 +93,12 @@ export function PortfolioSection() {
 
             {backImage && (
               <div className="absolute left-[4%] top-[24%] z-0 hidden h-[48%] w-[42%] -rotate-[7deg] overflow-hidden rounded-[1.7rem] border-[6px] border-white/80 shadow-[0_30px_70px_rgba(0,0,0,.2)] sm:block">
-                <img
+                <Image
                   src={backImage}
                   alt={`${activeProduct.title} supporting visual`}
-                  className="h-full w-full object-cover"
+                  fill
+                  sizes="(max-width: 1024px) 42vw, 30vw"
+                  className="object-cover"
                 />
                 <div className="pointer-events-none absolute inset-0 bg-black/10" />
               </div>
@@ -103,10 +106,12 @@ export function PortfolioSection() {
 
             {sideImage && (
               <div className="absolute right-[3%] top-[18%] z-10 hidden h-[51%] w-[40%] rotate-[6deg] overflow-hidden rounded-[1.7rem] border-[6px] border-white/85 shadow-[0_30px_70px_rgba(0,0,0,.18)] sm:block">
-                <img
+                <Image
                   src={sideImage}
                   alt={`${activeProduct.title} secondary visual`}
-                  className="h-full w-full object-cover"
+                  fill
+                  sizes="(max-width: 1024px) 40vw, 29vw"
+                  className="object-cover"
                 />
                 <div className="pointer-events-none absolute inset-0 bg-black/5" />
               </div>
@@ -118,10 +123,12 @@ export function PortfolioSection() {
               aria-label={`View ${activeProduct.title} service`}
             >
               <div className="relative min-h-[330px] overflow-hidden sm:min-h-[410px]">
-                <img
+                <Image
                   src={mainImage}
                   alt={`${activeProduct.title} main preview`}
-                  className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.035]"
+                  fill
+                  sizes="(max-width: 640px) 86vw, (max-width: 1024px) 76vw, 44vw"
+                  className="object-cover transition duration-700 group-hover:scale-[1.035]"
                 />
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent" />
 
