@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { InteractiveBusinessDemo } from '@/components/interactive-business-demo';
+import { RestaurantQitchenDemo } from '@/components/restaurant-qitchen-demo';
 import { SalonSpaDemo } from '@/components/salon-spa-demo';
 
 const slugs = [
@@ -26,6 +27,10 @@ export default async function ProjectPage({
 
   if (slug === 'salon-spa') {
     return <SalonSpaDemo />;
+  }
+
+  if (slug === 'restaurant-website') {
+    return <RestaurantQitchenDemo />;
   }
 
   return <InteractiveBusinessDemo slug={slug} />;
