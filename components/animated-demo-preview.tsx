@@ -11,12 +11,14 @@ type AnimatedDemoPreviewProps = {
   image: string;
   href: string;
   isCenter: boolean;
+  onComplete?: () => void;
 };
 
-export function AnimatedDemoPreview({ name, image, href, isCenter }: AnimatedDemoPreviewProps) {
+export function AnimatedDemoPreview({ name, image, href, isCenter, onComplete }: AnimatedDemoPreviewProps) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const rafRef = useRef<number>(0);
+  const completedRef = useRef(false);
   const [inView, setInView] = useState(false);
   const running = isCenter && inView;
 
@@ -46,22 +48,17 @@ export function AnimatedDemoPreview({ name, image, href, isCenter }: AnimatedDem
     const doc = frame?.contentDocument;
     if (!frame || !win || !doc) return;
 
-    // The iframe is same-origin. Disable CSS smooth scrolling inside the preview
-    // so the animation is driven by one consistent requestAnimationFrame timeline.
+    completedRef.current = false;
     doc.documentElement.style.scrollBehavior = 'auto';
     if (doc.body) doc.body.style.scrollBehavior = 'auto';
 
     win.scrollTo(0, 0);
 
-    const holdAtTop = 1100;
-    const scrollDuration = 14500;
-    const holdAtEnd = 1200;
+    const holdAtTop = 700;
+    const scrollDuration = 10000;
     const startedAt = performance.now();
 
-    const ease = (t: number) => {
-      // Smoothstep keeps the real page's scroll-triggered animation feeling natural.
-      return t * t * (3 - 2 * t);
-    };
+    const ease = (t: number) => t * t * (3 - 2 * t);
 
     const getHalfPageTarget = () => {
       const maxScroll = Math.max(
@@ -70,6 +67,13 @@ export function AnimatedDemoPreview({ name, image, href, isCenter }: AnimatedDem
         doc.body ? doc.body.scrollHeight - win.innerHeight : 0,
       );
       return maxScroll * 0.5;
+    };
+
+    const finish = () => {
+      if (completedRef.current) return;
+      completedRef.current = true;
+      win.scrollTo(0, getHalfPageTarget());
+      onComplete?.();
     };
 
     const tick = (now: number) => {
@@ -81,24 +85,26 @@ export function AnimatedDemoPreview({ name, image, href, isCenter }: AnimatedDem
 
       if (elapsed <= holdAtTop) {
         win.scrollTo(0, 0);
-      } else if (scrollingFor < scrollDuration) {
-        const progress = Math.min(1, Math.max(0, scrollingFor / scrollDuration));
-        win.scrollTo(0, targetScroll * ease(progress));
-      } else {
-        // Recalculate the halfway point in case lazy-loaded content changed the page height.
-        win.scrollTo(0, getHalfPageTarget());
+        rafRef.current = requestAnimationFrame(tick);
+        return;
       }
 
-      if (elapsed < holdAtTop + scrollDuration + holdAtEnd) {
+      if (scrollingFor < scrollDuration) {
+        const progress = Math.min(1, Math.max(0, scrollingFor / scrollDuration));
+        win.scrollTo(0, targetScroll * ease(progress));
         rafRef.current = requestAnimationFrame(tick);
+        return;
       }
+
+      finish();
     };
 
     rafRef.current = requestAnimationFrame(tick);
-  }, [running, stopPreview]);
+  }, [onComplete, running, stopPreview]);
 
   useEffect(() => {
     if (!running) {
+      completedRef.current = false;
       stopPreview();
       return;
     }
