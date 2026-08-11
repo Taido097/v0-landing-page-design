@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ExternalLink } from 'lucide-react';
 import type { MouseEvent } from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type Project = {
   name: string;
@@ -67,8 +67,6 @@ const projects: Project[] = [
 
 export function HeroSection() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [previousBackgroundIndex, setPreviousBackgroundIndex] = useState<number | null>(null);
-  const lastActiveIndex = useRef(0);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -77,20 +75,6 @@ export function HeroSection() {
 
     return () => window.clearInterval(timer);
   }, []);
-
-  useEffect(() => {
-    const previous = lastActiveIndex.current;
-    if (previous === activeIndex) return;
-
-    setPreviousBackgroundIndex(previous);
-    lastActiveIndex.current = activeIndex;
-
-    const fadeTimer = window.setTimeout(() => {
-      setPreviousBackgroundIndex(null);
-    }, 1400);
-
-    return () => window.clearTimeout(fadeTimer);
-  }, [activeIndex]);
 
   const previousIndex = (activeIndex - 1 + projects.length) % projects.length;
   const nextIndex = (activeIndex + 1) % projects.length;
@@ -125,11 +109,6 @@ export function HeroSection() {
           --right-y: 0px;
         }
 
-        @keyframes showcaseBackgroundFadeIn {
-          from { opacity: 0; transform: scale(1.025); }
-          to { opacity: 1; transform: scale(1); }
-        }
-
         @keyframes showcaseCenterFloat {
           0%, 100% { transform: translate3d(0, 0, 0); }
           50% { transform: translate3d(0, -9px, 0); }
@@ -150,9 +129,6 @@ export function HeroSection() {
           55%, 100% { transform: translateX(280%) skewX(-20deg); }
         }
 
-        .showcase-background-enter {
-          animation: showcaseBackgroundFadeIn 1.2s ease both;
-        }
         .showcase-center-card { animation: showcaseCenterFloat 6s ease-in-out infinite; }
         .showcase-left-card { animation: showcaseLeftFloat 7.5s ease-in-out infinite; }
         .showcase-right-card { animation: showcaseRightFloat 8.2s ease-in-out infinite; }
@@ -180,7 +156,6 @@ export function HeroSection() {
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .showcase-background-enter,
           .showcase-center-card,
           .showcase-left-card,
           .showcase-right-card,
@@ -191,20 +166,19 @@ export function HeroSection() {
       `}</style>
 
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-        {previousBackgroundIndex !== null && (
-          <HeroBackground project={projects[previousBackgroundIndex]} />
-        )}
-        <HeroBackground
-          key={`background-${activeProject.name}`}
-          project={activeProject}
-          entering={previousBackgroundIndex !== null}
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,.58)_0%,rgba(0,0,0,.47)_24%,rgba(0,0,0,.32)_55%,rgba(0,0,0,.72)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,transparent_0%,rgba(0,0,0,.08)_46%,rgba(0,0,0,.34)_100%)]" />
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black via-black/55 to-transparent" />
+        {projects.map((project, index) => (
+          <HeroBackground
+            key={project.name}
+            project={project}
+            active={index === activeIndex}
+          />
+        ))}
+        <div className="absolute inset-0 z-10 bg-[linear-gradient(to_bottom,rgba(0,0,0,.58)_0%,rgba(0,0,0,.47)_24%,rgba(0,0,0,.32)_55%,rgba(0,0,0,.72)_100%)]" />
+        <div className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_50%_42%,transparent_0%,rgba(0,0,0,.08)_46%,rgba(0,0,0,.34)_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 z-10 h-40 bg-gradient-to-t from-black via-black/55 to-transparent" />
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-[1500px] px-4 sm:px-6 lg:px-8">
+      <div className="relative z-20 mx-auto w-full max-w-[1500px] px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="text-5xl font-semibold leading-[0.92] tracking-[-0.045em] sm:text-6xl lg:text-7xl">
             Make every visit count.
@@ -240,7 +214,7 @@ export function HeroSection() {
           </div>
 
           <div className="showcase-center-wrap absolute left-1/2 top-0 z-30 w-[78%] transition-transform duration-200 sm:w-[62%] lg:w-[47%]">
-            <div key={activeProject.name} className="showcase-center-card">
+            <div className="showcase-center-card">
               <Link
                 href={activeProject.href}
                 className="group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
@@ -287,9 +261,20 @@ export function HeroSection() {
   );
 }
 
-function HeroBackground({ project, entering = false }: { project: Project; entering?: boolean }) {
+function HeroBackground({ project, active }: { project: Project; active: boolean }) {
   return (
-    <div className={`absolute inset-0 ${entering ? 'showcase-background-enter' : ''}`}>
+    <div
+      className={`absolute inset-0 transition-opacity ${active ? 'opacity-100' : 'opacity-0'}`}
+      style={{
+        zIndex: active ? 2 : 1,
+        transitionDuration: '1800ms',
+        transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        willChange: 'opacity',
+        backfaceVisibility: 'hidden',
+        transform: 'translateZ(0)',
+      }}
+      aria-hidden="true"
+    >
       <Image
         src={project.image}
         alt=""
@@ -303,9 +288,8 @@ function HeroBackground({ project, entering = false }: { project: Project; enter
         muted
         loop
         playsInline
-        preload="metadata"
+        preload="auto"
         poster={project.image}
-        aria-hidden="true"
         tabIndex={-1}
         style={{ objectPosition: project.objectPosition }}
         className="absolute inset-0 h-full w-full object-cover brightness-[0.9] saturate-[0.95] motion-reduce:hidden"
