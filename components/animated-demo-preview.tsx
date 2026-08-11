@@ -14,7 +14,7 @@ type AnimatedDemoPreviewProps = {
   onComplete?: () => void;
 };
 
-export function AnimatedDemoPreview({ name, image, href, isCenter, onComplete }: AnimatedDemoPreviewProps) {
+export function AnimatedDemoPreview({ name, href, isCenter, onComplete }: AnimatedDemoPreviewProps) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const rafRef = useRef<number>(0);
@@ -39,19 +39,35 @@ export function AnimatedDemoPreview({ name, image, href, isCenter, onComplete }:
     cancelAnimationFrame(rafRef.current);
   }, []);
 
+  const resetToTop = useCallback(() => {
+    const frame = iframeRef.current;
+    const win = frame?.contentWindow;
+    const doc = frame?.contentDocument;
+    if (!win || !doc) return;
+
+    doc.documentElement.style.scrollBehavior = 'auto';
+    if (doc.body) doc.body.style.scrollBehavior = 'auto';
+    win.scrollTo(0, 0);
+  }, []);
+
   const startPreview = useCallback(() => {
     stopPreview();
-    if (!running) return;
 
     const frame = iframeRef.current;
     const win = frame?.contentWindow;
     const doc = frame?.contentDocument;
     if (!frame || !win || !doc) return;
 
-    completedRef.current = false;
     doc.documentElement.style.scrollBehavior = 'auto';
     if (doc.body) doc.body.style.scrollBehavior = 'auto';
 
+    // Side cards always show the top of the exact same live demo and remain frozen.
+    if (!running) {
+      win.scrollTo(0, 0);
+      return;
+    }
+
+    completedRef.current = false;
     win.scrollTo(0, 0);
 
     const holdAtTop = 700;
@@ -103,19 +119,21 @@ export function AnimatedDemoPreview({ name, image, href, isCenter, onComplete }:
   }, [onComplete, running, stopPreview]);
 
   useEffect(() => {
+    const frame = iframeRef.current;
+
     if (!running) {
       completedRef.current = false;
       stopPreview();
+      if (frame?.contentDocument?.readyState === 'complete') resetToTop();
       return;
     }
 
-    const frame = iframeRef.current;
     if (frame?.contentDocument?.readyState === 'complete') {
       startPreview();
     }
 
     return stopPreview;
-  }, [href, running, startPreview, stopPreview]);
+  }, [href, running, resetToTop, startPreview, stopPreview]);
 
   return (
     <div
@@ -126,36 +144,29 @@ export function AnimatedDemoPreview({ name, image, href, isCenter, onComplete }:
           : 'h-[225px] rounded-[1.1rem] sm:h-[270px] lg:h-[310px]'
       }`}
     >
-      {isCenter ? (
-        <div className="absolute inset-0 overflow-hidden bg-black">
-          <iframe
-            key={href}
-            ref={iframeRef}
-            src={href}
-            title={`${name} live website preview`}
-            onLoad={startPreview}
-            tabIndex={-1}
-            aria-hidden="true"
-            className="pointer-events-none absolute left-0 top-0 border-0 bg-black"
-            style={{
-              width: '200%',
-              height: '200%',
-              transform: 'scale(.5)',
-              transformOrigin: 'top left',
-            }}
-          />
-        </div>
-      ) : (
-        <div className="absolute inset-0 bg-black">
-          <img src={image} alt="" className="h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/10" />
-        </div>
-      )}
+      <div className="absolute inset-0 overflow-hidden bg-black">
+        <iframe
+          key={href}
+          ref={iframeRef}
+          src={href}
+          title={`${name} live website preview`}
+          onLoad={startPreview}
+          tabIndex={-1}
+          aria-hidden="true"
+          className="pointer-events-none absolute left-0 top-0 border-0 bg-black"
+          style={{
+            width: '200%',
+            height: '200%',
+            transform: 'scale(.5)',
+            transformOrigin: 'top left',
+          }}
+        />
+      </div>
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-40 flex items-center justify-between border-t border-white/10 bg-black/72 px-4 py-2.5 text-[8px] uppercase tracking-[.14em] text-white/65 backdrop-blur-md sm:px-5">
         <span>{name}</span>
         <span className="inline-flex items-center gap-1.5 text-white/85">
-          {isCenter ? 'Real demo · auto scroll' : 'Preview paused'}
+          {isCenter ? 'Real demo · auto scroll' : 'Real demo · paused'}
           <ArrowUpRight className="h-3 w-3" />
         </span>
       </div>
