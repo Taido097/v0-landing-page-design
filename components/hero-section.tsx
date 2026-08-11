@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ExternalLink } from 'lucide-react';
 import type { MouseEvent } from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type Project = {
   name: string;
@@ -67,6 +67,8 @@ const projects: Project[] = [
 
 export function HeroSection() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [previousBackgroundIndex, setPreviousBackgroundIndex] = useState<number | null>(null);
+  const lastActiveIndex = useRef(0);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -75,6 +77,20 @@ export function HeroSection() {
 
     return () => window.clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    const previous = lastActiveIndex.current;
+    if (previous === activeIndex) return;
+
+    setPreviousBackgroundIndex(previous);
+    lastActiveIndex.current = activeIndex;
+
+    const fadeTimer = window.setTimeout(() => {
+      setPreviousBackgroundIndex(null);
+    }, 1400);
+
+    return () => window.clearTimeout(fadeTimer);
+  }, [activeIndex]);
 
   const previousIndex = (activeIndex - 1 + projects.length) % projects.length;
   const nextIndex = (activeIndex + 1) % projects.length;
@@ -109,6 +125,11 @@ export function HeroSection() {
           --right-y: 0px;
         }
 
+        @keyframes showcaseBackgroundFadeIn {
+          from { opacity: 0; transform: scale(1.025); }
+          to { opacity: 1; transform: scale(1); }
+        }
+
         @keyframes showcaseCenterFloat {
           0%, 100% { transform: translate3d(0, 0, 0); }
           50% { transform: translate3d(0, -9px, 0); }
@@ -129,6 +150,9 @@ export function HeroSection() {
           55%, 100% { transform: translateX(280%) skewX(-20deg); }
         }
 
+        .showcase-background-enter {
+          animation: showcaseBackgroundFadeIn 1.2s ease both;
+        }
         .showcase-center-card { animation: showcaseCenterFloat 6s ease-in-out infinite; }
         .showcase-left-card { animation: showcaseLeftFloat 7.5s ease-in-out infinite; }
         .showcase-right-card { animation: showcaseRightFloat 8.2s ease-in-out infinite; }
@@ -156,6 +180,7 @@ export function HeroSection() {
         }
 
         @media (prefers-reduced-motion: reduce) {
+          .showcase-background-enter,
           .showcase-center-card,
           .showcase-left-card,
           .showcase-right-card,
@@ -165,13 +190,27 @@ export function HeroSection() {
         }
       `}</style>
 
-      <div className="relative mx-auto w-full max-w-[1500px] px-4 sm:px-6 lg:px-8">
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+        {previousBackgroundIndex !== null && (
+          <HeroBackground project={projects[previousBackgroundIndex]} />
+        )}
+        <HeroBackground
+          key={`background-${activeProject.name}`}
+          project={activeProject}
+          entering={previousBackgroundIndex !== null}
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,.58)_0%,rgba(0,0,0,.47)_24%,rgba(0,0,0,.32)_55%,rgba(0,0,0,.72)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,transparent_0%,rgba(0,0,0,.08)_46%,rgba(0,0,0,.34)_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black via-black/55 to-transparent" />
+      </div>
+
+      <div className="relative z-10 mx-auto w-full max-w-[1500px] px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="text-5xl font-semibold leading-[0.92] tracking-[-0.045em] sm:text-6xl lg:text-7xl">
             Make every visit count.
           </h1>
 
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/70 sm:text-lg">
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/75 sm:text-lg">
             Modern websites built to turn visitors into customers.
           </p>
 
@@ -182,41 +221,13 @@ export function HeroSection() {
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="rounded-lg border-white/30 bg-black/20 px-8 py-6 text-base font-medium text-white backdrop-blur-md hover:bg-white hover:text-black">
+            <Button asChild size="lg" variant="outline" className="rounded-lg border-white/35 bg-black/20 px-8 py-6 text-base font-medium text-white backdrop-blur-md hover:bg-white hover:text-black">
               <Link href="/#portfolio">Explore the Work</Link>
             </Button>
           </div>
         </div>
 
         <div className="relative mt-10 h-[330px] flex-none sm:h-[400px] lg:h-[460px]">
-          <div className="pointer-events-none absolute -inset-x-[10%] -inset-y-8 z-0 overflow-hidden rounded-[2rem] sm:-inset-x-[6%] lg:-inset-x-[3%]">
-            <Image
-              src={activeProject.image}
-              alt=""
-              fill
-              sizes="100vw"
-              style={{ objectPosition: activeProject.objectPosition }}
-              className="object-cover opacity-50 blur-[2px]"
-            />
-            <video
-              key={activeProject.video}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              poster={activeProject.image}
-              aria-hidden="true"
-              tabIndex={-1}
-              style={{ objectPosition: activeProject.objectPosition }}
-              className="absolute inset-0 h-full w-full object-cover opacity-65 motion-reduce:hidden"
-            >
-              <source src={activeProject.video} type="video/mp4" />
-            </video>
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,.05),rgba(0,0,0,.42)_72%),linear-gradient(to_bottom,rgba(0,0,0,.2),rgba(0,0,0,.5))]" />
-            <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black to-transparent" />
-          </div>
-
           <div className="showcase-left-wrap absolute -left-[29%] top-14 z-10 w-[59%] transition-transform duration-200 sm:-left-[12%] sm:w-[46%] lg:left-[1%] lg:top-20 lg:w-[32%]">
             <button
               type="button"
@@ -253,7 +264,7 @@ export function HeroSection() {
         </div>
 
         <div className="relative z-40 mt-5 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/55">
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/60">
             Click the side previews to explore · Click the center to open
           </p>
           <div className="flex items-center gap-2" aria-label="Choose featured demo">
@@ -273,6 +284,35 @@ export function HeroSection() {
         </div>
       </div>
     </section>
+  );
+}
+
+function HeroBackground({ project, entering = false }: { project: Project; entering?: boolean }) {
+  return (
+    <div className={`absolute inset-0 ${entering ? 'showcase-background-enter' : ''}`}>
+      <Image
+        src={project.image}
+        alt=""
+        fill
+        sizes="100vw"
+        style={{ objectPosition: project.objectPosition }}
+        className="object-cover brightness-[0.88] saturate-[0.95]"
+      />
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        poster={project.image}
+        aria-hidden="true"
+        tabIndex={-1}
+        style={{ objectPosition: project.objectPosition }}
+        className="absolute inset-0 h-full w-full object-cover brightness-[0.9] saturate-[0.95] motion-reduce:hidden"
+      >
+        <source src={project.video} type="video/mp4" />
+      </video>
+    </div>
   );
 }
 
