@@ -55,13 +55,21 @@ export function AnimatedDemoPreview({ name, image, href, isCenter }: AnimatedDem
 
     const holdAtTop = 1100;
     const scrollDuration = 14500;
-    const holdAtBottom = 1200;
+    const holdAtEnd = 1200;
     const startedAt = performance.now();
 
     const ease = (t: number) => {
-      // Smoothstep gives a gentle start/end while still moving through the
-      // entire real page, allowing its own scroll-triggered effects to fire.
+      // Smoothstep keeps the real page's scroll-triggered animation feeling natural.
       return t * t * (3 - 2 * t);
+    };
+
+    const getHalfPageTarget = () => {
+      const maxScroll = Math.max(
+        0,
+        doc.documentElement.scrollHeight - win.innerHeight,
+        doc.body ? doc.body.scrollHeight - win.innerHeight : 0,
+      );
+      return maxScroll * 0.5;
     };
 
     const tick = (now: number) => {
@@ -69,28 +77,19 @@ export function AnimatedDemoPreview({ name, image, href, isCenter }: AnimatedDem
 
       const elapsed = now - startedAt;
       const scrollingFor = elapsed - holdAtTop;
-      const maxScroll = Math.max(
-        0,
-        doc.documentElement.scrollHeight - win.innerHeight,
-        doc.body ? doc.body.scrollHeight - win.innerHeight : 0,
-      );
+      const targetScroll = getHalfPageTarget();
 
       if (elapsed <= holdAtTop) {
         win.scrollTo(0, 0);
       } else if (scrollingFor < scrollDuration) {
         const progress = Math.min(1, Math.max(0, scrollingFor / scrollDuration));
-        win.scrollTo(0, maxScroll * ease(progress));
+        win.scrollTo(0, targetScroll * ease(progress));
       } else {
-        // Recalculate at the end in case lazy-loaded content increased height.
-        const finalMax = Math.max(
-          0,
-          doc.documentElement.scrollHeight - win.innerHeight,
-          doc.body ? doc.body.scrollHeight - win.innerHeight : 0,
-        );
-        win.scrollTo(0, finalMax);
+        // Recalculate the halfway point in case lazy-loaded content changed the page height.
+        win.scrollTo(0, getHalfPageTarget());
       }
 
-      if (elapsed < holdAtTop + scrollDuration + holdAtBottom) {
+      if (elapsed < holdAtTop + scrollDuration + holdAtEnd) {
         rafRef.current = requestAnimationFrame(tick);
       }
     };
