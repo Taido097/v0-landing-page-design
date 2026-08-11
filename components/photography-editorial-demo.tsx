@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 type HeroImage = {
   src: string;
@@ -58,35 +58,82 @@ function mix(from: number, to: number, progress: number) {
 
 export function PhotographyEditorialDemo() {
   const heroRef = useRef<HTMLElement | null>(null);
-  const [heroProgress, setHeroProgress] = useState(0);
+  const titleGroupRef = useRef<HTMLDivElement | null>(null);
+  const portraitRef = useRef<HTMLElement | null>(null);
+  const gridLayerRef = useRef<HTMLDivElement | null>(null);
+  const heroCardRefs = useRef<(HTMLElement | null)[]>([]);
 
   useEffect(() => {
     let raf = 0;
+    let targetProgress = 0;
+    let currentProgress = 0;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    const update = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const hero = heroRef.current;
-        if (!hero) return;
-        const rect = hero.getBoundingClientRect();
-        const travel = Math.max(1, hero.offsetHeight - window.innerHeight);
-        setHeroProgress(clamp(-rect.top / travel));
+    const measure = () => {
+      const hero = heroRef.current;
+      if (!hero) return;
+      const rect = hero.getBoundingClientRect();
+      const travel = Math.max(1, hero.offsetHeight - window.innerHeight);
+      targetProgress = clamp(-rect.top / travel);
+    };
+
+    const apply = (heroProgress: number) => {
+      const titleExit = clamp((heroProgress - .08) / .2);
+      const gridFadeOut = 1 - clamp((heroProgress - .86) / .12);
+
+      if (titleGroupRef.current) {
+        titleGroupRef.current.style.opacity = String(1 - titleExit);
+        titleGroupRef.current.style.transform = `translate(-50%, -50%) scale(${mix(1, .7, titleExit)})`;
+      }
+
+      if (portraitRef.current) {
+        portraitRef.current.style.transform = `translate(-50%, -48%) rotate(${mix(0, -7, titleExit)}deg)`;
+      }
+
+      if (gridLayerRef.current) {
+        gridLayerRef.current.style.opacity = String(gridFadeOut);
+      }
+
+      heroImages.forEach((item, index) => {
+        const node = heroCardRefs.current[index];
+        if (!node) return;
+
+        const threshold = item.group === 1 ? .16 : item.group === 2 ? .30 : item.group === 3 ? .45 : .58;
+        const p = clamp((heroProgress - threshold) / .18);
+        const rotate = mix(item.rotate, item.finalRotate, p);
+        const rotateX = mix(item.rotateX, 0, p);
+        const rotateY = mix(item.rotateY, 0, p);
+        const x = mix(item.x, 0, p);
+        const y = mix(item.y, 0, p);
+        const scale = mix(item.scale, 1, p);
+
+        node.style.opacity = String(p);
+        node.style.transform = `translate3d(${x}px, ${y}px, 0) rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotate(${rotate}deg) scale3d(${scale}, ${scale}, 1)`;
       });
     };
 
-    update();
-    window.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update);
+    const tick = () => {
+      const smoothing = reducedMotion ? 1 : .11;
+      currentProgress += (targetProgress - currentProgress) * smoothing;
+      if (Math.abs(targetProgress - currentProgress) < .00008) currentProgress = targetProgress;
+      apply(currentProgress);
+      raf = requestAnimationFrame(tick);
+    };
+
+    measure();
+    currentProgress = targetProgress;
+    apply(currentProgress);
+    raf = requestAnimationFrame(tick);
+
+    window.addEventListener('scroll', measure, { passive: true });
+    window.addEventListener('resize', measure);
 
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener('scroll', update);
-      window.removeEventListener('resize', update);
+      window.removeEventListener('scroll', measure);
+      window.removeEventListener('resize', measure);
     };
   }, []);
-
-  const titleExit = clamp((heroProgress - .08) / .2);
-  const gridFadeOut = 1 - clamp((heroProgress - .86) / .12);
 
   return (
     <main className="lm-page bg-black text-white selection:bg-white selection:text-black">
@@ -122,15 +169,41 @@ export function PhotographyEditorialDemo() {
         }
         .lm-nav-link:hover::after { right: 0; }
 
+        .lm-title-group,
+        .lm-portrait,
+        .lm-grid-layer,
+        .lm-hero-card {
+          will-change: transform, opacity;
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
+        }
+
+        .lm-title-group {
+          animation: lmHeroEnter 1.05s cubic-bezier(.22,1,.36,1) both;
+        }
+
+        @keyframes lmHeroEnter {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
         .lm-hero-grid {
-          width: min(92vw, 1420px);
+          width: 1480px;
+          height: 568px;
           display: grid;
-          grid-template-columns: repeat(6, minmax(0, 1fr));
+          grid-template-columns: repeat(6, 180px);
+          grid-auto-rows: 180px;
+          justify-content: center;
+          align-content: center;
           gap: 54px 68px;
           perspective: 800px;
           transform-style: preserve-3d;
         }
-        .lm-hero-card { aspect-ratio: 1 / 1; transform-style: preserve-3d; }
+        .lm-hero-card {
+          aspect-ratio: 1 / 1;
+          transform-style: preserve-3d;
+          contain: layout paint style;
+        }
         .lm-hero-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
         .lm-reveal {
@@ -178,21 +251,26 @@ export function PhotographyEditorialDemo() {
           display: flex;
           width: max-content;
           animation: lmTicker 26s linear infinite;
+          will-change: transform;
         }
-        @keyframes lmTicker { to { transform: translateX(-50%); } }
+        @keyframes lmTicker { to { transform: translate3d(-50%, 0, 0); } }
 
-        @media (max-width: 1199px) {
+        @media (min-width: 810px) and (max-width: 1199px) {
           .lm-hero-grid {
-            width: min(92vw, 870px);
-            grid-template-columns: repeat(4, minmax(0,1fr));
+            width: 869px;
+            height: auto;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-auto-rows: auto;
             gap: 32px;
           }
         }
 
         @media (max-width: 809px) {
           .lm-hero-grid {
-            width: min(92vw, 560px);
-            grid-template-columns: repeat(3, minmax(0,1fr));
+            width: 229px;
+            height: auto;
+            grid-template-columns: repeat(3, minmax(24px, 1fr));
+            grid-auto-rows: auto;
             gap: 18px;
           }
           .lm-desktop-nav { display: none !important; }
@@ -200,7 +278,9 @@ export function PhotographyEditorialDemo() {
 
         @media (prefers-reduced-motion: reduce) {
           html { scroll-behavior: auto; }
-          .lm-ticker-track, .lm-reveal { animation: none !important; }
+          .lm-title-group,
+          .lm-ticker-track,
+          .lm-reveal { animation: none !important; }
           .lm-reveal { opacity: 1; transform: none; }
         }
       `}</style>
@@ -225,21 +305,18 @@ export function PhotographyEditorialDemo() {
       <section ref={heroRef} className="relative h-[3791px] bg-black">
         <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden bg-black px-4 py-6">
           <div
-            className="absolute left-1/2 top-1/2 z-30 flex w-full -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-6 px-5"
-            style={{
-              opacity: 1 - titleExit,
-              transform: `translate(-50%, -50%) scale(${mix(1, .7, titleExit)})`,
-            }}
+            ref={titleGroupRef}
+            className="lm-title-group absolute left-1/2 top-1/2 z-30 flex w-full flex-col items-center gap-6 px-5"
           >
             <div className="relative flex w-full max-w-[1500px] items-center justify-center">
               <figure
-                className="absolute left-[49.25%] top-1/2 z-0 h-[315px] w-[271px] -translate-x-1/2 -translate-y-[48%] overflow-hidden"
-                style={{ transform: `translate(-50%, -48%) rotate(${mix(0, -7, titleExit)}deg)` }}
+                ref={portraitRef}
+                className="lm-portrait absolute left-[49.25%] top-1/2 z-0 h-[315px] w-[271px] overflow-hidden"
               >
                 <img src={portrait} alt="" className="h-full w-full object-cover" />
               </figure>
 
-              <h1 className="lm-serif relative z-10 w-full whitespace-nowrap text-center text-[clamp(6rem,20.9vw,18.8rem)] font-normal leading-[.9] tracking-[-.04em] mix-blend-difference">
+              <h1 className="lm-serif relative z-10 w-full whitespace-nowrap text-center text-[clamp(6rem,25.05vw,18.8rem)] font-normal leading-[.9] tracking-[-.04em] mix-blend-difference">
                 Luca Mori
               </h1>
             </div>
@@ -250,33 +327,17 @@ export function PhotographyEditorialDemo() {
             </div>
           </div>
 
-          <div className="absolute inset-0 z-20 flex items-center justify-center" style={{ opacity: gridFadeOut }}>
+          <div ref={gridLayerRef} className="lm-grid-layer absolute inset-0 z-20 flex items-center justify-center">
             <div className="lm-hero-grid">
-              {heroImages.map((item, index) => {
-                const threshold = item.group === 1 ? .16 : item.group === 2 ? .30 : item.group === 3 ? .45 : .58;
-                const p = clamp((heroProgress - threshold) / .18);
-                const opacity = p;
-                const rotate = mix(item.rotate, item.finalRotate, p);
-                const rotateX = mix(item.rotateX, 0, p);
-                const rotateY = mix(item.rotateY, 0, p);
-                const x = mix(item.x, 0, p);
-                const y = mix(item.y, 0, p);
-                const scale = mix(item.scale, 1, p);
-
-                return (
-                  <figure
-                    key={item.src}
-                    className="lm-hero-card overflow-hidden"
-                    style={{
-                      opacity,
-                      transform: `translate3d(${x}px, ${y}px, 0) rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotate(${rotate}deg) scale(${scale})`,
-                      transition: 'transform 80ms linear, opacity 80ms linear',
-                    }}
-                  >
-                    <img src={item.src} alt={`Luca Mori portfolio image ${index + 1}`} />
-                  </figure>
-                );
-              })}
+              {heroImages.map((item, index) => (
+                <figure
+                  key={item.src}
+                  ref={(node) => { heroCardRefs.current[index] = node; }}
+                  className="lm-hero-card overflow-hidden opacity-0"
+                >
+                  <img src={item.src} alt={`Luca Mori portfolio image ${index + 1}`} draggable={false} />
+                </figure>
+              ))}
             </div>
           </div>
         </div>
@@ -412,46 +473,69 @@ function SmallLabel({ children }: { children: string }) {
 
 function RevealText({ text }: { text: string }) {
   const ref = useRef<HTMLParagraphElement | null>(null);
-  const [progress, setProgress] = useState(0);
+  const spanRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   useEffect(() => {
     let raf = 0;
-    const update = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const node = ref.current;
-        if (!node) return;
-        const rect = node.getBoundingClientRect();
-        const start = window.innerHeight * .75;
-        const end = window.innerHeight * .15;
-        setProgress(clamp((start - rect.top) / Math.max(1, start - end)));
+    let targetProgress = 0;
+    let currentProgress = 0;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const measure = () => {
+      const node = ref.current;
+      if (!node) return;
+      const rect = node.getBoundingClientRect();
+      const start = window.innerHeight * .75;
+      const end = window.innerHeight * .15;
+      targetProgress = clamp((start - rect.top) / Math.max(1, start - end));
+    };
+
+    const apply = (progress: number) => {
+      spanRefs.current.forEach((span, index) => {
+        if (!span) return;
+        const threshold = index / Math.max(1, text.length - 1);
+        const local = clamp((progress - threshold) * 7);
+        const tone = Math.round(mix(102, 255, local));
+        span.style.color = `rgb(${tone},${tone},${tone})`;
       });
     };
 
-    update();
-    window.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update);
+    const tick = () => {
+      const smoothing = reducedMotion ? 1 : .13;
+      currentProgress += (targetProgress - currentProgress) * smoothing;
+      if (Math.abs(targetProgress - currentProgress) < .00008) currentProgress = targetProgress;
+      apply(currentProgress);
+      raf = requestAnimationFrame(tick);
+    };
+
+    measure();
+    currentProgress = targetProgress;
+    apply(currentProgress);
+    raf = requestAnimationFrame(tick);
+
+    window.addEventListener('scroll', measure, { passive: true });
+    window.addEventListener('resize', measure);
+
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener('scroll', update);
-      window.removeEventListener('resize', update);
+      window.removeEventListener('scroll', measure);
+      window.removeEventListener('resize', measure);
     };
-  }, []);
+  }, [text]);
 
   const chars = text.split('');
 
   return (
     <p ref={ref} className="lm-serif flex flex-wrap justify-center text-[clamp(2rem,4.4vw,3.3rem)] font-medium leading-[1.075] tracking-[-.029em]">
-      {chars.map((char, index) => {
-        const threshold = index / Math.max(1, chars.length - 1);
-        const local = clamp((progress - threshold) * 7);
-        const tone = Math.round(mix(102, 255, local));
-        return (
-          <span key={`${char}-${index}`} style={{ color: `rgb(${tone},${tone},${tone})` }}>
-            {char === ' ' ? '\u00A0' : char}
-          </span>
-        );
-      })}
+      {chars.map((char, index) => (
+        <span
+          key={`${char}-${index}`}
+          ref={(node) => { spanRefs.current[index] = node; }}
+          style={{ color: 'rgb(102,102,102)' }}
+        >
+          {char === ' ' ? '\u00A0' : char}
+        </span>
+      ))}
     </p>
   );
 }
