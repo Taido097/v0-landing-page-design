@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { InteractiveBusinessDemo } from '@/components/interactive-business-demo';
+import { PhotographyEditorialDemo } from '@/components/photography-editorial-demo';
 import { RestaurantQitchenDemo } from '@/components/restaurant-qitchen-demo';
 import { SalonSpaDemo } from '@/components/salon-spa-demo';
 
@@ -23,6 +24,10 @@ export default async function ProjectPage({
 
   if (!slugs.includes(slug)) {
     notFound();
+  }
+
+  if (slug === 'photography-studio') {
+    return <PhotographyEditorialDemo />;
   }
 
   if (slug === 'salon-spa') {
