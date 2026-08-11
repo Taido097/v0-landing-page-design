@@ -168,6 +168,79 @@ a.inline-flex[class*='rounded-full'][href='#samples'] {
   text-transform: uppercase;
 }
 
+/* Cinematic Qitchen motion: image-based movement that feels like video. */
+@keyframes qitchenCinematicHero {
+  0% {
+    transform: scale(1.045) translate3d(0, 0, 0);
+  }
+  33% {
+    transform: scale(1.085) translate3d(-1.25%, -0.7%, 0);
+  }
+  66% {
+    transform: scale(1.07) translate3d(1%, -1.1%, 0);
+  }
+  100% {
+    transform: scale(1.045) translate3d(0, 0, 0);
+  }
+}
+
+@keyframes qitchenCardPan {
+  0% {
+    object-position: 48% 46%;
+  }
+  50% {
+    object-position: 53% 52%;
+  }
+  100% {
+    object-position: 49% 48%;
+  }
+}
+
+@keyframes qitchenViewCinematicIn {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0) scale(0.992);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.qitchen-hero-img {
+  animation: qitchenCinematicHero 18s ease-in-out infinite !important;
+  backface-visibility: hidden;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.qitchen-card > img {
+  animation: qitchenCardPan 13s ease-in-out infinite !important;
+  will-change: object-position, transform, opacity;
+}
+
+.qitchen-card:nth-child(2) > img {
+  animation-delay: -4s !important;
+  animation-duration: 15s !important;
+}
+
+.qitchen-card:nth-child(3) > img {
+  animation-delay: -8s !important;
+  animation-duration: 17s !important;
+}
+
+.qitchen-view {
+  animation: qitchenViewCinematicIn 850ms cubic-bezier(.22, 1, .36, 1) both !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qitchen-hero-img,
+  .qitchen-card > img,
+  .qitchen-view {
+    animation: none !important;
+  }
+}
+
 /* Animations */
 @layer utilities {
   /* Fade in animation */
