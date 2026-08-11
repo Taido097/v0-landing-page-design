@@ -189,14 +189,17 @@ export function HeroSection() {
           </p>
 
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <Button asChild size="lg" className="group rounded-lg bg-white px-8 py-6 text-base font-medium text-black hover:bg-white/90">
-              <Link href="/contact" className="flex items-center gap-2">
+            <Button asChild size="lg" className="group rounded-none bg-white px-8 py-6 text-xs font-semibold tracking-[0.09em] text-black hover:bg-white/88">
+              <Link href="/contact" className="flex items-center gap-3">
                 Start Your Project
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="rounded-lg border-white/35 bg-black/20 px-8 py-6 text-base font-medium text-white backdrop-blur-md hover:bg-white hover:text-black">
-              <Link href="/#portfolio">Explore the Work</Link>
+            <Button asChild size="lg" variant="outline" className="group rounded-none border-white/55 bg-black/20 px-8 py-6 text-xs font-semibold tracking-[0.09em] text-white backdrop-blur-md hover:bg-white hover:text-black">
+              <Link href="/#portfolio" className="flex items-center gap-3">
+                Explore the Work
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
             </Button>
           </div>
         </div>
@@ -374,7 +377,7 @@ function WebsiteCard({ project, position }: { project: Project; position: 'cente
 
         {isCenter && (
           <div
-            className={`mt-5 inline-flex items-center gap-2 rounded-md px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.06em] shadow-sm sm:text-xs ${project.accent}`}
+            className={`mt-5 inline-flex items-center gap-2 rounded-none px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.09em] shadow-sm sm:text-xs ${project.accent}`}
           >
             View project
             <ExternalLink className="h-3.5 w-3.5" />
@@ -395,7 +398,7 @@ function WebsiteCard({ project, position }: { project: Project; position: 'cente
       )}
 
       {!isCenter && (
-        <div className="absolute bottom-4 right-4 z-10 rounded-full border border-white/50 bg-white/88 px-3 py-1.5 text-[8px] font-semibold uppercase tracking-[0.1em] text-black/70 backdrop-blur-md sm:bottom-5 sm:right-5">
+        <div className="absolute bottom-4 right-4 z-10 rounded-none border border-white/50 bg-white/88 px-3 py-1.5 text-[8px] font-semibold uppercase tracking-[0.09em] text-black/70 backdrop-blur-md sm:bottom-5 sm:right-5">
           Bring to center
         </div>
       )}
