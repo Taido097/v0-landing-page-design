@@ -130,7 +130,7 @@ export function HeroSection() {
           position: absolute;
           inset: -35% auto -35% -25%;
           width: 27%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,.28), transparent);
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent);
           animation: showcaseShine 5.8s ease-in-out infinite;
           pointer-events: none;
         }
@@ -259,51 +259,63 @@ function WebsiteCard({ project, position }: { project: Project; position: 'cente
 
   return (
     <div
-      className={`showcase-shine relative overflow-hidden border border-white/15 bg-[#141414] shadow-[0_35px_100px_rgba(0,0,0,.55)] ${
-        isCenter ? 'rounded-[1.25rem]' : 'rounded-[1rem]'
+      className={`showcase-shine relative overflow-hidden border border-white/15 bg-[#111] shadow-[0_35px_100px_rgba(0,0,0,.55)] ${
+        isCenter ? 'h-[300px] rounded-[1.35rem] sm:h-[350px] lg:h-[400px]' : 'h-[225px] rounded-[1.1rem] sm:h-[270px] lg:h-[310px]'
       }`}
     >
-      <div className={`flex items-center justify-between border-b border-white/10 bg-[#1c1c1c] ${isCenter ? 'px-4 py-3' : 'px-3 py-2.5'}`}>
-        <div className="flex gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
-        </div>
-        <span className="max-w-[58%] truncate text-[9px] uppercase tracking-[0.2em] text-white/40">
-          {project.name.replaceAll(' ', '').toLowerCase()}.com
+      <Image
+        src={project.image}
+        alt={`${project.name} website design preview`}
+        fill
+        sizes={isCenter ? '(max-width: 1024px) 62vw, 47vw' : '(max-width: 1024px) 46vw, 32vw'}
+        className="object-cover transition-transform duration-700 group-hover:scale-[1.025]"
+      />
+
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,.76)_0%,rgba(0,0,0,.38)_42%,rgba(0,0,0,.08)_72%),linear-gradient(to_bottom,rgba(0,0,0,.42),transparent_34%,rgba(0,0,0,.5))]" />
+
+      <div className={`absolute inset-x-0 top-0 z-10 flex items-center justify-between text-white ${isCenter ? 'px-5 py-4 sm:px-7 sm:py-5' : 'px-4 py-3.5'}`}>
+        <span className={`${isCenter ? 'text-xs sm:text-sm' : 'text-[10px] sm:text-xs'} font-semibold tracking-[0.01em]`}>
+          {project.name}
         </span>
-      </div>
-
-      <div className={`relative overflow-hidden bg-black ${isCenter ? 'h-[235px] sm:h-[285px] lg:h-[335px]' : 'h-[175px] sm:h-[215px] lg:h-[250px]'}`}>
-        <Image
-          src={project.image}
-          alt={`${project.name} website design preview`}
-          fill
-          sizes={isCenter ? '(max-width: 1024px) 62vw, 47vw' : '(max-width: 1024px) 46vw, 32vw'}
-          className="object-cover transition-transform duration-700 group-hover:scale-[1.035]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-black/20" />
-
-        <div className={`absolute inset-x-0 top-0 flex items-center justify-between text-white/75 ${isCenter ? 'p-4 sm:p-5' : 'p-3.5'}`}>
-          <span className="text-[10px] font-semibold tracking-wide sm:text-xs">{project.name}</span>
-          <div className="hidden gap-4 text-[8px] uppercase tracking-[0.18em] sm:flex">
-            <span>Services</span>
-            <span>Gallery</span>
-            <span>Contact</span>
-          </div>
-        </div>
-
-        <div className={`absolute inset-x-0 bottom-0 text-white ${isCenter ? 'p-5 sm:p-6' : 'p-4'}`}>
-          <p className="text-[8px] uppercase tracking-[0.26em] text-white/60 sm:text-[9px]">{project.category}</p>
-          <h2 className={`mt-2 max-w-xl font-light leading-[1.02] ${isCenter ? 'text-2xl sm:text-3xl lg:text-4xl' : 'text-lg sm:text-xl'}`}>
-            {project.headline}
-          </h2>
-          <div className={`mt-4 inline-flex items-center gap-2 px-3.5 py-2 text-[10px] font-medium sm:text-xs ${project.accent} ${isCenter ? 'rounded-full' : 'rounded-lg'}`}>
-            {isCenter ? 'View live demo' : 'Bring to center'}
-            {isCenter && <ExternalLink className="h-3.5 w-3.5" />}
-          </div>
+        <div className={`items-center uppercase tracking-[0.14em] text-white/72 ${isCenter ? 'hidden gap-5 text-[8px] sm:flex lg:text-[9px]' : 'hidden gap-3 text-[7px] md:flex'}`}>
+          <span>Services</span>
+          <span>About</span>
+          <span>Gallery</span>
+          <span>Contact</span>
         </div>
       </div>
+
+      <div className={`absolute z-10 text-white ${isCenter ? 'left-5 top-[31%] max-w-[66%] sm:left-7 sm:top-[29%]' : 'bottom-5 left-4 right-4 sm:bottom-6 sm:left-5'}`}>
+        <p className={`${isCenter ? 'text-[9px] sm:text-[10px]' : 'text-[8px]'} font-semibold uppercase tracking-[0.24em] text-white/58`}>
+          {project.category}
+        </p>
+        <h2 className={`mt-2 font-medium tracking-[-0.035em] ${isCenter ? 'text-2xl leading-[1.02] sm:text-3xl lg:text-[2.5rem]' : 'max-w-[90%] text-lg leading-[1.06] sm:text-xl'}`}>
+          {project.headline}
+        </h2>
+
+        {isCenter && (
+          <div className={`mt-5 inline-flex items-center gap-2 rounded-md px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.08em] sm:text-xs ${project.accent}`}>
+            View project
+            <ExternalLink className="h-3.5 w-3.5" />
+          </div>
+        )}
+      </div>
+
+      {isCenter && (
+        <div className="absolute inset-x-0 bottom-0 z-10 hidden border-t border-white/10 bg-black/72 backdrop-blur-md sm:grid sm:grid-cols-4">
+          {['Custom design', 'Mobile ready', 'Fast & clear', 'Built to convert'].map((item) => (
+            <div key={item} className="border-r border-white/10 px-3 py-3.5 text-center last:border-r-0">
+              <p className="text-[8px] uppercase tracking-[0.14em] text-white/62 lg:text-[9px]">{item}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {!isCenter && (
+        <div className="absolute bottom-4 right-4 z-10 rounded-full border border-white/20 bg-black/35 px-3 py-1.5 text-[8px] font-medium uppercase tracking-[0.12em] text-white/72 backdrop-blur-md sm:bottom-5 sm:right-5">
+          Bring to center
+        </div>
+      )}
     </div>
   );
 }
