@@ -97,8 +97,8 @@ html {
 }
 
 @theme inline {
-  --font-sans: 'Geist', 'Geist Fallback';
-  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -142,7 +142,7 @@ html {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background font-sans text-foreground;
   }
 }
 
@@ -155,6 +155,17 @@ html {
   .glass-dark {
     @apply backdrop-blur-md bg-black/20 border border-white/10;
   }
+}
+
+/* Square-modern CTA treatment. Keeps card/carousel controls untouched. */
+[data-slot='button'],
+a.inline-flex[class*='rounded-full'][href^='/contact'],
+a.inline-flex[class*='rounded-full'][href='#samples'] {
+  border-radius: 0 !important;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
 }
 
 /* Animations */
