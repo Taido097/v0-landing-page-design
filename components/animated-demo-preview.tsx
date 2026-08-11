@@ -14,9 +14,10 @@ type AnimatedDemoPreviewProps = {
 
 const assets = {
   photography: [
-    'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=84',
-    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=700&q=84',
-    'https://images.unsplash.com/photo-1452780212940-6f5c0d14d848?auto=format&fit=crop&w=900&q=84',
+    'https://framerusercontent.com/images/gPkgBcGwatmPdwzMlpToFBHNSs.png?width=912&height=1170',
+    'https://framerusercontent.com/images/yIrZXCStv1OSKgU3LeSDNUk8.png?width=1200&height=1799',
+    'https://framerusercontent.com/images/hy8DPmqfuubnG4z6KVW21Noim3k.png?width=750&height=1125',
+    'https://framerusercontent.com/images/YN7uZ6616b5EToA62ayKCfXDN8.png?width=609&height=768',
   ],
   auto: [
     'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=1000&q=84',
@@ -34,16 +35,17 @@ const assets = {
   ],
 };
 
-export function AnimatedDemoPreview({ variant, name, image, isCenter }: AnimatedDemoPreviewProps) {
+export function AnimatedDemoPreview({ variant, name, isCenter }: AnimatedDemoPreviewProps) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [running, setRunning] = useState(false);
+  const [inView, setInView] = useState(false);
+  const running = isCenter && inView;
 
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
 
     const observer = new IntersectionObserver(
-      ([entry]) => setRunning(entry.isIntersecting && entry.intersectionRatio > 0.35),
+      ([entry]) => setInView(entry.isIntersecting && entry.intersectionRatio > 0.35),
       { threshold: [0, 0.35, 0.7] },
     );
 
@@ -64,47 +66,31 @@ export function AnimatedDemoPreview({ variant, name, image, isCenter }: Animated
       <style>{`
         @keyframes previewPageScroll {
           0%, 12% { transform: translate3d(0, 0, 0); }
-          42%, 58% { transform: translate3d(0, -26%, 0); }
-          88%, 100% { transform: translate3d(0, -51%, 0); }
-        }
-        @keyframes previewFloatOne {
-          0%, 100% { transform: translate3d(-8%, 12%, 0) rotate(-8deg); }
-          50% { transform: translate3d(-2%, -6%, 0) rotate(-2deg); }
-        }
-        @keyframes previewFloatTwo {
-          0%, 100% { transform: translate3d(12%, -5%, 0) rotate(7deg); }
-          50% { transform: translate3d(4%, 12%, 0) rotate(1deg); }
+          43%, 56% { transform: translate3d(0, -27%, 0); }
+          88%, 100% { transform: translate3d(0, -52%, 0); }
         }
         @keyframes previewPhotoZoom {
-          0%, 100% { transform: scale(1.02); }
-          50% { transform: scale(1.1) translate3d(-1.5%, -1%, 0); }
-        }
-        @keyframes qitchenPanelScroll {
-          0%, 17% { transform: translateY(0); }
-          42%, 58% { transform: translateY(-33.333%); }
-          83%, 100% { transform: translateY(-66.666%); }
+          0% { transform: scale(1.02); }
+          100% { transform: scale(1.09) translate3d(-1.25%, -1%, 0); }
         }
         .demo-preview .auto-timeline,
-        .demo-preview .preview-float-one,
-        .demo-preview .preview-float-two,
-        .demo-preview .preview-photo-zoom,
-        .demo-preview .qitchen-panel-timeline {
+        .demo-preview .preview-photo-zoom {
           animation-play-state: paused !important;
         }
         .demo-preview[data-running='true'] .auto-timeline,
-        .demo-preview[data-running='true'] .preview-float-one,
-        .demo-preview[data-running='true'] .preview-float-two,
-        .demo-preview[data-running='true'] .preview-photo-zoom,
-        .demo-preview[data-running='true'] .qitchen-panel-timeline {
+        .demo-preview[data-running='true'] .preview-photo-zoom {
           animation-play-state: running !important;
         }
-        .auto-timeline { animation: previewPageScroll 9.5s cubic-bezier(.65,0,.35,1) infinite; }
-        .preview-float-one { animation: previewFloatOne 5.8s ease-in-out infinite; }
-        .preview-float-two { animation: previewFloatTwo 6.6s ease-in-out infinite; }
-        .preview-photo-zoom { animation: previewPhotoZoom 8s ease-in-out infinite; }
-        .qitchen-panel-timeline { animation: qitchenPanelScroll 8.8s cubic-bezier(.65,0,.35,1) infinite; }
+        .auto-timeline {
+          animation: previewPageScroll 6.8s cubic-bezier(.65,0,.35,1) both;
+          will-change: transform;
+        }
+        .preview-photo-zoom {
+          animation: previewPhotoZoom 6.8s cubic-bezier(.22,1,.36,1) both;
+          will-change: transform;
+        }
         @media (prefers-reduced-motion: reduce) {
-          .auto-timeline,.preview-float-one,.preview-float-two,.preview-photo-zoom,.qitchen-panel-timeline { animation: none !important; }
+          .auto-timeline,.preview-photo-zoom { animation: none !important; }
         }
       `}</style>
 
@@ -123,23 +109,36 @@ export function AnimatedDemoPreview({ variant, name, image, isCenter }: Animated
 
 function PhotographyPreview({ isCenter }: { isCenter: boolean }) {
   return (
-    <div className="relative h-full overflow-hidden bg-[#050505] text-white">
-      <div className="absolute inset-0 grid place-items-center">
-        <div className="select-none text-center text-[clamp(2.1rem,5vw,4.8rem)] font-semibold uppercase leading-[.72] tracking-[-.08em] text-[#eeeae2]">
-          Luna
-          <span className="block font-light">Frame</span>
-        </div>
+    <div className="h-full overflow-hidden bg-black text-white">
+      <div className="auto-timeline min-h-[205%] bg-black">
+        <section className="relative flex min-h-[300px] items-center justify-center overflow-hidden bg-black px-4">
+          <figure className="absolute left-1/2 top-[48%] z-0 h-[46%] w-[24%] -translate-x-1/2 -translate-y-1/2 overflow-hidden">
+            <img src={assets.photography[0]} alt="" className="preview-photo-zoom h-full w-full object-cover" />
+          </figure>
+          <h3 className={`relative z-10 whitespace-nowrap font-serif font-normal leading-[.82] tracking-[-.07em] mix-blend-difference ${isCenter ? 'text-[clamp(4.1rem,10vw,7.8rem)]' : 'text-[3.2rem]'}`}>
+            Luca Mori
+          </h3>
+          <div className="absolute inset-x-0 bottom-7 flex justify-center text-[7px] text-white/65">Photographer — Amsterdam</div>
+        </section>
+
+        <section className="min-h-[300px] bg-black px-4 py-6">
+          <div className="mb-4 flex items-center justify-between text-[7px] text-white/45"><span>Selected frames</span><span>01—03</span></div>
+          <div className="grid grid-cols-3 gap-3">
+            {assets.photography.slice(1).map((src, index) => (
+              <figure key={src} className="overflow-hidden" style={{ transform: `rotate(${[-3, 2, -2][index]}deg)` }}>
+                <img src={src} alt="" className="aspect-[4/5] w-full object-cover" />
+              </figure>
+            ))}
+          </div>
+        </section>
+
+        <section className="flex min-h-[250px] items-center justify-center bg-black px-8 text-center">
+          <div>
+            <p className="text-[7px] text-white/40">• Intro</p>
+            <p className="mt-5 font-serif text-[28px] leading-[.95] tracking-[-.04em] text-white/85">I photograph the moment before the moment.</p>
+          </div>
+        </section>
       </div>
-      <div className="preview-float-one absolute left-[8%] top-[12%] z-10 w-[34%] overflow-hidden border border-white/10 shadow-2xl" style={{ aspectRatio: '4/5' }}>
-        <img src={assets.photography[0]} alt="" className="h-full w-full object-cover" />
-      </div>
-      <div className="preview-float-two absolute right-[8%] top-[14%] z-20 w-[28%] overflow-hidden border border-white/10 shadow-2xl" style={{ aspectRatio: '3/4' }}>
-        <img src={assets.photography[1]} alt="" className="h-full w-full object-cover" />
-      </div>
-      <div className="preview-float-one absolute bottom-[10%] left-[38%] z-30 w-[29%] overflow-hidden border border-white/10 shadow-2xl [animation-delay:-2.5s]" style={{ aspectRatio: '4/5' }}>
-        <img src={assets.photography[2]} alt="" className="h-full w-full object-cover" />
-      </div>
-      {isCenter && <div className="absolute left-5 top-4 z-30 text-[7px] font-semibold uppercase tracking-[.24em] text-white/48 sm:left-7">Editorial photography</div>}
     </div>
   );
 }
@@ -201,32 +200,36 @@ function SalonPreview({ isCenter }: { isCenter: boolean }) {
 }
 
 function RestaurantPreview({ isCenter }: { isCenter: boolean }) {
-  const panels = [
-    { image: assets.restaurant[1], label: 'Menu' },
-    { image: assets.restaurant[2], label: 'Reservation' },
-    { image: assets.restaurant[3], label: 'Our Restaurant' },
-  ];
-
   return (
-    <div className="grid h-full grid-cols-[1.6fr_.8fr] gap-1 bg-[#090909] p-1 text-white">
-      <div className="relative overflow-hidden bg-black">
-        <img src={assets.restaurant[0]} alt="" className="preview-photo-zoom absolute inset-0 h-full w-full object-cover opacity-88" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/68 via-transparent to-black/15" />
-        <div className="absolute inset-x-0 bottom-[12%] p-4 sm:p-6">
-          <p className="text-[6px] uppercase tracking-[.24em] text-white/55">Qitchen presents</p>
-          <p className={`${isCenter ? 'text-3xl sm:text-5xl' : 'text-xl'} mt-2 font-medium uppercase leading-[.78] tracking-[-.06em]`}>Sushi<br /><span className="font-light">Sensation</span></p>
-        </div>
-      </div>
-      <div className="overflow-hidden">
-        <div className="qitchen-panel-timeline h-[300%]">
-          {panels.map((panel) => (
-            <div key={panel.label} className="relative h-1/3 overflow-hidden border-b border-black">
-              <img src={panel.image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-62" />
+    <div className="h-full overflow-hidden bg-[#090909] text-white">
+      <div className="auto-timeline min-h-[205%] bg-[#090909]">
+        <section className="relative min-h-[290px] overflow-hidden bg-black">
+          <img src={assets.restaurant[0]} alt="" className="preview-photo-zoom absolute inset-0 h-full w-full object-cover opacity-88" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-black/20" />
+          <div className="absolute inset-x-0 bottom-[12%] p-5 sm:p-7">
+            <p className="text-[6px] uppercase tracking-[.24em] text-white/55">Qitchen presents</p>
+            <p className={`${isCenter ? 'text-4xl sm:text-6xl' : 'text-2xl'} mt-2 font-medium uppercase leading-[.78] tracking-[-.06em]`}>Sushi<br /><span className="font-light">Sensation</span></p>
+          </div>
+        </section>
+
+        <section className="grid min-h-[270px] grid-cols-3 gap-1 bg-[#090909] p-1">
+          {[
+            { image: assets.restaurant[1], label: 'Menu' },
+            { image: assets.restaurant[2], label: 'Reservation' },
+            { image: assets.restaurant[3], label: 'Restaurant' },
+          ].map((panel) => (
+            <div key={panel.label} className="relative overflow-hidden">
+              <img src={panel.image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-68" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/5" />
-              <div className="absolute inset-x-0 bottom-0 p-3 text-[8px] font-medium uppercase tracking-[.08em] sm:text-[10px]">{panel.label}</div>
+              <div className="absolute inset-x-0 bottom-0 p-3 text-[8px] font-medium uppercase tracking-[.08em]">{panel.label}</div>
             </div>
           ))}
-        </div>
+        </section>
+
+        <section className="min-h-[250px] bg-[#111] p-7">
+          <p className="text-[7px] uppercase tracking-[.22em] text-white/40">The experience</p>
+          <p className="mt-5 max-w-sm font-serif text-3xl leading-[.95] tracking-[-.04em]">Precision, texture, season — served one piece at a time.</p>
+        </section>
       </div>
     </div>
   );
