@@ -1,194 +1,259 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Instagram } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
 
-const photos = [
-  'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1600&q=88',
-  'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1600&q=88',
-  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1400&q=88',
-  'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1400&q=88',
-  'https://images.unsplash.com/photo-1452780212940-6f5c0d14d848?auto=format&fit=crop&w=1600&q=88',
-  'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=1600&q=88',
-  'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1600&q=88',
+const projectImages = [
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=900&q=88',
+  'https://images.unsplash.com/photo-1521119989659-a83eee488004?auto=format&fit=crop&w=900&q=88',
+  'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=900&q=88',
+  'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=88',
+  'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=88',
+  'https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?auto=format&fit=crop&w=900&q=88',
+  'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=88',
+  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=88',
+  'https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?auto=format&fit=crop&w=900&q=88',
+  'https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=900&q=88',
+  'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=900&q=88',
+  'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=900&q=88',
 ];
 
-function clamp(value: number, min = 0, max = 1) {
-  return Math.min(max, Math.max(min, value));
-}
+const rotations = [
+  '-rotate-[2deg]',
+  'rotate-[1deg]',
+  '-rotate-[1deg]',
+  'rotate-[2deg]',
+  '-rotate-[1.5deg]',
+  'rotate-[1deg]',
+  'rotate-[1.5deg]',
+  '-rotate-[2deg]',
+  'rotate-[1deg]',
+  '-rotate-[1deg]',
+  'rotate-[2deg]',
+  '-rotate-[1.5deg]',
+];
+
+const portrait =
+  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1000&q=88';
+const workOne =
+  'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=90';
+const workTwo =
+  'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1800&q=90';
 
 export function PhotographyEditorialDemo() {
-  const heroRef = useRef<HTMLElement | null>(null);
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    let frame = 0;
-
-    const update = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        const section = heroRef.current;
-        if (!section) return;
-        const rect = section.getBoundingClientRect();
-        const travel = Math.max(1, section.offsetHeight - window.innerHeight);
-        setProgress(clamp(-rect.top / travel));
-      });
-    };
-
-    update();
-    window.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update);
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener('scroll', update);
-      window.removeEventListener('resize', update);
-    };
-  }, []);
-
-  const titleOpacity = 1 - clamp((progress - 0.28) / 0.42);
-  const settle = clamp(progress / 0.72);
-  const galleryReveal = clamp((progress - 0.38) / 0.5);
-
-  const cards = [
-    { src: photos[0], startX: -38, startY: 18, endX: -31, endY: -14, startR: -11, endR: -2, w: 25 },
-    { src: photos[1], startX: -15, startY: -27, endX: -11, endY: -20, startR: 8, endR: 1, w: 20 },
-    { src: photos[2], startX: 19, startY: -22, endX: 15, endY: -12, startR: -7, endR: 2, w: 18 },
-    { src: photos[3], startX: 35, startY: 15, endX: 32, endY: 6, startR: 12, endR: 3, w: 22 },
-    { src: photos[4], startX: -10, startY: 32, endX: -7, endY: 25, startR: 5, endR: -1, w: 23 },
-  ];
-
   return (
-    <main className="bg-[#050505] text-white selection:bg-white selection:text-black">
-      <header className="fixed inset-x-0 top-0 z-[80] border-b border-white/10 bg-black/55 backdrop-blur-xl">
-        <div className="mx-auto flex h-[70px] max-w-[1600px] items-center justify-between px-4 sm:px-7 lg:px-10">
-          <Link href="/#portfolio" className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[.18em] text-white/60 transition hover:text-white">
-            <ArrowLeft className="h-4 w-4" /> Portfolio
-          </Link>
-          <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="text-sm font-semibold uppercase tracking-[.34em]">
+    <main className="lm-page min-h-screen overflow-x-hidden bg-[#050505] text-[#f0eee8] selection:bg-[#f0eee8] selection:text-black">
+      <style>{`
+        .lm-page {
+          --paper: #f0eee8;
+          --dim: rgba(240, 238, 232, .42);
+          --serif: 'Times New Roman', Times, Georgia, serif;
+        }
+
+        .lm-serif { font-family: var(--serif); }
+
+        @keyframes lmHeroFade {
+          from { opacity: 1; transform: scale(1); }
+          to { opacity: .2; transform: scale(.965); }
+        }
+
+        @keyframes lmCardEnter {
+          from { opacity: 0; transform: translate3d(0, 70px, 0) rotate(0deg) scale(.93); }
+          to { opacity: 1; transform: translate3d(0, 0, 0) rotate(var(--card-r, 0deg)) scale(1); }
+        }
+
+        @keyframes lmTextEnter {
+          from { opacity: 0; transform: translate3d(0, 44px, 0); }
+          to { opacity: 1; transform: translate3d(0, 0, 0); }
+        }
+
+        @keyframes lmImageReveal {
+          from { opacity: .1; transform: scale(1.1); }
+          to { opacity: 1; transform: scale(1); }
+        }
+
+        @supports (animation-timeline: view()) {
+          .lm-hero-content {
+            animation: lmHeroFade linear both;
+            animation-timeline: view();
+            animation-range: exit 0% exit 95%;
+          }
+
+          .lm-project-card {
+            animation: lmCardEnter linear both;
+            animation-timeline: view();
+            animation-range: entry 5% cover 33%;
+          }
+
+          .lm-reveal-text {
+            animation: lmTextEnter linear both;
+            animation-timeline: view();
+            animation-range: entry 0% cover 36%;
+          }
+
+          .lm-reveal-image img {
+            animation: lmImageReveal linear both;
+            animation-timeline: view();
+            animation-range: entry 0% cover 45%;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .lm-hero-content,
+          .lm-project-card,
+          .lm-reveal-text,
+          .lm-reveal-image img {
+            animation: none !important;
+            transform: none !important;
+            opacity: 1 !important;
+          }
+        }
+      `}</style>
+
+      <header className="fixed inset-x-0 top-0 z-[100] bg-[#050505]/82 backdrop-blur-[3px]">
+        <div className="grid h-10 grid-cols-[1fr_auto_1fr] items-center px-3 text-[7px] font-medium tracking-[-.01em] text-white sm:px-4 lg:grid-cols-[1fr_2fr_1fr]">
+          <Link href="/#portfolio" className="lm-serif text-[13px] leading-none tracking-[-.04em] text-white">
             Luna Frame
-          </button>
-          <Link href="/contact" className="border border-white/25 px-4 py-2 text-[9px] font-semibold uppercase tracking-[.16em] transition hover:bg-white hover:text-black">
-            Book a shoot
           </Link>
+
+          <nav className="hidden items-center justify-around gap-8 sm:flex">
+            <a href="#projects" className="transition hover:text-white/55">Projects</a>
+            <a href="#services" className="transition hover:text-white/55">Services</a>
+            <a href="#about" className="transition hover:text-white/55">About</a>
+            <a href="#contact" className="transition hover:text-white/55">Contact</a>
+          </nav>
+
+          <span className="justify-self-end text-white/28">© 2026</span>
         </div>
       </header>
 
-      <section ref={heroRef} className="relative h-[320vh] bg-[#050505]">
-        <div className="sticky top-0 h-screen overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,.05),transparent_36%)]" />
+      <section className="relative flex min-h-[100svh] items-center overflow-hidden px-4 pt-10 sm:px-7 lg:px-10">
+        <div className="lm-hero-content relative mx-auto flex min-h-[calc(100svh-40px)] w-full max-w-[1800px] items-center justify-center">
+          <h1 className="lm-serif relative z-10 whitespace-nowrap text-center text-[clamp(5.2rem,15.7vw,16rem)] font-normal leading-[.76] tracking-[-.09em] text-[#f3f1eb]">
+            Luna Frame
+          </h1>
 
-          <div
-            className="absolute inset-0 grid place-items-center transition-opacity duration-75"
-            style={{ opacity: titleOpacity }}
-          >
-            <div className="text-center">
-              <p className="mb-4 text-[10px] font-semibold uppercase tracking-[.42em] text-white/42">Editorial photography · Orange County</p>
-              <h1 className="select-none text-[clamp(5rem,16vw,15rem)] font-semibold uppercase leading-[.72] tracking-[-.085em] text-[#efede7]">
-                Luna
-                <span className="block font-light">Frame</span>
-              </h1>
-            </div>
+          <figure className="absolute left-1/2 top-[44%] z-20 w-[clamp(118px,15vw,235px)] -translate-x-[32%] -translate-y-1/2 bg-[#aaa]">
+            <img
+              src={portrait}
+              alt="Luna Frame photographer portrait"
+              className="aspect-[4/5] w-full object-cover grayscale"
+            />
+            <figcaption className="absolute left-1/2 top-[calc(100%+18px)] w-[210px] -translate-x-1/2 text-center text-[7px] leading-[1.7] text-white/82">
+              <span className="block">Photographer — Orange County</span>
+              <span className="block text-white/45">Editorial · Weddings · Commercial</span>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="projects" className="relative min-h-[100svh] scroll-mt-10 px-4 pb-24 pt-28 sm:px-7 lg:px-10">
+        <div className="mx-auto max-w-[1700px]">
+          <div className="mb-10 flex items-center justify-between text-[7px] text-white/46">
+            <span>Projects</span>
+            <span>Selected frames · 01—12</span>
           </div>
 
-          <div className="absolute inset-0 flex items-center justify-center">
-            {cards.map((card, index) => {
-              const x = card.startX + (card.endX - card.startX) * settle;
-              const y = card.startY + (card.endY - card.startY) * settle;
-              const rotation = card.startR + (card.endR - card.startR) * settle;
-              const scale = 0.78 + settle * 0.22;
-              return (
-                <figure
-                  key={`${card.src}-${index}`}
-                  className="absolute overflow-hidden border border-white/10 bg-[#111] shadow-[0_30px_80px_rgba(0,0,0,.55)]"
-                  style={{
-                    width: `${card.w}vw`,
-                    maxWidth: '390px',
-                    minWidth: '150px',
-                    aspectRatio: index % 2 === 0 ? '4 / 5' : '3 / 4',
-                    transform: `translate3d(${x}vw, ${y}vh, 0) rotate(${rotation}deg) scale(${scale})`,
-                    zIndex: 10 + index,
-                    transition: 'transform 80ms linear',
-                  }}
-                >
-                  <img src={card.src} alt="Luna Frame editorial work" className="h-full w-full object-cover" />
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/50 to-transparent p-3 pt-10 text-[8px] uppercase tracking-[.2em] text-white/65">
-                    0{index + 1} / Selected work
-                  </div>
-                </figure>
-              );
-            })}
-          </div>
-
-          <div
-            className="absolute inset-x-0 bottom-8 z-40 flex items-end justify-between px-5 text-[9px] uppercase tracking-[.2em] text-white/42 sm:px-10"
-            style={{ opacity: 1 - galleryReveal * 0.9 }}
-          >
-            <span>Scroll to explore</span>
-            <span>Weddings · Portraits · Brands</span>
-          </div>
-
-          <div
-            className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center"
-            style={{ opacity: galleryReveal }}
-          >
-            <div className="text-center">
-              <p className="text-[10px] uppercase tracking-[.38em] text-white/45">Stories worth keeping</p>
-              <p className="mt-3 text-[clamp(2rem,5vw,4.6rem)] font-light leading-none tracking-[-.05em] text-white/92">Quiet moments.<br />Bold frames.</p>
-            </div>
+          <div className="grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-6 lg:gap-x-7 lg:gap-y-14">
+            {projectImages.map((src, index) => (
+              <figure
+                key={src}
+                className={`lm-project-card group relative ${rotations[index]} transition-transform duration-700 hover:!rotate-0 hover:scale-[1.02]`}
+                style={{ '--card-r': `${[-2,1,-1,2,-1.5,1,1.5,-2,1,-1,2,-1.5][index]}deg` } as React.CSSProperties}
+              >
+                <div className="overflow-hidden bg-[#111]">
+                  <img
+                    src={src}
+                    alt={`Luna Frame selected project ${index + 1}`}
+                    className="aspect-[4/5] w-full object-cover transition duration-[1100ms] ease-out group-hover:scale-[1.045]"
+                  />
+                </div>
+                <figcaption className="mt-2 flex items-center justify-between text-[6px] text-white/36">
+                  <span>0{index + 1}</span>
+                  <span>{index % 3 === 0 ? 'Editorial' : index % 3 === 1 ? 'Portrait' : 'Campaign'}</span>
+                </figcaption>
+              </figure>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="border-t border-white/10 bg-[#0a0a0a] px-4 py-24 sm:px-7 lg:px-10 lg:py-36">
-        <div className="mx-auto max-w-[1500px]">
-          <div className="mb-14 flex flex-col justify-between gap-6 border-b border-white/12 pb-8 md:flex-row md:items-end">
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[.32em] text-white/40">Selected stories · 2026</p>
-              <h2 className="mt-4 text-5xl font-light tracking-[-.06em] sm:text-7xl">The gallery</h2>
-            </div>
-            <p className="max-w-md text-sm leading-7 text-white/45">Wedding, portrait, and brand photography shaped with editorial restraint and a natural sense of movement.</p>
+      <section id="services" className="flex min-h-[100svh] scroll-mt-10 items-center justify-center px-5 py-28">
+        <div className="lm-reveal-text w-full max-w-[760px] text-center">
+          <p className="mb-8 text-[7px] text-white/40">• Intro</p>
+          <p className="lm-serif text-[clamp(2rem,4.1vw,4.5rem)] font-normal leading-[.92] tracking-[-.045em] text-white/48">
+            I photograph the second before the story reveals itself — the tension, the light, the feeling that something is about to happen.
+          </p>
+          <p className="mt-20 text-[7px] text-white/28">• Commissioned by people, brands, and stories worth remembering</p>
+        </div>
+      </section>
+
+      <section className="flex min-h-[78svh] items-center px-4 py-20 sm:px-7 lg:px-10">
+        <div className="lm-reveal-text mx-auto flex w-full max-w-[1700px] items-center justify-between text-[7px] text-white/48">
+          <span>Selected Works</span>
+          <span>• Projects</span>
+        </div>
+      </section>
+
+      <section className="min-h-[100svh] px-2 pb-28 sm:px-3 lg:px-4">
+        <div className="grid gap-3 md:grid-cols-2">
+          <figure className="lm-reveal-image overflow-hidden bg-[#111]">
+            <img src={workOne} alt="Luna Frame landscape project" className="h-[34vh] min-h-[260px] w-full object-cover" />
+          </figure>
+          <figure className="lm-reveal-image overflow-hidden bg-[#111]">
+            <img src={workTwo} alt="Luna Frame fashion project" className="h-[34vh] min-h-[260px] w-full object-cover" />
+          </figure>
+        </div>
+      </section>
+
+      <section id="about" className="flex min-h-[100svh] scroll-mt-10 items-center px-4 py-28 sm:px-7 lg:px-10">
+        <div className="lm-reveal-text mx-auto grid w-full max-w-[1500px] gap-10 lg:grid-cols-12 lg:items-center">
+          <div className="lg:col-span-3 lg:col-start-3">
+            <p className="mb-5 text-[7px] text-white/42">• My story</p>
+            <h2 className="lm-serif text-[clamp(2.2rem,3.8vw,4.3rem)] font-normal leading-[.88] tracking-[-.045em] text-white/82">
+              California-born.<br />Orange County-based.<br />Obsessed with light.
+            </h2>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-12">
-            <GalleryImage src={photos[5]} className="md:col-span-7 md:h-[720px]" label="Wedding story" />
-            <div className="grid gap-3 md:col-span-5">
-              <GalleryImage src={photos[2]} className="h-[350px]" label="Portrait study" />
-              <GalleryImage src={photos[4]} className="h-[350px]" label="Brand editorial" />
-            </div>
+          <figure className="lg:col-span-2">
+            <img src={portrait} alt="Luna Frame portrait" className="aspect-[4/5] w-full max-w-[250px] object-cover grayscale" />
+          </figure>
+
+          <div className="max-w-xl text-[8px] leading-[1.8] text-white/42 lg:col-span-4">
+            <p>
+              I grew up watching small moments turn cinematic when the light was right. I did not know then that I was learning how to see.
+            </p>
+            <p className="mt-5">
+              I have spent years photographing people and brands that understand the difference between a photograph and an image that stays with you. The work lives somewhere between editorial precision and honest observation.
+            </p>
+            <p className="mt-5 text-white/28">Based in Orange County · Available worldwide.</p>
           </div>
         </div>
       </section>
 
-      <section className="bg-[#efede7] px-4 py-24 text-black sm:px-7 lg:px-10 lg:py-32">
-        <div className="mx-auto grid max-w-[1500px] gap-12 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
-          <p className="text-[10px] font-semibold uppercase tracking-[.32em] text-black/45">Available for commissions</p>
-          <div>
-            <h2 className="max-w-4xl text-5xl font-medium leading-[.92] tracking-[-.065em] sm:text-7xl lg:text-8xl">Let the photographs speak before you do.</h2>
-            <Link href="/contact" className="mt-10 inline-flex items-center gap-3 border-b border-black pb-2 text-xs font-semibold uppercase tracking-[.16em]">
-              Start a project <ArrowRight className="h-4 w-4" />
+      <section id="contact" className="relative flex min-h-[100svh] scroll-mt-10 items-center px-4 py-28 sm:px-7 lg:px-10">
+        <div className="lm-reveal-text mx-auto grid w-full max-w-[1500px] lg:grid-cols-12">
+          <div className="lg:col-span-5 lg:col-start-8">
+            <p className="mb-7 text-[7px] text-white/42">• Available for commission</p>
+            <h2 className="lm-serif text-[clamp(3.3rem,6vw,7rem)] font-normal leading-[.84] tracking-[-.055em] text-[#f0eee8]">
+              Let&apos;s make something worth remembering.
+            </h2>
+            <p className="mt-8 text-[7px] uppercase tracking-[.08em] text-white/30">Orange County — Worldwide</p>
+            <Link href="/contact" className="mt-12 inline-block border-b border-white/35 pb-1 text-[8px] text-white/72 transition hover:border-white hover:text-white">
+              Start a project
             </Link>
           </div>
         </div>
+
+        <footer className="absolute inset-x-4 bottom-5 grid grid-cols-1 gap-3 text-[7px] text-white/34 sm:inset-x-7 sm:grid-cols-3 sm:items-end lg:inset-x-10">
+          <span className="lm-serif text-[16px] tracking-[-.04em] text-white/82">Luna Frame</span>
+          <span className="sm:text-center">© 2026 Luna Frame Studio. All rights reserved.</span>
+          <div className="flex gap-4 sm:justify-end">
+            <a href="#about" className="hover:text-white">About</a>
+            <a href="#projects" className="hover:text-white">Projects</a>
+            <a href="#contact" className="hover:text-white">Contact</a>
+          </div>
+        </footer>
       </section>
-
-      <footer className="flex flex-col gap-5 border-t border-white/10 bg-black px-5 py-8 text-[9px] uppercase tracking-[.18em] text-white/40 sm:flex-row sm:items-center sm:justify-between sm:px-10">
-        <span>© Luna Frame Studio</span>
-        <a href="#" className="inline-flex items-center gap-2 hover:text-white"><Instagram className="h-3.5 w-3.5" /> Instagram</a>
-        <Link href="/" className="hover:text-white">Designed by DesignedbyTD Studio</Link>
-      </footer>
     </main>
-  );
-}
-
-function GalleryImage({ src, className, label }: { src: string; className: string; label: string }) {
-  return (
-    <figure className={`group relative overflow-hidden bg-[#151515] ${className}`}>
-      <img src={src} alt={label} className="h-full w-full object-cover transition duration-[1400ms] ease-out group-hover:scale-[1.035]" />
-      <figcaption className="absolute inset-x-0 bottom-0 flex items-end justify-between bg-gradient-to-t from-black/65 to-transparent p-5 pt-20 text-[9px] uppercase tracking-[.18em] text-white/65">
-        <span>{label}</span>
-        <ArrowRight className="h-4 w-4" />
-      </figcaption>
-    </figure>
   );
 }
