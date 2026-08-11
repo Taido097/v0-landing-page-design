@@ -139,7 +139,7 @@ export function HeroSection() {
           position: absolute;
           inset: -35% auto -35% -25%;
           width: 27%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,.16), transparent);
           animation: showcaseShine 5.8s ease-in-out infinite;
           pointer-events: none;
         }
@@ -175,10 +175,10 @@ export function HeroSection() {
           fill
           sizes="100vw"
           style={{ objectPosition: activeProject.objectPosition }}
-          className="showcase-background object-cover opacity-28 blur-[8px] transition-opacity duration-700"
+          className="showcase-background object-cover opacity-32 blur-[8px] transition-opacity duration-700"
         />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(255,255,255,.07),transparent_32%),linear-gradient(to_bottom,rgba(0,0,0,.42),rgba(0,0,0,.88)_62%,#000)]" />
-        <div className="absolute inset-0 opacity-[0.1] [background-image:linear-gradient(rgba(255,255,255,.16)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.16)_1px,transparent_1px)] [background-size:72px_72px] [mask-image:linear-gradient(to_bottom,black,transparent_65%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(255,255,255,.09),transparent_34%),linear-gradient(to_bottom,rgba(0,0,0,.34),rgba(0,0,0,.82)_64%,#000)]" />
+        <div className="absolute inset-0 opacity-[0.08] [background-image:linear-gradient(rgba(255,255,255,.16)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.16)_1px,transparent_1px)] [background-size:72px_72px] [mask-image:linear-gradient(to_bottom,black,transparent_65%)]" />
       </div>
 
       <div className="relative mx-auto w-full max-w-[1500px] px-4 sm:px-6 lg:px-8">
@@ -209,7 +209,7 @@ export function HeroSection() {
             <button
               type="button"
               onClick={() => setActiveIndex(previousIndex)}
-              className="group showcase-left-card block w-full text-left opacity-70 transition-opacity duration-300 hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+              className="group showcase-left-card block w-full text-left opacity-90 transition-opacity duration-300 hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
               aria-label={`Show ${projects[previousIndex].name}`}
             >
               <WebsiteCard project={projects[previousIndex]} position="side" />
@@ -232,7 +232,7 @@ export function HeroSection() {
             <button
               type="button"
               onClick={() => setActiveIndex(nextIndex)}
-              className="group showcase-right-card block w-full text-left opacity-70 transition-opacity duration-300 hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+              className="group showcase-right-card block w-full text-left opacity-90 transition-opacity duration-300 hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
               aria-label={`Show ${projects[nextIndex].name}`}
             >
               <WebsiteCard project={projects[nextIndex]} position="side" />
@@ -241,7 +241,7 @@ export function HeroSection() {
         </div>
 
         <div className="relative z-40 mt-5 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/48">
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/55">
             Click the side previews to explore · Click the center to open
           </p>
           <div className="flex items-center gap-2" aria-label="Choose featured demo">
@@ -269,7 +269,7 @@ function WebsiteCard({ project, position }: { project: Project; position: 'cente
 
   return (
     <div
-      className={`showcase-shine relative overflow-hidden border border-white/15 bg-[#111] font-sans shadow-[0_35px_100px_rgba(0,0,0,.55)] ${
+      className={`showcase-shine relative overflow-hidden border border-white/25 bg-[#262626] font-sans shadow-[0_30px_80px_rgba(0,0,0,.42)] ${
         isCenter
           ? 'h-[300px] rounded-[1.35rem] sm:h-[350px] lg:h-[400px]'
           : 'h-[225px] rounded-[1.1rem] sm:h-[270px] lg:h-[310px]'
@@ -281,13 +281,13 @@ function WebsiteCard({ project, position }: { project: Project; position: 'cente
         fill
         sizes={isCenter ? '(max-width: 1024px) 62vw, 47vw' : '(max-width: 1024px) 46vw, 32vw'}
         style={{ objectPosition: project.objectPosition }}
-        className="object-cover transition-transform duration-700 group-hover:scale-[1.025]"
+        className="object-cover brightness-[1.08] saturate-[1.03] transition-transform duration-700 group-hover:scale-[1.025]"
       />
 
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,.82)_0%,rgba(0,0,0,.56)_39%,rgba(0,0,0,.12)_72%),linear-gradient(to_bottom,rgba(0,0,0,.48),transparent_34%,rgba(0,0,0,.56))]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,.58)_0%,rgba(0,0,0,.28)_40%,rgba(0,0,0,.03)_72%),linear-gradient(to_bottom,rgba(0,0,0,.22),transparent_38%,rgba(0,0,0,.2))]" />
 
       <div
-        className={`absolute inset-x-0 top-0 z-10 flex items-center justify-between border-b border-white/10 text-white backdrop-blur-[2px] ${
+        className={`absolute inset-x-0 top-0 z-10 flex items-center justify-between border-b border-white/15 text-white bg-black/12 backdrop-blur-[2px] ${
           isCenter ? 'px-5 py-4 sm:px-7 sm:py-5' : 'px-4 py-3.5'
         }`}
       >
@@ -299,7 +299,7 @@ function WebsiteCard({ project, position }: { project: Project; position: 'cente
           {project.name}
         </span>
         <div
-          className={`items-center font-medium uppercase tracking-[0.12em] text-white/72 ${
+          className={`items-center font-medium uppercase tracking-[0.12em] text-white/82 ${
             isCenter
               ? 'hidden gap-5 text-[8px] sm:flex lg:text-[9px]'
               : 'hidden gap-3 text-[7px] md:flex'
@@ -322,12 +322,12 @@ function WebsiteCard({ project, position }: { project: Project; position: 'cente
         <p
           className={`${
             isCenter ? 'text-[9px] sm:text-[10px]' : 'text-[8px]'
-          } font-semibold uppercase tracking-[0.2em] text-white/62`}
+          } font-semibold uppercase tracking-[0.2em] text-white/80`}
         >
           {project.category}
         </p>
         <h2
-          className={`mt-2 font-semibold tracking-[-0.04em] ${
+          className={`mt-2 font-semibold tracking-[-0.04em] drop-shadow-[0_2px_12px_rgba(0,0,0,.45)] ${
             isCenter
               ? 'text-2xl leading-[1.02] sm:text-3xl lg:text-[2.45rem]'
               : 'max-w-[90%] text-lg leading-[1.06] sm:text-xl'
@@ -338,7 +338,7 @@ function WebsiteCard({ project, position }: { project: Project; position: 'cente
 
         {isCenter && (
           <div
-            className={`mt-5 inline-flex items-center gap-2 rounded-md px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.06em] sm:text-xs ${project.accent}`}
+            className={`mt-5 inline-flex items-center gap-2 rounded-md px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.06em] shadow-sm sm:text-xs ${project.accent}`}
           >
             View project
             <ExternalLink className="h-3.5 w-3.5" />
@@ -347,10 +347,10 @@ function WebsiteCard({ project, position }: { project: Project; position: 'cente
       </div>
 
       {isCenter && (
-        <div className="absolute inset-x-0 bottom-0 z-10 hidden border-t border-white/10 bg-black/72 backdrop-blur-md sm:grid sm:grid-cols-4">
+        <div className="absolute inset-x-0 bottom-0 z-10 hidden border-t border-white/60 bg-white/92 text-black backdrop-blur-md sm:grid sm:grid-cols-4">
           {['Custom design', 'Mobile ready', 'Fast & clear', 'Built to convert'].map((item) => (
-            <div key={item} className="border-r border-white/10 px-3 py-3.5 text-center last:border-r-0">
-              <p className="text-[8px] font-medium uppercase tracking-[0.12em] text-white/64 lg:text-[9px]">
+            <div key={item} className="border-r border-black/10 px-3 py-3.5 text-center last:border-r-0">
+              <p className="text-[8px] font-semibold uppercase tracking-[0.12em] text-black/62 lg:text-[9px]">
                 {item}
               </p>
             </div>
@@ -359,7 +359,7 @@ function WebsiteCard({ project, position }: { project: Project; position: 'cente
       )}
 
       {!isCenter && (
-        <div className="absolute bottom-4 right-4 z-10 rounded-full border border-white/20 bg-black/40 px-3 py-1.5 text-[8px] font-medium uppercase tracking-[0.1em] text-white/78 backdrop-blur-md sm:bottom-5 sm:right-5">
+        <div className="absolute bottom-4 right-4 z-10 rounded-full border border-white/50 bg-white/88 px-3 py-1.5 text-[8px] font-semibold uppercase tracking-[0.1em] text-black/70 backdrop-blur-md sm:bottom-5 sm:right-5">
           Bring to center
         </div>
       )}
