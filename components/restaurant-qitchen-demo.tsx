@@ -10,92 +10,198 @@ import {
   Clock3,
   MapPin,
   Menu as MenuIcon,
-  Sparkles,
+  Star,
   Users,
   X,
 } from 'lucide-react';
 
 type View = 'home' | 'menu' | 'about' | 'reserve';
-type MenuCategory = 'Dinner' | 'Small Plates' | 'Dessert';
+type MenuCategory = 'Maki' | 'Uramaki' | 'Special Rolls';
 
-const images = {
-  hero: 'https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=2200&q=90',
-  menu: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1500&q=88',
-  reserve: 'https://images.unsplash.com/photo-1516211697506-8360dbcfe9a4?auto=format&fit=crop&w=1500&q=88',
-  about: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1500&q=88',
-  chef: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=1400&q=88',
-  dining: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1500&q=88',
+const media = {
+  texture:
+    'https://framerusercontent.com/images/RAU19PL6ISblT8l98fG6ggBX9g.jpg?height=1100&width=1920',
+  hero:
+    'https://framerusercontent.com/images/10I4GJR5nYsUsYnoOPIDjoapkA.webp?height=2400&width=2000',
+  interior:
+    'https://framerusercontent.com/images/SMJY8uQcFDPv5vRNMRmZijjygkM.webp?height=2400&width=2000',
+  dining:
+    'https://framerusercontent.com/images/I8AGYbzHAG3DaCqU2wYCmWnrFLw.webp?height=1600&width=1600',
+  tuna:
+    'https://framerusercontent.com/images/QAnUAEBWAkCE4NM4Ja4aQy9Tu4.webp?height=600&width=900',
+  salmon:
+    'https://framerusercontent.com/images/quqbVpcYdgH65rZqF71BSohYQ.webp?height=600&width=900',
+  special:
+    'https://framerusercontent.com/images/27vE5qIMgg0IarFBK9fDPTLr9ZA.webp?height=600&width=900',
+  chef:
+    'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=1600&q=88',
+  reservation:
+    'https://images.unsplash.com/photo-1516211697506-8360dbcfe9a4?auto=format&fit=crop&w=1600&q=88',
 };
 
-const menuItems: Record<MenuCategory, { name: string; price: string; description: string }[]> = {
-  Dinner: [
-    { name: 'Ember Short Rib', price: '$34', description: 'Red wine jus · charred onion · smoked potato' },
-    { name: 'Cedar Salmon', price: '$29', description: 'Brown butter · summer squash · preserved lemon' },
-    { name: 'Wild Mushroom Risotto', price: '$25', description: 'Parmesan · herbs · roasted maitake' },
-    { name: 'Fire-Roasted Chicken', price: '$28', description: 'Herb jus · crispy skin · market vegetables' },
+const menuItems: Record<
+  MenuCategory,
+  { name: string; price: string; description: string; image: string }[]
+> = {
+  Maki: [
+    {
+      name: 'Spicy Tuna Maki',
+      price: '$5',
+      description: 'Spicy tuna, cucumber, avocado, nori, and seasoned rice.',
+      image: media.tuna,
+    },
+    {
+      name: 'Salmon Maki',
+      price: '$5',
+      description: 'Fresh salmon, avocado, cucumber, sesame, and sushi rice.',
+      image: media.salmon,
+    },
+    {
+      name: 'Cucumber Maki',
+      price: '$5',
+      description: 'Crisp cucumber, toasted sesame, nori, and seasoned rice.',
+      image: media.tuna,
+    },
+    {
+      name: 'Tuna Maki',
+      price: '$5',
+      description: 'Fresh tuna, scallion, sesame, nori, and sushi rice.',
+      image: media.salmon,
+    },
   ],
-  'Small Plates': [
-    { name: 'Whipped Ricotta', price: '$14', description: 'Hot honey · grilled sourdough · sea salt' },
-    { name: 'Crispy Potatoes', price: '$12', description: 'Smoked aioli · scallion · chili oil' },
-    { name: 'Beef Tartare', price: '$18', description: 'Caper · mustard seed · rye crisp' },
-    { name: 'Market Greens', price: '$13', description: 'Pear · toasted walnut · champagne vinaigrette' },
+  Uramaki: [
+    {
+      name: 'Volcano Delight',
+      price: '$12',
+      description: 'Crab, avocado, cucumber, spicy tuna, and sriracha.',
+      image: media.special,
+    },
+    {
+      name: 'Rainbow Fusion',
+      price: '$12',
+      description: 'Tuna, salmon, avocado, cucumber, and crab stick.',
+      image: media.salmon,
+    },
+    {
+      name: 'Dragon Elegance',
+      price: '$12',
+      description: 'Grilled eel, avocado, cucumber, sesame, and sweet soy.',
+      image: media.tuna,
+    },
+    {
+      name: 'Ocean Breeze',
+      price: '$12',
+      description: 'Shrimp, crab, avocado, cucumber, and yuzu tobiko.',
+      image: media.special,
+    },
   ],
-  Dessert: [
-    { name: 'Dark Chocolate Torte', price: '$13', description: 'Espresso cream · cacao nib · sea salt' },
-    { name: 'Burnt Honey Panna Cotta', price: '$12', description: 'Citrus · pistachio · olive oil' },
-    { name: 'Seasonal Sorbet', price: '$10', description: 'Daily fruit · sparkling wine' },
+  'Special Rolls': [
+    {
+      name: 'Sunrise Bliss',
+      price: '$16',
+      description: 'Salmon, asparagus, cream cheese, and orange tobiko.',
+      image: media.salmon,
+    },
+    {
+      name: 'Mango Tango',
+      price: '$16',
+      description: 'Tempura shrimp, mango, avocado, cucumber, and mango glaze.',
+      image: media.special,
+    },
+    {
+      name: 'Truffle Indulgence',
+      price: '$16',
+      description: 'Wagyu, cucumber, microgreens, black truffle, and sesame.',
+      image: media.tuna,
+    },
+    {
+      name: 'Pacific Firecracker',
+      price: '$16',
+      description: 'Spicy crab, tempura shrimp, jalapeño, and chili aioli.',
+      image: media.special,
+    },
   ],
 };
 
 export function RestaurantQitchenDemo() {
   const [view, setView] = useState<View>('home');
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [category, setCategory] = useState<MenuCategory>('Dinner');
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [category, setCategory] = useState<MenuCategory>('Maki');
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    setMenuOpen(false);
+    setMobileOpen(false);
   }, [view]);
 
-  const go = (next: View) => setView(next);
-
   return (
-    <main className="min-h-screen bg-[#11100d] text-[#f4efe6] selection:bg-[#d9b36c] selection:text-black">
+    <main
+      className="min-h-screen bg-[#0d0d0d] text-[#f4f0e7] selection:bg-[#efe8d8] selection:text-black"
+      style={{
+        backgroundImage: `linear-gradient(rgba(13,13,13,.96),rgba(13,13,13,.96)),url(${media.texture})`,
+        backgroundSize: 'cover',
+        backgroundAttachment: 'fixed',
+      }}
+    >
       <style>{`
-        @keyframes restaurantFade { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes restaurantDrift { 0%,100% { transform: scale(1.04) translate3d(0,0,0); } 50% { transform: scale(1.08) translate3d(-1.5%, -1%, 0); } }
-        @keyframes restaurantLine { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-        .restaurant-view { animation: restaurantFade .65s cubic-bezier(.22,1,.36,1) both; }
-        .restaurant-hero-image { animation: restaurantDrift 16s ease-in-out infinite; }
-        .restaurant-line { transform-origin: left; animation: restaurantLine .9s .2s cubic-bezier(.22,1,.36,1) both; }
+        @keyframes qitchenIn {
+          from { opacity: 0; transform: translateY(18px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes qitchenImage {
+          from { transform: scale(1.035); }
+          to { transform: scale(1); }
+        }
+        @keyframes qitchenArrow {
+          0%,100% { transform: translateX(0); }
+          50% { transform: translateX(5px); }
+        }
+        .qitchen-view { animation: qitchenIn .62s cubic-bezier(.22,1,.36,1) both; }
+        .qitchen-hero-img { animation: qitchenImage 1.25s cubic-bezier(.22,1,.36,1) both; }
+        .qitchen-card:hover .qitchen-arrow { animation: qitchenArrow .8s ease-in-out infinite; }
         @media (prefers-reduced-motion: reduce) {
-          .restaurant-view,.restaurant-hero-image,.restaurant-line { animation: none !important; }
+          .qitchen-view,.qitchen-hero-img,.qitchen-arrow { animation: none !important; }
         }
       `}</style>
 
-      <RestaurantTopbar view={view} onNavigate={go} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+      <TopNav
+        view={view}
+        onNavigate={setView}
+        mobileOpen={mobileOpen}
+        setMobileOpen={setMobileOpen}
+      />
 
-      <div key={view} className="restaurant-view">
-        {view === 'home' && <RestaurantHome onNavigate={go} />}
-        {view === 'menu' && <RestaurantMenu category={category} setCategory={setCategory} onNavigate={go} />}
-        {view === 'about' && <RestaurantAbout onNavigate={go} />}
-        {view === 'reserve' && <RestaurantReserve submitted={submitted} onSubmit={() => setSubmitted(true)} />}
+      <div key={view} className="qitchen-view">
+        {view === 'home' && <HomeView onNavigate={setView} />}
+        {view === 'menu' && (
+          <MenuView
+            category={category}
+            setCategory={setCategory}
+            onNavigate={setView}
+          />
+        )}
+        {view === 'about' && <AboutView onNavigate={setView} />}
+        {view === 'reserve' && (
+          <ReservationView
+            submitted={submitted}
+            onSubmit={() => setSubmitted(true)}
+          />
+        )}
       </div>
     </main>
   );
 }
 
-function RestaurantTopbar({
+function TopNav({
   view,
   onNavigate,
-  menuOpen,
-  setMenuOpen,
+  mobileOpen,
+  setMobileOpen,
 }: {
   view: View;
   onNavigate: (view: View) => void;
-  menuOpen: boolean;
-  setMenuOpen: (open: boolean) => void;
+  mobileOpen: boolean;
+  setMobileOpen: (open: boolean) => void;
 }) {
   const nav: { label: string; view: View }[] = [
     { label: 'Menu', view: 'menu' },
@@ -105,30 +211,36 @@ function RestaurantTopbar({
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-[80] border-b border-white/10 bg-[#11100d]/78 backdrop-blur-xl">
-        <div className="mx-auto flex h-[74px] max-w-[1600px] items-center justify-between px-5 sm:px-8 lg:px-10">
-          <div className="flex items-center gap-5">
+      <header className="fixed inset-x-0 top-0 z-[90] border-b border-white/10 bg-[#0b0b0b]/88 backdrop-blur-xl">
+        <div className="mx-auto flex h-[76px] max-w-[1700px] items-center justify-between px-4 sm:px-7 lg:px-10">
+          <div className="flex items-center gap-4 sm:gap-6">
             <Link
               href="/#portfolio"
-              aria-label="Back to DesignedbyTD portfolio"
-              className="grid h-10 w-10 place-items-center border border-white/15 text-white/70 transition hover:border-white/45 hover:text-white"
+              aria-label="Back to portfolio"
+              className="grid h-10 w-10 place-items-center border border-white/15 text-white/65 transition hover:border-white/50 hover:text-white"
             >
               <ArrowLeft className="h-4 w-4" />
             </Link>
-            <button type="button" onClick={() => onNavigate('home')} className="text-left">
-              <span className="block text-sm font-semibold uppercase tracking-[.28em]">Harvest</span>
-              <span className="block text-[9px] uppercase tracking-[.42em] text-[#d9b36c]">& Ember</span>
+
+            <button
+              type="button"
+              onClick={() => onNavigate('home')}
+              className="text-[15px] font-semibold uppercase tracking-[.34em] text-white"
+            >
+              Qitchen
             </button>
           </div>
 
-          <nav className="hidden items-center gap-8 md:flex">
+          <nav className="hidden items-center gap-2 md:flex">
             {nav.map((item) => (
               <button
                 key={item.label}
                 type="button"
                 onClick={() => onNavigate(item.view)}
-                className={`text-[11px] font-semibold uppercase tracking-[.18em] transition ${
-                  view === item.view ? 'text-[#d9b36c]' : 'text-white/60 hover:text-white'
+                className={`border px-5 py-2.5 text-[10px] font-semibold uppercase tracking-[.18em] transition ${
+                  view === item.view
+                    ? 'border-[#eee7d9] bg-[#eee7d9] text-black'
+                    : 'border-white/15 text-white/60 hover:border-white/45 hover:text-white'
                 }`}
               >
                 {item.label}
@@ -138,27 +250,27 @@ function RestaurantTopbar({
 
           <button
             type="button"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Open restaurant navigation"
-            className="grid h-10 w-10 place-items-center border border-white/15 text-white md:hidden"
+            aria-label="Toggle restaurant menu"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="grid h-10 w-10 place-items-center border border-white/15 md:hidden"
           >
-            {menuOpen ? <X className="h-4 w-4" /> : <MenuIcon className="h-4 w-4" />}
+            {mobileOpen ? <X className="h-4 w-4" /> : <MenuIcon className="h-4 w-4" />}
           </button>
         </div>
       </header>
 
-      {menuOpen && (
-        <div className="fixed inset-0 z-[75] grid place-items-center bg-[#11100d] px-6 pt-20 md:hidden">
-          <div className="flex flex-col items-center gap-7">
+      {mobileOpen && (
+        <div className="fixed inset-0 z-[85] flex items-center justify-center bg-[#0b0b0b] px-6 pt-[76px] md:hidden">
+          <div className="w-full max-w-md divide-y divide-white/10 border-y border-white/10">
             {nav.map((item, index) => (
               <button
                 key={item.label}
                 type="button"
                 onClick={() => onNavigate(item.view)}
-                className="group flex items-center gap-4 text-3xl font-medium"
+                className="flex w-full items-center justify-between py-7 text-left text-2xl font-medium"
               >
-                <span className="text-xs text-[#d9b36c]">0{index + 1}</span>
-                {item.label}
+                <span>{item.label}</span>
+                <span className="text-xs text-white/35">0{index + 1}</span>
               </button>
             ))}
           </div>
@@ -168,69 +280,73 @@ function RestaurantTopbar({
   );
 }
 
-function RestaurantHome({ onNavigate }: { onNavigate: (view: View) => void }) {
-  const cards: { title: string; view: View; image: string; index: string }[] = [
-    { title: 'Explore the Menu', view: 'menu', image: images.menu, index: '01' },
-    { title: 'Book Your Table', view: 'reserve', image: images.reserve, index: '02' },
-    { title: 'Our Restaurant', view: 'about', image: images.about, index: '03' },
+function HomeView({ onNavigate }: { onNavigate: (view: View) => void }) {
+  const cards: { label: string; view: View; image: string; eyebrow: string }[] = [
+    { label: 'Menu', view: 'menu', image: media.salmon, eyebrow: 'Discover' },
+    { label: 'Reservation', view: 'reserve', image: media.dining, eyebrow: 'Join us' },
+    { label: 'Our Restaurant', view: 'about', image: media.interior, eyebrow: 'The story' },
   ];
 
   return (
-    <section className="min-h-screen pt-[74px] lg:h-screen lg:overflow-hidden">
-      <div className="grid min-h-[calc(100vh-74px)] lg:grid-cols-[minmax(0,1.12fr)_minmax(520px,.88fr)]">
-        <div className="relative min-h-[660px] overflow-hidden border-r border-white/10 lg:min-h-0">
-          <img src={images.hero} alt="Harvest & Ember dining" className="restaurant-hero-image absolute inset-0 h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(12,11,9,.82)_0%,rgba(12,11,9,.3)_58%,rgba(12,11,9,.05)_100%),linear-gradient(to_top,rgba(12,11,9,.7),transparent_55%)]" />
+    <section className="min-h-screen pt-[76px] lg:h-screen lg:overflow-hidden">
+      <div className="grid min-h-[calc(100vh-76px)] gap-3 p-3 lg:grid-cols-[minmax(0,1.55fr)_minmax(420px,.72fr)] lg:p-4">
+        <div className="relative min-h-[620px] overflow-hidden border border-white/10 bg-black lg:min-h-0">
+          <img
+            src={media.hero}
+            alt="Qitchen signature sushi dish"
+            className="qitchen-hero-img absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,.72),rgba(0,0,0,.05)_58%),linear-gradient(90deg,rgba(0,0,0,.26),transparent_55%)]" />
 
-          <div className="relative flex h-full min-h-[660px] flex-col justify-end p-6 sm:p-10 lg:min-h-0 lg:p-12 xl:p-16">
-            <div className="max-w-3xl pb-10 lg:pb-0">
-              <div className="mb-7 flex items-center gap-4">
-                <span className="h-px w-12 bg-[#d9b36c]" />
-                <p className="text-[10px] font-semibold uppercase tracking-[.32em] text-[#d9b36c]">Wood fire · seasonal kitchen</p>
-              </div>
-              <h1 className="max-w-3xl text-5xl font-medium leading-[.92] tracking-[-.055em] sm:text-7xl lg:text-[clamp(4.4rem,6.2vw,7.2rem)]">
-                Dinner made for <span className="font-light italic text-[#d9b36c]">staying awhile.</span>
-              </h1>
-              <p className="mt-7 max-w-xl text-sm leading-7 text-white/65 sm:text-base">
-                Fire-driven cooking, thoughtful cocktails, and a room designed for long conversations.
-              </p>
-              <button
-                type="button"
-                onClick={() => onNavigate('reserve')}
-                className="mt-9 inline-flex items-center gap-5 border border-[#d9b36c] bg-[#d9b36c] px-6 py-4 text-xs font-semibold uppercase tracking-[.16em] text-[#11100d] transition hover:bg-transparent hover:text-[#d9b36c]"
-              >
-                Reserve a table <ArrowRight className="h-4 w-4" />
-              </button>
-            </div>
+          <div className="absolute left-5 top-5 border border-white/20 bg-black/20 px-4 py-2 backdrop-blur-md sm:left-8 sm:top-8">
+            <span className="text-[10px] font-semibold uppercase tracking-[.28em] text-white/75">
+              Japanese kitchen · sushi bar
+            </span>
           </div>
 
-          <div className="absolute right-5 top-5 hidden border border-white/15 bg-black/20 px-4 py-3 backdrop-blur-md sm:block lg:right-8 lg:top-8">
-            <p className="text-[9px] uppercase tracking-[.18em] text-white/45">Tonight</p>
-            <p className="mt-1 text-xs font-medium">Dinner · 5 PM — 11 PM</p>
+          <div className="relative flex h-full min-h-[620px] flex-col justify-end p-6 sm:p-10 lg:min-h-0 lg:p-12 xl:p-16">
+            <p className="mb-5 text-xs font-medium uppercase tracking-[.36em] text-white/55">
+              Qitchen presents
+            </p>
+            <h1 className="max-w-[780px] text-[clamp(4.3rem,9vw,9rem)] font-medium uppercase leading-[.78] tracking-[-.065em] text-white">
+              Sushi
+              <span className="block font-light">Sensation</span>
+            </h1>
+            <div className="mt-8 flex max-w-2xl items-center gap-5 border-t border-white/25 pt-5 text-xs uppercase tracking-[.18em] text-white/55">
+              <span>Precision</span>
+              <span className="h-1 w-1 rounded-full bg-white/40" />
+              <span>Texture</span>
+              <span className="h-1 w-1 rounded-full bg-white/40" />
+              <span>Season</span>
+            </div>
           </div>
         </div>
 
-        <div className="grid bg-[#171510] lg:grid-rows-3">
-          {cards.map((card) => (
+        <div className="grid gap-3 lg:grid-rows-3">
+          {cards.map((card, index) => (
             <button
-              key={card.title}
+              key={card.label}
               type="button"
               onClick={() => onNavigate(card.view)}
-              className="group relative min-h-[250px] overflow-hidden border-b border-white/10 text-left last:border-b-0 lg:min-h-0"
+              className="qitchen-card group relative min-h-[240px] overflow-hidden border border-white/10 bg-[#151515] text-left lg:min-h-0"
             >
               <img
                 src={card.image}
                 alt=""
-                className="absolute inset-0 h-full w-full object-cover opacity-45 transition duration-1000 ease-out group-hover:scale-[1.06] group-hover:opacity-70"
+                className="absolute inset-0 h-full w-full object-cover opacity-55 transition duration-1000 ease-out group-hover:scale-[1.07] group-hover:opacity-75"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/30 to-transparent" />
-              <div className="relative flex h-full min-h-[250px] items-end justify-between gap-5 p-7 lg:min-h-0 lg:p-8">
+              <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/35 to-black/5" />
+              <div className="relative flex h-full min-h-[240px] items-end justify-between gap-6 p-6 lg:min-h-0 lg:p-7">
                 <div>
-                  <p className="text-[9px] font-semibold uppercase tracking-[.22em] text-[#d9b36c]">{card.index}</p>
-                  <h2 className="mt-2 text-2xl font-medium tracking-[-.03em] sm:text-3xl">{card.title}</h2>
+                  <p className="text-[9px] font-semibold uppercase tracking-[.24em] text-white/45">
+                    0{index + 1} · {card.eyebrow}
+                  </p>
+                  <h2 className="mt-3 text-3xl font-medium tracking-[-.045em] sm:text-4xl">
+                    {card.label}
+                  </h2>
                 </div>
-                <span className="grid h-11 w-11 shrink-0 place-items-center border border-white/25 transition duration-500 group-hover:border-[#d9b36c] group-hover:bg-[#d9b36c] group-hover:text-black">
-                  <ArrowRight className="h-4 w-4 transition-transform duration-500 group-hover:translate-x-1" />
+                <span className="grid h-12 w-12 shrink-0 place-items-center border border-white/25 bg-black/20 transition group-hover:border-white group-hover:bg-white group-hover:text-black">
+                  <ArrowRight className="qitchen-arrow h-4 w-4" />
                 </span>
               </div>
             </button>
@@ -241,7 +357,21 @@ function RestaurantHome({ onNavigate }: { onNavigate: (view: View) => void }) {
   );
 }
 
-function RestaurantMenu({
+function SplitTitle({ image, title }: { image: string; title: React.ReactNode }) {
+  return (
+    <div className="relative min-h-[430px] overflow-hidden border border-white/10 lg:sticky lg:top-[92px] lg:h-[calc(100vh-112px)]">
+      <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/10" />
+      <div className="relative flex h-full min-h-[430px] items-end p-7 sm:p-10 lg:min-h-0 lg:p-12">
+        <h1 className="text-[clamp(4.5rem,9vw,8.4rem)] font-medium uppercase leading-[.82] tracking-[-.07em]">
+          {title}
+        </h1>
+      </div>
+    </div>
+  );
+}
+
+function MenuView({
   category,
   setCategory,
   onNavigate,
@@ -253,120 +383,135 @@ function RestaurantMenu({
   const categories = Object.keys(menuItems) as MenuCategory[];
 
   return (
-    <section className="pt-[74px]">
-      <div className="grid min-h-[calc(100vh-74px)] lg:grid-cols-[.8fr_1.2fr]">
-        <div className="relative min-h-[460px] overflow-hidden border-r border-white/10 lg:sticky lg:top-[74px] lg:h-[calc(100vh-74px)]">
-          <img src={images.menu} alt="Seasonal restaurant dish" className="absolute inset-0 h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/10" />
-          <div className="relative flex h-full min-h-[460px] flex-col justify-end p-8 sm:p-12 lg:min-h-0">
-            <p className="text-[10px] uppercase tracking-[.28em] text-[#d9b36c]">Seasonal kitchen</p>
-            <h1 className="mt-4 text-6xl font-medium tracking-[-.06em] sm:text-7xl">Menu</h1>
-            <p className="mt-5 max-w-sm text-sm leading-7 text-white/60">A changing menu built around the best ingredients we can get our hands on.</p>
-          </div>
-        </div>
+    <section className="pt-[76px]">
+      <div className="grid gap-3 p-3 lg:grid-cols-[.8fr_1.2fr] lg:p-4">
+        <SplitTitle image={media.hero} title={<>Me<br />nu</>} />
 
-        <div className="bg-[#f1ece2] px-6 py-12 text-[#171510] sm:px-10 lg:px-14 lg:py-16 xl:px-20">
-          <div className="sticky top-[74px] z-20 -mx-6 mb-12 border-b border-black/10 bg-[#f1ece2]/95 px-6 py-5 backdrop-blur sm:-mx-10 sm:px-10 lg:-mx-14 lg:px-14 xl:-mx-20 xl:px-20">
-            <div className="flex gap-6 overflow-x-auto">
-              {categories.map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  onClick={() => setCategory(item)}
-                  className={`shrink-0 border-b pb-2 text-[11px] font-semibold uppercase tracking-[.16em] transition ${
-                    category === item ? 'border-black text-black' : 'border-transparent text-black/40 hover:text-black'
-                  }`}
-                >
-                  {item}
-                </button>
-              ))}
-            </div>
+        <div className="border border-white/10 bg-[#111] px-5 py-8 sm:px-8 lg:px-10 lg:py-12 xl:px-14">
+          <div className="mb-10 flex flex-wrap gap-2 border-b border-white/10 pb-6">
+            {categories.map((item) => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => setCategory(item)}
+                className={`border px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[.2em] transition ${
+                  category === item
+                    ? 'border-[#efe8d8] bg-[#efe8d8] text-black'
+                    : 'border-white/15 text-white/55 hover:border-white/50 hover:text-white'
+                }`}
+              >
+                {item}
+              </button>
+            ))}
           </div>
 
-          <div key={category} className="restaurant-view">
-            <div className="flex items-end justify-between border-b border-black/15 pb-7">
+          <div key={category} className="qitchen-view">
+            <div className="mb-8 flex items-end justify-between gap-4">
               <div>
-                <p className="text-[10px] uppercase tracking-[.22em] text-black/45">Current selection</p>
-                <h2 className="mt-2 text-4xl font-medium tracking-[-.04em] sm:text-5xl">{category}</h2>
+                <p className="text-[10px] uppercase tracking-[.28em] text-white/35">Qitchen menu</p>
+                <h2 className="mt-2 text-4xl font-medium tracking-[-.05em] sm:text-5xl">{category}</h2>
               </div>
-              <Sparkles className="h-5 w-5 text-black/25" />
+              <p className="hidden max-w-xs text-right text-xs leading-6 text-white/40 sm:block">
+                Prepared to order with premium ingredients and precise technique.
+              </p>
             </div>
 
-            <div className="divide-y divide-black/12">
-              {menuItems[category].map((item, index) => (
-                <article key={item.name} className="group grid gap-4 py-8 sm:grid-cols-[44px_1fr_auto] sm:items-start">
-                  <span className="text-[10px] font-semibold tracking-[.18em] text-black/30">0{index + 1}</span>
-                  <div>
-                    <h3 className="text-xl font-medium tracking-[-.025em] transition group-hover:translate-x-1">{item.name}</h3>
-                    <p className="mt-2 text-sm leading-6 text-black/50">{item.description}</p>
+            <div className="divide-y divide-white/10 border-y border-white/10">
+              {menuItems[category].map((item) => (
+                <article
+                  key={item.name}
+                  className="group grid gap-5 py-6 sm:grid-cols-[110px_1fr_auto] sm:items-center"
+                >
+                  <div className="h-[90px] overflow-hidden bg-black sm:h-[78px]">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
+                    />
                   </div>
-                  <p className="text-sm font-semibold">{item.price}</p>
+                  <div>
+                    <h3 className="text-lg font-medium tracking-[-.025em]">{item.name}</h3>
+                    <p className="mt-2 max-w-xl text-sm leading-6 text-white/45">{item.description}</p>
+                  </div>
+                  <div className="text-lg font-medium text-[#efe8d8]">{item.price}</div>
                 </article>
               ))}
             </div>
-
-            <button
-              type="button"
-              onClick={() => onNavigate('reserve')}
-              className="mt-10 inline-flex items-center gap-4 border border-black bg-black px-6 py-4 text-xs font-semibold uppercase tracking-[.15em] text-white transition hover:bg-transparent hover:text-black"
-            >
-              Book your table <ArrowRight className="h-4 w-4" />
-            </button>
           </div>
+
+          <button
+            type="button"
+            onClick={() => onNavigate('reserve')}
+            className="mt-10 inline-flex items-center gap-3 border border-white bg-white px-6 py-3.5 text-[11px] font-semibold uppercase tracking-[.18em] text-black transition hover:bg-transparent hover:text-white"
+          >
+            Book a Table <ArrowRight className="h-4 w-4" />
+          </button>
         </div>
       </div>
     </section>
   );
 }
 
-function RestaurantAbout({ onNavigate }: { onNavigate: (view: View) => void }) {
+function AboutView({ onNavigate }: { onNavigate: (view: View) => void }) {
   return (
-    <section className="pt-[74px]">
-      <div className="mx-auto max-w-[1600px] px-5 py-10 sm:px-8 lg:px-10 lg:py-14">
-        <div className="grid gap-px bg-white/10 lg:grid-cols-2">
-          <div className="bg-[#171510] p-8 sm:p-12 lg:p-16">
-            <p className="text-[10px] font-semibold uppercase tracking-[.28em] text-[#d9b36c]">Our restaurant</p>
-            <h1 className="mt-5 max-w-xl text-5xl font-medium leading-[.98] tracking-[-.055em] sm:text-6xl lg:text-7xl">
-              Built around the <span className="font-light italic text-[#d9b36c]">fire.</span>
-            </h1>
-            <p className="mt-8 max-w-lg text-base leading-8 text-white/58">
-              Harvest & Ember is a neighborhood dining room centered on open-fire cooking, seasonal produce, and the belief that hospitality should feel effortless.
+    <section className="pt-[76px]">
+      <div className="grid gap-3 p-3 lg:grid-cols-[.8fr_1.2fr] lg:p-4">
+        <SplitTitle image={media.interior} title={<>Abo<br />ut</>} />
+
+        <div className="space-y-3">
+          <div className="border border-white/10 bg-[#111] p-7 sm:p-10 lg:p-12 xl:p-14">
+            <p className="text-[10px] uppercase tracking-[.3em] text-white/35">Our philosophy</p>
+            <h2 className="mt-5 max-w-3xl text-5xl font-medium leading-[.94] tracking-[-.055em] sm:text-6xl xl:text-7xl">
+              Sushi Artistry<br />
+              <span className="font-light italic text-white/55">Redefined.</span>
+            </h2>
+            <p className="mt-7 max-w-2xl text-base font-light leading-8 text-white/50">
+              Where culinary craftsmanship meets modern elegance. Qitchen brings precision,
+              atmosphere, and thoughtful hospitality together in one immersive dining experience.
             </p>
-            <button
-              type="button"
-              onClick={() => onNavigate('reserve')}
-              className="mt-10 inline-flex items-center gap-4 border border-[#d9b36c] px-6 py-4 text-xs font-semibold uppercase tracking-[.15em] text-[#d9b36c] transition hover:bg-[#d9b36c] hover:text-black"
-            >
-              Join us tonight <ArrowRight className="h-4 w-4" />
-            </button>
           </div>
 
-          <div className="min-h-[520px] overflow-hidden bg-[#171510]">
-            <img src={images.chef} alt="Chef preparing dinner" className="h-full w-full object-cover transition duration-[1400ms] hover:scale-[1.035]" />
-          </div>
-        </div>
-
-        <div className="mt-px grid gap-px bg-white/10 md:grid-cols-3">
-          {[
-            ['01', 'Seasonal', 'Menus change with the market, not the calendar.'],
-            ['02', 'Fire driven', 'Wood, flame, smoke, and restraint guide the kitchen.'],
-            ['03', 'Hospitality first', 'Warm service without the formality.'],
-          ].map(([num, title, copy]) => (
-            <div key={num} className="bg-[#171510] p-8 sm:p-10">
-              <p className="text-[10px] tracking-[.2em] text-[#d9b36c]">{num}</p>
-              <h2 className="mt-8 text-2xl font-medium">{title}</h2>
-              <p className="mt-3 text-sm leading-7 text-white/50">{copy}</p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="min-h-[420px] overflow-hidden border border-white/10">
+              <img src={media.dining} alt="Guest at Qitchen" className="h-full w-full object-cover" />
             </div>
-          ))}
-        </div>
+            <div className="min-h-[420px] overflow-hidden border border-white/10">
+              <img src={media.chef} alt="Chef preparing dinner" className="h-full w-full object-cover" />
+            </div>
+          </div>
 
-        <div className="relative mt-px min-h-[420px] overflow-hidden">
-          <img src={images.dining} alt="Harvest and Ember dining room" className="absolute inset-0 h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/75 to-black/15" />
-          <div className="relative flex min-h-[420px] max-w-xl flex-col justify-end p-8 sm:p-12">
-            <MapPin className="h-5 w-5 text-[#d9b36c]" />
-            <h2 className="mt-5 text-4xl font-medium tracking-[-.04em]">Meet us in the neighborhood.</h2>
-            <p className="mt-4 text-sm leading-7 text-white/60">Orange County, California · Dinner Tuesday through Sunday.</p>
+          <div className="grid gap-px border border-white/10 bg-white/10 sm:grid-cols-3">
+            {[
+              ['Trip Advisor', 'Best Sushi'],
+              ['Michelin Guide', 'Quality Food'],
+              ['Star Dining', 'Cool Vibe'],
+            ].map(([top, bottom]) => (
+              <div key={top} className="bg-[#111] p-7 text-center sm:p-9">
+                <Star className="mx-auto h-4 w-4 text-[#efe8d8]" />
+                <p className="mt-5 text-[9px] uppercase tracking-[.25em] text-white/35">{top}</p>
+                <p className="mt-2 text-xl font-medium">{bottom}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="border border-white/10 bg-[#111] p-7 sm:p-10 lg:p-12">
+            <div className="grid gap-8 lg:grid-cols-[.6fr_1fr]">
+              <h3 className="text-3xl font-medium tracking-[-.04em]">Our Story</h3>
+              <div>
+                <p className="text-sm font-light leading-8 text-white/50">
+                  Built around a love for modern Japanese cooking, Qitchen turns every plate into
+                  a small composition. The room is intentionally dark, warm, and tactile so the
+                  food remains the focus from the first course to the last.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => onNavigate('reserve')}
+                  className="mt-7 inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[.2em] text-white transition hover:text-white/60"
+                >
+                  Start Dining <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -374,67 +519,139 @@ function RestaurantAbout({ onNavigate }: { onNavigate: (view: View) => void }) {
   );
 }
 
-function RestaurantReserve({ submitted, onSubmit }: { submitted: boolean; onSubmit: () => void }) {
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+function ReservationView({
+  submitted,
+  onSubmit,
+}: {
+  submitted: boolean;
+  onSubmit: () => void;
+}) {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSubmit();
   };
 
   return (
-    <section className="pt-[74px]">
-      <div className="grid min-h-[calc(100vh-74px)] lg:grid-cols-2">
-        <div className="relative hidden overflow-hidden border-r border-white/10 lg:block">
-          <img src={images.reserve} alt="Restaurant table set for dinner" className="absolute inset-0 h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/10" />
-          <div className="relative flex h-full flex-col justify-end p-14">
-            <p className="text-[10px] uppercase tracking-[.28em] text-[#d9b36c]">A table is waiting</p>
-            <h1 className="mt-4 max-w-xl text-7xl font-medium leading-[.92] tracking-[-.055em]">Make a night of it.</h1>
-          </div>
-        </div>
+    <section className="pt-[76px]">
+      <div className="grid gap-3 p-3 lg:grid-cols-[.8fr_1.2fr] lg:p-4">
+        <SplitTitle image={media.reservation} title={<>Book<br />a Table</>} />
 
-        <div className="flex items-center bg-[#f1ece2] px-6 py-14 text-[#171510] sm:px-10 lg:px-16 xl:px-24">
-          <div className="w-full max-w-2xl">
-            <p className="text-[10px] font-semibold uppercase tracking-[.28em] text-black/40">Reservations</p>
-            <h2 className="mt-4 text-5xl font-medium tracking-[-.055em] sm:text-6xl">Book a Table</h2>
-            <p className="mt-5 max-w-xl text-sm leading-7 text-black/50">Choose your date, time, and party size. This is a demo reservation experience for the portfolio sample.</p>
+        <div className="flex min-h-[calc(100vh-112px)] items-center border border-white/10 bg-[#111] p-6 sm:p-10 lg:p-14 xl:p-20">
+          <div className="mx-auto w-full max-w-3xl">
+            <p className="text-[10px] uppercase tracking-[.3em] text-white/35">Reservation</p>
+            <h2 className="mt-4 text-4xl font-medium tracking-[-.05em] sm:text-5xl">
+              Your table is waiting.
+            </h2>
+            <p className="mt-5 max-w-xl text-sm font-light leading-7 text-white/45">
+              Secure your spot at Qitchen for an evening of precise sushi, warm service, and a
+              relaxed atmosphere.
+            </p>
 
             {submitted ? (
-              <div className="mt-12 border border-black/15 bg-white/45 p-8 sm:p-10">
-                <div className="grid h-12 w-12 place-items-center bg-black text-white">
-                  <CalendarDays className="h-5 w-5" />
-                </div>
-                <h3 className="mt-7 text-3xl font-medium tracking-[-.04em]">Your demo reservation is set.</h3>
-                <p className="mt-3 text-sm leading-7 text-black/50">No real booking was submitted. This interaction demonstrates how a restaurant client’s reservation flow could feel.</p>
-                <button type="button" onClick={() => window.location.reload()} className="mt-7 border-b border-black pb-1 text-xs font-semibold uppercase tracking-[.15em]">Start over</button>
+              <div className="mt-10 border border-white/15 bg-white/[.035] p-8 sm:p-10">
+                <p className="text-[10px] uppercase tracking-[.24em] text-white/40">Request received</p>
+                <h3 className="mt-3 text-3xl font-medium">Thank you.</h3>
+                <p className="mt-4 max-w-lg text-sm leading-7 text-white/50">
+                  This is an interactive portfolio demo. In a client website, this step would send
+                  the booking request to the restaurant or reservation platform.
+                </p>
               </div>
             ) : (
-              <form onSubmit={submit} className="mt-10 space-y-7">
-                <div className="grid gap-6 sm:grid-cols-2">
-                  <Field label="Name"><input required placeholder="Your name" className="w-full border-b border-black/20 bg-transparent py-3 text-sm outline-none transition focus:border-black" /></Field>
-                  <Field label="Email"><input required type="email" placeholder="you@example.com" className="w-full border-b border-black/20 bg-transparent py-3 text-sm outline-none transition focus:border-black" /></Field>
+              <form onSubmit={handleSubmit} className="mt-10 grid gap-5 sm:grid-cols-2">
+                <Field label="Name">
+                  <input required placeholder="Jane Smith" className="qitchen-input" />
+                </Field>
+                <Field label="Email">
+                  <input required type="email" placeholder="jane@example.com" className="qitchen-input" />
+                </Field>
+                <Field label="Phone Number">
+                  <input required type="tel" placeholder="(714) 555-0123" className="qitchen-input" />
+                </Field>
+                <Field label="People">
+                  <div className="relative">
+                    <Users className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
+                    <select className="qitchen-input pl-11" defaultValue="2">
+                      {[1,2,3,4,5,6,7,8,9,10].map((count) => (
+                        <option key={count} value={count}>{count} {count === 1 ? 'guest' : 'guests'}</option>
+                      ))}
+                    </select>
+                  </div>
+                </Field>
+                <Field label="Date">
+                  <div className="relative">
+                    <CalendarDays className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
+                    <input required type="date" className="qitchen-input pl-11" />
+                  </div>
+                </Field>
+                <Field label="Time">
+                  <div className="relative">
+                    <Clock3 className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
+                    <select className="qitchen-input pl-11" defaultValue="19:00">
+                      <option value="17:30">5:30 PM</option>
+                      <option value="18:00">6:00 PM</option>
+                      <option value="18:30">6:30 PM</option>
+                      <option value="19:00">7:00 PM</option>
+                      <option value="19:30">7:30 PM</option>
+                      <option value="20:00">8:00 PM</option>
+                      <option value="20:30">8:30 PM</option>
+                    </select>
+                  </div>
+                </Field>
+
+                <div className="sm:col-span-2">
+                  <button
+                    type="submit"
+                    className="flex w-full items-center justify-between border border-[#efe8d8] bg-[#efe8d8] px-6 py-4 text-[11px] font-semibold uppercase tracking-[.2em] text-black transition hover:bg-transparent hover:text-white"
+                  >
+                    Book a Table <ArrowRight className="h-4 w-4" />
+                  </button>
                 </div>
-                <div className="grid gap-6 sm:grid-cols-3">
-                  <Field label="Date" icon={<CalendarDays className="h-4 w-4" />}><input required type="date" className="w-full border-b border-black/20 bg-transparent py-3 text-sm outline-none transition focus:border-black" /></Field>
-                  <Field label="Time" icon={<Clock3 className="h-4 w-4" />}><select className="w-full border-b border-black/20 bg-transparent py-3 text-sm outline-none transition focus:border-black"><option>6:00 PM</option><option>7:00 PM</option><option>8:00 PM</option><option>9:00 PM</option></select></Field>
-                  <Field label="Guests" icon={<Users className="h-4 w-4" />}><select className="w-full border-b border-black/20 bg-transparent py-3 text-sm outline-none transition focus:border-black"><option>2 Guests</option><option>3 Guests</option><option>4 Guests</option><option>5+ Guests</option></select></Field>
-                </div>
-                <button type="submit" className="group mt-3 flex w-full items-center justify-between border border-black bg-black px-6 py-5 text-xs font-semibold uppercase tracking-[.16em] text-white transition hover:bg-transparent hover:text-black">
-                  Request reservation <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </button>
               </form>
             )}
+
+            <div className="mt-10 grid gap-4 border-t border-white/10 pt-8 text-xs text-white/40 sm:grid-cols-2">
+              <div className="flex items-center gap-3">
+                <MapPin className="h-4 w-4" />
+                <span>Orange County, California</span>
+              </div>
+              <div className="flex items-center gap-3 sm:justify-end">
+                <Clock3 className="h-4 w-4" />
+                <span>Tue–Sun · 5 PM–11 PM</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      <style>{`
+        .qitchen-input {
+          width: 100%;
+          min-height: 52px;
+          border: 1px solid rgba(255,255,255,.14);
+          border-radius: 0;
+          background: rgba(255,255,255,.025);
+          padding: 0 16px;
+          color: #f4f0e7;
+          outline: none;
+          font-size: 14px;
+          transition: border-color .2s ease, background .2s ease;
+        }
+        .qitchen-input:focus {
+          border-color: rgba(255,255,255,.55);
+          background: rgba(255,255,255,.05);
+        }
+        .qitchen-input::placeholder { color: rgba(255,255,255,.28); }
+        select.qitchen-input option { color: #111; }
+      `}</style>
     </section>
   );
 }
 
-function Field({ label, icon, children }: { label: string; icon?: React.ReactNode; children: React.ReactNode }) {
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[.17em] text-black/45">
-        {icon}{label}
+      <span className="mb-2 block text-[9px] font-semibold uppercase tracking-[.22em] text-white/35">
+        {label}
       </span>
       {children}
     </label>
