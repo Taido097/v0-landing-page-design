@@ -53,15 +53,15 @@ const projects: Project[] = [
     accent: 'bg-[#ead5dc] text-[#341c24]',
   },
   {
-    name: 'Harvest & Ember',
-    category: 'Restaurant',
-    headline: 'Seasonal food. Warm hospitality. Memorable nights.',
+    name: 'Qitchen Sushi',
+    category: 'Japanese Restaurant',
+    headline: 'Sushi Sensation. Precision in every bite.',
     image:
-      'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1600&q=82',
+      'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=1600&q=82',
     video: 'https://www.pexels.com/download/video/4253333/',
-    objectPosition: 'center 55%',
+    objectPosition: 'center 48%',
     href: '/portfolio/restaurant-website',
-    accent: 'bg-amber-300 text-[#28170a]',
+    accent: 'bg-[#f0e7d8] text-[#1a1713]',
   },
 ];
 
