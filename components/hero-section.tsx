@@ -2,66 +2,59 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { AnimatedDemoPreview } from '@/components/animated-demo-preview';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ExternalLink } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import type { MouseEvent } from 'react';
 import { useEffect, useState } from 'react';
 
+type PreviewVariant = 'photography' | 'auto' | 'salon' | 'restaurant';
+
 type Project = {
   name: string;
-  category: string;
-  headline: string;
   image: string;
   video: string;
   objectPosition: string;
   href: string;
-  accent: string;
+  variant: PreviewVariant;
 };
 
 const projects: Project[] = [
   {
     name: 'Luna Frame Studio',
-    category: 'Photography',
-    headline: 'Stories that feel as beautiful as they looked.',
     image:
       'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1600&q=82',
     video: 'https://www.pexels.com/download/video/25839108/',
     objectPosition: 'center 42%',
     href: '/portfolio/photography-studio',
-    accent: 'bg-[#efe3d5] text-[#241c16]',
+    variant: 'photography',
   },
   {
     name: 'Apex Auto Care',
-    category: 'Auto Repair',
-    headline: 'Fast repairs. Honest pricing. No surprises.',
     image:
       'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=1600&q=82',
     video: 'https://www.pexels.com/download/video/8987453/',
     objectPosition: 'center 48%',
     href: '/portfolio/auto-repair-shop',
-    accent: 'bg-red-600 text-white',
+    variant: 'auto',
   },
   {
     name: 'Velvet Glow Salon',
-    category: 'Salon & Spa',
-    headline: 'Beauty that feels personal and effortless.',
     image:
       'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1600&q=82',
     video: 'https://www.pexels.com/download/video/7754397/',
     objectPosition: 'center 44%',
     href: '/portfolio/salon-spa',
-    accent: 'bg-[#ead5dc] text-[#341c24]',
+    variant: 'salon',
   },
   {
     name: 'Qitchen Sushi',
-    category: 'Japanese Restaurant',
-    headline: 'Sushi Sensation. Precision in every bite.',
     image:
-      'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=1600&q=82',
+      'https://framerusercontent.com/images/10I4GJR5nYsUsYnoOPIDjoapkA.webp?height=1400&width=1100',
     video: 'https://www.pexels.com/download/video/4253333/',
     objectPosition: 'center 48%',
     href: '/portfolio/restaurant-website',
-    accent: 'bg-[#f0e7d8] text-[#1a1713]',
+    variant: 'restaurant',
   },
 ];
 
@@ -71,7 +64,7 @@ export function HeroSection() {
   useEffect(() => {
     const timer = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % projects.length);
-    }, 5200);
+    }, 7200);
 
     return () => window.clearInterval(timer);
   }, []);
@@ -111,37 +104,22 @@ export function HeroSection() {
 
         @keyframes showcaseCenterFloat {
           0%, 100% { transform: translate3d(0, 0, 0); }
-          50% { transform: translate3d(0, -9px, 0); }
+          50% { transform: translate3d(0, -7px, 0); }
         }
 
         @keyframes showcaseLeftFloat {
-          0%, 100% { transform: rotate(-6deg) translate3d(0, 0, 0); }
-          50% { transform: rotate(-4deg) translate3d(0, -11px, 0); }
+          0%, 100% { transform: rotate(-5deg) translate3d(0, 0, 0); }
+          50% { transform: rotate(-3deg) translate3d(0, -9px, 0); }
         }
 
         @keyframes showcaseRightFloat {
-          0%, 100% { transform: rotate(6deg) translate3d(0, 0, 0); }
-          50% { transform: rotate(4deg) translate3d(0, 10px, 0); }
-        }
-
-        @keyframes showcaseShine {
-          0% { transform: translateX(-160%) skewX(-20deg); }
-          55%, 100% { transform: translateX(280%) skewX(-20deg); }
+          0%, 100% { transform: rotate(5deg) translate3d(0, 0, 0); }
+          50% { transform: rotate(3deg) translate3d(0, 9px, 0); }
         }
 
         .showcase-center-card { animation: showcaseCenterFloat 6s ease-in-out infinite; }
         .showcase-left-card { animation: showcaseLeftFloat 7.5s ease-in-out infinite; }
         .showcase-right-card { animation: showcaseRightFloat 8.2s ease-in-out infinite; }
-
-        .showcase-shine::after {
-          content: '';
-          position: absolute;
-          inset: -35% auto -35% -25%;
-          width: 27%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,.16), transparent);
-          animation: showcaseShine 5.8s ease-in-out infinite;
-          pointer-events: none;
-        }
 
         .showcase-center-wrap {
           transform: translate3d(var(--center-x), var(--center-y), 0) translateX(-50%);
@@ -158,8 +136,7 @@ export function HeroSection() {
         @media (prefers-reduced-motion: reduce) {
           .showcase-center-card,
           .showcase-left-card,
-          .showcase-right-card,
-          .showcase-shine::after {
+          .showcase-right-card {
             animation: none !important;
           }
         }
@@ -173,7 +150,7 @@ export function HeroSection() {
             active={index === activeIndex}
           />
         ))}
-        <div className="absolute inset-0 z-10 bg-[linear-gradient(to_bottom,rgba(0,0,0,.58)_0%,rgba(0,0,0,.47)_24%,rgba(0,0,0,.32)_55%,rgba(0,0,0,.72)_100%)]" />
+        <div className="absolute inset-0 z-10 bg-[linear-gradient(to_bottom,rgba(0,0,0,.62)_0%,rgba(0,0,0,.5)_24%,rgba(0,0,0,.34)_55%,rgba(0,0,0,.76)_100%)]" />
         <div className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_50%_42%,transparent_0%,rgba(0,0,0,.08)_46%,rgba(0,0,0,.34)_100%)]" />
         <div className="absolute inset-x-0 bottom-0 z-10 h-40 bg-gradient-to-t from-black via-black/55 to-transparent" />
       </div>
@@ -242,7 +219,7 @@ export function HeroSection() {
 
         <div className="relative z-40 mt-5 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
           <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/60">
-            Click the side previews to explore · Click the center to open
+            Live previews animate when in view · Click center to open
           </p>
           <div className="flex items-center gap-2" aria-label="Choose featured demo">
             {projects.map((project, index) => (
@@ -284,18 +261,18 @@ function HeroBackground({ project, active }: { project: Project; active: boolean
         fill
         sizes="100vw"
         style={{ objectPosition: project.objectPosition }}
-        className="object-cover brightness-[0.88] saturate-[0.95]"
+        className="object-cover brightness-[0.86] saturate-[0.92]"
       />
       <video
         autoPlay
         muted
         loop
         playsInline
-        preload="auto"
+        preload="metadata"
         poster={project.image}
         tabIndex={-1}
         style={{ objectPosition: project.objectPosition }}
-        className="absolute inset-0 h-full w-full object-cover brightness-[0.9] saturate-[0.95] motion-reduce:hidden"
+        className="absolute inset-0 h-full w-full object-cover brightness-[0.88] saturate-[0.92] motion-reduce:hidden"
       >
         <source src={project.video} type="video/mp4" />
       </video>
@@ -304,104 +281,12 @@ function HeroBackground({ project, active }: { project: Project; active: boolean
 }
 
 function WebsiteCard({ project, position }: { project: Project; position: 'center' | 'side' }) {
-  const isCenter = position === 'center';
-
   return (
-    <div
-      className={`showcase-shine relative overflow-hidden border border-white/25 bg-[#262626] font-sans shadow-[0_30px_80px_rgba(0,0,0,.42)] ${
-        isCenter
-          ? 'h-[300px] rounded-[1.35rem] sm:h-[350px] lg:h-[400px]'
-          : 'h-[225px] rounded-[1.1rem] sm:h-[270px] lg:h-[310px]'
-      }`}
-    >
-      <Image
-        src={project.image}
-        alt={`${project.name} website design preview`}
-        fill
-        sizes={isCenter ? '(max-width: 1024px) 62vw, 47vw' : '(max-width: 1024px) 46vw, 32vw'}
-        style={{ objectPosition: project.objectPosition }}
-        className="object-cover brightness-[1.08] saturate-[1.03] transition-transform duration-700 group-hover:scale-[1.025]"
-      />
-
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,.58)_0%,rgba(0,0,0,.28)_40%,rgba(0,0,0,.03)_72%),linear-gradient(to_bottom,rgba(0,0,0,.22),transparent_38%,rgba(0,0,0,.2))]" />
-
-      <div
-        className={`absolute inset-x-0 top-0 z-10 flex items-center justify-between border-b border-white/15 bg-black/12 text-white backdrop-blur-[2px] ${
-          isCenter ? 'px-5 py-4 sm:px-7 sm:py-5' : 'px-4 py-3.5'
-        }`}
-      >
-        <span
-          className={`${
-            isCenter ? 'text-xs sm:text-sm' : 'text-[10px] sm:text-xs'
-          } font-semibold tracking-[-0.01em]`}
-        >
-          {project.name}
-        </span>
-        <div
-          className={`items-center font-medium uppercase tracking-[0.12em] text-white/82 ${
-            isCenter
-              ? 'hidden gap-5 text-[8px] sm:flex lg:text-[9px]'
-              : 'hidden gap-3 text-[7px] md:flex'
-          }`}
-        >
-          <span>Services</span>
-          <span>About</span>
-          <span>Gallery</span>
-          <span>Contact</span>
-        </div>
-      </div>
-
-      <div
-        className={`absolute z-10 text-white ${
-          isCenter
-            ? 'left-5 top-[29%] max-w-[66%] sm:left-7 sm:top-[28%]'
-            : 'bottom-5 left-4 right-4 sm:bottom-6 sm:left-5'
-        }`}
-      >
-        <p
-          className={`${
-            isCenter ? 'text-[9px] sm:text-[10px]' : 'text-[8px]'
-          } font-semibold uppercase tracking-[0.2em] text-white/80`}
-        >
-          {project.category}
-        </p>
-        <h2
-          className={`mt-2 font-semibold tracking-[-0.04em] drop-shadow-[0_2px_12px_rgba(0,0,0,.45)] ${
-            isCenter
-              ? 'text-2xl leading-[1.02] sm:text-3xl lg:text-[2.45rem]'
-              : 'max-w-[90%] text-lg leading-[1.06] sm:text-xl'
-          }`}
-        >
-          {project.headline}
-        </h2>
-
-        {isCenter && (
-          <div
-            className={`mt-5 inline-flex items-center gap-2 rounded-none px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.09em] shadow-sm sm:text-xs ${project.accent}`}
-          >
-            View project
-            <ExternalLink className="h-3.5 w-3.5" />
-          </div>
-        )}
-      </div>
-
-      {isCenter && (
-        <div className="absolute inset-x-0 bottom-0 z-10 hidden border-t border-white/60 bg-white/92 text-black backdrop-blur-md sm:grid sm:grid-cols-4">
-          {['Custom design', 'Mobile ready', 'Fast & clear', 'Built to convert'].map((item) => (
-            <div key={item} className="border-r border-black/10 px-3 py-3.5 text-center last:border-r-0">
-              <p className="text-[8px] font-semibold uppercase tracking-[0.12em] text-black/62 lg:text-[9px]">
-                {item}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {!isCenter && (
-        <div className="absolute bottom-4 right-4 z-10 rounded-none border border-white/50 bg-white/88 px-3 py-1.5 text-[8px] font-semibold uppercase tracking-[0.09em] text-black/70 backdrop-blur-md sm:bottom-5 sm:right-5">
-          Bring to center
-        </div>
-      )}
-    </div>
+    <AnimatedDemoPreview
+      variant={project.variant}
+      name={project.name}
+      image={project.image}
+      isCenter={position === 'center'}
+    />
   );
 }
