@@ -36,7 +36,7 @@ const projects: Project[] = [
     headline: 'Fast repairs. Honest pricing. No surprises.',
     image:
       'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=1600&q=82',
-    video: 'https://www.pexels.com/download/video/4823674/',
+    video: 'https://www.pexels.com/download/video/8987453/',
     objectPosition: 'center 48%',
     href: '/portfolio/auto-repair-shop',
     accent: 'bg-red-600 text-white',
