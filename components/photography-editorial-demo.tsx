@@ -2,42 +2,63 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import type { CSSProperties } from 'react';
 
-const projectImages = [
-  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=900&q=88',
-  'https://images.unsplash.com/photo-1521119989659-a83eee488004?auto=format&fit=crop&w=900&q=88',
-  'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=900&q=88',
-  'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=88',
-  'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=88',
-  'https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?auto=format&fit=crop&w=900&q=88',
-  'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=88',
-  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=88',
-  'https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?auto=format&fit=crop&w=900&q=88',
-  'https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=900&q=88',
-  'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=900&q=88',
-  'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=900&q=88',
+type HeroImage = {
+  src: string;
+  finalRotate: number;
+  group: 1 | 2 | 3 | 4;
+  x: number;
+  y: number;
+  rotate: number;
+  rotateX: number;
+  rotateY: number;
+  scale: number;
+};
+
+const heroImages: HeroImage[] = [
+  { src: 'https://framerusercontent.com/images/yIrZXCStv1OSKgU3LeSDNUk8.png?width=1200&height=1799', finalRotate: 5, group: 4, x: 121, y: 77, rotate: 6, rotateX: 24, rotateY: -47, scale: .3 },
+  { src: 'https://framerusercontent.com/images/hy8DPmqfuubnG4z6KVW21Noim3k.png?width=750&height=1125', finalRotate: -5, group: 1, x: 112, y: 0, rotate: -14, rotateX: 0, rotateY: -70, scale: .3 },
+  { src: 'https://framerusercontent.com/images/YN7uZ6616b5EToA62ayKCfXDN8.png?width=609&height=768', finalRotate: -4, group: 2, x: 210, y: -108, rotate: -25, rotateX: -32, rotateY: -24, scale: .3 },
+  { src: 'https://framerusercontent.com/images/4vdqIXoUGYvEAYjE1bGxf2b99U.png?width=736&height=1104', finalRotate: 3, group: 3, x: 71, y: 106, rotate: 19, rotateX: 40, rotateY: -20, scale: .2 },
+  { src: 'https://framerusercontent.com/images/nhXfOcaOehNBmm7KIBIRkPYgVs.png?width=1080&height=1350', finalRotate: -3, group: 2, x: 0, y: 0, rotate: 0, rotateX: -18, rotateY: 0, scale: .4 },
+  { src: 'https://framerusercontent.com/images/dJYUrSojOaQLyxmGh7J0FA0Lys.png?width=736&height=920', finalRotate: 6, group: 4, x: 62, y: -114, rotate: 28, rotateX: -62, rotateY: 25, scale: .4 },
+  { src: 'https://framerusercontent.com/images/uq180aSePM1LYy4AzlTD9RjtOM.png?width=736&height=920', finalRotate: 4, group: 4, x: 0, y: 0, rotate: 0, rotateX: 20, rotateY: 4, scale: .4 },
+  { src: 'https://framerusercontent.com/images/PRVlMQdxdekMiWP3bqqhbsrUVs.png?width=896&height=1344', finalRotate: 5, group: 2, x: 0, y: 0, rotate: 0, rotateX: -18, rotateY: 0, scale: .4 },
+  { src: 'https://framerusercontent.com/images/5vy8xYVbwltpvCKLNTujrSqR7j0.png?width=750&height=1126', finalRotate: -1, group: 3, x: -100, y: -125, rotate: 0, rotateX: -56, rotateY: 0, scale: .2 },
+  { src: 'https://framerusercontent.com/images/cqp5MgdA765vd6QxFBN4GT6fio.png?width=736&height=1103', finalRotate: -4, group: 2, x: -186, y: 98, rotate: -18, rotateX: 23, rotateY: 26, scale: .3 },
+  { src: 'https://framerusercontent.com/images/8k3F10wiAUCV1Rjw5Fi1SQySR4.png?width=896&height=1280', finalRotate: 6, group: 1, x: -112, y: 0, rotate: 14, rotateX: 0, rotateY: 70, scale: .3 },
+  { src: 'https://framerusercontent.com/images/YJ2QNB6OG5lHB6PiWzPez4Eg4.png?width=1200&height=1600', finalRotate: 0, group: 4, x: -86, y: -70, rotate: -6, rotateX: -25, rotateY: 23, scale: .3 },
 ];
 
-const cardRotations = [-2, 1, -1, 2, -1.5, 1, 1.5, -2, 1, -1, 2, -1.5];
-const cardDepth = [90, 150, 70, 125, 185, 95, 140, 80, 170, 115, 75, 155];
+const projects = [
+  { name: 'LUMIÈRE', meta: 'Editorial Fashion', image: 'https://framerusercontent.com/images/utnmS2W3FrDn7DwfxgTbsKYjA.png?width=960&height=1200' },
+  { name: 'SILENCE', meta: 'Portrait · Documentary', image: 'https://framerusercontent.com/images/AhJtPwhjE62p08bXUPIRVn3NGiQ.png?width=961&height=1200' },
+  { name: 'TERRAIN', meta: 'Commercial · Travel', image: 'https://framerusercontent.com/images/UYAjeQ6aXoXctPOTlHOeGo23HcM.png?width=1200&height=1800' },
+  { name: 'REGARD', meta: 'Portrait · Press', image: 'https://framerusercontent.com/images/4XDKBQzLWRqFKlDZNeniPTN9ArU.png?width=735&height=895' },
+  { name: 'SAISON', meta: 'Editorial Fashion', image: 'https://framerusercontent.com/images/6OvBmWhVDS6GA9MnQZDNHyV1yA.png?width=736&height=920' },
+  { name: 'HORIZON', meta: 'Commercial · Campaign', image: 'https://framerusercontent.com/images/WCIGFGY62oWyMpmE4NVo2YWdXI.png?width=736&height=890' },
+];
 
-const portrait =
-  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1000&q=88';
-const workOne =
-  'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=90';
-const workTwo =
-  'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1800&q=90';
+const services = [
+  ['01', 'Editorial & Fashion', 'Campaigns, lookbooks, and editorial shoots for magazines and fashion houses. Available for single-day and multi-day productions across Europe and internationally.'],
+  ['02', 'Commercial & Advertising', 'Product, lifestyle, and brand photography for commercial use across print, digital, and out-of-home. Working directly with brands and through agencies.'],
+  ['03', 'Portrait & Documentary', 'Intimate portrait sessions and long-form documentary projects. Individuals, founders, artists, and cultural figures. Shot with natural light wherever possible.'],
+  ['04', 'Art Direction', 'Creative direction for photo productions — concept development, casting, location scouting, and full on-set direction. Available as a standalone service or alongside shooting.'],
+];
+
+const portrait = 'https://framerusercontent.com/images/gPkgBcGwatmPdwzMlpToFBHNSs.png?width=912&height=1170';
 
 function clamp(value: number, min = 0, max = 1) {
   return Math.min(max, Math.max(min, value));
 }
 
+function mix(from: number, to: number, progress: number) {
+  return from + (to - from) * progress;
+}
+
 export function PhotographyEditorialDemo() {
   const heroRef = useRef<HTMLElement | null>(null);
-  const projectsRef = useRef<HTMLElement | null>(null);
   const [heroProgress, setHeroProgress] = useState(0);
-  const [projectProgress, setProjectProgress] = useState(0);
 
   useEffect(() => {
     let raf = 0;
@@ -46,33 +67,12 @@ export function PhotographyEditorialDemo() {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
         const hero = heroRef.current;
-        const projects = projectsRef.current;
-
-        if (hero) {
-          const rect = hero.getBoundingClientRect();
-          const distance = Math.max(window.innerHeight, hero.offsetHeight);
-          setHeroProgress(clamp(-rect.top / distance));
-        }
-
-        if (projects) {
-          const rect = projects.getBoundingClientRect();
-          const start = window.innerHeight * 0.88;
-          const end = window.innerHeight * 0.12;
-          setProjectProgress(clamp((start - rect.top) / (start - end)));
-        }
+        if (!hero) return;
+        const rect = hero.getBoundingClientRect();
+        const travel = Math.max(1, hero.offsetHeight - window.innerHeight);
+        setHeroProgress(clamp(-rect.top / travel));
       });
     };
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) entry.target.classList.add('lm-visible');
-        });
-      },
-      { threshold: 0.14, rootMargin: '0px 0px -7% 0px' },
-    );
-
-    document.querySelectorAll('.lm-observe').forEach((element) => observer.observe(element));
 
     update();
     window.addEventListener('scroll', update, { passive: true });
@@ -80,262 +80,378 @@ export function PhotographyEditorialDemo() {
 
     return () => {
       cancelAnimationFrame(raf);
-      observer.disconnect();
       window.removeEventListener('scroll', update);
       window.removeEventListener('resize', update);
     };
   }, []);
 
-  const heroTitleY = heroProgress * -95;
-  const heroTitleScale = 1 - heroProgress * 0.075;
-  const heroTitleOpacity = 1 - heroProgress * 0.78;
-  const heroPortraitY = heroProgress * -42;
-  const heroPortraitX = heroProgress * 74;
-  const heroPortraitRotate = heroProgress * 5;
+  const titleExit = clamp((heroProgress - .08) / .2);
+  const gridFadeOut = 1 - clamp((heroProgress - .86) / .12);
 
   return (
-    <main className="lm-page min-h-screen overflow-x-hidden bg-[#050505] text-[#f0eee8] selection:bg-[#f0eee8] selection:text-black">
+    <main className="lm-page bg-black text-white selection:bg-white selection:text-black">
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Schibsted+Grotesk:wght@400;500;700&display=swap');
+
+        html { scroll-behavior: smooth; }
+
         .lm-page {
-          --paper: #f0eee8;
-          --dim: rgba(240, 238, 232, .42);
-          --serif: 'Times New Roman', Times, Georgia, serif;
+          --serif: 'Instrument Serif', Georgia, serif;
+          --sans: 'Schibsted Grotesk', Arial, sans-serif;
+          min-height: 100vh;
+          overflow-x: clip;
+          background: #000;
+          font-family: var(--sans);
         }
 
         .lm-serif { font-family: var(--serif); }
 
-        .lm-observe {
+        .lm-nav-link {
+          position: relative;
+          text-decoration: none;
+        }
+        .lm-nav-link::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          right: 100%;
+          bottom: -4px;
+          height: 1px;
+          background: #fff;
+          transition: right .35s cubic-bezier(.22,1,.36,1);
+        }
+        .lm-nav-link:hover::after { right: 0; }
+
+        .lm-hero-grid {
+          width: min(92vw, 1420px);
+          display: grid;
+          grid-template-columns: repeat(6, minmax(0, 1fr));
+          gap: 54px 68px;
+          perspective: 800px;
+          transform-style: preserve-3d;
+        }
+        .lm-hero-card { aspect-ratio: 1 / 1; transform-style: preserve-3d; }
+        .lm-hero-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        .lm-reveal {
           opacity: 0;
-          transform: translate3d(0, 72px, 0);
-          transition:
-            opacity 1.05s cubic-bezier(.22,1,.36,1),
-            transform 1.2s cubic-bezier(.22,1,.36,1);
+          transform: translateY(60px);
+          animation: lmReveal linear both;
+          animation-timeline: view();
+          animation-range: entry 5% cover 34%;
         }
 
-        .lm-observe.lm-visible {
-          opacity: 1;
-          transform: translate3d(0, 0, 0);
+        @keyframes lmReveal {
+          to { opacity: 1; transform: translateY(0); }
         }
 
-        .lm-image-reveal {
-          clip-path: inset(10% 0 10% 0);
-          transform: scale(1.08);
-          transition:
-            clip-path 1.35s cubic-bezier(.22,1,.36,1),
-            transform 1.7s cubic-bezier(.22,1,.36,1);
+        .lm-project img {
+          transition: transform .75s cubic-bezier(.22,1,.36,1), filter .75s cubic-bezier(.22,1,.36,1);
         }
+        .lm-project:hover img { transform: scale(1.025); filter: brightness(.88); }
 
-        .lm-visible .lm-image-reveal,
-        .lm-image-reveal.lm-visible {
-          clip-path: inset(0 0 0 0);
-          transform: scale(1);
-        }
-
-        .lm-story-image {
-          transform: translate3d(0, 82px, 0) rotate(-3deg);
+        .lm-project::before,
+        .lm-project::after {
+          content: '';
+          position: absolute;
+          z-index: 3;
+          pointer-events: none;
+          width: 12px;
+          height: 12px;
           opacity: 0;
-          transition:
-            opacity 1.05s cubic-bezier(.22,1,.36,1),
-            transform 1.35s cubic-bezier(.22,1,.36,1);
+          transition: opacity .25s ease;
+        }
+        .lm-project::before {
+          left: 4px; top: 4px;
+          border-left: 1px solid white;
+          border-top: 1px solid white;
+        }
+        .lm-project::after {
+          right: 4px; bottom: 4px;
+          border-right: 1px solid white;
+          border-bottom: 1px solid white;
+        }
+        .lm-project:hover::before,
+        .lm-project:hover::after { opacity: 1; }
+
+        .lm-ticker-track {
+          display: flex;
+          width: max-content;
+          animation: lmTicker 26s linear infinite;
+        }
+        @keyframes lmTicker { to { transform: translateX(-50%); } }
+
+        @media (max-width: 1199px) {
+          .lm-hero-grid {
+            width: min(92vw, 870px);
+            grid-template-columns: repeat(4, minmax(0,1fr));
+            gap: 32px;
+          }
         }
 
-        .lm-visible .lm-story-image {
-          opacity: 1;
-          transform: translate3d(0,0,0) rotate(0deg);
+        @media (max-width: 809px) {
+          .lm-hero-grid {
+            width: min(92vw, 560px);
+            grid-template-columns: repeat(3, minmax(0,1fr));
+            gap: 18px;
+          }
+          .lm-desktop-nav { display: none !important; }
         }
-
-        .lm-stagger-1 { transition-delay: 80ms; }
-        .lm-stagger-2 { transition-delay: 170ms; }
-        .lm-stagger-3 { transition-delay: 260ms; }
 
         @media (prefers-reduced-motion: reduce) {
-          .lm-observe,
-          .lm-image-reveal,
-          .lm-story-image {
-            opacity: 1 !important;
-            transform: none !important;
-            clip-path: none !important;
-            transition: none !important;
-          }
+          html { scroll-behavior: auto; }
+          .lm-ticker-track, .lm-reveal { animation: none !important; }
+          .lm-reveal { opacity: 1; transform: none; }
         }
       `}</style>
 
-      <header className="fixed inset-x-0 top-0 z-[100] bg-[#050505]/82 backdrop-blur-[3px]">
-        <div className="grid h-10 grid-cols-[1fr_auto_1fr] items-center px-3 text-[7px] font-medium tracking-[-.01em] text-white sm:px-4 lg:grid-cols-[1fr_2fr_1fr]">
-          <Link href="/#portfolio" className="lm-serif text-[13px] leading-none tracking-[-.04em] text-white">
-            Luna Frame
+      <header className="fixed inset-x-0 top-0 z-[100] h-12 bg-black/20 backdrop-blur-[2px]">
+        <div className="mx-auto grid h-full max-w-[1600px] grid-cols-[1fr_auto] items-center px-3 sm:px-5 lg:grid-cols-[1fr_3fr_1fr] lg:px-8">
+          <Link href="/" className="lm-serif text-[21px] leading-none tracking-[-.06em] text-white">
+            Luca Mori
           </Link>
 
-          <nav className="hidden items-center justify-around gap-8 sm:flex">
-            <a href="#projects" className="transition hover:text-white/55">Projects</a>
-            <a href="#services" className="transition hover:text-white/55">Services</a>
-            <a href="#about" className="transition hover:text-white/55">About</a>
-            <a href="#contact" className="transition hover:text-white/55">Contact</a>
+          <nav className="lm-desktop-nav hidden items-center justify-around text-[9px] text-white lg:flex">
+            <a className="lm-nav-link" href="#projects">Projects</a>
+            <a className="lm-nav-link" href="#services">Services</a>
+            <a className="lm-nav-link" href="#about">About</a>
+            <Link className="lm-nav-link" href="/contact">Contact</Link>
           </nav>
 
-          <span className="justify-self-end text-white/28">© 2026</span>
+          <div className="justify-self-end text-[9px] text-white/50 lg:block">Amsterdam</div>
         </div>
       </header>
 
-      <section ref={heroRef} className="relative flex min-h-[120svh] items-start overflow-hidden px-4 pt-10 sm:px-7 lg:px-10">
-        <div className="sticky top-0 mx-auto flex h-screen w-full max-w-[1800px] items-center justify-center overflow-hidden">
-          <h1
-            className="lm-serif relative z-10 whitespace-nowrap text-center text-[clamp(5.2rem,15.7vw,16rem)] font-normal leading-[.76] tracking-[-.09em] text-[#f3f1eb] will-change-transform"
-            style={{
-              transform: `translate3d(0, ${heroTitleY}px, 0) scale(${heroTitleScale})`,
-              opacity: heroTitleOpacity,
-            }}
-          >
-            Luna Frame
-          </h1>
-
-          <figure
-            className="absolute left-1/2 top-[44%] z-20 w-[clamp(118px,15vw,235px)] bg-[#aaa] will-change-transform"
-            style={{
-              transform: `translate3d(calc(-32% + ${heroPortraitX}px), calc(-50% + ${heroPortraitY}px), 0) rotate(${heroPortraitRotate}deg)`,
-            }}
-          >
-            <img
-              src={portrait}
-              alt="Luna Frame photographer portrait"
-              className="aspect-[4/5] w-full object-cover grayscale"
-            />
-            <figcaption className="absolute left-1/2 top-[calc(100%+18px)] w-[210px] -translate-x-1/2 text-center text-[7px] leading-[1.7] text-white/82">
-              <span className="block">Photographer — Orange County</span>
-              <span className="block text-white/45">Editorial · Weddings · Commercial</span>
-            </figcaption>
-          </figure>
-
+      <section ref={heroRef} className="relative h-[3791px] bg-black">
+        <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden bg-black px-4 py-6">
           <div
-            className="absolute bottom-5 left-0 right-0 flex justify-between text-[7px] text-white/28"
-            style={{ opacity: 1 - heroProgress * 2 }}
+            className="absolute left-1/2 top-1/2 z-30 flex w-full -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-6 px-5"
+            style={{
+              opacity: 1 - titleExit,
+              transform: `translate(-50%, -50%) scale(${mix(1, .7, titleExit)})`,
+            }}
           >
-            <span>Scroll to explore</span>
-            <span>01 — 04</span>
+            <div className="relative flex w-full max-w-[1500px] items-center justify-center">
+              <figure
+                className="absolute left-[49.25%] top-1/2 z-0 h-[315px] w-[271px] -translate-x-1/2 -translate-y-[48%] overflow-hidden"
+                style={{ transform: `translate(-50%, -48%) rotate(${mix(0, -7, titleExit)}deg)` }}
+              >
+                <img src={portrait} alt="" className="h-full w-full object-cover" />
+              </figure>
+
+              <h1 className="lm-serif relative z-10 w-full whitespace-nowrap text-center text-[clamp(6rem,20.9vw,18.8rem)] font-normal leading-[.9] tracking-[-.04em] mix-blend-difference">
+                Luca Mori
+              </h1>
+            </div>
+
+            <div className="flex flex-col items-center gap-2 text-[11px] leading-none text-white">
+              <span>Photographer — Amsterdam</span>
+              <span>Editorial · Fashion · Commercial</span>
+            </div>
+          </div>
+
+          <div className="absolute inset-0 z-20 flex items-center justify-center" style={{ opacity: gridFadeOut }}>
+            <div className="lm-hero-grid">
+              {heroImages.map((item, index) => {
+                const threshold = item.group === 1 ? .16 : item.group === 2 ? .30 : item.group === 3 ? .45 : .58;
+                const p = clamp((heroProgress - threshold) / .18);
+                const opacity = p;
+                const rotate = mix(item.rotate, item.finalRotate, p);
+                const rotateX = mix(item.rotateX, 0, p);
+                const rotateY = mix(item.rotateY, 0, p);
+                const x = mix(item.x, 0, p);
+                const y = mix(item.y, 0, p);
+                const scale = mix(item.scale, 1, p);
+
+                return (
+                  <figure
+                    key={item.src}
+                    className="lm-hero-card overflow-hidden"
+                    style={{
+                      opacity,
+                      transform: `translate3d(${x}px, ${y}px, 0) rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotate(${rotate}deg) scale(${scale})`,
+                      transition: 'transform 80ms linear, opacity 80ms linear',
+                    }}
+                  >
+                    <img src={item.src} alt={`Luca Mori portfolio image ${index + 1}`} />
+                  </figure>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
 
-      <section ref={projectsRef} id="projects" className="relative min-h-[100svh] scroll-mt-10 px-4 pb-24 pt-20 sm:px-7 lg:px-10">
-        <div className="mx-auto max-w-[1700px]">
-          <div className="mb-10 flex items-center justify-between text-[7px] text-white/46">
-            <span>Projects</span>
-            <span>Selected frames · 01—12</span>
+      <section id="intro" className="relative px-5 py-[150px] sm:px-8">
+        <div className="mx-auto flex max-w-[1400px] flex-col items-center gap-[58px]">
+          <div className="h-[273px] w-px bg-white/20" />
+          <div className="flex w-full max-w-[704px] flex-col items-center gap-5 text-center">
+            <SmallLabel>Intro</SmallLabel>
+            <RevealText text="I photograph the moment before the moment. The tension, the light, the feeling that something is about to happen." />
           </div>
 
-          <div className="grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-6 lg:gap-x-7 lg:gap-y-14">
-            {projectImages.map((src, index) => {
-              const delayed = clamp(projectProgress * 1.35 - index * 0.035);
-              const y = (1 - delayed) * cardDepth[index];
-              const rotation = cardRotations[index] * delayed;
-              const scale = 0.91 + delayed * 0.09;
-              const opacity = clamp(delayed * 1.35);
-
-              return (
-                <figure
-                  key={src}
-                  className="group relative will-change-transform"
-                  style={{
-                    opacity,
-                    transform: `translate3d(0, ${y}px, 0) rotate(${rotation}deg) scale(${scale})`,
-                    transition: 'transform 70ms linear, opacity 120ms linear',
-                  }}
-                >
-                  <div className="overflow-hidden bg-[#111]">
-                    <img
-                      src={src}
-                      alt={`Luna Frame selected project ${index + 1}`}
-                      className="aspect-[4/5] w-full object-cover transition duration-[1100ms] ease-out group-hover:scale-[1.045]"
-                    />
+          <div className="mt-2 flex w-full flex-col items-center gap-6 overflow-hidden">
+            <SmallLabel>Commissioned by</SmallLabel>
+            <div className="w-full overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_7%,#000_87%,transparent)]">
+              <div className="lm-ticker-track gap-10 py-5 text-[12px] uppercase tracking-[.04em] text-white/70">
+                {[0, 1].map((copy) => (
+                  <div key={copy} className="flex shrink-0 gap-10 pr-10">
+                    {['DRIVE JOURNAL','MAISON VENTURI','DENZY','THE METROPOLITAN','AUTRE','ONEAUTO','LUMIÈRE MAGAZINE','NORD COLLECTIVE'].map((item) => <span key={`${copy}-${item}`}>{item}</span>)}
                   </div>
-                  <figcaption className="mt-2 flex items-center justify-between text-[6px] text-white/36">
-                    <span>{String(index + 1).padStart(2, '0')}</span>
-                    <span>{index % 3 === 0 ? 'Editorial' : index % 3 === 1 ? 'Portrait' : 'Campaign'}</span>
-                  </figcaption>
-                </figure>
-              );
-            })}
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section id="services" className="flex min-h-[100svh] scroll-mt-10 items-center justify-center px-5 py-28">
-        <div className="lm-observe w-full max-w-[760px] text-center">
-          <p className="mb-8 text-[7px] text-white/40">• Intro</p>
-          <p className="lm-serif text-[clamp(2rem,4.1vw,4.5rem)] font-normal leading-[.92] tracking-[-.045em] text-white/48">
-            I photograph the second before the story reveals itself — the tension, the light, the feeling that something is about to happen.
-          </p>
-          <p className="mt-20 text-[7px] text-white/28">• Commissioned by people, brands, and stories worth remembering</p>
+      <section id="projects" className="relative px-5 py-[150px] sm:px-8">
+        <div className="mx-auto flex max-w-[1400px] flex-col gap-10">
+          <div className="lm-reveal flex items-end justify-between">
+            <h2 className="text-[20px] font-medium tracking-[-.04em]">Selected Works</h2>
+            <SmallLabel>Projects</SmallLabel>
+          </div>
+
+          <div className="grid grid-cols-1 gap-[26px] md:grid-cols-2">
+            {projects.map((project, index) => (
+              <article key={project.name} className="lm-project lm-reveal relative overflow-hidden">
+                <div className="absolute inset-x-3 top-3 z-10 flex items-center justify-between text-[10px] text-white mix-blend-difference">
+                  <span>{project.name}</span>
+                  <span>{String(index + 1).padStart(2, '0')}</span>
+                </div>
+                <div className="aspect-[1.04/1] overflow-hidden bg-[#111]">
+                  <img src={project.image} alt={project.name} className="h-full w-full object-cover" />
+                </div>
+                <div className="mt-2 text-[10px] text-white/45">{project.meta}</div>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="flex min-h-[78svh] items-center px-4 py-20 sm:px-7 lg:px-10">
-        <div className="lm-observe mx-auto flex w-full max-w-[1700px] items-center justify-between text-[7px] text-white/48">
-          <span>Selected Works</span>
-          <span>• Projects</span>
-        </div>
-      </section>
-
-      <section className="min-h-[100svh] px-2 pb-28 sm:px-3 lg:px-4">
-        <div className="grid gap-3 md:grid-cols-2">
-          <figure className="lm-observe overflow-hidden bg-[#111]">
-            <img src={workOne} alt="Luna Frame landscape project" className="lm-image-reveal h-[42vh] min-h-[300px] w-full object-cover" />
-          </figure>
-          <figure className="lm-observe lm-stagger-2 overflow-hidden bg-[#111]">
-            <img src={workTwo} alt="Luna Frame fashion project" className="lm-image-reveal h-[42vh] min-h-[300px] w-full object-cover" />
-          </figure>
-        </div>
-      </section>
-
-      <section id="about" className="flex min-h-[100svh] scroll-mt-10 items-center px-4 py-28 sm:px-7 lg:px-10">
-        <div className="lm-observe mx-auto grid w-full max-w-[1500px] gap-10 lg:grid-cols-12 lg:items-center">
-          <div className="lg:col-span-3 lg:col-start-3">
-            <p className="mb-5 text-[7px] text-white/42">• My story</p>
-            <h2 className="lm-serif text-[clamp(2.2rem,3.8vw,4.3rem)] font-normal leading-[.88] tracking-[-.045em] text-white/82">
-              California-born.<br />Orange County-based.<br />Obsessed with light.
+      <section id="about" className="relative px-5 py-[150px] sm:px-8">
+        <div className="lm-reveal mx-auto grid max-w-[1400px] gap-14 lg:grid-cols-[276px_1fr] lg:items-start">
+          <div>
+            <SmallLabel>My story</SmallLabel>
+            <h2 className="lm-serif mt-5 text-[38px] leading-[1.02] tracking-[-.04em]">
+              “Italian-born.<br />Amsterdam-based.<br />Obsessed with light.”
             </h2>
           </div>
 
-          <figure className="lg:col-span-2">
-            <img src={portrait} alt="Luna Frame portrait" className="lm-story-image aspect-[4/5] w-full max-w-[250px] object-cover grayscale" />
-          </figure>
+          <div className="grid gap-8 md:grid-cols-[271px_1fr] md:items-start">
+            <figure className="h-[315px] overflow-hidden">
+              <img src={portrait} alt="Luca Mori" className="h-full w-full object-cover" />
+            </figure>
 
-          <div className="lm-stagger-2 max-w-xl text-[8px] leading-[1.8] text-white/42 lg:col-span-4">
-            <p>
-              I grew up watching small moments turn cinematic when the light was right. I did not know then that I was learning how to see.
-            </p>
-            <p className="mt-5">
-              I have spent years photographing people and brands that understand the difference between a photograph and an image that stays with you. The work lives somewhere between editorial precision and honest observation.
-            </p>
-            <p className="mt-5 text-white/28">Based in Orange County · Available worldwide.</p>
+            <div className="max-w-[560px] space-y-5 text-[15px] leading-[1.6] tracking-[-.02em] text-[#a3a3a3]">
+              <p>I grew up in Milan watching my father develop film in a darkroom. I didn&apos;t know then that I was learning to see. <strong className="text-white">I know now.</strong></p>
+              <p>I&apos;ve spent eight years shooting for the people and brands that understand the difference between a photograph and an image. I work in editorial, fashion, and commercial — but always with the same obsession: the fraction of a second where everything is true.</p>
+              <p>Based in Amsterdam since 2019. Available worldwide.</p>
+            </div>
           </div>
         </div>
       </section>
 
-      <section id="contact" className="relative flex min-h-[100svh] scroll-mt-10 items-center px-4 py-28 sm:px-7 lg:px-10">
-        <div className="lm-observe mx-auto grid w-full max-w-[1500px] lg:grid-cols-12">
-          <div className="lg:col-span-5 lg:col-start-8">
-            <p className="mb-7 text-[7px] text-white/42">• Available for commission</p>
-            <h2 className="lm-serif text-[clamp(3.3rem,6vw,7rem)] font-normal leading-[.84] tracking-[-.055em] text-[#f0eee8]">
-              Let&apos;s make something worth remembering.
+      <section id="services" className="relative px-5 pb-[150px] pt-[150px] sm:px-8">
+        <div className="mx-auto grid max-w-[1400px] gap-16 lg:grid-cols-[361px_1fr] lg:gap-[116px]">
+          <div className="lm-reveal lg:sticky lg:top-[200px] lg:self-start">
+            <SmallLabel>What I Offer</SmallLabel>
+            <h2 className="lm-serif mt-5 text-[38px] leading-[1.02] tracking-[-.04em]">
+              Available for the work<br />that demands precision.
             </h2>
-            <p className="mt-8 text-[7px] uppercase tracking-[.08em] text-white/30">Orange County — Worldwide</p>
-            <Link href="/contact" className="mt-12 inline-block border-b border-white/35 pb-1 text-[8px] text-white/72 transition hover:border-white hover:text-white">
-              Start a project
-            </Link>
+          </div>
+
+          <div>
+            {services.map(([number, title, body]) => (
+              <div key={number} className="lm-reveal grid min-h-[173px] grid-cols-[46px_1fr] gap-5 border-t border-white/15 py-7 sm:grid-cols-[70px_1fr]">
+                <div className="text-[13px] text-white/45">{number}</div>
+                <div className="grid gap-4 md:grid-cols-[220px_1fr] md:gap-10">
+                  <h3 className="text-[20px] font-medium tracking-[-.04em]">{title}</h3>
+                  <p className="max-w-xl text-[15px] leading-[1.6] tracking-[-.02em] text-[#a3a3a3]">{body}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-
-        <footer className="absolute inset-x-4 bottom-5 grid grid-cols-1 gap-3 text-[7px] text-white/34 sm:inset-x-7 sm:grid-cols-3 sm:items-end lg:inset-x-10">
-          <span className="lm-serif text-[16px] tracking-[-.04em] text-white/82">Luna Frame</span>
-          <span className="sm:text-center">© 2026 Luna Frame Studio. All rights reserved.</span>
-          <div className="flex gap-4 sm:justify-end">
-            <a href="#about" className="hover:text-white">About</a>
-            <a href="#projects" className="hover:text-white">Projects</a>
-            <a href="#contact" className="hover:text-white">Contact</a>
-          </div>
-        </footer>
       </section>
+
+      <footer id="contact" className="relative px-5 py-5 sm:px-8">
+        <div className="lm-reveal mx-auto flex max-w-[1400px] flex-col items-center gap-9 overflow-hidden py-[248px] text-center">
+          <SmallLabel>Available for commission</SmallLabel>
+          <Link href="/contact" className="lm-serif text-[clamp(3.1rem,6.3vw,4.75rem)] leading-[.9] tracking-[-.04em]">
+            Let&apos;s make something<br />worth remembering.
+          </Link>
+          <p className="text-[12px] uppercase text-[#878787]">AMSTERDAM — WORLDWIDE</p>
+        </div>
+
+        <div className="mx-auto flex max-w-[1400px] flex-col gap-8 pb-6 text-[11px] sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <div className="lm-serif text-[38px] leading-none tracking-[-.06em]">Luca Mori</div>
+            <p className="mt-5 text-[#878787]">© 2026 Luca Mori. All rights reserved.</p>
+          </div>
+          <nav className="flex gap-5 text-white">
+            <a className="lm-nav-link" href="#about">About</a>
+            <a className="lm-nav-link" href="#projects">Projects</a>
+            <Link className="lm-nav-link" href="/contact">Contact</Link>
+            <a className="lm-nav-link" href="https://instagram.com" target="_blank" rel="noreferrer">Instagram</a>
+          </nav>
+        </div>
+      </footer>
     </main>
+  );
+}
+
+function SmallLabel({ children }: { children: string }) {
+  return (
+    <div className="inline-flex items-center gap-2 text-[11px] text-white">
+      <span className="h-2 w-2 rounded-full bg-[#404040]" />
+      <span>{children}</span>
+    </div>
+  );
+}
+
+function RevealText({ text }: { text: string }) {
+  const ref = useRef<HTMLParagraphElement | null>(null);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    let raf = 0;
+    const update = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const node = ref.current;
+        if (!node) return;
+        const rect = node.getBoundingClientRect();
+        const start = window.innerHeight * .75;
+        const end = window.innerHeight * .15;
+        setProgress(clamp((start - rect.top) / Math.max(1, start - end)));
+      });
+    };
+
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+    };
+  }, []);
+
+  const chars = text.split('');
+
+  return (
+    <p ref={ref} className="lm-serif flex flex-wrap justify-center text-[clamp(2rem,4.4vw,3.3rem)] font-medium leading-[1.075] tracking-[-.029em]">
+      {chars.map((char, index) => {
+        const threshold = index / Math.max(1, chars.length - 1);
+        const local = clamp((progress - threshold) * 7);
+        const tone = Math.round(mix(102, 255, local));
+        return (
+          <span key={`${char}-${index}`} style={{ color: `rgb(${tone},${tone},${tone})` }}>
+            {char === ' ' ? '\u00A0' : char}
+          </span>
+        );
+      })}
+    </p>
   );
 }
