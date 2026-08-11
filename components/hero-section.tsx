@@ -6,7 +6,7 @@ import { AnimatedDemoPreview } from '@/components/animated-demo-preview';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import type { MouseEvent } from 'react';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 type PreviewVariant = 'photography' | 'auto' | 'salon' | 'restaurant';
 
@@ -60,13 +60,8 @@ const projects: Project[] = [
 
 export function HeroSection() {
   const [activeIndex, setActiveIndex] = useState(0);
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setActiveIndex((current) => (current + 1) % projects.length);
-    }, 18000);
-
-    return () => window.clearInterval(timer);
+  const advanceDemo = useCallback(() => {
+    setActiveIndex((current) => (current + 1) % projects.length);
   }, []);
 
   const previousIndex = (activeIndex - 1 + projects.length) % projects.length;
@@ -107,19 +102,9 @@ export function HeroSection() {
           50% { transform: translate3d(0, -7px, 0); }
         }
 
-        @keyframes showcaseLeftFloat {
-          0%, 100% { transform: rotate(-5deg) translate3d(0, 0, 0); }
-          50% { transform: rotate(-3deg) translate3d(0, -9px, 0); }
-        }
-
-        @keyframes showcaseRightFloat {
-          0%, 100% { transform: rotate(5deg) translate3d(0, 0, 0); }
-          50% { transform: rotate(3deg) translate3d(0, 9px, 0); }
-        }
-
         .showcase-center-card { animation: showcaseCenterFloat 6s ease-in-out infinite; }
-        .showcase-left-card { animation: showcaseLeftFloat 7.5s ease-in-out infinite; }
-        .showcase-right-card { animation: showcaseRightFloat 8.2s ease-in-out infinite; }
+        .showcase-left-card,
+        .showcase-right-card { animation: none; }
 
         .showcase-center-wrap {
           transform: translate3d(var(--center-x), var(--center-y), 0) translateX(-50%);
@@ -134,9 +119,7 @@ export function HeroSection() {
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .showcase-center-card,
-          .showcase-left-card,
-          .showcase-right-card {
+          .showcase-center-card {
             animation: none !important;
           }
         }
@@ -200,7 +183,7 @@ export function HeroSection() {
                 className="group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
                 aria-label={`Open ${activeProject.name} demo`}
               >
-                <WebsiteCard project={activeProject} position="center" />
+                <WebsiteCard project={activeProject} position="center" onComplete={advanceDemo} />
               </Link>
             </div>
           </div>
@@ -219,7 +202,7 @@ export function HeroSection() {
 
         <div className="relative z-40 mt-5 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
           <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/60">
-            The active card scrolls the real demo from top to bottom · Click center to open
+            Active demo auto-scrolls to halfway, then the next demo starts
           </p>
           <div className="flex items-center gap-2" aria-label="Choose featured demo">
             {projects.map((project, index) => (
@@ -280,7 +263,15 @@ function HeroBackground({ project, active }: { project: Project; active: boolean
   );
 }
 
-function WebsiteCard({ project, position }: { project: Project; position: 'center' | 'side' }) {
+function WebsiteCard({
+  project,
+  position,
+  onComplete,
+}: {
+  project: Project;
+  position: 'center' | 'side';
+  onComplete?: () => void;
+}) {
   return (
     <AnimatedDemoPreview
       variant={project.variant}
@@ -288,6 +279,7 @@ function WebsiteCard({ project, position }: { project: Project; position: 'cente
       image={project.image}
       href={project.href}
       isCenter={position === 'center'}
+      onComplete={onComplete}
     />
   );
 }
