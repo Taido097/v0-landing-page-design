@@ -12,6 +12,7 @@ type Project = {
   category: string;
   headline: string;
   image: string;
+  video: string;
   objectPosition: string;
   href: string;
   accent: string;
@@ -24,6 +25,7 @@ const projects: Project[] = [
     headline: 'Stories that feel as beautiful as they looked.',
     image:
       'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1600&q=82',
+    video: 'https://www.pexels.com/download/video/25839108/',
     objectPosition: 'center 42%',
     href: '/portfolio/photography-studio',
     accent: 'bg-[#efe3d5] text-[#241c16]',
@@ -34,6 +36,7 @@ const projects: Project[] = [
     headline: 'Fast repairs. Honest pricing. No surprises.',
     image:
       'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=1600&q=82',
+    video: 'https://www.pexels.com/download/video/4823674/',
     objectPosition: 'center 48%',
     href: '/portfolio/auto-repair-shop',
     accent: 'bg-red-600 text-white',
@@ -44,6 +47,7 @@ const projects: Project[] = [
     headline: 'Beauty that feels personal and effortless.',
     image:
       'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1600&q=82',
+    video: 'https://www.pexels.com/download/video/7754397/',
     objectPosition: 'center 44%',
     href: '/portfolio/salon-spa',
     accent: 'bg-[#ead5dc] text-[#341c24]',
@@ -54,6 +58,7 @@ const projects: Project[] = [
     headline: 'Seasonal food. Warm hospitality. Memorable nights.',
     image:
       'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1600&q=82',
+    video: 'https://www.pexels.com/download/video/4253333/',
     objectPosition: 'center 55%',
     href: '/portfolio/restaurant-website',
     accent: 'bg-amber-300 text-[#28170a]',
@@ -284,10 +289,26 @@ function WebsiteCard({ project, position }: { project: Project; position: 'cente
         className="object-cover brightness-[1.08] saturate-[1.03] transition-transform duration-700 group-hover:scale-[1.025]"
       />
 
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,.58)_0%,rgba(0,0,0,.28)_40%,rgba(0,0,0,.03)_72%),linear-gradient(to_bottom,rgba(0,0,0,.22),transparent_38%,rgba(0,0,0,.2))]" />
+      <video
+        key={project.video}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        poster={project.image}
+        aria-hidden="true"
+        tabIndex={-1}
+        style={{ objectPosition: project.objectPosition }}
+        className="pointer-events-none absolute inset-0 z-[1] h-full w-full object-cover brightness-[1.08] saturate-[1.05] motion-reduce:hidden"
+      >
+        <source src={project.video} type="video/mp4" />
+      </video>
+
+      <div className="pointer-events-none absolute inset-0 z-[2] bg-[linear-gradient(90deg,rgba(0,0,0,.58)_0%,rgba(0,0,0,.28)_40%,rgba(0,0,0,.03)_72%),linear-gradient(to_bottom,rgba(0,0,0,.22),transparent_38%,rgba(0,0,0,.2))]" />
 
       <div
-        className={`absolute inset-x-0 top-0 z-10 flex items-center justify-between border-b border-white/15 text-white bg-black/12 backdrop-blur-[2px] ${
+        className={`absolute inset-x-0 top-0 z-10 flex items-center justify-between border-b border-white/15 bg-black/12 text-white backdrop-blur-[2px] ${
           isCenter ? 'px-5 py-4 sm:px-7 sm:py-5' : 'px-4 py-3.5'
         }`}
       >
