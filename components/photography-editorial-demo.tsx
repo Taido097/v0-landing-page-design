@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
 
 const projectImages = [
   'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=900&q=88',
@@ -17,20 +19,8 @@ const projectImages = [
   'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=900&q=88',
 ];
 
-const rotations = [
-  '-rotate-[2deg]',
-  'rotate-[1deg]',
-  '-rotate-[1deg]',
-  'rotate-[2deg]',
-  '-rotate-[1.5deg]',
-  'rotate-[1deg]',
-  'rotate-[1.5deg]',
-  '-rotate-[2deg]',
-  'rotate-[1deg]',
-  '-rotate-[1deg]',
-  'rotate-[2deg]',
-  '-rotate-[1.5deg]',
-];
+const cardRotations = [-2, 1, -1, 2, -1.5, 1, 1.5, -2, 1, -1, 2, -1.5];
+const cardDepth = [90, 150, 70, 125, 185, 95, 140, 80, 170, 115, 75, 155];
 
 const portrait =
   'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1000&q=88';
@@ -39,7 +29,70 @@ const workOne =
 const workTwo =
   'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1800&q=90';
 
+function clamp(value: number, min = 0, max = 1) {
+  return Math.min(max, Math.max(min, value));
+}
+
 export function PhotographyEditorialDemo() {
+  const heroRef = useRef<HTMLElement | null>(null);
+  const projectsRef = useRef<HTMLElement | null>(null);
+  const [heroProgress, setHeroProgress] = useState(0);
+  const [projectProgress, setProjectProgress] = useState(0);
+
+  useEffect(() => {
+    let raf = 0;
+
+    const update = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const hero = heroRef.current;
+        const projects = projectsRef.current;
+
+        if (hero) {
+          const rect = hero.getBoundingClientRect();
+          const distance = Math.max(window.innerHeight, hero.offsetHeight);
+          setHeroProgress(clamp(-rect.top / distance));
+        }
+
+        if (projects) {
+          const rect = projects.getBoundingClientRect();
+          const start = window.innerHeight * 0.88;
+          const end = window.innerHeight * 0.12;
+          setProjectProgress(clamp((start - rect.top) / (start - end)));
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) entry.target.classList.add('lm-visible');
+        });
+      },
+      { threshold: 0.14, rootMargin: '0px 0px -7% 0px' },
+    );
+
+    document.querySelectorAll('.lm-observe').forEach((element) => observer.observe(element));
+
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      observer.disconnect();
+      window.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+    };
+  }, []);
+
+  const heroTitleY = heroProgress * -95;
+  const heroTitleScale = 1 - heroProgress * 0.075;
+  const heroTitleOpacity = 1 - heroProgress * 0.78;
+  const heroPortraitY = heroProgress * -42;
+  const heroPortraitX = heroProgress * 74;
+  const heroPortraitRotate = heroProgress * 5;
+
   return (
     <main className="lm-page min-h-screen overflow-x-hidden bg-[#050505] text-[#f0eee8] selection:bg-[#f0eee8] selection:text-black">
       <style>{`
@@ -51,60 +104,58 @@ export function PhotographyEditorialDemo() {
 
         .lm-serif { font-family: var(--serif); }
 
-        @keyframes lmHeroFade {
-          from { opacity: 1; transform: scale(1); }
-          to { opacity: .2; transform: scale(.965); }
+        .lm-observe {
+          opacity: 0;
+          transform: translate3d(0, 72px, 0);
+          transition:
+            opacity 1.05s cubic-bezier(.22,1,.36,1),
+            transform 1.2s cubic-bezier(.22,1,.36,1);
         }
 
-        @keyframes lmCardEnter {
-          from { opacity: 0; transform: translate3d(0, 70px, 0) rotate(0deg) scale(.93); }
-          to { opacity: 1; transform: translate3d(0, 0, 0) rotate(var(--card-r, 0deg)) scale(1); }
+        .lm-observe.lm-visible {
+          opacity: 1;
+          transform: translate3d(0, 0, 0);
         }
 
-        @keyframes lmTextEnter {
-          from { opacity: 0; transform: translate3d(0, 44px, 0); }
-          to { opacity: 1; transform: translate3d(0, 0, 0); }
+        .lm-image-reveal {
+          clip-path: inset(10% 0 10% 0);
+          transform: scale(1.08);
+          transition:
+            clip-path 1.35s cubic-bezier(.22,1,.36,1),
+            transform 1.7s cubic-bezier(.22,1,.36,1);
         }
 
-        @keyframes lmImageReveal {
-          from { opacity: .1; transform: scale(1.1); }
-          to { opacity: 1; transform: scale(1); }
+        .lm-visible .lm-image-reveal,
+        .lm-image-reveal.lm-visible {
+          clip-path: inset(0 0 0 0);
+          transform: scale(1);
         }
 
-        @supports (animation-timeline: view()) {
-          .lm-hero-content {
-            animation: lmHeroFade linear both;
-            animation-timeline: view();
-            animation-range: exit 0% exit 95%;
-          }
-
-          .lm-project-card {
-            animation: lmCardEnter linear both;
-            animation-timeline: view();
-            animation-range: entry 5% cover 33%;
-          }
-
-          .lm-reveal-text {
-            animation: lmTextEnter linear both;
-            animation-timeline: view();
-            animation-range: entry 0% cover 36%;
-          }
-
-          .lm-reveal-image img {
-            animation: lmImageReveal linear both;
-            animation-timeline: view();
-            animation-range: entry 0% cover 45%;
-          }
+        .lm-story-image {
+          transform: translate3d(0, 82px, 0) rotate(-3deg);
+          opacity: 0;
+          transition:
+            opacity 1.05s cubic-bezier(.22,1,.36,1),
+            transform 1.35s cubic-bezier(.22,1,.36,1);
         }
+
+        .lm-visible .lm-story-image {
+          opacity: 1;
+          transform: translate3d(0,0,0) rotate(0deg);
+        }
+
+        .lm-stagger-1 { transition-delay: 80ms; }
+        .lm-stagger-2 { transition-delay: 170ms; }
+        .lm-stagger-3 { transition-delay: 260ms; }
 
         @media (prefers-reduced-motion: reduce) {
-          .lm-hero-content,
-          .lm-project-card,
-          .lm-reveal-text,
-          .lm-reveal-image img {
-            animation: none !important;
-            transform: none !important;
+          .lm-observe,
+          .lm-image-reveal,
+          .lm-story-image {
             opacity: 1 !important;
+            transform: none !important;
+            clip-path: none !important;
+            transition: none !important;
           }
         }
       `}</style>
@@ -126,13 +177,24 @@ export function PhotographyEditorialDemo() {
         </div>
       </header>
 
-      <section className="relative flex min-h-[100svh] items-center overflow-hidden px-4 pt-10 sm:px-7 lg:px-10">
-        <div className="lm-hero-content relative mx-auto flex min-h-[calc(100svh-40px)] w-full max-w-[1800px] items-center justify-center">
-          <h1 className="lm-serif relative z-10 whitespace-nowrap text-center text-[clamp(5.2rem,15.7vw,16rem)] font-normal leading-[.76] tracking-[-.09em] text-[#f3f1eb]">
+      <section ref={heroRef} className="relative flex min-h-[120svh] items-start overflow-hidden px-4 pt-10 sm:px-7 lg:px-10">
+        <div className="sticky top-0 mx-auto flex h-screen w-full max-w-[1800px] items-center justify-center overflow-hidden">
+          <h1
+            className="lm-serif relative z-10 whitespace-nowrap text-center text-[clamp(5.2rem,15.7vw,16rem)] font-normal leading-[.76] tracking-[-.09em] text-[#f3f1eb] will-change-transform"
+            style={{
+              transform: `translate3d(0, ${heroTitleY}px, 0) scale(${heroTitleScale})`,
+              opacity: heroTitleOpacity,
+            }}
+          >
             Luna Frame
           </h1>
 
-          <figure className="absolute left-1/2 top-[44%] z-20 w-[clamp(118px,15vw,235px)] -translate-x-[32%] -translate-y-1/2 bg-[#aaa]">
+          <figure
+            className="absolute left-1/2 top-[44%] z-20 w-[clamp(118px,15vw,235px)] bg-[#aaa] will-change-transform"
+            style={{
+              transform: `translate3d(calc(-32% + ${heroPortraitX}px), calc(-50% + ${heroPortraitY}px), 0) rotate(${heroPortraitRotate}deg)`,
+            }}
+          >
             <img
               src={portrait}
               alt="Luna Frame photographer portrait"
@@ -143,10 +205,18 @@ export function PhotographyEditorialDemo() {
               <span className="block text-white/45">Editorial · Weddings · Commercial</span>
             </figcaption>
           </figure>
+
+          <div
+            className="absolute bottom-5 left-0 right-0 flex justify-between text-[7px] text-white/28"
+            style={{ opacity: 1 - heroProgress * 2 }}
+          >
+            <span>Scroll to explore</span>
+            <span>01 — 04</span>
+          </div>
         </div>
       </section>
 
-      <section id="projects" className="relative min-h-[100svh] scroll-mt-10 px-4 pb-24 pt-28 sm:px-7 lg:px-10">
+      <section ref={projectsRef} id="projects" className="relative min-h-[100svh] scroll-mt-10 px-4 pb-24 pt-20 sm:px-7 lg:px-10">
         <div className="mx-auto max-w-[1700px]">
           <div className="mb-10 flex items-center justify-between text-[7px] text-white/46">
             <span>Projects</span>
@@ -154,31 +224,43 @@ export function PhotographyEditorialDemo() {
           </div>
 
           <div className="grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-6 lg:gap-x-7 lg:gap-y-14">
-            {projectImages.map((src, index) => (
-              <figure
-                key={src}
-                className={`lm-project-card group relative ${rotations[index]} transition-transform duration-700 hover:!rotate-0 hover:scale-[1.02]`}
-                style={{ '--card-r': `${[-2,1,-1,2,-1.5,1,1.5,-2,1,-1,2,-1.5][index]}deg` } as React.CSSProperties}
-              >
-                <div className="overflow-hidden bg-[#111]">
-                  <img
-                    src={src}
-                    alt={`Luna Frame selected project ${index + 1}`}
-                    className="aspect-[4/5] w-full object-cover transition duration-[1100ms] ease-out group-hover:scale-[1.045]"
-                  />
-                </div>
-                <figcaption className="mt-2 flex items-center justify-between text-[6px] text-white/36">
-                  <span>0{index + 1}</span>
-                  <span>{index % 3 === 0 ? 'Editorial' : index % 3 === 1 ? 'Portrait' : 'Campaign'}</span>
-                </figcaption>
-              </figure>
-            ))}
+            {projectImages.map((src, index) => {
+              const delayed = clamp(projectProgress * 1.35 - index * 0.035);
+              const y = (1 - delayed) * cardDepth[index];
+              const rotation = cardRotations[index] * delayed;
+              const scale = 0.91 + delayed * 0.09;
+              const opacity = clamp(delayed * 1.35);
+
+              return (
+                <figure
+                  key={src}
+                  className="group relative will-change-transform"
+                  style={{
+                    opacity,
+                    transform: `translate3d(0, ${y}px, 0) rotate(${rotation}deg) scale(${scale})`,
+                    transition: 'transform 70ms linear, opacity 120ms linear',
+                  }}
+                >
+                  <div className="overflow-hidden bg-[#111]">
+                    <img
+                      src={src}
+                      alt={`Luna Frame selected project ${index + 1}`}
+                      className="aspect-[4/5] w-full object-cover transition duration-[1100ms] ease-out group-hover:scale-[1.045]"
+                    />
+                  </div>
+                  <figcaption className="mt-2 flex items-center justify-between text-[6px] text-white/36">
+                    <span>{String(index + 1).padStart(2, '0')}</span>
+                    <span>{index % 3 === 0 ? 'Editorial' : index % 3 === 1 ? 'Portrait' : 'Campaign'}</span>
+                  </figcaption>
+                </figure>
+              );
+            })}
           </div>
         </div>
       </section>
 
       <section id="services" className="flex min-h-[100svh] scroll-mt-10 items-center justify-center px-5 py-28">
-        <div className="lm-reveal-text w-full max-w-[760px] text-center">
+        <div className="lm-observe w-full max-w-[760px] text-center">
           <p className="mb-8 text-[7px] text-white/40">• Intro</p>
           <p className="lm-serif text-[clamp(2rem,4.1vw,4.5rem)] font-normal leading-[.92] tracking-[-.045em] text-white/48">
             I photograph the second before the story reveals itself — the tension, the light, the feeling that something is about to happen.
@@ -188,7 +270,7 @@ export function PhotographyEditorialDemo() {
       </section>
 
       <section className="flex min-h-[78svh] items-center px-4 py-20 sm:px-7 lg:px-10">
-        <div className="lm-reveal-text mx-auto flex w-full max-w-[1700px] items-center justify-between text-[7px] text-white/48">
+        <div className="lm-observe mx-auto flex w-full max-w-[1700px] items-center justify-between text-[7px] text-white/48">
           <span>Selected Works</span>
           <span>• Projects</span>
         </div>
@@ -196,17 +278,17 @@ export function PhotographyEditorialDemo() {
 
       <section className="min-h-[100svh] px-2 pb-28 sm:px-3 lg:px-4">
         <div className="grid gap-3 md:grid-cols-2">
-          <figure className="lm-reveal-image overflow-hidden bg-[#111]">
-            <img src={workOne} alt="Luna Frame landscape project" className="h-[34vh] min-h-[260px] w-full object-cover" />
+          <figure className="lm-observe overflow-hidden bg-[#111]">
+            <img src={workOne} alt="Luna Frame landscape project" className="lm-image-reveal h-[42vh] min-h-[300px] w-full object-cover" />
           </figure>
-          <figure className="lm-reveal-image overflow-hidden bg-[#111]">
-            <img src={workTwo} alt="Luna Frame fashion project" className="h-[34vh] min-h-[260px] w-full object-cover" />
+          <figure className="lm-observe lm-stagger-2 overflow-hidden bg-[#111]">
+            <img src={workTwo} alt="Luna Frame fashion project" className="lm-image-reveal h-[42vh] min-h-[300px] w-full object-cover" />
           </figure>
         </div>
       </section>
 
       <section id="about" className="flex min-h-[100svh] scroll-mt-10 items-center px-4 py-28 sm:px-7 lg:px-10">
-        <div className="lm-reveal-text mx-auto grid w-full max-w-[1500px] gap-10 lg:grid-cols-12 lg:items-center">
+        <div className="lm-observe mx-auto grid w-full max-w-[1500px] gap-10 lg:grid-cols-12 lg:items-center">
           <div className="lg:col-span-3 lg:col-start-3">
             <p className="mb-5 text-[7px] text-white/42">• My story</p>
             <h2 className="lm-serif text-[clamp(2.2rem,3.8vw,4.3rem)] font-normal leading-[.88] tracking-[-.045em] text-white/82">
@@ -215,10 +297,10 @@ export function PhotographyEditorialDemo() {
           </div>
 
           <figure className="lg:col-span-2">
-            <img src={portrait} alt="Luna Frame portrait" className="aspect-[4/5] w-full max-w-[250px] object-cover grayscale" />
+            <img src={portrait} alt="Luna Frame portrait" className="lm-story-image aspect-[4/5] w-full max-w-[250px] object-cover grayscale" />
           </figure>
 
-          <div className="max-w-xl text-[8px] leading-[1.8] text-white/42 lg:col-span-4">
+          <div className="lm-stagger-2 max-w-xl text-[8px] leading-[1.8] text-white/42 lg:col-span-4">
             <p>
               I grew up watching small moments turn cinematic when the light was right. I did not know then that I was learning how to see.
             </p>
@@ -231,7 +313,7 @@ export function PhotographyEditorialDemo() {
       </section>
 
       <section id="contact" className="relative flex min-h-[100svh] scroll-mt-10 items-center px-4 py-28 sm:px-7 lg:px-10">
-        <div className="lm-reveal-text mx-auto grid w-full max-w-[1500px] lg:grid-cols-12">
+        <div className="lm-observe mx-auto grid w-full max-w-[1500px] lg:grid-cols-12">
           <div className="lg:col-span-5 lg:col-start-8">
             <p className="mb-7 text-[7px] text-white/42">• Available for commission</p>
             <h2 className="lm-serif text-[clamp(3.3rem,6vw,7rem)] font-normal leading-[.84] tracking-[-.055em] text-[#f0eee8]">
