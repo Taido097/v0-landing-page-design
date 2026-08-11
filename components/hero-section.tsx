@@ -64,7 +64,7 @@ export function HeroSection() {
   useEffect(() => {
     const timer = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % projects.length);
-    }, 7200);
+    }, 18000);
 
     return () => window.clearInterval(timer);
   }, []);
@@ -219,7 +219,7 @@ export function HeroSection() {
 
         <div className="relative z-40 mt-5 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
           <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/60">
-            Live previews animate when in view · Click center to open
+            The active card scrolls the real demo from top to bottom · Click center to open
           </p>
           <div className="flex items-center gap-2" aria-label="Choose featured demo">
             {projects.map((project, index) => (
@@ -286,6 +286,7 @@ function WebsiteCard({ project, position }: { project: Project; position: 'cente
       variant={project.variant}
       name={project.name}
       image={project.image}
+      href={project.href}
       isCenter={position === 'center'}
     />
   );
