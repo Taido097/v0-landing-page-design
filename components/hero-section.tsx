@@ -109,11 +109,6 @@ export function HeroSection() {
           --right-y: 0px;
         }
 
-        @keyframes showcaseBackground {
-          0%, 100% { transform: scale(1.08) translate3d(0, 0, 0); }
-          50% { transform: scale(1.12) translate3d(0, -8px, 0); }
-        }
-
         @keyframes showcaseCenterFloat {
           0%, 100% { transform: translate3d(0, 0, 0); }
           50% { transform: translate3d(0, -9px, 0); }
@@ -134,7 +129,6 @@ export function HeroSection() {
           55%, 100% { transform: translateX(280%) skewX(-20deg); }
         }
 
-        .showcase-background { animation: showcaseBackground 14s ease-in-out infinite; }
         .showcase-center-card { animation: showcaseCenterFloat 6s ease-in-out infinite; }
         .showcase-left-card { animation: showcaseLeftFloat 7.5s ease-in-out infinite; }
         .showcase-right-card { animation: showcaseRightFloat 8.2s ease-in-out infinite; }
@@ -162,7 +156,6 @@ export function HeroSection() {
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .showcase-background,
           .showcase-center-card,
           .showcase-left-card,
           .showcase-right-card,
@@ -171,20 +164,6 @@ export function HeroSection() {
           }
         }
       `}</style>
-
-      <div className="absolute inset-0 overflow-hidden">
-        <Image
-          key={activeProject.image}
-          src={activeProject.image}
-          alt=""
-          fill
-          sizes="100vw"
-          style={{ objectPosition: activeProject.objectPosition }}
-          className="showcase-background object-cover opacity-32 blur-[8px] transition-opacity duration-700"
-        />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(255,255,255,.09),transparent_34%),linear-gradient(to_bottom,rgba(0,0,0,.34),rgba(0,0,0,.82)_64%,#000)]" />
-        <div className="absolute inset-0 opacity-[0.08] [background-image:linear-gradient(rgba(255,255,255,.16)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.16)_1px,transparent_1px)] [background-size:72px_72px] [mask-image:linear-gradient(to_bottom,black,transparent_65%)]" />
-      </div>
 
       <div className="relative mx-auto w-full max-w-[1500px] px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
@@ -210,6 +189,34 @@ export function HeroSection() {
         </div>
 
         <div className="relative mt-10 h-[330px] flex-none sm:h-[400px] lg:h-[460px]">
+          <div className="pointer-events-none absolute -inset-x-[10%] -inset-y-8 z-0 overflow-hidden rounded-[2rem] sm:-inset-x-[6%] lg:-inset-x-[3%]">
+            <Image
+              src={activeProject.image}
+              alt=""
+              fill
+              sizes="100vw"
+              style={{ objectPosition: activeProject.objectPosition }}
+              className="object-cover opacity-50 blur-[2px]"
+            />
+            <video
+              key={activeProject.video}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              poster={activeProject.image}
+              aria-hidden="true"
+              tabIndex={-1}
+              style={{ objectPosition: activeProject.objectPosition }}
+              className="absolute inset-0 h-full w-full object-cover opacity-65 motion-reduce:hidden"
+            >
+              <source src={activeProject.video} type="video/mp4" />
+            </video>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,.05),rgba(0,0,0,.42)_72%),linear-gradient(to_bottom,rgba(0,0,0,.2),rgba(0,0,0,.5))]" />
+            <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black to-transparent" />
+          </div>
+
           <div className="showcase-left-wrap absolute -left-[29%] top-14 z-10 w-[59%] transition-transform duration-200 sm:-left-[12%] sm:w-[46%] lg:left-[1%] lg:top-20 lg:w-[32%]">
             <button
               type="button"
@@ -289,23 +296,7 @@ function WebsiteCard({ project, position }: { project: Project; position: 'cente
         className="object-cover brightness-[1.08] saturate-[1.03] transition-transform duration-700 group-hover:scale-[1.025]"
       />
 
-      <video
-        key={project.video}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        poster={project.image}
-        aria-hidden="true"
-        tabIndex={-1}
-        style={{ objectPosition: project.objectPosition }}
-        className="pointer-events-none absolute inset-0 z-[1] h-full w-full object-cover brightness-[1.08] saturate-[1.05] motion-reduce:hidden"
-      >
-        <source src={project.video} type="video/mp4" />
-      </video>
-
-      <div className="pointer-events-none absolute inset-0 z-[2] bg-[linear-gradient(90deg,rgba(0,0,0,.58)_0%,rgba(0,0,0,.28)_40%,rgba(0,0,0,.03)_72%),linear-gradient(to_bottom,rgba(0,0,0,.22),transparent_38%,rgba(0,0,0,.2))]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,.58)_0%,rgba(0,0,0,.28)_40%,rgba(0,0,0,.03)_72%),linear-gradient(to_bottom,rgba(0,0,0,.22),transparent_38%,rgba(0,0,0,.2))]" />
 
       <div
         className={`absolute inset-x-0 top-0 z-10 flex items-center justify-between border-b border-white/15 bg-black/12 text-white backdrop-blur-[2px] ${
