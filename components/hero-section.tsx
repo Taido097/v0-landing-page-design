@@ -12,6 +12,7 @@ type Project = {
   category: string;
   headline: string;
   image: string;
+  objectPosition: string;
   href: string;
   accent: string;
 };
@@ -21,15 +22,19 @@ const projects: Project[] = [
     name: 'Luna Frame Studio',
     category: 'Photography',
     headline: 'Stories that feel as beautiful as they looked.',
-    image: '/portfolio-photography.jpg',
+    image:
+      'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1600&q=82',
+    objectPosition: 'center 42%',
     href: '/portfolio/photography-studio',
-    accent: 'bg-[#e9d8c5] text-[#241c16]',
+    accent: 'bg-[#efe3d5] text-[#241c16]',
   },
   {
     name: 'Apex Auto Care',
     category: 'Auto Repair',
     headline: 'Fast repairs. Honest pricing. No surprises.',
-    image: '/portfolio-auto-repair.jpg',
+    image:
+      'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=1600&q=82',
+    objectPosition: 'center 48%',
     href: '/portfolio/auto-repair-shop',
     accent: 'bg-red-600 text-white',
   },
@@ -37,15 +42,19 @@ const projects: Project[] = [
     name: 'Velvet Glow Salon',
     category: 'Salon & Spa',
     headline: 'Beauty that feels personal and effortless.',
-    image: '/portfolio-salon.jpg',
+    image:
+      'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1600&q=82',
+    objectPosition: 'center 44%',
     href: '/portfolio/salon-spa',
-    accent: 'bg-[#e5b9c5] text-[#341c24]',
+    accent: 'bg-[#ead5dc] text-[#341c24]',
   },
   {
     name: 'Harvest & Ember',
     category: 'Restaurant',
     headline: 'Seasonal food. Warm hospitality. Memorable nights.',
-    image: '/portfolio-restaurant.jpg',
+    image:
+      'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1600&q=82',
+    objectPosition: 'center 55%',
     href: '/portfolio/restaurant-website',
     accent: 'bg-amber-300 text-[#28170a]',
   },
@@ -83,7 +92,7 @@ export function HeroSection() {
     <section
       id="hero"
       onMouseMove={handlePointerMove}
-      className="showcase-hero relative overflow-hidden bg-black pb-20 pt-28 text-white"
+      className="showcase-hero relative overflow-hidden bg-black pb-20 pt-28 font-sans text-white"
     >
       <style>{`
         .showcase-hero {
@@ -130,7 +139,7 @@ export function HeroSection() {
           position: absolute;
           inset: -35% auto -35% -25%;
           width: 27%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent);
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
           animation: showcaseShine 5.8s ease-in-out infinite;
           pointer-events: none;
         }
@@ -165,10 +174,11 @@ export function HeroSection() {
           alt=""
           fill
           sizes="100vw"
-          className="showcase-background object-cover opacity-40 blur-[5px] transition-opacity duration-700"
+          style={{ objectPosition: activeProject.objectPosition }}
+          className="showcase-background object-cover opacity-28 blur-[8px] transition-opacity duration-700"
         />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(255,255,255,.08),transparent_34%),linear-gradient(to_bottom,rgba(0,0,0,.36),rgba(0,0,0,.82)_62%,#000)]" />
-        <div className="absolute inset-0 opacity-[0.12] [background-image:linear-gradient(rgba(255,255,255,.18)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.18)_1px,transparent_1px)] [background-size:72px_72px] [mask-image:linear-gradient(to_bottom,black,transparent_65%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(255,255,255,.07),transparent_32%),linear-gradient(to_bottom,rgba(0,0,0,.42),rgba(0,0,0,.88)_62%,#000)]" />
+        <div className="absolute inset-0 opacity-[0.1] [background-image:linear-gradient(rgba(255,255,255,.16)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.16)_1px,transparent_1px)] [background-size:72px_72px] [mask-image:linear-gradient(to_bottom,black,transparent_65%)]" />
       </div>
 
       <div className="relative mx-auto w-full max-w-[1500px] px-4 sm:px-6 lg:px-8">
@@ -231,7 +241,7 @@ export function HeroSection() {
         </div>
 
         <div className="relative z-40 mt-5 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
-          <p className="text-xs uppercase tracking-[0.22em] text-white/50">
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/48">
             Click the side previews to explore · Click the center to open
           </p>
           <div className="flex items-center gap-2" aria-label="Choose featured demo">
@@ -259,8 +269,10 @@ function WebsiteCard({ project, position }: { project: Project; position: 'cente
 
   return (
     <div
-      className={`showcase-shine relative overflow-hidden border border-white/15 bg-[#111] shadow-[0_35px_100px_rgba(0,0,0,.55)] ${
-        isCenter ? 'h-[300px] rounded-[1.35rem] sm:h-[350px] lg:h-[400px]' : 'h-[225px] rounded-[1.1rem] sm:h-[270px] lg:h-[310px]'
+      className={`showcase-shine relative overflow-hidden border border-white/15 bg-[#111] font-sans shadow-[0_35px_100px_rgba(0,0,0,.55)] ${
+        isCenter
+          ? 'h-[300px] rounded-[1.35rem] sm:h-[350px] lg:h-[400px]'
+          : 'h-[225px] rounded-[1.1rem] sm:h-[270px] lg:h-[310px]'
       }`}
     >
       <Image
@@ -268,16 +280,31 @@ function WebsiteCard({ project, position }: { project: Project; position: 'cente
         alt={`${project.name} website design preview`}
         fill
         sizes={isCenter ? '(max-width: 1024px) 62vw, 47vw' : '(max-width: 1024px) 46vw, 32vw'}
+        style={{ objectPosition: project.objectPosition }}
         className="object-cover transition-transform duration-700 group-hover:scale-[1.025]"
       />
 
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,.76)_0%,rgba(0,0,0,.38)_42%,rgba(0,0,0,.08)_72%),linear-gradient(to_bottom,rgba(0,0,0,.42),transparent_34%,rgba(0,0,0,.5))]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,.82)_0%,rgba(0,0,0,.56)_39%,rgba(0,0,0,.12)_72%),linear-gradient(to_bottom,rgba(0,0,0,.48),transparent_34%,rgba(0,0,0,.56))]" />
 
-      <div className={`absolute inset-x-0 top-0 z-10 flex items-center justify-between text-white ${isCenter ? 'px-5 py-4 sm:px-7 sm:py-5' : 'px-4 py-3.5'}`}>
-        <span className={`${isCenter ? 'text-xs sm:text-sm' : 'text-[10px] sm:text-xs'} font-semibold tracking-[0.01em]`}>
+      <div
+        className={`absolute inset-x-0 top-0 z-10 flex items-center justify-between border-b border-white/10 text-white backdrop-blur-[2px] ${
+          isCenter ? 'px-5 py-4 sm:px-7 sm:py-5' : 'px-4 py-3.5'
+        }`}
+      >
+        <span
+          className={`${
+            isCenter ? 'text-xs sm:text-sm' : 'text-[10px] sm:text-xs'
+          } font-semibold tracking-[-0.01em]`}
+        >
           {project.name}
         </span>
-        <div className={`items-center uppercase tracking-[0.14em] text-white/72 ${isCenter ? 'hidden gap-5 text-[8px] sm:flex lg:text-[9px]' : 'hidden gap-3 text-[7px] md:flex'}`}>
+        <div
+          className={`items-center font-medium uppercase tracking-[0.12em] text-white/72 ${
+            isCenter
+              ? 'hidden gap-5 text-[8px] sm:flex lg:text-[9px]'
+              : 'hidden gap-3 text-[7px] md:flex'
+          }`}
+        >
           <span>Services</span>
           <span>About</span>
           <span>Gallery</span>
@@ -285,16 +312,34 @@ function WebsiteCard({ project, position }: { project: Project; position: 'cente
         </div>
       </div>
 
-      <div className={`absolute z-10 text-white ${isCenter ? 'left-5 top-[31%] max-w-[66%] sm:left-7 sm:top-[29%]' : 'bottom-5 left-4 right-4 sm:bottom-6 sm:left-5'}`}>
-        <p className={`${isCenter ? 'text-[9px] sm:text-[10px]' : 'text-[8px]'} font-semibold uppercase tracking-[0.24em] text-white/58`}>
+      <div
+        className={`absolute z-10 text-white ${
+          isCenter
+            ? 'left-5 top-[29%] max-w-[66%] sm:left-7 sm:top-[28%]'
+            : 'bottom-5 left-4 right-4 sm:bottom-6 sm:left-5'
+        }`}
+      >
+        <p
+          className={`${
+            isCenter ? 'text-[9px] sm:text-[10px]' : 'text-[8px]'
+          } font-semibold uppercase tracking-[0.2em] text-white/62`}
+        >
           {project.category}
         </p>
-        <h2 className={`mt-2 font-medium tracking-[-0.035em] ${isCenter ? 'text-2xl leading-[1.02] sm:text-3xl lg:text-[2.5rem]' : 'max-w-[90%] text-lg leading-[1.06] sm:text-xl'}`}>
+        <h2
+          className={`mt-2 font-semibold tracking-[-0.04em] ${
+            isCenter
+              ? 'text-2xl leading-[1.02] sm:text-3xl lg:text-[2.45rem]'
+              : 'max-w-[90%] text-lg leading-[1.06] sm:text-xl'
+          }`}
+        >
           {project.headline}
         </h2>
 
         {isCenter && (
-          <div className={`mt-5 inline-flex items-center gap-2 rounded-md px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.08em] sm:text-xs ${project.accent}`}>
+          <div
+            className={`mt-5 inline-flex items-center gap-2 rounded-md px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.06em] sm:text-xs ${project.accent}`}
+          >
             View project
             <ExternalLink className="h-3.5 w-3.5" />
           </div>
@@ -305,14 +350,16 @@ function WebsiteCard({ project, position }: { project: Project; position: 'cente
         <div className="absolute inset-x-0 bottom-0 z-10 hidden border-t border-white/10 bg-black/72 backdrop-blur-md sm:grid sm:grid-cols-4">
           {['Custom design', 'Mobile ready', 'Fast & clear', 'Built to convert'].map((item) => (
             <div key={item} className="border-r border-white/10 px-3 py-3.5 text-center last:border-r-0">
-              <p className="text-[8px] uppercase tracking-[0.14em] text-white/62 lg:text-[9px]">{item}</p>
+              <p className="text-[8px] font-medium uppercase tracking-[0.12em] text-white/64 lg:text-[9px]">
+                {item}
+              </p>
             </div>
           ))}
         </div>
       )}
 
       {!isCenter && (
-        <div className="absolute bottom-4 right-4 z-10 rounded-full border border-white/20 bg-black/35 px-3 py-1.5 text-[8px] font-medium uppercase tracking-[0.12em] text-white/72 backdrop-blur-md sm:bottom-5 sm:right-5">
+        <div className="absolute bottom-4 right-4 z-10 rounded-full border border-white/20 bg-black/40 px-3 py-1.5 text-[8px] font-medium uppercase tracking-[0.1em] text-white/78 backdrop-blur-md sm:bottom-5 sm:right-5">
           Bring to center
         </div>
       )}
