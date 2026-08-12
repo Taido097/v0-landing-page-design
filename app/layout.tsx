@@ -7,22 +7,27 @@ import './globals.css'
 export const metadata: Metadata = {
   metadataBase: new URL('https://designedbytd.com'),
   title: {
-    default: 'Designed by TD | Custom Web Design in Orange County',
+    default: 'Orange County Web Designer | Designed by TD',
     template: '%s | Designed by TD',
   },
   description:
-    'Designed by TD creates modern, mobile-friendly websites for small businesses in Orange County, California.',
+    'Custom, mobile-friendly website design for Orange County small businesses, including portfolio, eCommerce, scheduling, lead-capture, and custom website builds.',
   keywords: [
     'Designed by TD',
     'DesignedbyTD Studio',
     'Orange County web designer',
+    'web design Orange County',
     'small business web design',
     'custom website design',
+    'eCommerce website design',
+    'booking website design',
+    'portfolio website design',
   ],
   applicationName: 'Designed by TD',
   authors: [{ name: 'Tai Do', url: 'https://designedbytd.com' }],
   creator: 'Designed by TD',
   publisher: 'Designed by TD',
+  category: 'web design',
   robots: {
     index: true,
     follow: true,
@@ -42,9 +47,9 @@ export const metadata: Metadata = {
     apple: '/icon.png',
   },
   openGraph: {
-    title: 'Designed by TD | Custom Web Design in Orange County',
+    title: 'Orange County Web Designer | Designed by TD',
     description:
-      'Modern, mobile-friendly websites for small businesses in Orange County, California.',
+      'Custom websites for Orange County small businesses, including portfolio, eCommerce, scheduling, lead-capture, and custom builds.',
     type: 'website',
     locale: 'en_US',
     url: 'https://designedbytd.com',
@@ -60,9 +65,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Designed by TD | Custom Web Design in Orange County',
+    title: 'Orange County Web Designer | Designed by TD',
     description:
-      'Modern, mobile-friendly websites for small businesses in Orange County, California.',
+      'Custom websites for Orange County small businesses, including portfolio, eCommerce, scheduling, and lead-capture builds.',
     images: ['/icon.png'],
   },
 }
@@ -81,11 +86,58 @@ export default function RootLayout({
     logo: 'https://designedbytd.com/icon.png',
     image: 'https://designedbytd.com/icon.png',
     description:
-      'Custom website design for small businesses in Orange County, California.',
+      'Custom, mobile-friendly website design for small businesses in Orange County, California.',
     email: 'designedbytd.studio@gmail.com',
+    priceRange: '$500+',
     areaServed: {
       '@type': 'AdministrativeArea',
       name: 'Orange County, California',
+    },
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'Website Design Services',
+      itemListElement: [
+        {
+          '@type': 'Offer',
+          itemOffered: {
+            '@type': 'Service',
+            name: 'Custom Website Design',
+            serviceType: 'Custom website design',
+          },
+        },
+        {
+          '@type': 'Offer',
+          itemOffered: {
+            '@type': 'Service',
+            name: 'Portfolio Website Design',
+            serviceType: 'Portfolio website design',
+          },
+        },
+        {
+          '@type': 'Offer',
+          itemOffered: {
+            '@type': 'Service',
+            name: 'eCommerce Website Design',
+            serviceType: 'eCommerce website design',
+          },
+        },
+        {
+          '@type': 'Offer',
+          itemOffered: {
+            '@type': 'Service',
+            name: 'Scheduling Website Design',
+            serviceType: 'Booking and scheduling website design',
+          },
+        },
+        {
+          '@type': 'Offer',
+          itemOffered: {
+            '@type': 'Service',
+            name: 'Lead Capture Website Design',
+            serviceType: 'Lead capture website design',
+          },
+        },
+      ],
     },
   }
 
