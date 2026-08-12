@@ -2,6 +2,19 @@ const SOURCE_URL = 'https://nuanced-fancy-718952.framer.app/';
 
 export const revalidate = 86400;
 
+const CLEANUP_STYLES = `
+<style id="designedbytd-demo-cleanup">
+  #__framer-badge-container,
+  .framer-qbdszy-container,
+  [data-framer-name="Remove - Promo Button"],
+  [data-framer-name="Remove This"],
+  [name="Remove This"] {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+</style>`;
+
 export async function GET() {
   try {
     const response = await fetch(SOURCE_URL, {
@@ -16,7 +29,7 @@ export async function GET() {
 
     html = html.replace(
       /<head([^>]*)>/i,
-      `<head$1><base href="${SOURCE_URL}"><meta name="robots" content="noindex,follow">`,
+      `<head$1><base href="${SOURCE_URL}"><meta name="robots" content="noindex,follow">${CLEANUP_STYLES}`,
     );
 
     return new Response(html, {
