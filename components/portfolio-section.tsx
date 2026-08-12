@@ -243,8 +243,8 @@ export function PortfolioSection() {
           <h2 className="max-w-[720px] text-[clamp(3.5rem,7vw,6.25rem)] font-medium leading-[.9] tracking-[-0.06em]">
             Services
           </h2>
-          <p className="mt-6 max-w-[460px] text-base font-light leading-[1.45] tracking-[-0.02em] text-black/70">
-            Custom website services built around how your business attracts customers, takes bookings, and presents its work.
+          <p className="mt-6 max-w-[500px] text-base font-light leading-[1.45] tracking-[-0.02em] text-black/70">
+            Custom web design for Orange County businesses, built around how you attract customers, take bookings, and present your work.
           </p>
         </div>
 
