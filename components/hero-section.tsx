@@ -30,11 +30,11 @@ const projects: Project[] = [
     variant: 'photography',
   },
   {
-    name: 'Apex Auto Care',
+    name: 'Beanro Coffee',
     image:
-      'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=1600&q=82',
-    video: 'https://www.pexels.com/download/video/8987453/',
-    objectPosition: 'center 48%',
+      'https://framerusercontent.com/images/9BOQjMuTjInl3CMPRrkdP4QKJZU.png?width=2440&height=2344',
+    video: 'https://framerusercontent.com/assets/v4aErQGkJo2Q26RGPB8Mac4c.mp4',
+    objectPosition: 'center 50%',
     href: '/portfolio/auto-repair-shop',
     variant: 'auto',
   },
