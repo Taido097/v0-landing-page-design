@@ -192,7 +192,7 @@ export function HeroSection() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="group rounded-none border-white/55 bg-black/20 px-8 py-6 text-xs font-semibold tracking-[0.09em] text-white backdrop-blur-md hover:bg-white hover:text-black">
-              <Link href="/#portfolio" className="flex items-center gap-3">
+              <Link href="/demos" className="flex items-center gap-3">
                 Explore the Work
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
