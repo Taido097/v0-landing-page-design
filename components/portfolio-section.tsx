@@ -253,6 +253,18 @@ export function PortfolioSection() {
             <FiberCard key={card.number} card={card} />
           ))}
         </div>
+
+        <div className="mt-5 flex justify-end">
+          <Link
+            href="/demos"
+            className="group inline-flex items-center gap-2 text-xs font-medium text-black/45 transition-colors hover:text-black"
+          >
+            <span>View all demos</span>
+            <span className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
+              ↗
+            </span>
+          </Link>
+        </div>
       </div>
     </section>
   );
