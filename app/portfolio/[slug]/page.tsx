@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { AlexKabiruDemo } from '@/components/alex-kabiru-demo';
 import { BeanroCoffeeDemo } from '@/components/beanro-coffee-demo';
 import { PhotographyEditorialDemo } from '@/components/photography-editorial-demo';
 import { RestaurantQitchenDemo } from '@/components/restaurant-qitchen-demo';
@@ -9,6 +10,7 @@ const slugs = [
   'auto-repair-shop',
   'salon-spa',
   'restaurant-website',
+  'minimal-portfolio',
 ];
 
 export async function generateStaticParams() {
@@ -36,6 +38,10 @@ export default async function ProjectPage({
 
   if (slug === 'salon-spa') {
     return <SalonSpaDemo />;
+  }
+
+  if (slug === 'minimal-portfolio') {
+    return <AlexKabiruDemo />;
   }
 
   return <RestaurantQitchenDemo />;
