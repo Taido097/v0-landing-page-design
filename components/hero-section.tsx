@@ -177,7 +177,7 @@ export function HeroSection() {
       <div className="relative z-20 mx-auto w-full max-w-[1500px] px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="text-5xl font-semibold leading-[0.92] tracking-[-0.045em] sm:text-6xl lg:text-7xl">
-            Orange County web design that makes every visit count.
+            Make every visit count.
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/75 sm:text-lg">
