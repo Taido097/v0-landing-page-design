@@ -254,13 +254,13 @@ export function PortfolioSection() {
           ))}
         </div>
 
-        <div className="mt-5 flex justify-end">
+        <div className="mt-8 flex justify-center sm:justify-end">
           <Link
             href="/demos"
-            className="group inline-flex items-center gap-2 text-xs font-medium text-black/45 transition-colors hover:text-black"
+            className="group inline-flex items-center gap-3 rounded-full bg-black px-6 py-3.5 text-sm font-semibold text-white shadow-[0_10px_30px_rgba(0,0,0,.14)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-black/85 hover:shadow-[0_14px_34px_rgba(0,0,0,.2)]"
           >
             <span>View all demos</span>
-            <span className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
+            <span className="text-base transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
               ↗
             </span>
           </Link>
