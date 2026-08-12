@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { AnimatedDemoPreview } from '@/components/animated-demo-preview';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
-import type { MouseEvent } from 'react';
-import { useCallback, useState } from 'react';
+import type { MouseEvent, TouchEvent } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 type PreviewVariant = 'photography' | 'auto' | 'salon' | 'restaurant';
 
@@ -60,8 +60,15 @@ const projects: Project[] = [
 
 export function HeroSection() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const suppressClickRef = useRef(false);
+
   const advanceDemo = useCallback(() => {
     setActiveIndex((current) => (current + 1) % projects.length);
+  }, []);
+
+  const previousDemo = useCallback(() => {
+    setActiveIndex((current) => (current - 1 + projects.length) % projects.length);
   }, []);
 
   const previousIndex = (activeIndex - 1 + projects.length) % projects.length;
@@ -79,6 +86,35 @@ export function HeroSection() {
     event.currentTarget.style.setProperty('--left-y', `${y * -7}px`);
     event.currentTarget.style.setProperty('--right-x', `${x * 12}px`);
     event.currentTarget.style.setProperty('--right-y', `${y * 7}px`);
+  };
+
+  const handleTouchStart = (event: TouchEvent<HTMLDivElement>) => {
+    const touch = event.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+
+  const handleTouchEnd = (event: TouchEvent<HTMLDivElement>) => {
+    const start = touchStartRef.current;
+    const touch = event.changedTouches[0];
+    touchStartRef.current = null;
+    if (!start || !touch) return;
+
+    const deltaX = touch.clientX - start.x;
+    const deltaY = touch.clientY - start.y;
+    const horizontalSwipe = Math.abs(deltaX) >= 48 && Math.abs(deltaX) > Math.abs(deltaY) * 1.15;
+
+    if (!horizontalSwipe) return;
+
+    suppressClickRef.current = true;
+    if (deltaX < 0) {
+      advanceDemo();
+    } else {
+      previousDemo();
+    }
+
+    window.setTimeout(() => {
+      suppressClickRef.current = false;
+    }, 350);
   };
 
   return (
@@ -164,7 +200,16 @@ export function HeroSection() {
           </div>
         </div>
 
-        <div className="relative mt-10 h-[330px] flex-none sm:h-[400px] lg:h-[460px]">
+        <div
+          className="relative mt-10 h-[330px] flex-none touch-pan-y select-none sm:h-[400px] lg:h-[460px]"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          onClickCapture={(event) => {
+            if (!suppressClickRef.current) return;
+            event.preventDefault();
+            event.stopPropagation();
+          }}
+        >
           <div className="showcase-left-wrap absolute -left-[29%] top-14 z-10 w-[59%] transition-transform duration-200 sm:-left-[12%] sm:w-[46%] lg:left-[1%] lg:top-20 lg:w-[32%]">
             <button
               type="button"
@@ -202,7 +247,7 @@ export function HeroSection() {
 
         <div className="relative z-40 mt-5 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
           <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/60">
-            Active demo auto-scrolls to halfway, then the next demo starts
+            Swipe left or right to browse · active demo auto-scrolls to halfway
           </p>
           <div className="flex items-center gap-2" aria-label="Choose featured demo">
             {projects.map((project, index) => (
