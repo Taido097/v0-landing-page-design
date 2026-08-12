@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-type DemoCategory = 'All' | 'Portfolio' | 'eCommerce' | 'Scheduling' | 'Restaurant';
+type DemoCategory = 'All' | 'Portfolio' | 'Scheduling' | 'Restaurant';
 
 type Demo = {
   name: string;
@@ -13,7 +13,7 @@ type Demo = {
   href: string;
 };
 
-const categories: DemoCategory[] = ['All', 'Portfolio', 'eCommerce', 'Scheduling', 'Restaurant'];
+const categories: DemoCategory[] = ['All', 'Portfolio', 'Scheduling', 'Restaurant'];
 
 const demos: Demo[] = [
   {
@@ -42,7 +42,7 @@ const demos: Demo[] = [
   },
   {
     name: 'Beanro Coffee',
-    category: 'eCommerce',
+    category: 'Restaurant',
     industry: 'Coffee shop',
     href: '/portfolio/auto-repair-shop',
   },
@@ -57,6 +57,12 @@ const demos: Demo[] = [
     category: 'Restaurant',
     industry: 'Restaurant',
     href: '/portfolio/restaurant-website',
+  },
+  {
+    name: 'Foodee',
+    category: 'Restaurant',
+    industry: 'Food & restaurant',
+    href: '/portfolio/foodee-restaurant',
   },
 ];
 
