@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { InteractiveBusinessDemo } from '@/components/interactive-business-demo';
+import { BeanroCoffeeDemo } from '@/components/beanro-coffee-demo';
 import { PhotographyEditorialDemo } from '@/components/photography-editorial-demo';
 import { RestaurantQitchenDemo } from '@/components/restaurant-qitchen-demo';
 import { SalonSpaDemo } from '@/components/salon-spa-demo';
@@ -30,13 +30,13 @@ export default async function ProjectPage({
     return <PhotographyEditorialDemo />;
   }
 
+  if (slug === 'auto-repair-shop') {
+    return <BeanroCoffeeDemo />;
+  }
+
   if (slug === 'salon-spa') {
     return <SalonSpaDemo />;
   }
 
-  if (slug === 'restaurant-website') {
-    return <RestaurantQitchenDemo />;
-  }
-
-  return <InteractiveBusinessDemo slug={slug} />;
+  return <RestaurantQitchenDemo />;
 }
