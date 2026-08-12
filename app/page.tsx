@@ -10,29 +10,31 @@ import { Footer } from '@/components/footer';
 export const dynamic = 'force-static';
 
 export const metadata = {
-  title: 'Orange County Web Designer for Small Businesses',
+  title: {
+    absolute: 'Orange County Web Design | Designed by TD',
+  },
   description:
-    'Designed by TD builds custom, mobile-friendly websites for Orange County small businesses, including portfolio, eCommerce, scheduling, and lead-capture sites. Packages start at $500.',
+    'Orange County web design for small businesses. Custom, mobile-friendly websites for local service businesses, restaurants, salons, and more. Packages start at $500.',
   keywords: [
-    'Orange County web designer',
+    'Orange County web design',
     'web design Orange County',
-    'small business website design Orange County',
+    'Orange County website design',
+    'website design Orange County CA',
+    'website designer Orange County',
+    'web design company Orange County',
+    'small business web design Orange County',
+    'responsive website design Orange County',
+    'mobile friendly website design Orange County',
     'custom website design Orange County',
-    'eCommerce web design Orange County',
-    'booking website design',
-    'portfolio website designer',
-    'lead capture website design',
-    'affordable web design Orange County',
-    'website design starting at $500',
     'Designed by TD',
   ],
   alternates: {
     canonical: 'https://designedbytd.com/',
   },
   openGraph: {
-    title: 'Orange County Web Designer for Small Businesses',
+    title: 'Orange County Web Design | Designed by TD',
     description:
-      'Custom websites for Orange County small businesses, including portfolio, eCommerce, scheduling, and lead-capture experiences. Packages start at $500.',
+      'Custom, mobile-friendly web design for Orange County small businesses. Explore real website demos and packages starting at $500.',
     type: 'website',
     url: 'https://designedbytd.com/',
     siteName: 'Designed by TD',
@@ -40,9 +42,9 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Orange County Web Designer for Small Businesses',
+    title: 'Orange County Web Design | Designed by TD',
     description:
-      'Custom websites for Orange County small businesses, with portfolio, eCommerce, scheduling, and lead-capture options starting at $500.',
+      'Custom, mobile-friendly web design for Orange County small businesses. Explore real website demos and packages starting at $500.',
     images: ['/icon.png'],
   },
 };
