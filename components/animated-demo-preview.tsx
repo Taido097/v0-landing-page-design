@@ -27,8 +27,8 @@ export function AnimatedDemoPreview({ name, href, isCenter, onComplete }: Animat
     if (!node) return;
 
     const observer = new IntersectionObserver(
-      ([entry]) => setInView(entry.isIntersecting && entry.intersectionRatio > 0.4),
-      { threshold: [0, 0.4, 0.75] },
+      ([entry]) => setInView(entry.isIntersecting && entry.intersectionRatio > 0.2),
+      { threshold: [0, 0.2, 0.5] },
     );
 
     observer.observe(node);
@@ -70,11 +70,17 @@ export function AnimatedDemoPreview({ name, href, isCenter, onComplete }: Animat
     completedRef.current = false;
     win.scrollTo(0, 0);
 
-    const holdAtTop = 700;
-    const scrollDuration = 10000;
+    // Begin almost immediately once the card becomes the active center preview.
+    const holdAtTop = 100;
+    const scrollDuration = 8200;
     const startedAt = performance.now();
 
-    const ease = (t: number) => t * t * (3 - 2 * t);
+    // Fast at the beginning, intentionally slower through the middle,
+    // then accelerates again near the 50% destination.
+    const fastSlowFast = (t: number) => {
+      const shaped = t + (0.72 / (2 * Math.PI)) * Math.sin(2 * Math.PI * t);
+      return Math.min(1, Math.max(0, shaped));
+    };
 
     const getHalfPageTarget = () => {
       const maxScroll = Math.max(
@@ -107,7 +113,7 @@ export function AnimatedDemoPreview({ name, href, isCenter, onComplete }: Animat
 
       if (scrollingFor < scrollDuration) {
         const progress = Math.min(1, Math.max(0, scrollingFor / scrollDuration));
-        win.scrollTo(0, targetScroll * ease(progress));
+        win.scrollTo(0, targetScroll * fastSlowFast(progress));
         rafRef.current = requestAnimationFrame(tick);
         return;
       }
