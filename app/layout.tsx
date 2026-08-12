@@ -7,21 +7,22 @@ import './globals.css'
 export const metadata: Metadata = {
   metadataBase: new URL('https://designedbytd.com'),
   title: {
-    default: 'Orange County Web Designer | Designed by TD',
+    default: 'Orange County Web Design | Designed by TD',
     template: '%s | Designed by TD',
   },
   description:
-    'Custom, mobile-friendly website design for Orange County small businesses, including portfolio, eCommerce, scheduling, lead-capture, and custom website builds.',
+    'Custom, mobile-friendly web design for Orange County small businesses, including portfolio, restaurant, scheduling, eCommerce, and custom website builds.',
   keywords: [
     'Designed by TD',
     'DesignedbyTD Studio',
-    'Orange County web designer',
+    'Orange County web design',
     'web design Orange County',
+    'Orange County website design',
+    'website designer Orange County',
     'small business web design',
     'custom website design',
-    'eCommerce website design',
-    'booking website design',
-    'portfolio website design',
+    'responsive website design',
+    'mobile friendly website design',
   ],
   applicationName: 'Designed by TD',
   authors: [{ name: 'Tai Do', url: 'https://designedbytd.com' }],
@@ -47,9 +48,9 @@ export const metadata: Metadata = {
     apple: '/icon.png',
   },
   openGraph: {
-    title: 'Orange County Web Designer | Designed by TD',
+    title: 'Orange County Web Design | Designed by TD',
     description:
-      'Custom websites for Orange County small businesses, including portfolio, eCommerce, scheduling, lead-capture, and custom builds.',
+      'Custom, mobile-friendly websites for Orange County small businesses, with real demos and packages starting at $500.',
     type: 'website',
     locale: 'en_US',
     url: 'https://designedbytd.com',
@@ -65,9 +66,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Orange County Web Designer | Designed by TD',
+    title: 'Orange County Web Design | Designed by TD',
     description:
-      'Custom websites for Orange County small businesses, including portfolio, eCommerce, scheduling, and lead-capture builds.',
+      'Custom, mobile-friendly websites for Orange County small businesses, with real demos and packages starting at $500.',
     images: ['/icon.png'],
   },
 }
@@ -79,66 +80,100 @@ export default function RootLayout({
 }>) {
   const schemaData = {
     '@context': 'https://schema.org',
-    '@type': 'ProfessionalService',
-    name: 'Designed by TD',
-    alternateName: 'DesignedbyTD Studio',
-    url: 'https://designedbytd.com',
-    logo: 'https://designedbytd.com/icon.png',
-    image: 'https://designedbytd.com/icon.png',
-    description:
-      'Custom, mobile-friendly website design for small businesses in Orange County, California.',
-    email: 'designedbytd.studio@gmail.com',
-    priceRange: '$500+',
-    areaServed: {
-      '@type': 'AdministrativeArea',
-      name: 'Orange County, California',
-    },
-    hasOfferCatalog: {
-      '@type': 'OfferCatalog',
-      name: 'Website Design Services',
-      itemListElement: [
-        {
-          '@type': 'Offer',
-          itemOffered: {
-            '@type': 'Service',
-            name: 'Custom Website Design',
-            serviceType: 'Custom website design',
+    '@graph': [
+      {
+        '@type': 'WebSite',
+        '@id': 'https://designedbytd.com/#website',
+        url: 'https://designedbytd.com',
+        name: 'Designed by TD',
+        alternateName: 'DesignedbyTD Studio',
+      },
+      {
+        '@type': 'ProfessionalService',
+        '@id': 'https://designedbytd.com/#business',
+        name: 'Designed by TD',
+        alternateName: 'DesignedbyTD Studio',
+        url: 'https://designedbytd.com',
+        logo: 'https://designedbytd.com/icon.png',
+        image: 'https://designedbytd.com/icon.png',
+        description:
+          'Custom, mobile-friendly website design for small businesses in Orange County, California.',
+        email: 'designedbytd.studio@gmail.com',
+        priceRange: '$500+',
+        areaServed: [
+          {
+            '@type': 'AdministrativeArea',
+            name: 'Orange County, California',
           },
-        },
-        {
-          '@type': 'Offer',
-          itemOffered: {
-            '@type': 'Service',
-            name: 'Portfolio Website Design',
-            serviceType: 'Portfolio website design',
+          {
+            '@type': 'City',
+            name: 'Irvine, California',
           },
-        },
-        {
-          '@type': 'Offer',
-          itemOffered: {
-            '@type': 'Service',
-            name: 'eCommerce Website Design',
-            serviceType: 'eCommerce website design',
+          {
+            '@type': 'City',
+            name: 'Anaheim, California',
           },
-        },
-        {
-          '@type': 'Offer',
-          itemOffered: {
-            '@type': 'Service',
-            name: 'Scheduling Website Design',
-            serviceType: 'Booking and scheduling website design',
+          {
+            '@type': 'City',
+            name: 'Costa Mesa, California',
           },
-        },
-        {
-          '@type': 'Offer',
-          itemOffered: {
-            '@type': 'Service',
-            name: 'Lead Capture Website Design',
-            serviceType: 'Lead capture website design',
+          {
+            '@type': 'City',
+            name: 'Huntington Beach, California',
           },
+          {
+            '@type': 'City',
+            name: 'Tustin, California',
+          },
+        ],
+        hasOfferCatalog: {
+          '@type': 'OfferCatalog',
+          name: 'Website Design Services',
+          itemListElement: [
+            {
+              '@type': 'Offer',
+              itemOffered: {
+                '@type': 'Service',
+                name: 'Custom Website Design',
+                serviceType: 'Custom website design',
+              },
+            },
+            {
+              '@type': 'Offer',
+              itemOffered: {
+                '@type': 'Service',
+                name: 'Portfolio Website Design',
+                serviceType: 'Portfolio website design',
+              },
+            },
+            {
+              '@type': 'Offer',
+              itemOffered: {
+                '@type': 'Service',
+                name: 'Restaurant Website Design',
+                serviceType: 'Restaurant and food business website design',
+              },
+            },
+            {
+              '@type': 'Offer',
+              itemOffered: {
+                '@type': 'Service',
+                name: 'Scheduling Website Design',
+                serviceType: 'Booking and scheduling website design',
+              },
+            },
+            {
+              '@type': 'Offer',
+              itemOffered: {
+                '@type': 'Service',
+                name: 'Responsive Small Business Web Design',
+                serviceType: 'Responsive and mobile-friendly small business website design',
+              },
+            },
+          ],
         },
-      ],
-    },
+      },
+    ],
   }
 
   return (
