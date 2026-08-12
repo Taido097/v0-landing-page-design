@@ -1,21 +1,34 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Contact Tai Do - Custom Web Design Services',
+  title: 'Get a Website Quote in Orange County',
   description:
-    'Get in touch with Tai Do for custom web design services. Free consultation for small businesses and entrepreneurs.',
+    'Contact Designed by TD for a custom website quote in Orange County. Ask about portfolio, eCommerce, scheduling, lead-capture, or custom small-business websites starting at $500.',
+  keywords: [
+    'website quote Orange County',
+    'web designer Orange County contact',
+    'small business website quote',
+    'custom website quote',
+    'Designed by TD contact',
+  ],
+  alternates: {
+    canonical: 'https://designedbytd.com/contact',
+  },
   openGraph: {
-    title: 'Contact Tai Do - Custom Web Design Services',
+    title: 'Get a Website Quote in Orange County',
     description:
-      'Get in touch with Tai Do for custom web design services.',
+      'Tell Designed by TD about your business and get a quote for a custom small-business website in Orange County.',
     type: 'website',
-    locale: 'en_US',
+    url: 'https://designedbytd.com/contact',
+    siteName: 'Designed by TD',
+    images: ['/icon.png'],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Contact Tai Do - Custom Web Design Services',
+    title: 'Get a Website Quote in Orange County',
     description:
-      'Get in touch with Tai Do for custom web design services.',
+      'Request a quote for a custom portfolio, eCommerce, scheduling, lead-capture, or small-business website.',
+    images: ['/icon.png'],
   },
 };
 
