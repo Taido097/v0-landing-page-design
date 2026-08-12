@@ -53,6 +53,12 @@ const demos: Demo[] = [
     href: '/portfolio/salon-spa',
   },
   {
+    name: 'Dentalo',
+    category: 'Scheduling',
+    industry: 'Dental clinic & hospital',
+    href: '/portfolio/dentalo-clinic',
+  },
+  {
     name: 'Qitchen Sushi',
     category: 'Restaurant',
     industry: 'Restaurant',
