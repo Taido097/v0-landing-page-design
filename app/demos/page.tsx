@@ -5,11 +5,37 @@ import { AllDemosGallery } from '@/components/all-demos-gallery';
 export const dynamic = 'force-static';
 
 export const metadata = {
-  title: 'Website Demos | Designed by TD',
+  title: 'Website Design Portfolio & Live Demos',
   description:
-    'Explore live website demos from Designed by TD across portfolio, eCommerce, scheduling, and restaurant experiences.',
+    'Browse live website demos by Designed by TD for photography portfolios, eCommerce, salon scheduling, restaurants, and personal portfolio websites.',
+  keywords: [
+    'website design portfolio',
+    'website demos',
+    'Orange County web design portfolio',
+    'small business website examples',
+    'portfolio website examples',
+    'eCommerce website examples',
+    'booking website examples',
+    'restaurant website examples',
+  ],
   alternates: {
     canonical: 'https://designedbytd.com/demos',
+  },
+  openGraph: {
+    title: 'Website Design Portfolio & Live Demos',
+    description:
+      'Explore live website examples across portfolio, eCommerce, scheduling, restaurant, and personal-brand projects by Designed by TD.',
+    type: 'website',
+    url: 'https://designedbytd.com/demos',
+    siteName: 'Designed by TD',
+    images: ['/icon.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Website Design Portfolio & Live Demos',
+    description:
+      'Explore live website examples across portfolio, eCommerce, scheduling, restaurant, and personal-brand projects.',
+    images: ['/icon.png'],
   },
 };
 
