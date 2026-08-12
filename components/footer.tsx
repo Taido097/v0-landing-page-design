@@ -9,26 +9,28 @@ export function Footer() {
       title: 'Navigation',
       links: [
         { label: 'Home', href: '/' },
-        { label: 'Portfolio', href: '/#portfolio' },
-        { label: 'Services', href: '/#services' },
+        { label: 'All Demos', href: '/demos' },
+        { label: 'Services', href: '/#portfolio' },
         { label: 'Pricing', href: '/#pricing' },
         { label: 'FAQ', href: '/#faq' },
       ],
     },
     {
-      title: 'Company',
+      title: 'Local Web Design',
       links: [
-        { label: 'About', href: '/#about' },
-        { label: 'Contact', href: '/contact' },
-        { label: 'Email', href: 'mailto:designedbytd.studio@gmail.com' },
+        { label: 'Orange County Web Design', href: '/orange-county-web-design' },
+        { label: 'Irvine Web Design', href: '/web-design-irvine' },
+        { label: 'Small Business Web Design', href: '/small-business-web-design' },
+        { label: 'Affordable Web Design', href: '/affordable-web-design' },
       ],
     },
     {
       title: 'Get Started',
       links: [
         { label: 'Request a Website', href: '/contact' },
-        { label: 'View Work', href: '/#portfolio' },
+        { label: 'View Work', href: '/demos' },
         { label: 'See Pricing', href: '/#pricing' },
+        { label: 'About', href: '/#about' },
       ],
     },
   ];
@@ -46,7 +48,7 @@ export function Footer() {
         <div className="mt-12 grid gap-10 border-t border-white/15 pt-8 md:grid-cols-4 md:gap-8">
           <div>
             <p className="max-w-[34ch] text-sm font-light leading-relaxed text-white/60">
-              Custom web design for local business owners who want a clean, professional website.
+              Custom web design for Orange County business owners who want a clean, professional, mobile-friendly website.
             </p>
             <div className="mt-6 flex flex-col gap-2">
               <a
