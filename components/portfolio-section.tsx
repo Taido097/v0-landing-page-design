@@ -28,9 +28,9 @@ const cards: FiberCardData[] = [
   },
   {
     number: '02',
-    title: 'eCommerce',
+    title: 'Restaurant',
     href: '/portfolio/auto-repair-shop',
-    ariaLabel: 'eCommerce service — Beanro Coffee demo',
+    ariaLabel: 'Restaurant service — Beanro Coffee demo',
     images: [
       'https://framerusercontent.com/images/9BOQjMuTjInl3CMPRrkdP4QKJZU.png?width=2440&height=2344',
       'https://framerusercontent.com/images/snawRh3kduwUM969MzVgQuJ8JM.png?width=4096&height=1712',
