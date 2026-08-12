@@ -291,19 +291,21 @@ function HeroBackground({ project, active }: { project: Project; active: boolean
         style={{ objectPosition: project.objectPosition }}
         className="object-cover brightness-[0.86] saturate-[0.92]"
       />
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        poster={project.image}
-        tabIndex={-1}
-        style={{ objectPosition: project.objectPosition }}
-        className="absolute inset-0 h-full w-full object-cover brightness-[0.88] saturate-[0.92] motion-reduce:hidden"
-      >
-        <source src={project.video} type="video/mp4" />
-      </video>
+      {active && (
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster={project.image}
+          tabIndex={-1}
+          style={{ objectPosition: project.objectPosition }}
+          className="absolute inset-0 h-full w-full object-cover brightness-[0.88] saturate-[0.92] motion-reduce:hidden"
+        >
+          <source src={project.video} type="video/mp4" />
+        </video>
+      )}
     </div>
   );
 }
