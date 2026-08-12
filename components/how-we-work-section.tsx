@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { CheckCircle } from 'lucide-react';
+import { ArrowUpRight, CheckCircle } from 'lucide-react';
 
 const steps = [
   {
@@ -49,30 +49,43 @@ export function HowWeWorkSection() {
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
           {steps.map((step, index) => (
             <div
               key={step.number}
-              className={`transition-all duration-1000 ${
-                isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+              className={`group relative aspect-[5/6] min-h-[360px] overflow-hidden rounded-xl border border-black/10 bg-[#f7f7f7] shadow-[0_1px_0_rgba(0,0,0,.02)] transition-all duration-700 [transition-timing-function:cubic-bezier(.22,1,.36,1)] ${
+                isVisible ? 'translate-y-0 opacity-100' : 'translate-y-7 opacity-0'
               }`}
-              style={{ transitionDelay: `${index * 100}ms` }}
+              style={{
+                transitionDelay: `${index * 80}ms`,
+                background:
+                  'radial-gradient(circle at 75% 18%, rgba(0,0,0,.035), transparent 26%), linear-gradient(160deg, #ffffff 0%, #f5f5f5 100%)',
+              }}
             >
-              <div className="relative flex h-full flex-col rounded-none border border-gray-300 p-6">
-                <div className="absolute -left-4 -top-4 flex h-8 w-8 items-center justify-center rounded-full bg-black text-sm font-bold text-white">
-                  {step.number}
-                </div>
+              <div className="absolute inset-0 translate-y-[102%] bg-[#121212] transition-transform duration-500 [transition-timing-function:cubic-bezier(.22,1,.36,1)] group-hover:translate-y-0" />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[46%] bg-gradient-to-t from-black/[0.07] to-transparent transition-opacity duration-300 group-hover:opacity-0" />
 
-                <div className="pt-2">
-                  <h3 className="mb-3 text-xl font-medium text-black">{step.title}</h3>
-                  <p className="mb-6 flex-grow text-sm font-light leading-relaxed text-gray-700">
-                    {step.description}
-                  </p>
+              <div className="absolute left-4 top-4 z-10 grid h-[38px] w-[38px] place-items-center rounded-full bg-[#121212] text-sm font-semibold text-white transition-all duration-500 [transition-timing-function:cubic-bezier(.22,1.2,.36,1)] group-hover:rotate-[7deg] group-hover:scale-110 group-hover:bg-white group-hover:text-[#121212]">
+                {step.number}
+              </div>
 
-                  <div className="flex items-center gap-2 text-black">
-                    <CheckCircle className="h-4 w-4" />
-                    <span className="text-xs font-medium uppercase tracking-wider">Included</span>
-                  </div>
+              <div className="absolute right-4 top-4 z-10 grid h-[34px] w-[34px] place-items-center rounded-full border border-black/10 bg-white/75 text-black/45 backdrop-blur-md transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:bg-white group-hover:text-black">
+                <ArrowUpRight className="h-[18px] w-[18px]" />
+              </div>
+
+              <div className="absolute inset-0 z-[2] flex flex-col justify-end p-5 text-[#121212] transition-colors duration-300 group-hover:text-white">
+                <h3 className="mb-3 text-[clamp(24px,2vw,34px)] font-medium leading-[1.03] tracking-[-0.045em]">
+                  {step.title}
+                </h3>
+                <p className="mb-5 max-w-[28ch] text-sm font-light leading-relaxed text-black/60 transition-colors duration-300 group-hover:text-white/65">
+                  {step.description}
+                </p>
+
+                <div className="flex items-center gap-2 border-t border-black/10 pt-3.5 text-[11px] font-bold uppercase tracking-[0.11em] transition-colors duration-300 group-hover:border-white/20">
+                  <span className="grid h-[18px] w-[18px] place-items-center rounded-full border-[1.5px] border-current text-[11px]">
+                    ✓
+                  </span>
+                  <span>Included</span>
                 </div>
               </div>
             </div>
