@@ -12,18 +12,6 @@ export const metadata: Metadata = {
   },
   description:
     'Custom, mobile-friendly web design for Orange County small businesses, including portfolio, restaurant, scheduling, eCommerce, and custom website builds.',
-  keywords: [
-    'Designed by TD',
-    'DesignedbyTD Studio',
-    'Orange County web design',
-    'web design Orange County',
-    'Orange County website design',
-    'website designer Orange County',
-    'small business web design',
-    'custom website design',
-    'responsive website design',
-    'mobile friendly website design',
-  ],
   applicationName: 'Designed by TD',
   authors: [{ name: 'Tai Do', url: 'https://designedbytd.com' }],
   creator: 'Designed by TD',
@@ -40,12 +28,9 @@ export const metadata: Metadata = {
       'max-video-preview': -1,
     },
   },
-  alternates: {
-    canonical: '/',
-  },
   icons: {
-    icon: '/icon.png',
-    apple: '/icon.png',
+    icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
+    apple: '/apple-icon.png',
   },
   openGraph: {
     title: 'Orange County Web Design | Designed by TD',
@@ -53,23 +38,14 @@ export const metadata: Metadata = {
       'Custom, mobile-friendly websites for Orange County small businesses, with real demos and packages starting at $500.',
     type: 'website',
     locale: 'en_US',
-    url: 'https://designedbytd.com',
+    url: 'https://designedbytd.com/',
     siteName: 'Designed by TD',
-    images: [
-      {
-        url: '/icon.png',
-        width: 512,
-        height: 512,
-        alt: 'Designed by TD logo',
-      },
-    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Orange County Web Design | Designed by TD',
     description:
       'Custom, mobile-friendly websites for Orange County small businesses, with real demos and packages starting at $500.',
-    images: ['/icon.png'],
   },
 }
 
@@ -84,22 +60,32 @@ export default function RootLayout({
       {
         '@type': 'WebSite',
         '@id': 'https://designedbytd.com/#website',
-        url: 'https://designedbytd.com',
+        url: 'https://designedbytd.com/',
         name: 'Designed by TD',
         alternateName: 'DesignedbyTD Studio',
+        inLanguage: 'en-US',
+        publisher: {
+          '@id': 'https://designedbytd.com/#business',
+        },
       },
       {
         '@type': 'ProfessionalService',
         '@id': 'https://designedbytd.com/#business',
         name: 'Designed by TD',
         alternateName: 'DesignedbyTD Studio',
-        url: 'https://designedbytd.com',
-        logo: 'https://designedbytd.com/icon.png',
-        image: 'https://designedbytd.com/icon.png',
+        url: 'https://designedbytd.com/',
+        logo: 'https://designedbytd.com/apple-icon.png',
+        image: 'https://designedbytd.com/apple-icon.png',
         description:
           'Custom, mobile-friendly website design for small businesses in Orange County, California.',
         email: 'designedbytd.studio@gmail.com',
         priceRange: '$500+',
+        contactPoint: {
+          '@type': 'ContactPoint',
+          contactType: 'sales',
+          email: 'designedbytd.studio@gmail.com',
+          availableLanguage: ['English', 'Vietnamese'],
+        },
         areaServed: [
           {
             '@type': 'AdministrativeArea',
@@ -123,8 +109,29 @@ export default function RootLayout({
           },
           {
             '@type': 'City',
+            name: 'Garden Grove, California',
+          },
+          {
+            '@type': 'City',
+            name: 'Westminster, California',
+          },
+          {
+            '@type': 'City',
+            name: 'Santa Ana, California',
+          },
+          {
+            '@type': 'City',
             name: 'Tustin, California',
           },
+        ],
+        knowsAbout: [
+          'Custom web design',
+          'Small business websites',
+          'Responsive web design',
+          'Restaurant websites',
+          'Portfolio websites',
+          'Booking and scheduling websites',
+          'Website redesign',
         ],
         hasOfferCatalog: {
           '@type': 'OfferCatalog',
