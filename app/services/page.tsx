@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { ArrowRight } from 'lucide-react';
@@ -60,10 +61,27 @@ const services = [
   },
 ];
 
-export const metadata = {
-  title: 'Our Services | Tai Do Web Design',
+export const metadata: Metadata = {
+  title: 'Web Design Services for Orange County Businesses',
   description:
-    'Web design services including custom design, e-commerce, booking systems, redesigns, and ongoing support.',
+    'Explore custom web design, website redesign, eCommerce, booking and scheduling, landing pages, and ongoing website support for Orange County businesses.',
+  alternates: {
+    canonical: 'https://designedbytd.com/services',
+  },
+  openGraph: {
+    title: 'Web Design Services for Orange County Businesses',
+    description:
+      'Custom websites, redesigns, eCommerce, booking systems, landing pages, and ongoing website support from Designed by TD.',
+    type: 'website',
+    url: 'https://designedbytd.com/services',
+    siteName: 'Designed by TD',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Web Design Services for Orange County Businesses',
+    description:
+      'Custom websites, redesigns, eCommerce, booking systems, landing pages, and ongoing website support from Designed by TD.',
+  },
 };
 
 export default function ServicesPage() {
