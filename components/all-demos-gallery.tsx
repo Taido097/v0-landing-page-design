@@ -82,6 +82,12 @@ const demos: Demo[] = [
     industry: 'Construction & renovation',
     href: '/portfolio/refit-construction',
   },
+  {
+    name: 'LeapFly',
+    category: 'Custom Website',
+    industry: 'Landscaping & lawn care',
+    href: '/portfolio/leapfly-landscaping',
+  },
 ];
 
 function AutoScrollDemoCard({ demo }: { demo: Demo }) {
