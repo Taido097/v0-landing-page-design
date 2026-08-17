@@ -2,22 +2,23 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
-type FiberCardData = {
+type ServiceCard = {
   number: string;
   title: string;
+  description: string;
   href: string;
-  ariaLabel: string;
   images: string[];
 };
 
-const cards: FiberCardData[] = [
+const cards: ServiceCard[] = [
   {
     number: '01',
     title: 'Portfolio',
-    href: '/portfolio/photography-studio',
-    ariaLabel: 'Portfolio service — Luna Frame Studio demo',
+    description:
+      'Editorial, photography, creative, and personal portfolio websites that make the work itself feel premium.',
+    href: '/demos?category=Portfolio',
     images: [
       'https://framerusercontent.com/images/gPkgBcGwatmPdwzMlpToFBHNSs.png?width=912&height=1170',
       'https://framerusercontent.com/images/yIrZXCStv1OSKgU3LeSDNUk8.png?width=1200&height=1799',
@@ -29,8 +30,9 @@ const cards: FiberCardData[] = [
   {
     number: '02',
     title: 'Restaurant',
-    href: '/portfolio/auto-repair-shop',
-    ariaLabel: 'Restaurant service — Beanro Coffee demo',
+    description:
+      'Modern restaurant and food websites built around menus, atmosphere, location, and clear customer actions.',
+    href: '/demos?category=Restaurant',
     images: [
       'https://framerusercontent.com/images/9BOQjMuTjInl3CMPRrkdP4QKJZU.png?width=2440&height=2344',
       'https://framerusercontent.com/images/snawRh3kduwUM969MzVgQuJ8JM.png?width=4096&height=1712',
@@ -42,8 +44,9 @@ const cards: FiberCardData[] = [
   {
     number: '03',
     title: 'Scheduling',
-    href: '/portfolio/salon-spa',
-    ariaLabel: 'Scheduling service — Salonix demo',
+    description:
+      'Service websites for salons, clinics, dental offices, med spas, and businesses that depend on appointments.',
+    href: '/demos?category=Scheduling',
     images: [
       'https://framerusercontent.com/images/dIylQwKI5TLfITTBRdEzEwYx7TY.jpg?width=2330&height=1536',
       'https://framerusercontent.com/images/0Ta2C6nFSV7xHeyaBtzWshdMJ7Y.png?width=480&height=518',
@@ -55,8 +58,9 @@ const cards: FiberCardData[] = [
   {
     number: '04',
     title: 'Custom Website',
-    href: '/portfolio/restaurant-website',
-    ariaLabel: 'Custom Website service — Qitchen Sushi demo',
+    description:
+      'Flexible websites for contractors, landscaping, local services, lead generation, and businesses with unique needs.',
+    href: '/demos?category=Custom%20Website',
     images: [
       'https://framerusercontent.com/images/10I4GJR5nYsUsYnoOPIDjoapkA.webp?height=2400&width=2000',
       'https://framerusercontent.com/images/QAnUAEBWAkCE4NM4Ja4aQy9Tu4.webp?height=600&width=900',
@@ -77,71 +81,141 @@ function ProgressiveBlur() {
   );
 }
 
-function FiberCard({ card }: { card: FiberCardData }) {
-  const [active, setActive] = useState(false);
-  const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const enter = () => {
-    if (leaveTimer.current) clearTimeout(leaveTimer.current);
-    setActive(true);
-  };
-
-  const leave = () => {
-    if (leaveTimer.current) clearTimeout(leaveTimer.current);
-    leaveTimer.current = setTimeout(() => setActive(false), 100);
-  };
-
-  return (
-    <Link
-      href={card.href}
-      aria-label={card.ariaLabel}
-      onMouseEnter={enter}
-      onMouseLeave={leave}
-      onFocus={enter}
-      onBlur={leave}
-      className="fiber-card group relative block min-w-0 overflow-hidden rounded-xl bg-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black"
-    >
-      {card.images.map((image, index) => (
-        <div
-          key={`${card.number}-${index}`}
-          className={`fiber-image-layer absolute inset-0 overflow-hidden ${index === 0 || active ? 'is-visible' : ''}`}
-          style={{
-            zIndex: index + 1,
-            ['--fiber-delay' as string]: index === 0 ? '0ms' : `${(index - 1) * 300}ms`,
-          }}
-        >
-          <Image
-            src={image}
-            alt=""
-            fill
-            sizes="(max-width: 640px) 94vw, (max-width: 1024px) 46vw, 24vw"
-            className="object-cover"
-          />
-        </div>
-      ))}
-
-      <ProgressiveBlur />
-
-      <span className="absolute left-0 top-0 z-20 p-4 text-xs leading-none tracking-[-0.02em] text-[#fafafa]">
-        {card.number}
-      </span>
-      <span className="absolute inset-x-0 bottom-0 z-20 p-4 text-xs leading-none tracking-[-0.02em] text-[#fafafa]">
-        {card.title}
-      </span>
-    </Link>
-  );
-}
-
 export function PortfolioSection() {
+  const [activeIndex, setActiveIndex] = useState(0);
+
   return (
     <section
       id="portfolio"
       className="scroll-mt-24 overflow-hidden border-y border-black/10 bg-[#fafafa] py-20 text-[#121212] sm:py-24 lg:py-28"
     >
       <style>{`
-        .fiber-card {
-          aspect-ratio: 5 / 6;
+        .service-accordion {
+          height: 560px;
+          display: flex;
+          overflow: hidden;
+          background: #fff;
+          border-top: 1px solid rgba(18,18,18,.10);
+          border-bottom: 1px solid rgba(18,18,18,.10);
+        }
+
+        .service-panel {
+          position: relative;
+          display: flex;
+          min-width: 86px;
+          flex: 0 0 13.5%;
+          overflow: hidden;
+          border-right: 1px solid rgba(18,18,18,.10);
+          background: #fff;
+          transition: flex-basis .78s cubic-bezier(.22,1,.36,1), background-color .35s ease;
+        }
+
+        .service-panel:last-child {
+          border-right: 0;
+        }
+
+        .service-panel.is-active {
+          flex-basis: 59.5%;
+        }
+
+        .service-trigger {
+          position: relative;
+          width: 86px;
+          flex: 0 0 86px;
+          border: 0;
+          background: transparent;
+          color: #121212;
+          cursor: pointer;
+        }
+
+        .service-number {
+          position: absolute;
+          left: 18px;
+          top: 18px;
+          font-size: 11px;
+          color: rgba(18,18,18,.42);
+          transition: transform .4s cubic-bezier(.22,1,.36,1), color .35s ease, opacity .35s ease;
+        }
+
+        .service-title-vertical {
+          position: absolute;
+          left: 50%;
+          bottom: 30px;
+          writing-mode: vertical-rl;
+          text-orientation: mixed;
+          transform: translateX(-50%);
+          font-size: 26px;
+          line-height: 1;
+          letter-spacing: -.045em;
+          text-transform: uppercase;
+          white-space: nowrap;
+          transition: transform .45s cubic-bezier(.22,1,.36,1), letter-spacing .45s cubic-bezier(.22,1,.36,1), opacity .35s ease;
+          will-change: transform;
+        }
+
+        .service-trigger::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 2px;
+          height: 0;
+          background: #121212;
+          transition: height .55s cubic-bezier(.22,1,.36,1);
+        }
+
+        @media (hover: hover) {
+          .service-panel:not(.is-active) .service-trigger:hover {
+            background: #f7f7f7;
+          }
+
+          .service-panel:not(.is-active) .service-trigger:hover .service-title-vertical {
+            transform: translateX(-50%) translateY(-10px);
+            letter-spacing: .015em;
+          }
+
+          .service-panel:not(.is-active) .service-trigger:hover .service-number {
+            transform: translateY(5px);
+            color: #121212;
+            opacity: 1;
+          }
+
+          .service-panel:not(.is-active) .service-trigger:hover::after {
+            height: 100%;
+          }
+
+          .service-panel.is-active .service-trigger:hover .service-title-vertical {
+            transform: translateX(-50%) translateY(-4px);
+          }
+        }
+
+        .service-content {
+          min-width: 0;
+          flex: 1;
+          display: grid;
+          grid-template-rows: auto 1fr;
+          gap: 28px;
+          padding: 28px 52px 34px 54px;
+          opacity: 0;
+          transform: translateX(24px);
+          pointer-events: none;
+          transition: opacity .28s ease .05s, transform .5s cubic-bezier(.22,1,.36,1) .05s;
+        }
+
+        .service-panel.is-active .service-content {
+          opacity: 1;
+          transform: translateX(0);
+          pointer-events: auto;
+          transition-delay: .18s;
+        }
+
+        .service-media {
+          position: relative;
+          min-height: 0;
+          height: 100%;
+          overflow: hidden;
           isolation: isolate;
+          background: #e8e8e8;
         }
 
         .fiber-image-layer {
@@ -154,7 +228,7 @@ export function PortfolioSection() {
           will-change: transform;
         }
 
-        .fiber-image-layer.is-visible {
+        .service-panel.is-active .fiber-image-layer {
           transform: scale(1);
           transition-delay: var(--fiber-delay);
         }
@@ -231,8 +305,73 @@ export function PortfolioSection() {
           -webkit-mask-image: linear-gradient(to bottom, transparent 87.5%, #000 100%);
         }
 
+        @media (max-width: 900px) {
+          .service-accordion {
+            height: auto;
+            display: block;
+            border-left: 1px solid rgba(18,18,18,.10);
+            border-right: 1px solid rgba(18,18,18,.10);
+          }
+
+          .service-panel,
+          .service-panel.is-active {
+            display: block;
+            min-width: 0;
+            border-right: 0;
+            border-bottom: 1px solid rgba(18,18,18,.10);
+          }
+
+          .service-panel:last-child {
+            border-bottom: 0;
+          }
+
+          .service-trigger {
+            width: 100%;
+            height: 74px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 18px;
+          }
+
+          .service-number {
+            position: static;
+          }
+
+          .service-title-vertical {
+            position: static;
+            writing-mode: horizontal-tb;
+            transform: none;
+            font-size: 24px;
+          }
+
+          .service-trigger::after {
+            display: none;
+          }
+
+          .service-content {
+            display: none;
+            padding: 8px 18px 20px;
+            opacity: 1;
+            transform: none;
+          }
+
+          .service-panel.is-active .service-content {
+            display: grid;
+          }
+
+          .service-media {
+            height: 360px;
+          }
+        }
+
         @media (prefers-reduced-motion: reduce) {
-          .fiber-image-layer {
+          .service-panel,
+          .service-content,
+          .fiber-image-layer,
+          .service-title-vertical,
+          .service-number,
+          .service-trigger::after {
             transition: none !important;
           }
         }
@@ -248,10 +387,64 @@ export function PortfolioSection() {
           </p>
         </div>
 
-        <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:mt-14 lg:grid-cols-4">
-          {cards.map((card) => (
-            <FiberCard key={card.number} card={card} />
-          ))}
+        <div className="service-accordion mt-12 lg:mt-14">
+          {cards.map((card, index) => {
+            const isActive = activeIndex === index;
+
+            return (
+              <div key={card.number} className={`service-panel ${isActive ? 'is-active' : ''}`}>
+                <button
+                  type="button"
+                  className="service-trigger focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-black"
+                  onClick={() => setActiveIndex(index)}
+                  aria-expanded={isActive}
+                  aria-controls={`service-content-${card.number}`}
+                >
+                  <span className="service-number">{card.number}</span>
+                  <span className="service-title-vertical">{card.title}</span>
+                </button>
+
+                <div id={`service-content-${card.number}`} className="service-content">
+                  <div>
+                    <p className="max-w-[410px] text-[clamp(1.35rem,2.1vw,1.7rem)] font-normal leading-[1.12] tracking-[-0.035em]">
+                      {card.description}
+                    </p>
+                  </div>
+
+                  <Link
+                    href={card.href}
+                    className="service-media group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black"
+                    aria-label={`View ${card.title} demos`}
+                  >
+                    {card.images.map((image, imageIndex) => (
+                      <div
+                        key={`${card.number}-${imageIndex}`}
+                        className="fiber-image-layer absolute inset-0 overflow-hidden"
+                        style={{
+                          zIndex: imageIndex + 1,
+                          ['--fiber-delay' as string]: imageIndex === 0 ? '0ms' : `${(imageIndex - 1) * 300}ms`,
+                        }}
+                      >
+                        <Image
+                          src={image}
+                          alt=""
+                          fill
+                          sizes="(max-width: 900px) 92vw, 54vw"
+                          className="object-cover"
+                        />
+                      </div>
+                    ))}
+
+                    <ProgressiveBlur />
+
+                    <span className="absolute bottom-4 right-4 z-20 inline-flex items-center gap-2 rounded-full bg-black px-4 py-2 text-xs font-semibold text-white transition-transform duration-300 group-hover:-translate-y-0.5">
+                      View demos <span aria-hidden="true">↗</span>
+                    </span>
+                  </Link>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         <div className="mt-8 flex justify-center sm:justify-end">
