@@ -65,7 +65,7 @@ const demos: Demo[] = [
     href: '/portfolio/dentalo-clinic',
   },
   {
-    name: 'Tai Do Dental',
+    name: 'DesignedbyTD Studio',
     category: 'Scheduling',
     industry: 'Dental clinic',
     href: '/portfolio/tai-do-dental',
