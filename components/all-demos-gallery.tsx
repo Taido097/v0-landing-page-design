@@ -258,7 +258,7 @@ export function AllDemosGallery() {
           <span>Live previews · auto-scroll</span>
         </div>
 
-        <div className="grid gap-x-5 gap-y-10 pt-6 md:grid-cols-2">
+        <div className="grid gap-x-5 gap-y-10 pt-6 md:grid-cols-2 lg:grid-cols-3">
           {visibleDemos.map((demo) => (
             <AutoScrollDemoCard key={demo.name} demo={demo} />
           ))}
