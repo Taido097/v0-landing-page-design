@@ -1,12 +1,5 @@
 import type { Metadata } from 'next';
-import { Header } from '@/components/header';
-import { HeroSection } from '@/components/hero-section';
-import { PortfolioSection } from '@/components/portfolio-section';
-import { HowWeWorkSection } from '@/components/how-we-work-section';
-import { PricingSection } from '@/components/pricing-section';
-import { FAQSection } from '@/components/faq-section';
-import { CTASection } from '@/components/cta-section';
-import { Footer } from '@/components/footer';
+import { SheltaStyleHomepage } from '@/components/shelta-style-homepage';
 
 export const dynamic = 'force-static';
 
@@ -36,18 +29,5 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  return (
-    <>
-      <Header />
-      <main className="flex flex-col">
-        <HeroSection />
-        <PortfolioSection />
-        <HowWeWorkSection />
-        <PricingSection />
-        <FAQSection />
-        <CTASection />
-      </main>
-      <Footer />
-    </>
-  );
+  return <SheltaStyleHomepage />;
 }
