@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { SheltaStyleHomepage } from '@/components/shelta-style-homepage';
+import { SheltaStyleHomepageMotion } from '@/components/shelta-style-homepage-motion';
 
 export const dynamic = 'force-static';
 
@@ -29,5 +29,5 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  return <SheltaStyleHomepage />;
+  return <SheltaStyleHomepageMotion />;
 }
