@@ -19,6 +19,7 @@ export function Footer() {
       title: 'Local Web Design',
       links: [
         { label: 'Orange County Web Design', href: '/orange-county-web-design' },
+        { label: 'Garden Grove Web Design', href: '/web-design-garden-grove' },
         { label: 'Irvine Web Design', href: '/web-design-irvine' },
         { label: 'Small Business Web Design', href: '/small-business-web-design' },
         { label: 'Affordable Web Design', href: '/affordable-web-design' },
