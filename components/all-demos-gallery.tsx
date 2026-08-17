@@ -41,6 +41,12 @@ const demos: Demo[] = [
     href: '/portfolio/jorge-portfolio',
   },
   {
+    name: 'Akjo',
+    category: 'Portfolio',
+    industry: 'Creative portfolio',
+    href: '/portfolio/akjo-portfolio',
+  },
+  {
     name: 'Beanro Coffee',
     category: 'Restaurant',
     industry: 'Coffee shop',
