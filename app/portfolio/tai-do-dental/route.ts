@@ -20,10 +20,10 @@ const CLEANUP_STYLES = `
   }
 
   .framer-f3O3P a[data-framer-name="Logo"]::after {
-    content: "TAI DO";
+    content: "DesignedbyTD Studio";
     color: #000;
     font-family: "Host Grotesk", Arial, sans-serif;
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 700;
     letter-spacing: -0.04em;
     line-height: 1;
@@ -31,10 +31,10 @@ const CLEANUP_STYLES = `
   }
 
   .framer-4uMl1 a[data-framer-name="Logo"]::after {
-    content: "TAI DO";
+    content: "DesignedbyTD Studio";
     color: #fff;
     font-family: "Host Grotesk", Arial, sans-serif;
-    font-size: 30px;
+    font-size: 24px;
     font-weight: 700;
     letter-spacing: -0.04em;
     line-height: 1;
@@ -55,8 +55,8 @@ export async function GET() {
     let html = await response.text();
 
     html = html
-      .replaceAll('Dento - Dental Clinic Template', 'Tai Do Dental')
-      .replaceAll('Dento', 'Tai Do Dental');
+      .replaceAll('Dento - Dental Clinic Template', 'DesignedbyTD Studio')
+      .replaceAll('Dento', 'DesignedbyTD Studio');
 
     html = html.replace(
       /<head([^>]*)>/i,
