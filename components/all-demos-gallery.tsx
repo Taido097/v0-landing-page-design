@@ -65,6 +65,12 @@ const demos: Demo[] = [
     href: '/portfolio/dentalo-clinic',
   },
   {
+    name: 'Tai Do Dental',
+    category: 'Scheduling',
+    industry: 'Dental clinic',
+    href: '/portfolio/tai-do-dental',
+  },
+  {
     name: 'Éclat Aesthetics',
     category: 'Scheduling',
     industry: 'Aesthetic clinic & beauty studio',
