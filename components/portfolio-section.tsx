@@ -87,7 +87,7 @@ export function PortfolioSection() {
   return (
     <section
       id="portfolio"
-      className="scroll-mt-24 overflow-hidden border-y border-black/10 bg-[#fafafa] py-20 text-[#121212] sm:py-24 lg:py-28"
+      className="scroll-mt-24 overflow-hidden border-y border-black/10 bg-white py-20 text-[#121212] sm:py-24 lg:py-28"
     >
       <style>{`
         .service-accordion {
