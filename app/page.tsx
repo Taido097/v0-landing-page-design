@@ -12,26 +12,26 @@ export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
   title: {
-    absolute: 'Orange County Web Design | Designed by TD',
+    absolute: 'DesignedbyTD Studio | Custom Websites for Small Businesses',
   },
   description:
-    'Orange County web design for small businesses. Custom, mobile-friendly websites for local service businesses, restaurants, salons, and more. Packages start at $500.',
+    'Custom, mobile-friendly websites for small businesses. Explore DesignedbyTD website demos, transparent packages starting at $500, and web design services across Orange County.',
   alternates: {
     canonical: 'https://designedbytd.com/',
   },
   openGraph: {
-    title: 'Orange County Web Design | Designed by TD',
+    title: 'DesignedbyTD Studio | Custom Websites for Small Businesses',
     description:
-      'Custom, mobile-friendly web design for Orange County small businesses. Explore real website demos and packages starting at $500.',
+      'Custom, mobile-friendly websites for small businesses. Explore real website demos and transparent packages starting at $500.',
     type: 'website',
     url: 'https://designedbytd.com/',
     siteName: 'Designed by TD',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Orange County Web Design | Designed by TD',
+    title: 'DesignedbyTD Studio | Custom Websites for Small Businesses',
     description:
-      'Custom, mobile-friendly web design for Orange County small businesses. Explore real website demos and packages starting at $500.',
+      'Custom, mobile-friendly websites for small businesses. Explore real website demos and transparent packages starting at $500.',
   },
 };
 

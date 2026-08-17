@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://designedbytd.com';
-  const lastModified = new Date('2026-08-14T17:00:00.000Z');
+  const lastModified = new Date('2026-08-17T19:45:00.000Z');
 
   return [
     {
@@ -11,6 +11,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${baseUrl}/orange-county-web-design`,
+      lastModified,
+    },
+    {
+      url: `${baseUrl}/web-design-garden-grove`,
       lastModified,
     },
     {
