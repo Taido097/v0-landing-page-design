@@ -16,6 +16,60 @@ const CLEANUP_STYLES = `
   }
 </style>`;
 
+const EMBED_PREVIEW_SCRIPT = `
+<script id="designedbytd-akjo-preview-motion">
+(() => {
+  if (window.self === window.top) return;
+
+  const run = () => {
+    const doc = document.documentElement;
+    const body = document.body;
+    if (!doc || !body) return;
+
+    doc.style.scrollBehavior = 'auto';
+    body.style.scrollBehavior = 'auto';
+
+    const maxScroll = Math.max(
+      0,
+      doc.scrollHeight - window.innerHeight,
+      body.scrollHeight - window.innerHeight,
+    );
+
+    if (maxScroll <= 0) return;
+
+    const target = Math.min(maxScroll * 0.18, 760);
+    const duration = 1150;
+    const delay = 180;
+
+    window.scrollTo(0, 0);
+
+    window.setTimeout(() => {
+      const startedAt = performance.now();
+
+      const tick = (now) => {
+        const progress = Math.min(1, (now - startedAt) / duration);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        window.scrollTo(0, target * eased);
+
+        if (progress < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          window.scrollTo(0, target);
+        }
+      };
+
+      requestAnimationFrame(tick);
+    }, delay);
+  };
+
+  if (document.readyState === 'complete') {
+    window.setTimeout(run, 120);
+  } else {
+    window.addEventListener('load', () => window.setTimeout(run, 120), { once: true });
+  }
+})();
+</script>`;
+
 export async function GET() {
   try {
     const response = await fetch(SOURCE_URL, {
@@ -32,6 +86,8 @@ export async function GET() {
       /<head([^>]*)>/i,
       `<head$1><base href="${SOURCE_URL}"><meta name="robots" content="noindex,follow">${CLEANUP_STYLES}`,
     );
+
+    html = html.replace(/<\/body>/i, `${EMBED_PREVIEW_SCRIPT}</body>`);
 
     return new Response(html, {
       headers: {
