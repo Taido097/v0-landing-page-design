@@ -97,10 +97,9 @@ function DemoCard({ demo, index }: { demo: ShowcaseDemo; index: number }) {
 
 export function HowWeWorkSection() {
   const [isVisible, setIsVisible] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
   const stackRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const sceneRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   useEffect(() => {
     setIsVisible(true);
@@ -121,28 +120,20 @@ export function HowWeWorkSection() {
       const maxTravel = Math.max(1, stack.offsetHeight - stage.offsetHeight);
       const travelled = Math.min(maxTravel, Math.max(0, stickyTop - stackRect.top));
       const position = (travelled / maxTravel) * (demos.length - 1);
+      const gap = window.innerWidth <= 560 ? 18 : window.innerWidth <= 900 ? 20 : 24;
 
-      cardRefs.current.forEach((card, index) => {
-        if (!card) return;
+      sceneRefs.current.forEach((scene, index) => {
+        if (!scene) return;
 
         if (index === 0) {
-          card.style.transform = 'translate(-50%, -50%)';
+          scene.style.transform = 'translateY(0)';
           return;
         }
 
         const localProgress = Math.min(1, Math.max(0, position - (index - 1)));
-        const translateY = (1 - localProgress) * 108;
-        card.style.transform = `translate(-50%, -50%) translateY(${translateY}%)`;
+        const translateY = (1 - localProgress) * (stage.offsetHeight + gap);
+        scene.style.transform = `translateY(${translateY}px)`;
       });
-
-      const nextActiveIndex = Math.min(
-        demos.length - 1,
-        Math.max(0, Math.round(position)),
-      );
-
-      setActiveIndex((current) =>
-        current === nextActiveIndex ? current : nextActiveIndex,
-      );
     };
 
     const requestUpdate = () => {
@@ -160,8 +151,6 @@ export function HowWeWorkSection() {
       if (frame) window.cancelAnimationFrame(frame);
     };
   }, []);
-
-  const activeDemo = demos[activeIndex];
 
   return (
     <section
@@ -181,7 +170,27 @@ export function HowWeWorkSection() {
           min-height: 560px;
           overflow: hidden;
           isolation: isolate;
+          background: #fafafa;
+        }
+
+        .demo-showcase-scene {
+          position: absolute;
+          inset: 0;
+          overflow: visible;
           background: #d8d8d8;
+          will-change: transform;
+        }
+
+        .demo-showcase-scene:not(:first-child)::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: -24px;
+          z-index: 50;
+          height: 24px;
+          background: #fafafa;
+          pointer-events: none;
         }
 
         .demo-showcase-bg {
@@ -192,7 +201,6 @@ export function HowWeWorkSection() {
           background: #d8d8d8;
           filter: blur(24px) saturate(.82) brightness(.76);
           transform: scale(1.1);
-          animation: demo-showcase-bg-in .35s ease both;
         }
 
         .demo-showcase-bg::after {
@@ -222,13 +230,13 @@ export function HowWeWorkSection() {
           position: absolute;
           left: 50%;
           top: 50%;
+          z-index: 5;
           width: min(58%, 840px);
           min-width: 650px;
           overflow: hidden;
           background: #fff;
           box-shadow: 0 28px 70px rgba(0,0,0,.18);
           transform: translate(-50%, -50%);
-          will-change: transform;
         }
 
         .demo-showcase-preview {
@@ -286,11 +294,6 @@ export function HowWeWorkSection() {
           -webkit-backdrop-filter: blur(12px);
         }
 
-        @keyframes demo-showcase-bg-in {
-          from { opacity: .45; }
-          to { opacity: 1; }
-        }
-
         @media (max-width: 900px) {
           .demo-showcase-scroll {
             height: 1940px;
@@ -300,6 +303,11 @@ export function HowWeWorkSection() {
             top: 76px;
             height: 620px;
             min-height: 620px;
+          }
+
+          .demo-showcase-scene:not(:first-child)::before {
+            top: -20px;
+            height: 20px;
           }
 
           .demo-showcase-card {
@@ -335,6 +343,11 @@ export function HowWeWorkSection() {
             min-height: 520px;
           }
 
+          .demo-showcase-scene:not(:first-child)::before {
+            top: -18px;
+            height: 18px;
+          }
+
           .demo-showcase-card {
             top: 46%;
             width: calc(100% - 44px);
@@ -360,12 +373,8 @@ export function HowWeWorkSection() {
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .demo-showcase-card {
+          .demo-showcase-scene {
             will-change: auto;
-          }
-
-          .demo-showcase-bg {
-            animation: none;
           }
         }
       `}</style>
@@ -392,34 +401,37 @@ export function HowWeWorkSection() {
 
           <div ref={stackRef} className="demo-showcase-scroll">
             <div ref={stageRef} className="demo-showcase-stage">
-              <div
-                key={`background-${activeDemo.href}`}
-                className="demo-showcase-bg"
-                aria-hidden="true"
-              >
-                <iframe src={activeDemo.href} title="" loading="lazy" tabIndex={-1} />
-              </div>
-
               {demos.map((demo, index) => (
                 <div
                   key={demo.href}
                   ref={(node) => {
-                    cardRefs.current[index] = node;
+                    sceneRefs.current[index] = node;
                   }}
-                  className="demo-showcase-card"
+                  className="demo-showcase-scene"
                   style={{
                     zIndex: 10 + index,
                     transform:
                       index === 0
-                        ? 'translate(-50%, -50%)'
-                        : 'translate(-50%, -50%) translateY(108%)',
+                        ? 'translateY(0)'
+                        : 'translateY(calc(100% + 24px))',
                   }}
                 >
-                  <DemoCard demo={demo} index={index} />
+                  <div className="demo-showcase-bg" aria-hidden="true">
+                    <iframe
+                      src={demo.href}
+                      title=""
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                      tabIndex={-1}
+                    />
+                  </div>
+
+                  <div className="demo-showcase-card">
+                    <DemoCard demo={demo} index={index} />
+                  </div>
+
+                  <span className="demo-showcase-category">{demo.category}</span>
                 </div>
               ))}
-
-              <span className="demo-showcase-category">{activeDemo.category}</span>
             </div>
           </div>
 
