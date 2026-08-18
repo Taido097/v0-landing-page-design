@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type ShowcaseDemo = {
   name: string;
@@ -13,34 +13,10 @@ type ShowcaseDemo = {
 
 const demos: ShowcaseDemo[] = [
   {
-    name: 'Luna Frame Studio',
-    category: 'Portfolio',
-    industry: 'Photography studio',
-    href: '/portfolio/photography-studio',
-  },
-  {
-    name: 'Alex Kabiru',
-    category: 'Portfolio',
-    industry: 'Designer portfolio',
-    href: '/portfolio/minimal-portfolio',
-  },
-  {
     name: 'Fuel',
     category: 'Portfolio',
     industry: 'Premium creative agency',
     href: '/portfolio/fuel-agency',
-  },
-  {
-    name: 'JORGE',
-    category: 'Portfolio',
-    industry: 'Creative portfolio',
-    href: '/portfolio/jorge-portfolio',
-  },
-  {
-    name: 'Akjo',
-    category: 'Portfolio',
-    industry: 'Creative studio',
-    href: '/portfolio/akjo-portfolio',
   },
   {
     name: 'Beanro Coffee',
@@ -55,46 +31,10 @@ const demos: ShowcaseDemo[] = [
     href: '/portfolio/salon-spa',
   },
   {
-    name: 'Dentalo',
-    category: 'Scheduling',
-    industry: 'Dental clinic & hospital',
-    href: '/portfolio/dentalo-clinic',
-  },
-  {
-    name: 'DesignedbyTD Dental',
-    category: 'Scheduling',
-    industry: 'Dental clinic',
-    href: '/portfolio/tai-do-dental',
-  },
-  {
-    name: 'Éclat Aesthetics',
-    category: 'Scheduling',
-    industry: 'Aesthetic clinic & beauty studio',
-    href: '/portfolio/eclat-aesthetics',
-  },
-  {
-    name: 'Qitchen Sushi',
-    category: 'Restaurant',
-    industry: 'Restaurant',
-    href: '/portfolio/restaurant-website',
-  },
-  {
-    name: 'Foodee',
-    category: 'Restaurant',
-    industry: 'Food & restaurant',
-    href: '/portfolio/foodee-restaurant',
-  },
-  {
     name: 'Refit',
     category: 'Custom Website',
     industry: 'Construction & renovation',
     href: '/portfolio/refit-construction',
-  },
-  {
-    name: 'LeapFly',
-    category: 'Custom Website',
-    industry: 'Landscaping & lawn care',
-    href: '/portfolio/leapfly-landscaping',
   },
 ];
 
@@ -132,7 +72,7 @@ function DemoCard({ demo, index }: { demo: ShowcaseDemo; index: number }) {
         <iframe
           src={demo.href}
           title={`${demo.name} live demo preview`}
-          loading="lazy"
+          loading={index === 0 ? 'eager' : 'lazy'}
           tabIndex={-1}
         />
         <Link
@@ -157,10 +97,71 @@ function DemoCard({ demo, index }: { demo: ShowcaseDemo; index: number }) {
 
 export function HowWeWorkSection() {
   const [isVisible, setIsVisible] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const stackRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
+
+  useEffect(() => {
+    let frame = 0;
+
+    const updateStack = () => {
+      frame = 0;
+
+      const stack = stackRef.current;
+      const stage = stageRef.current;
+      if (!stack || !stage) return;
+
+      const stickyTop = Number.parseFloat(window.getComputedStyle(stage).top) || 0;
+      const stackRect = stack.getBoundingClientRect();
+      const maxTravel = Math.max(1, stack.offsetHeight - stage.offsetHeight);
+      const travelled = Math.min(maxTravel, Math.max(0, stickyTop - stackRect.top));
+      const position = (travelled / maxTravel) * (demos.length - 1);
+
+      cardRefs.current.forEach((card, index) => {
+        if (!card) return;
+
+        if (index === 0) {
+          card.style.transform = 'translate(-50%, -50%)';
+          return;
+        }
+
+        const localProgress = Math.min(1, Math.max(0, position - (index - 1)));
+        const translateY = (1 - localProgress) * 108;
+        card.style.transform = `translate(-50%, -50%) translateY(${translateY}%)`;
+      });
+
+      const nextActiveIndex = Math.min(
+        demos.length - 1,
+        Math.max(0, Math.round(position)),
+      );
+
+      setActiveIndex((current) =>
+        current === nextActiveIndex ? current : nextActiveIndex,
+      );
+    };
+
+    const requestUpdate = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(updateStack);
+    };
+
+    updateStack();
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate);
+
+    return () => {
+      window.removeEventListener('scroll', requestUpdate);
+      window.removeEventListener('resize', requestUpdate);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  const activeDemo = demos[activeIndex];
 
   return (
     <section
@@ -168,33 +169,30 @@ export function HowWeWorkSection() {
       className="scroll-mt-24 border-t border-black/10 bg-[#fafafa] py-20 text-[#121212] sm:py-24 lg:py-28"
     >
       <style>{`
-        .demo-showcase-stack {
+        .demo-showcase-scroll {
           position: relative;
-          isolation: isolate;
+          height: 2400px;
         }
 
-        .demo-showcase-slide {
+        .demo-showcase-stage {
           position: sticky;
           top: 88px;
           height: min(72vw, 720px);
           min-height: 560px;
-          margin-bottom: -470px;
           overflow: hidden;
+          isolation: isolate;
           background: #d8d8d8;
-          box-shadow: 0 1px 0 rgba(18,18,18,.08);
-        }
-
-        .demo-showcase-slide:last-child {
-          margin-bottom: 0;
         }
 
         .demo-showcase-bg {
           position: absolute;
           inset: -8%;
+          z-index: 0;
           overflow: hidden;
           background: #d8d8d8;
           filter: blur(24px) saturate(.82) brightness(.76);
           transform: scale(1.1);
+          animation: demo-showcase-bg-in .35s ease both;
         }
 
         .demo-showcase-bg::after {
@@ -224,13 +222,13 @@ export function HowWeWorkSection() {
           position: absolute;
           left: 50%;
           top: 50%;
-          z-index: 5;
           width: min(58%, 840px);
           min-width: 650px;
           overflow: hidden;
           background: #fff;
           box-shadow: 0 28px 70px rgba(0,0,0,.18);
           transform: translate(-50%, -50%);
+          will-change: transform;
         }
 
         .demo-showcase-preview {
@@ -274,7 +272,7 @@ export function HowWeWorkSection() {
           position: absolute;
           left: 24px;
           bottom: 24px;
-          z-index: 8;
+          z-index: 30;
           border: 1px solid rgba(255,255,255,.9);
           border-radius: 999px;
           background: rgba(255,255,255,.14);
@@ -288,12 +286,20 @@ export function HowWeWorkSection() {
           -webkit-backdrop-filter: blur(12px);
         }
 
+        @keyframes demo-showcase-bg-in {
+          from { opacity: .45; }
+          to { opacity: 1; }
+        }
+
         @media (max-width: 900px) {
-          .demo-showcase-slide {
+          .demo-showcase-scroll {
+            height: 1940px;
+          }
+
+          .demo-showcase-stage {
             top: 76px;
             height: 620px;
             min-height: 620px;
-            margin-bottom: -400px;
           }
 
           .demo-showcase-card {
@@ -319,11 +325,14 @@ export function HowWeWorkSection() {
         }
 
         @media (max-width: 560px) {
-          .demo-showcase-slide {
+          .demo-showcase-scroll {
+            height: 1540px;
+          }
+
+          .demo-showcase-stage {
             top: 68px;
             height: 520px;
             min-height: 520px;
-            margin-bottom: -330px;
           }
 
           .demo-showcase-card {
@@ -349,6 +358,16 @@ export function HowWeWorkSection() {
             font-size: 12px;
           }
         }
+
+        @media (prefers-reduced-motion: reduce) {
+          .demo-showcase-card {
+            will-change: auto;
+          }
+
+          .demo-showcase-bg {
+            animation: none;
+          }
+        }
       `}</style>
 
       <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8">
@@ -371,24 +390,37 @@ export function HowWeWorkSection() {
             </Link>
           </div>
 
-          <div className="demo-showcase-stack">
-            {demos.map((demo, index) => (
+          <div ref={stackRef} className="demo-showcase-scroll">
+            <div ref={stageRef} className="demo-showcase-stage">
               <div
-                key={demo.href}
-                className="demo-showcase-slide"
-                style={{ zIndex: index + 1 }}
+                key={`background-${activeDemo.href}`}
+                className="demo-showcase-bg"
+                aria-hidden="true"
               >
-                <div className="demo-showcase-bg" aria-hidden="true">
-                  <iframe src={demo.href} title="" loading="lazy" tabIndex={-1} />
-                </div>
+                <iframe src={activeDemo.href} title="" loading="lazy" tabIndex={-1} />
+              </div>
 
-                <div className="demo-showcase-card">
+              {demos.map((demo, index) => (
+                <div
+                  key={demo.href}
+                  ref={(node) => {
+                    cardRefs.current[index] = node;
+                  }}
+                  className="demo-showcase-card"
+                  style={{
+                    zIndex: 10 + index,
+                    transform:
+                      index === 0
+                        ? 'translate(-50%, -50%)'
+                        : 'translate(-50%, -50%) translateY(108%)',
+                  }}
+                >
                   <DemoCard demo={demo} index={index} />
                 </div>
+              ))}
 
-                <span className="demo-showcase-category">{demo.category}</span>
-              </div>
-            ))}
+              <span className="demo-showcase-category">{activeDemo.category}</span>
+            </div>
           </div>
 
           <Link
