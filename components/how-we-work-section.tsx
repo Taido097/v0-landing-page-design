@@ -201,8 +201,23 @@ export function HowWeWorkSection() {
           position: absolute;
           inset: 0;
           overflow: hidden;
-          background: #181818;
           contain: paint;
+        }
+
+        .demo-showcase-scene:nth-child(1) .demo-showcase-scene-content {
+          background: #232321;
+        }
+
+        .demo-showcase-scene:nth-child(2) .demo-showcase-scene-content {
+          background: #d5c7b2;
+        }
+
+        .demo-showcase-scene:nth-child(3) .demo-showcase-scene-content {
+          background: #cdbcb6;
+        }
+
+        .demo-showcase-scene:nth-child(4) .demo-showcase-scene-content {
+          background: #c9c5bd;
         }
 
         .demo-showcase-scene:not(:first-child)::before {
@@ -219,15 +234,30 @@ export function HowWeWorkSection() {
 
         .demo-showcase-bg {
           position: absolute;
-          inset: -5%;
+          inset: -6%;
           z-index: 0;
           overflow: hidden;
-          background: #1d1d1d;
-          filter: blur(18px) saturate(1.08) brightness(.72) contrast(1.05);
-          transform: scale(1.08) translateZ(0);
+          filter: blur(20px) saturate(1.06) brightness(.92) contrast(1.02);
+          transform: scale(1.1) translateZ(0);
           opacity: 1;
           backface-visibility: hidden;
           -webkit-backface-visibility: hidden;
+        }
+
+        .demo-showcase-scene:nth-child(1) .demo-showcase-bg {
+          background: radial-gradient(circle at 48% 36%, #575650 0%, #353532 44%, #1c1c1a 82%);
+        }
+
+        .demo-showcase-scene:nth-child(2) .demo-showcase-bg {
+          background: radial-gradient(circle at 48% 34%, #f1e3c9 0%, #d9c5a8 42%, #9f8165 80%);
+        }
+
+        .demo-showcase-scene:nth-child(3) .demo-showcase-bg {
+          background: radial-gradient(circle at 50% 36%, #eadbd5 0%, #cfb7ae 44%, #9d7f78 82%);
+        }
+
+        .demo-showcase-scene:nth-child(4) .demo-showcase-bg {
+          background: radial-gradient(circle at 48% 36%, #e6e1d8 0%, #c7c0b5 44%, #8e887f 82%);
         }
 
         .demo-showcase-bg::after {
@@ -235,7 +265,7 @@ export function HowWeWorkSection() {
           position: absolute;
           inset: 0;
           z-index: 2;
-          background: rgba(0,0,0,.10);
+          background: rgba(255,255,255,.025);
           pointer-events: none;
         }
 
@@ -253,6 +283,10 @@ export function HowWeWorkSection() {
           transform-origin: top left;
         }
 
+        .demo-showcase-bg iframe {
+          opacity: .5;
+        }
+
         .demo-showcase-card {
           position: absolute;
           left: 50%;
@@ -262,7 +296,7 @@ export function HowWeWorkSection() {
           min-width: 650px;
           overflow: hidden;
           background: #fff;
-          box-shadow: 0 34px 90px rgba(0,0,0,.28);
+          box-shadow: 0 34px 90px rgba(0,0,0,.24);
           transform: translate3d(-50%, -50%, 0);
           backface-visibility: hidden;
           -webkit-backface-visibility: hidden;
@@ -312,7 +346,7 @@ export function HowWeWorkSection() {
           z-index: 30;
           border: 1px solid rgba(255,255,255,.9);
           border-radius: 999px;
-          background: rgba(255,255,255,.14);
+          background: rgba(0,0,0,.22);
           padding: 11px 20px;
           color: #fff;
           font-size: 12px;
@@ -338,34 +372,31 @@ export function HowWeWorkSection() {
             min-height: 620px;
           }
 
-          .demo-showcase-scene-content {
-            background: #171717;
-          }
-
-          /* Do not load a second set of live websites behind the cards on mobile.
-             A strong blurred color field keeps the same visual depth without the memory spike. */
           .demo-showcase-bg {
             inset: -8%;
-            filter: blur(28px) saturate(1.15) brightness(.72);
-            transform: scale(1.14) translateZ(0);
-            background: radial-gradient(circle at 45% 38%, #5b514b 0%, #34302d 42%, #151515 78%);
+            filter: blur(24px) saturate(1.06) brightness(.94);
+            transform: scale(1.12) translateZ(0);
+          }
+
+          .demo-showcase-scene:nth-child(1) .demo-showcase-bg {
+            background: radial-gradient(circle at 45% 38%, #625f58 0%, #3c3b36 44%, #1d1d1a 82%);
           }
 
           .demo-showcase-scene:nth-child(2) .demo-showcase-bg {
-            background: radial-gradient(circle at 48% 34%, #a38363 0%, #5a493b 40%, #211c18 80%);
+            background: radial-gradient(circle at 48% 34%, #f2e3c8 0%, #d7c09f 44%, #9c785b 82%);
           }
 
           .demo-showcase-scene:nth-child(3) .demo-showcase-bg {
-            background: radial-gradient(circle at 50% 36%, #8d766d 0%, #51433f 42%, #1d1918 82%);
+            background: radial-gradient(circle at 50% 36%, #ead8d1 0%, #cdb0a8 44%, #92736c 82%);
           }
 
           .demo-showcase-scene:nth-child(4) .demo-showcase-bg {
-            background: radial-gradient(circle at 48% 36%, #777777 0%, #414141 42%, #171717 82%);
+            background: radial-gradient(circle at 48% 36%, #e4dfd5 0%, #c1baae 44%, #867f75 82%);
           }
 
           .demo-showcase-bg::after {
             display: block;
-            background: rgba(0,0,0,.10);
+            background: rgba(255,255,255,.02);
           }
 
           .demo-showcase-scene:not(:first-child)::before {
@@ -376,7 +407,7 @@ export function HowWeWorkSection() {
           .demo-showcase-card {
             width: calc(100% - 84px);
             min-width: 0;
-            box-shadow: 0 22px 56px rgba(0,0,0,.32);
+            box-shadow: 0 22px 56px rgba(0,0,0,.26);
           }
 
           .demo-showcase-preview {
