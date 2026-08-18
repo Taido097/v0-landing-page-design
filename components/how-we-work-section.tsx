@@ -12,34 +12,37 @@ type ShowcaseDemo = {
   mobileImage: string;
 };
 
+const snapshot = (path: string) =>
+  `https://image.thum.io/get/width/1440/crop/900/noanimate/wait/2/https://designedbytd.com${path}`;
+
 const demos: ShowcaseDemo[] = [
   {
     name: 'Fuel',
     category: 'Portfolio',
     industry: 'Premium creative agency',
     href: '/portfolio/fuel-agency',
-    mobileImage: 'https://framerusercontent.com/images/gPkgBcGwatmPdwzMlpToFBHNSs.png?width=912&height=1170',
+    mobileImage: snapshot('/portfolio/fuel-agency'),
   },
   {
     name: 'Beanro Coffee',
     category: 'Restaurant',
     industry: 'Coffee shop',
     href: '/portfolio/auto-repair-shop',
-    mobileImage: 'https://framerusercontent.com/images/9BOQjMuTjInl3CMPRrkdP4QKJZU.png?width=2440&height=2344',
+    mobileImage: snapshot('/portfolio/auto-repair-shop'),
   },
   {
     name: 'Salonix',
     category: 'Scheduling',
     industry: 'Hair & beauty salon',
     href: '/portfolio/salon-spa',
-    mobileImage: 'https://framerusercontent.com/images/dIylQwKI5TLfITTBRdEzEwYx7TY.jpg?width=2330&height=1536',
+    mobileImage: snapshot('/portfolio/salon-spa'),
   },
   {
     name: 'AKJO',
     category: 'Portfolio',
     industry: 'Creative portfolio',
     href: '/portfolio/akjo-portfolio',
-    mobileImage: 'https://framerusercontent.com/images/yIrZXCStv1OSKgU3LeSDNUk8.png?width=1200&height=1799',
+    mobileImage: snapshot('/portfolio/akjo-portfolio'),
   },
 ];
 
@@ -204,7 +207,7 @@ export function HowWeWorkSection() {
           .mobile-demo-background img{width:100%;height:100%;object-fit:cover;filter:blur(22px) saturate(1.12) brightness(.82);transform:scale(1.15);transform-origin:center}
           .mobile-demo-card{position:absolute;left:18px;right:18px;top:50%;z-index:5;display:block;overflow:hidden;background:#fff;box-shadow:0 20px 52px rgba(0,0,0,.28);transform:translateY(-50%)}
           .mobile-demo-preview{height:286px;overflow:hidden;background:#eee}
-          .mobile-demo-preview img{width:100%;height:100%;object-fit:cover;display:block}
+          .mobile-demo-preview img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
           .mobile-demo-scene .demo-showcase-info{min-height:88px;padding:15px 16px}
           .mobile-demo-scene .demo-showcase-title{font-size:19px}
           .mobile-demo-scene .demo-showcase-industry{margin-top:5px;font-size:12px}
