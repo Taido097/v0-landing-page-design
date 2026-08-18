@@ -29,8 +29,12 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
-    apple: '/apple-icon.png',
+    icon: [
+      { url: '/apple-icon.png', type: 'image/png', sizes: '180x180' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: '/apple-icon.png',
+    apple: [{ url: '/apple-icon.png', sizes: '180x180', type: 'image/png' }],
   },
   openGraph: {
     title: 'Orange County Web Design | Designed by TD',
@@ -74,7 +78,14 @@ export default function RootLayout({
         name: 'Designed by TD',
         alternateName: 'DesignedbyTD Studio',
         url: 'https://designedbytd.com/',
-        logo: 'https://designedbytd.com/apple-icon.png',
+        logo: {
+          '@type': 'ImageObject',
+          url: 'https://designedbytd.com/apple-icon.png',
+          contentUrl: 'https://designedbytd.com/apple-icon.png',
+          width: 180,
+          height: 180,
+          caption: 'Designed by TD logo',
+        },
         image: 'https://designedbytd.com/apple-icon.png',
         description:
           'Custom, mobile-friendly website design for small businesses in Orange County, California.',
