@@ -30,14 +30,16 @@ export function CTASection() {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
               href="/contact"
-              className="group inline-flex items-center justify-between gap-5 rounded-full bg-[#121212] px-6 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-black/85"
+              style={{ borderRadius: 0 }}
+              className="group inline-flex items-center justify-between gap-5 rounded-none bg-[#121212] px-6 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-black/85"
             >
               <span>Get Started</span>
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
             <a
               href="mailto:designedbytd.studio@gmail.com"
-              className="inline-flex items-center justify-center rounded-full border border-black/10 bg-white px-6 py-3.5 text-sm font-semibold text-black transition-all duration-300 hover:-translate-y-0.5 hover:border-black/20"
+              style={{ borderRadius: 0 }}
+              className="inline-flex items-center justify-center rounded-none border border-black/10 bg-white px-6 py-3.5 text-sm font-semibold text-black transition-all duration-300 hover:-translate-y-0.5 hover:border-black/20"
             >
               Email Me
             </a>
