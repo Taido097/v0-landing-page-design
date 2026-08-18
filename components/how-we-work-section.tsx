@@ -65,31 +65,16 @@ const benefits = [
   },
 ];
 
-function DemoCard({
-  demo,
-  index,
-  renderLivePreview,
-}: {
-  demo: ShowcaseDemo;
-  index: number;
-  renderLivePreview: boolean;
-}) {
+function DemoCard({ demo, index }: { demo: ShowcaseDemo; index: number }) {
   return (
     <>
       <div className="demo-showcase-preview">
-        {renderLivePreview ? (
-          <iframe
-            src={demo.href}
-            title={`${demo.name} live demo preview`}
-            loading="lazy"
-            tabIndex={-1}
-          />
-        ) : (
-          <div className="demo-showcase-placeholder" aria-hidden="true">
-            <span>{demo.name}</span>
-            <small>Website preview</small>
-          </div>
-        )}
+        <iframe
+          src={demo.href}
+          title={`${demo.name} live demo preview`}
+          loading="lazy"
+          tabIndex={-1}
+        />
         <Link
           href={demo.href}
           aria-label={`Open ${demo.name} demo`}
@@ -113,8 +98,6 @@ function DemoCard({
 export function HowWeWorkSection() {
   const [isVisible, setIsVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(true);
-  const [mobileVisibleRange, setMobileVisibleRange] = useState<[number, number]>([0, 1]);
-  const mobileVisibleRangeRef = useRef<[number, number]>([0, 1]);
   const stackRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const sceneRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -148,16 +131,6 @@ export function HowWeWorkSection() {
       const position = (travelled / maxTravel) * (demos.length - 1);
       const gap = window.innerWidth <= 560 ? 18 : window.innerWidth <= 900 ? 20 : 24;
 
-      if (window.innerWidth <= 900) {
-        const lower = Math.max(0, Math.min(demos.length - 1, Math.floor(position)));
-        const upper = Math.min(demos.length - 1, lower + 1);
-        const current = mobileVisibleRangeRef.current;
-        if (current[0] !== lower || current[1] !== upper) {
-          mobileVisibleRangeRef.current = [lower, upper];
-          setMobileVisibleRange([lower, upper]);
-        }
-      }
-
       sceneRefs.current.forEach((scene, index) => {
         if (!scene) return;
 
@@ -177,13 +150,17 @@ export function HowWeWorkSection() {
       frame = window.requestAnimationFrame(updateStack);
     };
 
+    const handleOrientationChange = () => {
+      window.setTimeout(requestUpdate, 180);
+    };
+
     updateStack();
     window.addEventListener('scroll', requestUpdate, { passive: true });
-    window.addEventListener('resize', requestUpdate);
+    window.addEventListener('orientationchange', handleOrientationChange);
 
     return () => {
       window.removeEventListener('scroll', requestUpdate);
-      window.removeEventListener('resize', requestUpdate);
+      window.removeEventListener('orientationchange', handleOrientationChange);
       if (frame) window.cancelAnimationFrame(frame);
     };
   }, []);
@@ -217,6 +194,7 @@ export function HowWeWorkSection() {
           will-change: transform;
           backface-visibility: hidden;
           -webkit-backface-visibility: hidden;
+          transform-style: preserve-3d;
         }
 
         .demo-showcase-scene-content {
@@ -224,6 +202,7 @@ export function HowWeWorkSection() {
           inset: 0;
           overflow: hidden;
           background: #181818;
+          contain: paint;
         }
 
         .demo-showcase-scene:not(:first-child)::before {
@@ -272,31 +251,6 @@ export function HowWeWorkSection() {
           pointer-events: none;
           transform: scale(.5);
           transform-origin: top left;
-        }
-
-        .demo-showcase-placeholder {
-          position: absolute;
-          inset: 0;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 7px;
-          background: linear-gradient(145deg, #f5f5f5, #dedede);
-          color: #161616;
-        }
-
-        .demo-showcase-placeholder span {
-          font-size: clamp(24px, 5vw, 44px);
-          font-weight: 600;
-          letter-spacing: -.05em;
-        }
-
-        .demo-showcase-placeholder small {
-          font-size: 10px;
-          letter-spacing: .12em;
-          text-transform: uppercase;
-          color: rgba(18,18,18,.45);
         }
 
         .demo-showcase-card {
@@ -388,16 +342,30 @@ export function HowWeWorkSection() {
             background: #171717;
           }
 
+          /* Do not load a second set of live websites behind the cards on mobile.
+             A strong blurred color field keeps the same visual depth without the memory spike. */
           .demo-showcase-bg {
-            inset: -4%;
-            filter: blur(14px) saturate(1.02) brightness(.72) contrast(1.04);
-            transform: scale(1.06) translateZ(0);
-            background: #1b1b1b;
+            inset: -8%;
+            filter: blur(28px) saturate(1.15) brightness(.72);
+            transform: scale(1.14) translateZ(0);
+            background: radial-gradient(circle at 45% 38%, #5b514b 0%, #34302d 42%, #151515 78%);
+          }
+
+          .demo-showcase-scene:nth-child(2) .demo-showcase-bg {
+            background: radial-gradient(circle at 48% 34%, #a38363 0%, #5a493b 40%, #211c18 80%);
+          }
+
+          .demo-showcase-scene:nth-child(3) .demo-showcase-bg {
+            background: radial-gradient(circle at 50% 36%, #8d766d 0%, #51433f 42%, #1d1918 82%);
+          }
+
+          .demo-showcase-scene:nth-child(4) .demo-showcase-bg {
+            background: radial-gradient(circle at 48% 36%, #777777 0%, #414141 42%, #171717 82%);
           }
 
           .demo-showcase-bg::after {
             display: block;
-            background: rgba(0,0,0,.08);
+            background: rgba(0,0,0,.10);
           }
 
           .demo-showcase-scene:not(:first-child)::before {
@@ -432,13 +400,13 @@ export function HowWeWorkSection() {
 
         @media (max-width: 560px) {
           .demo-showcase-scroll {
-            height: 1540px;
+            height: calc(100svh + 1080px) !important;
           }
 
           .demo-showcase-stage {
             top: 68px;
-            height: 520px;
-            min-height: 520px;
+            height: calc(100svh - 68px) !important;
+            min-height: 620px !important;
           }
 
           .demo-showcase-scene:not(:first-child)::before {
@@ -500,48 +468,41 @@ export function HowWeWorkSection() {
 
           <div ref={stackRef} className="demo-showcase-scroll">
             <div ref={stageRef} className="demo-showcase-stage">
-              {demos.map((demo, index) => {
-                const renderLivePreview =
-                  !isMobile || index === mobileVisibleRange[0] || index === mobileVisibleRange[1];
-
-                return (
-                  <div
-                    key={demo.href}
-                    ref={(node) => {
-                      sceneRefs.current[index] = node;
-                    }}
-                    className="demo-showcase-scene"
-                    style={{
-                      zIndex: 10 + index,
-                      transform:
-                        index === 0
-                          ? 'translate3d(0,0,0)'
-                          : 'translate3d(0, calc(100% + 24px), 0)',
-                    }}
-                  >
-                    <div className="demo-showcase-scene-content">
-                      <div className="demo-showcase-bg" aria-hidden="true">
+              {demos.map((demo, index) => (
+                <div
+                  key={demo.href}
+                  ref={(node) => {
+                    sceneRefs.current[index] = node;
+                  }}
+                  className="demo-showcase-scene"
+                  style={{
+                    zIndex: 10 + index,
+                    transform:
+                      index === 0
+                        ? 'translate3d(0,0,0)'
+                        : 'translate3d(0, calc(100% + 24px), 0)',
+                  }}
+                >
+                  <div className="demo-showcase-scene-content">
+                    <div className="demo-showcase-bg" aria-hidden="true">
+                      {!isMobile && (
                         <iframe
                           src={demo.href}
                           title=""
                           loading="lazy"
                           tabIndex={-1}
                         />
-                      </div>
-
-                      <div className="demo-showcase-card">
-                        <DemoCard
-                          demo={demo}
-                          index={index}
-                          renderLivePreview={renderLivePreview}
-                        />
-                      </div>
-
-                      <span className="demo-showcase-category">{demo.category}</span>
+                      )}
                     </div>
+
+                    <div className="demo-showcase-card">
+                      <DemoCard demo={demo} index={index} />
+                    </div>
+
+                    <span className="demo-showcase-category">{demo.category}</span>
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
           </div>
 
