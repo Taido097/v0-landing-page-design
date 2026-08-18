@@ -38,7 +38,6 @@ const cards: ServiceCard[] = [
       'https://framerusercontent.com/images/snawRh3kduwUM969MzVgQuJ8JM.png?width=4096&height=1712',
       'https://framerusercontent.com/images/mAJ49eFrnsg4sH11nksIz5FP0.png',
       'https://framerusercontent.com/images/tY8YxgotM6gMQRc5vO5l6zlamE.png',
-      'https://framerusercontent.com/images/sMRY0L6VTBO99vZ4afLEdx5uI.png?width=5280&height=570',
     ],
   },
   {
