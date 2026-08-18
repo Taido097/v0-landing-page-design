@@ -37,7 +37,13 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <>
+    <div className="designedbytd-site">
+      <style>{`
+        .designedbytd-site,
+        .designedbytd-site *:not(svg):not(path) {
+          font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+        }
+      `}</style>
       <Header />
       <main className="flex flex-col">
         <HeroSection />
@@ -48,6 +54,6 @@ export default function Home() {
         <CTASection />
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
