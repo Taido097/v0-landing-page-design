@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { ArrowUpRight } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 type ShowcaseDemo = {
   name: string;
@@ -125,31 +125,21 @@ const benefits = [
   },
 ];
 
-function DemoCard({
-  demo,
-  index,
-  interactive = true,
-}: {
-  demo: ShowcaseDemo;
-  index: number;
-  interactive?: boolean;
-}) {
+function DemoCard({ demo, index }: { demo: ShowcaseDemo; index: number }) {
   return (
     <>
       <div className="demo-showcase-preview">
         <iframe
           src={demo.href}
-          title={interactive ? `${demo.name} live demo preview` : ''}
+          title={`${demo.name} live demo preview`}
           loading="lazy"
           tabIndex={-1}
         />
-        {interactive && (
-          <Link
-            href={demo.href}
-            aria-label={`Open ${demo.name} demo`}
-            className="absolute inset-0 z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-black"
-          />
-        )}
+        <Link
+          href={demo.href}
+          aria-label={`Open ${demo.name} demo`}
+          className="absolute inset-0 z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-black"
+        />
       </div>
 
       <div className="demo-showcase-info">
@@ -167,63 +157,35 @@ function DemoCard({
 
 export function HowWeWorkSection() {
   const [isVisible, setIsVisible] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [previousIndex, setPreviousIndex] = useState<number | null>(null);
-  const [direction, setDirection] = useState<'next' | 'prev'>('next');
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const transitionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setIsVisible(true);
-
-    return () => {
-      if (transitionTimer.current) clearTimeout(transitionTimer.current);
-    };
   }, []);
 
-  const activeDemo = demos[activeIndex];
-  const previousDemo = previousIndex === null ? null : demos[previousIndex];
-
-  const transitionTo = (nextIndex: number, nextDirection: 'next' | 'prev') => {
-    if (nextIndex === activeIndex || isTransitioning) return;
-
-    if (transitionTimer.current) clearTimeout(transitionTimer.current);
-
-    setDirection(nextDirection);
-    setPreviousIndex(activeIndex);
-    setActiveIndex(nextIndex);
-    setIsTransitioning(true);
-
-    transitionTimer.current = setTimeout(() => {
-      setPreviousIndex(null);
-      setIsTransitioning(false);
-      transitionTimer.current = null;
-    }, 820);
-  };
-
-  const moveDemo = (nextDirection: 'next' | 'prev') => {
-    const nextIndex =
-      nextDirection === 'next'
-        ? (activeIndex + 1) % demos.length
-        : (activeIndex - 1 + demos.length) % demos.length;
-
-    transitionTo(nextIndex, nextDirection);
-  };
-
-  const selectDemo = (index: number) => {
-    if (index === activeIndex) return;
-    transitionTo(index, index > activeIndex ? 'next' : 'prev');
-  };
-
   return (
-    <section id="process" className="scroll-mt-24 border-t border-black/10 bg-[#fafafa] py-20 text-[#121212] sm:py-24 lg:py-28">
+    <section
+      id="process"
+      className="scroll-mt-24 border-t border-black/10 bg-[#fafafa] py-20 text-[#121212] sm:py-24 lg:py-28"
+    >
       <style>{`
-        .demo-showcase-stage {
+        .demo-showcase-stack {
           position: relative;
+          isolation: isolate;
+        }
+
+        .demo-showcase-slide {
+          position: sticky;
+          top: 88px;
           height: min(72vw, 720px);
           min-height: 560px;
+          margin-bottom: -470px;
           overflow: hidden;
           background: #d8d8d8;
+          box-shadow: 0 1px 0 rgba(18,18,18,.08);
+        }
+
+        .demo-showcase-slide:last-child {
+          margin-bottom: 0;
         }
 
         .demo-showcase-bg {
@@ -233,7 +195,6 @@ export function HowWeWorkSection() {
           background: #d8d8d8;
           filter: blur(24px) saturate(.82) brightness(.76);
           transform: scale(1.1);
-          animation: demo-bg-in .7s ease both;
         }
 
         .demo-showcase-bg::after {
@@ -263,31 +224,13 @@ export function HowWeWorkSection() {
           position: absolute;
           left: 50%;
           top: 50%;
+          z-index: 5;
           width: min(58%, 840px);
           min-width: 650px;
           overflow: hidden;
           background: #fff;
+          box-shadow: 0 28px 70px rgba(0,0,0,.18);
           transform: translate(-50%, -50%);
-          will-change: transform;
-        }
-
-        .demo-showcase-card-behind {
-          z-index: 4;
-          pointer-events: none;
-          box-shadow: 0 28px 70px rgba(0,0,0,.18);
-        }
-
-        .demo-showcase-card-front {
-          z-index: 5;
-          box-shadow: 0 28px 70px rgba(0,0,0,.18);
-        }
-
-        .demo-showcase-card-front.is-roll-next {
-          animation: demo-card-roll-next .82s cubic-bezier(.22,1,.36,1) both;
-        }
-
-        .demo-showcase-card-front.is-roll-prev {
-          animation: demo-card-roll-prev .82s cubic-bezier(.22,1,.36,1) both;
         }
 
         .demo-showcase-preview {
@@ -327,52 +270,6 @@ export function HowWeWorkSection() {
           color: rgba(18,18,18,.42);
         }
 
-        .demo-showcase-control {
-          position: absolute;
-          z-index: 8;
-          display: grid;
-          place-items: center;
-          border: 1px solid rgba(255,255,255,.9);
-          background: rgba(255,255,255,.16);
-          color: #fff;
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          cursor: pointer;
-          transition: transform .35s cubic-bezier(.22,1,.36,1), background-color .3s ease, color .3s ease, opacity .25s ease;
-        }
-
-        .demo-showcase-control:hover:not(:disabled) {
-          transform: scale(1.08);
-          background: #fff;
-          color: #121212;
-        }
-
-        .demo-showcase-control:disabled,
-        .demo-showcase-dot:disabled {
-          cursor: default;
-        }
-
-        .demo-showcase-prev {
-          left: 24px;
-          top: 50%;
-          width: 52px;
-          height: 52px;
-          border-radius: 999px;
-          transform: translateY(-50%);
-        }
-
-        .demo-showcase-prev:hover:not(:disabled) {
-          transform: translateY(-50%) scale(1.08);
-        }
-
-        .demo-showcase-next {
-          right: 24px;
-          bottom: 24px;
-          width: 56px;
-          height: 56px;
-          border-radius: 999px;
-        }
-
         .demo-showcase-category {
           position: absolute;
           left: 24px;
@@ -391,65 +288,12 @@ export function HowWeWorkSection() {
           -webkit-backdrop-filter: blur(12px);
         }
 
-        .demo-showcase-dots {
-          position: absolute;
-          left: 50%;
-          bottom: 20px;
-          z-index: 9;
-          display: flex;
-          max-width: 52%;
-          gap: 7px;
-          transform: translateX(-50%);
-        }
-
-        .demo-showcase-dot {
-          width: 6px;
-          height: 6px;
-          flex: none;
-          border: 0;
-          border-radius: 999px;
-          background: rgba(255,255,255,.45);
-          padding: 0;
-          cursor: pointer;
-          transition: width .35s cubic-bezier(.22,1,.36,1), background-color .25s ease;
-        }
-
-        .demo-showcase-dot.is-active {
-          width: 22px;
-          background: #fff;
-        }
-
-        @keyframes demo-card-roll-next {
-          from {
-            transform: translate(-50%, 72%);
-          }
-          to {
-            transform: translate(-50%, -50%);
-          }
-        }
-
-        @keyframes demo-card-roll-prev {
-          from {
-            transform: translate(-50%, -172%);
-          }
-          to {
-            transform: translate(-50%, -50%);
-          }
-        }
-
-        @keyframes demo-bg-in {
-          from {
-            opacity: .5;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
         @media (max-width: 900px) {
-          .demo-showcase-stage {
+          .demo-showcase-slide {
+            top: 76px;
             height: 620px;
             min-height: 620px;
+            margin-bottom: -400px;
           }
 
           .demo-showcase-card {
@@ -466,37 +310,20 @@ export function HowWeWorkSection() {
             padding: 20px;
           }
 
-          .demo-showcase-prev {
-            left: 12px;
-            width: 44px;
-            height: 44px;
-          }
-
-          .demo-showcase-next {
-            right: 12px;
-            bottom: 14px;
-            width: 48px;
-            height: 48px;
-          }
-
           .demo-showcase-category {
             left: 12px;
             bottom: 14px;
             padding: 9px 14px;
             font-size: 10px;
           }
-
-          .demo-showcase-dots {
-            bottom: 16px;
-            max-width: 45%;
-            gap: 5px;
-          }
         }
 
         @media (max-width: 560px) {
-          .demo-showcase-stage {
+          .demo-showcase-slide {
+            top: 68px;
             height: 520px;
             min-height: 520px;
+            margin-bottom: -330px;
           }
 
           .demo-showcase-card {
@@ -521,52 +348,6 @@ export function HowWeWorkSection() {
             margin-top: 5px;
             font-size: 12px;
           }
-
-          .demo-showcase-prev {
-            top: auto;
-            left: auto;
-            right: 66px;
-            bottom: 14px;
-            transform: none;
-          }
-
-          .demo-showcase-prev:hover:not(:disabled) {
-            transform: scale(1.08);
-          }
-
-          .demo-showcase-dots {
-            display: none;
-          }
-
-          @keyframes demo-card-roll-next {
-            from {
-              transform: translate(-50%, 84%);
-            }
-            to {
-              transform: translate(-50%, -50%);
-            }
-          }
-
-          @keyframes demo-card-roll-prev {
-            from {
-              transform: translate(-50%, -184%);
-            }
-            to {
-              transform: translate(-50%, -50%);
-            }
-          }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .demo-showcase-card,
-          .demo-showcase-bg {
-            animation: none !important;
-          }
-
-          .demo-showcase-control,
-          .demo-showcase-dot {
-            transition: none !important;
-          }
         }
       `}</style>
 
@@ -574,7 +355,9 @@ export function HowWeWorkSection() {
         <div className="border-t border-black/10 pt-7 sm:pt-8">
           <div className="mb-8 flex items-end justify-between gap-6 sm:mb-10">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.13em] text-black/45">Selected demos</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.13em] text-black/45">
+                Selected demos
+              </p>
               <h2 className="mt-3 max-w-[850px] text-[clamp(2.7rem,5.5vw,5rem)] font-medium leading-[.92] tracking-[-0.055em]">
                 Websites built for different businesses
               </h2>
@@ -588,61 +371,24 @@ export function HowWeWorkSection() {
             </Link>
           </div>
 
-          <div className="demo-showcase-stage">
-            <div key={`bg-${activeDemo.href}`} className="demo-showcase-bg" aria-hidden="true">
-              <iframe src={activeDemo.href} title="" tabIndex={-1} />
-            </div>
+          <div className="demo-showcase-stack">
+            {demos.map((demo, index) => (
+              <div
+                key={demo.href}
+                className="demo-showcase-slide"
+                style={{ zIndex: index + 1 }}
+              >
+                <div className="demo-showcase-bg" aria-hidden="true">
+                  <iframe src={demo.href} title="" loading="lazy" tabIndex={-1} />
+                </div>
 
-            {previousDemo && previousIndex !== null && (
-              <div className="demo-showcase-card demo-showcase-card-behind" aria-hidden="true">
-                <DemoCard demo={previousDemo} index={previousIndex} interactive={false} />
+                <div className="demo-showcase-card">
+                  <DemoCard demo={demo} index={index} />
+                </div>
+
+                <span className="demo-showcase-category">{demo.category}</span>
               </div>
-            )}
-
-            <div
-              key={`card-${activeDemo.href}`}
-              className={`demo-showcase-card demo-showcase-card-front ${
-                previousDemo ? (direction === 'next' ? 'is-roll-next' : 'is-roll-prev') : ''
-              }`}
-            >
-              <DemoCard demo={activeDemo} index={activeIndex} />
-            </div>
-
-            <button
-              type="button"
-              aria-label="Previous demo"
-              onClick={() => moveDemo('prev')}
-              disabled={isTransitioning}
-              className="demo-showcase-control demo-showcase-prev"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
-
-            <span className="demo-showcase-category">{activeDemo.category}</span>
-
-            <div className="demo-showcase-dots" aria-label="Choose demo">
-              {demos.map((demo, index) => (
-                <button
-                  key={demo.href}
-                  type="button"
-                  aria-label={`Show ${demo.name}`}
-                  aria-current={index === activeIndex ? 'true' : undefined}
-                  onClick={() => selectDemo(index)}
-                  disabled={isTransitioning}
-                  className={`demo-showcase-dot ${index === activeIndex ? 'is-active' : ''}`}
-                />
-              ))}
-            </div>
-
-            <button
-              type="button"
-              aria-label="Next demo"
-              onClick={() => moveDemo('next')}
-              disabled={isTransitioning}
-              className="demo-showcase-control demo-showcase-next"
-            >
-              <ArrowRight className="h-5 w-5" />
-            </button>
+            ))}
           </div>
 
           <Link
@@ -653,7 +399,10 @@ export function HowWeWorkSection() {
           </Link>
         </div>
 
-        <div id="about" className="mt-20 scroll-mt-24 border-t border-black/10 pt-20 lg:mt-28 lg:pt-24">
+        <div
+          id="about"
+          className="mt-20 scroll-mt-24 border-t border-black/10 pt-20 lg:mt-28 lg:pt-24"
+        >
           <div className="border-t border-black/10 pt-7 sm:pt-8">
             <h3 className="max-w-[1000px] text-[clamp(3rem,6vw,5.5rem)] font-medium leading-[.92] tracking-[-0.06em]">
               Why Choose DesignedbyTD Studio?
@@ -676,7 +425,9 @@ export function HowWeWorkSection() {
                   <span className="grid h-[38px] w-[38px] place-items-center rounded-full bg-[#121212] text-base font-semibold text-white transition-transform duration-500 [transition-timing-function:cubic-bezier(.22,1.2,.36,1)] group-hover:-rotate-[8deg] group-hover:scale-110">
                     ✓
                   </span>
-                  <span className="text-[11px] uppercase tracking-[0.14em] text-black/35">{benefit.number}</span>
+                  <span className="text-[11px] uppercase tracking-[0.14em] text-black/35">
+                    {benefit.number}
+                  </span>
                 </div>
                 <h4 className="mt-10 text-[clamp(26px,2.5vw,38px)] font-medium leading-none tracking-[-0.05em]">
                   {benefit.title}
