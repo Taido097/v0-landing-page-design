@@ -31,10 +31,10 @@ const demos: ShowcaseDemo[] = [
     href: '/portfolio/salon-spa',
   },
   {
-    name: 'Refit',
-    category: 'Custom Website',
-    industry: 'Construction & renovation',
-    href: '/portfolio/refit-construction',
+    name: 'AKJO',
+    category: 'Portfolio',
+    industry: 'Creative portfolio',
+    href: '/portfolio/akjo-portfolio',
   },
 ];
 
@@ -162,13 +162,13 @@ export function HowWeWorkSection() {
         if (!scene) return;
 
         if (index === 0) {
-          scene.style.transform = 'translateY(0)';
+          scene.style.transform = 'translate3d(0, 0, 0)';
           return;
         }
 
         const localProgress = Math.min(1, Math.max(0, position - (index - 1)));
         const translateY = (1 - localProgress) * (stage.offsetHeight + gap);
-        scene.style.transform = `translateY(${translateY}px)`;
+        scene.style.transform = `translate3d(0, ${translateY}px, 0)`;
       });
     };
 
@@ -215,13 +215,15 @@ export function HowWeWorkSection() {
           overflow: visible;
           background: transparent;
           will-change: transform;
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
         }
 
         .demo-showcase-scene-content {
           position: absolute;
           inset: 0;
           overflow: hidden;
-          background: #d8d8d8;
+          background: #181818;
         }
 
         .demo-showcase-scene:not(:first-child)::before {
@@ -238,12 +240,15 @@ export function HowWeWorkSection() {
 
         .demo-showcase-bg {
           position: absolute;
-          inset: -8%;
+          inset: -5%;
           z-index: 0;
           overflow: hidden;
-          background: #d8d8d8;
-          filter: blur(24px) saturate(.82) brightness(.76);
-          transform: scale(1.1);
+          background: #1d1d1d;
+          filter: blur(18px) saturate(1.08) brightness(.72) contrast(1.05);
+          transform: scale(1.08) translateZ(0);
+          opacity: 1;
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
         }
 
         .demo-showcase-bg::after {
@@ -251,7 +256,7 @@ export function HowWeWorkSection() {
           position: absolute;
           inset: 0;
           z-index: 2;
-          background: rgba(255,255,255,.08);
+          background: rgba(0,0,0,.10);
           pointer-events: none;
         }
 
@@ -303,8 +308,10 @@ export function HowWeWorkSection() {
           min-width: 650px;
           overflow: hidden;
           background: #fff;
-          box-shadow: 0 28px 70px rgba(0,0,0,.18);
-          transform: translate(-50%, -50%);
+          box-shadow: 0 34px 90px rgba(0,0,0,.28);
+          transform: translate3d(-50%, -50%, 0);
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
         }
 
         .demo-showcase-preview {
@@ -377,23 +384,20 @@ export function HowWeWorkSection() {
             min-height: 620px;
           }
 
-          .demo-showcase-scene {
-            will-change: auto;
-          }
-
           .demo-showcase-scene-content {
-            background: #202020;
+            background: #171717;
           }
 
           .demo-showcase-bg {
-            inset: 0;
-            filter: none;
-            transform: none;
-            background: radial-gradient(circle at 50% 42%, #565656 0%, #303030 45%, #151515 100%);
+            inset: -4%;
+            filter: blur(14px) saturate(1.02) brightness(.72) contrast(1.04);
+            transform: scale(1.06) translateZ(0);
+            background: #1b1b1b;
           }
 
           .demo-showcase-bg::after {
-            display: none;
+            display: block;
+            background: rgba(0,0,0,.08);
           }
 
           .demo-showcase-scene:not(:first-child)::before {
@@ -404,7 +408,7 @@ export function HowWeWorkSection() {
           .demo-showcase-card {
             width: calc(100% - 84px);
             min-width: 0;
-            box-shadow: 0 16px 40px rgba(0,0,0,.18);
+            box-shadow: 0 22px 56px rgba(0,0,0,.32);
           }
 
           .demo-showcase-preview {
@@ -511,20 +515,18 @@ export function HowWeWorkSection() {
                       zIndex: 10 + index,
                       transform:
                         index === 0
-                          ? 'translateY(0)'
-                          : 'translateY(calc(100% + 24px))',
+                          ? 'translate3d(0,0,0)'
+                          : 'translate3d(0, calc(100% + 24px), 0)',
                     }}
                   >
                     <div className="demo-showcase-scene-content">
                       <div className="demo-showcase-bg" aria-hidden="true">
-                        {!isMobile && (
-                          <iframe
-                            src={demo.href}
-                            title=""
-                            loading="lazy"
-                            tabIndex={-1}
-                          />
-                        )}
+                        <iframe
+                          src={demo.href}
+                          title=""
+                          loading="lazy"
+                          tabIndex={-1}
+                        />
                       </div>
 
                       <div className="demo-showcase-card">
