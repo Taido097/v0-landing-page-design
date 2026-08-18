@@ -166,6 +166,8 @@ export function PortfolioSection() {
 
         .portfolio-demo-button {
           border-radius: 0 !important;
+          touch-action: manipulation;
+          -webkit-tap-highlight-color: transparent;
         }
 
         @media (hover: hover) {
@@ -336,6 +338,7 @@ export function PortfolioSection() {
             align-items: center;
             justify-content: space-between;
             padding: 0 18px;
+            touch-action: manipulation;
           }
 
           .service-number {
@@ -366,6 +369,32 @@ export function PortfolioSection() {
 
           .service-media {
             height: 360px;
+            touch-action: manipulation;
+          }
+
+          .portfolio-demo-button {
+            min-height: 44px;
+            padding: 12px 16px !important;
+            font-size: 12px;
+          }
+        }
+
+        @media (max-width: 560px) {
+          .service-content {
+            padding: 8px 12px 16px;
+          }
+
+          .service-media {
+            height: 300px;
+          }
+
+          .service-media .portfolio-demo-button {
+            right: 12px;
+            bottom: 12px;
+          }
+
+          .portfolio-demo-button {
+            min-height: 44px;
           }
         }
 
