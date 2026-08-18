@@ -103,7 +103,7 @@ function AutoScrollDemoCard({
     win.scrollTo(0, 0);
 
     const holdAtTop = isMobile ? 320 : 450;
-    const scrollDuration = isMobile ? 7200 : 10500;
+    const scrollDuration = isMobile ? (demo.name === 'Akjo' ? 6000 : 7200) : 10500;
     const holdAtBottom = isMobile ? 700 : 900;
     const cycleDuration = holdAtTop + scrollDuration + holdAtBottom;
     const startedAt = performance.now();
@@ -136,7 +136,7 @@ function AutoScrollDemoCard({
 
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [inView, loaded, painted, isMobile, shouldMountIframe]);
+  }, [demo.name, inView, loaded, painted, isMobile, shouldMountIframe]);
 
   useEffect(() => {
     if (!shouldMountIframe) {
