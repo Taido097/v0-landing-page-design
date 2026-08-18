@@ -22,6 +22,7 @@ const demos: Demo[] = [
   { name: 'JORGE', category: 'Portfolio', industry: 'Creative portfolio', href: '/portfolio/jorge-portfolio' },
   { name: 'Akjo', category: 'Portfolio', industry: 'Creative portfolio', href: '/portfolio/akjo-portfolio' },
   { name: 'Beanro Coffee', category: 'Restaurant', industry: 'Coffee shop', href: '/portfolio/auto-repair-shop' },
+  { name: 'Matchioo', category: 'Restaurant', industry: 'Ceremonial matcha café', href: '/portfolio/matchioo' },
   { name: 'Salonix', category: 'Scheduling', industry: 'Hair & beauty salon', href: '/portfolio/salon-spa' },
   { name: 'Dentalo', category: 'Scheduling', industry: 'Dental clinic & hospital', href: '/portfolio/dentalo-clinic' },
   { name: 'DesignedbyTD Studio', category: 'Scheduling', industry: 'Dental clinic', href: '/portfolio/tai-do-dental' },
