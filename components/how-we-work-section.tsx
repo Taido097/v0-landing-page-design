@@ -9,13 +9,38 @@ type ShowcaseDemo = {
   category: 'Portfolio' | 'Scheduling' | 'Restaurant' | 'Custom Website';
   industry: string;
   href: string;
+  mobileImage: string;
 };
 
 const demos: ShowcaseDemo[] = [
-  { name: 'Fuel', category: 'Portfolio', industry: 'Premium creative agency', href: '/portfolio/fuel-agency' },
-  { name: 'Beanro Coffee', category: 'Restaurant', industry: 'Coffee shop', href: '/portfolio/auto-repair-shop' },
-  { name: 'Salonix', category: 'Scheduling', industry: 'Hair & beauty salon', href: '/portfolio/salon-spa' },
-  { name: 'AKJO', category: 'Portfolio', industry: 'Creative portfolio', href: '/portfolio/akjo-portfolio' },
+  {
+    name: 'Fuel',
+    category: 'Portfolio',
+    industry: 'Premium creative agency',
+    href: '/portfolio/fuel-agency',
+    mobileImage: 'https://framerusercontent.com/images/gPkgBcGwatmPdwzMlpToFBHNSs.png?width=912&height=1170',
+  },
+  {
+    name: 'Beanro Coffee',
+    category: 'Restaurant',
+    industry: 'Coffee shop',
+    href: '/portfolio/auto-repair-shop',
+    mobileImage: 'https://framerusercontent.com/images/9BOQjMuTjInl3CMPRrkdP4QKJZU.png?width=2440&height=2344',
+  },
+  {
+    name: 'Salonix',
+    category: 'Scheduling',
+    industry: 'Hair & beauty salon',
+    href: '/portfolio/salon-spa',
+    mobileImage: 'https://framerusercontent.com/images/dIylQwKI5TLfITTBRdEzEwYx7TY.jpg?width=2330&height=1536',
+  },
+  {
+    name: 'AKJO',
+    category: 'Portfolio',
+    industry: 'Creative portfolio',
+    href: '/portfolio/akjo-portfolio',
+    mobileImage: 'https://framerusercontent.com/images/yIrZXCStv1OSKgU3LeSDNUk8.png?width=1200&height=1799',
+  },
 ];
 
 const benefits = [
@@ -25,49 +50,16 @@ const benefits = [
   { number: '04', title: 'Built for Local Businesses', description: 'The goal is not just a pretty site. The goal is to help customers trust you, call you, and request your service.' },
 ];
 
-function freezeBackgroundFrame(frame: HTMLIFrameElement) {
-  try {
-    const win = frame.contentWindow;
-    const doc = frame.contentDocument;
-    if (!win || !doc) return;
-
-    win.scrollTo(0, 0);
-    doc.documentElement.style.scrollBehavior = 'auto';
-    doc.documentElement.style.overflow = 'hidden';
-    if (doc.body) {
-      doc.body.style.scrollBehavior = 'auto';
-      doc.body.style.overflow = 'hidden';
-    }
-
-    if (!doc.getElementById('designedbytd-mobile-freeze')) {
-      const style = doc.createElement('style');
-      style.id = 'designedbytd-mobile-freeze';
-      style.textContent = `
-        html, body { overflow: hidden !important; scroll-behavior: auto !important; }
-        *, *::before, *::after {
-          animation-play-state: paused !important;
-          scroll-behavior: auto !important;
-        }
-      `;
-      doc.head.appendChild(style);
-    }
-  } catch {
-    // Same-origin proxy should allow this, but fail safely if a browser blocks access.
-  }
-}
-
-function DemoCard({ demo, index, shouldLoad = true }: { demo: ShowcaseDemo; index: number; shouldLoad?: boolean }) {
+function DemoCard({ demo, index }: { demo: ShowcaseDemo; index: number }) {
   return (
     <>
       <div className="demo-showcase-preview">
-        {shouldLoad && (
-          <iframe
-            src={demo.href}
-            title={`${demo.name} live demo preview`}
-            loading="lazy"
-            tabIndex={-1}
-          />
-        )}
+        <iframe
+          src={demo.href}
+          title={`${demo.name} live demo preview`}
+          loading="lazy"
+          tabIndex={-1}
+        />
         <Link
           href={demo.href}
           aria-label={`Open ${demo.name} demo`}
@@ -88,43 +80,29 @@ function DemoCard({ demo, index, shouldLoad = true }: { demo: ShowcaseDemo; inde
 }
 
 function MobileDemoScene({ demo, index }: { demo: ShowcaseDemo; index: number }) {
-  const sceneRef = useRef<HTMLDivElement | null>(null);
-  const [active, setActive] = useState(index === 0);
-
-  useEffect(() => {
-    const node = sceneRef.current;
-    if (!node) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setActive(entry.isIntersecting && entry.intersectionRatio >= 0.18);
-      },
-      { rootMargin: '0px', threshold: [0, 0.18, 0.4, 0.7] },
-    );
-
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <div ref={sceneRef} className="mobile-demo-scene">
+    <article className="mobile-demo-scene">
       <div className="mobile-demo-background" aria-hidden="true">
-        {active && (
-          <iframe
-            src={demo.href}
-            title=""
-            loading="lazy"
-            tabIndex={-1}
-            scrolling="no"
-            onLoad={(event) => freezeBackgroundFrame(event.currentTarget)}
-          />
-        )}
+        <img src={demo.mobileImage} alt="" decoding="async" loading="lazy" />
       </div>
-      <div className="demo-showcase-card">
-        <DemoCard demo={demo} index={index} shouldLoad={active} />
-      </div>
+
+      <Link href={demo.href} className="mobile-demo-card" aria-label={`Open ${demo.name} demo`}>
+        <div className="mobile-demo-preview">
+          <img src={demo.mobileImage} alt={`${demo.name} website preview`} decoding="async" loading="lazy" />
+        </div>
+        <div className="demo-showcase-info">
+          <div className="min-w-0">
+            <h3 className="demo-showcase-title truncate">{demo.name}</h3>
+            <p className="demo-showcase-industry truncate">{demo.industry}</p>
+          </div>
+          <span className="demo-showcase-count">
+            {String(index + 1).padStart(2, '0')} / {String(demos.length).padStart(2, '0')}
+          </span>
+        </div>
+      </Link>
+
       <span className="demo-showcase-category">{demo.category}</span>
-    </div>
+    </article>
   );
 }
 
@@ -196,9 +174,9 @@ export function HowWeWorkSection() {
         .demo-showcase-scene{position:absolute;inset:0;overflow:visible;background:transparent;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform-style:preserve-3d}
         .demo-showcase-scene-content{position:absolute;inset:0;overflow:hidden;contain:paint;background:#111}
         .demo-showcase-scene:not(:first-child)::before{content:'';position:absolute;left:0;right:0;top:-24px;z-index:100;height:24px;background:#fafafa;pointer-events:none}
-        .demo-showcase-bg,.mobile-demo-background{position:absolute;inset:-10%;z-index:0;overflow:hidden;background:#111;filter:blur(24px) saturate(1.12) brightness(.82) contrast(1.03);transform:scale(1.16) translateZ(0);transform-origin:center;pointer-events:none}
-        .demo-showcase-bg::after,.mobile-demo-background::after{content:'';position:absolute;inset:0;z-index:2;background:rgba(0,0,0,.06);pointer-events:none}
-        .demo-showcase-bg iframe,.mobile-demo-background iframe,.demo-showcase-preview iframe{position:absolute;left:0;top:0;width:200%;height:200%;border:0;background:#fff;pointer-events:none;transform:scale(.5);transform-origin:top left}
+        .demo-showcase-bg{position:absolute;inset:-10%;z-index:0;overflow:hidden;background:#111;filter:blur(24px) saturate(1.12) brightness(.82) contrast(1.03);transform:scale(1.16) translateZ(0);transform-origin:center;pointer-events:none}
+        .demo-showcase-bg::after{content:'';position:absolute;inset:0;z-index:2;background:rgba(0,0,0,.06);pointer-events:none}
+        .demo-showcase-bg iframe,.demo-showcase-preview iframe{position:absolute;left:0;top:0;width:200%;height:200%;border:0;background:#fff;pointer-events:none;transform:scale(.5);transform-origin:top left}
         .demo-showcase-card{position:absolute;left:50%;top:50%;z-index:5;width:min(58%,840px);min-width:650px;overflow:hidden;background:#fff;box-shadow:0 34px 90px rgba(0,0,0,.24);transform:translate3d(-50%,-50%,0)}
         .demo-showcase-preview{position:relative;height:470px;overflow:hidden;background:#fff}
         .demo-showcase-info{display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:118px;padding:24px 28px 26px;background:#fff}
@@ -219,13 +197,14 @@ export function HowWeWorkSection() {
         }
 
         @media(max-width:560px){
-          .mobile-demo-stack{display:block;position:relative;overflow:visible}
-          .mobile-demo-scene{position:relative;height:570px;overflow:hidden;isolation:isolate;margin:0 0 18px;background:#111;contain:layout paint style;transform:translateZ(0)}
-          .mobile-demo-background{inset:-12%;filter:blur(16px) saturate(1.16) brightness(.94) contrast(1.01);transform:scale(1.18) translateZ(0);will-change:auto}
-          .mobile-demo-background::after{background:rgba(0,0,0,.02)}
-          .mobile-demo-background iframe{position:absolute!important;top:0!important;left:0!important;transform:scale(.5)!important;will-change:auto!important}
-          .mobile-demo-scene .demo-showcase-card{top:48%;width:calc(100% - 36px);min-width:0;box-shadow:0 20px 52px rgba(0,0,0,.28);transform:translate3d(-50%,-50%,0)}
-          .mobile-demo-scene .demo-showcase-preview{height:286px}
+          .mobile-demo-stack{display:block;position:relative}
+          .mobile-demo-scene{position:relative;height:540px;overflow:hidden;isolation:isolate;margin:0 0 18px;background:#111;contain:layout paint style}
+          .mobile-demo-background{position:absolute;inset:-40px;z-index:0;overflow:hidden;background:#111;pointer-events:none}
+          .mobile-demo-background::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.10)}
+          .mobile-demo-background img{width:100%;height:100%;object-fit:cover;filter:blur(22px) saturate(1.12) brightness(.82);transform:scale(1.15);transform-origin:center}
+          .mobile-demo-card{position:absolute;left:18px;right:18px;top:50%;z-index:5;display:block;overflow:hidden;background:#fff;box-shadow:0 20px 52px rgba(0,0,0,.28);transform:translateY(-50%)}
+          .mobile-demo-preview{height:286px;overflow:hidden;background:#eee}
+          .mobile-demo-preview img{width:100%;height:100%;object-fit:cover;display:block}
           .mobile-demo-scene .demo-showcase-info{min-height:88px;padding:15px 16px}
           .mobile-demo-scene .demo-showcase-title{font-size:19px}
           .mobile-demo-scene .demo-showcase-industry{margin-top:5px;font-size:12px}
