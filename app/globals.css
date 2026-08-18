@@ -170,41 +170,21 @@ a.inline-flex[class*='rounded-full'][href='#samples'] {
 
 /* Cinematic Qitchen motion: image-based movement that feels like video. */
 @keyframes qitchenCinematicHero {
-  0% {
-    transform: scale(1.045) translate3d(0, 0, 0);
-  }
-  33% {
-    transform: scale(1.085) translate3d(-1.25%, -0.7%, 0);
-  }
-  66% {
-    transform: scale(1.07) translate3d(1%, -1.1%, 0);
-  }
-  100% {
-    transform: scale(1.045) translate3d(0, 0, 0);
-  }
+  0% { transform: scale(1.045) translate3d(0, 0, 0); }
+  33% { transform: scale(1.085) translate3d(-1.25%, -0.7%, 0); }
+  66% { transform: scale(1.07) translate3d(1%, -1.1%, 0); }
+  100% { transform: scale(1.045) translate3d(0, 0, 0); }
 }
 
 @keyframes qitchenCardPan {
-  0% {
-    object-position: 48% 46%;
-  }
-  50% {
-    object-position: 53% 52%;
-  }
-  100% {
-    object-position: 49% 48%;
-  }
+  0% { object-position: 48% 46%; }
+  50% { object-position: 53% 52%; }
+  100% { object-position: 49% 48%; }
 }
 
 @keyframes qitchenViewCinematicIn {
-  0% {
-    opacity: 0;
-    transform: translate3d(0, 22px, 0) scale(0.992);
-  }
-  100% {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
+  0% { opacity: 0; transform: translate3d(0, 22px, 0) scale(0.992); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
 }
 
 .qitchen-hero-img {
@@ -246,10 +226,7 @@ a.inline-flex[class*='rounded-full'][href='#samples'] {
   border-color: rgba(255, 255, 255, .18) !important;
 }
 
-.showcase-shine:has(> img[alt='Qitchen Sushi website design preview']) > img {
-  opacity: 0 !important;
-}
-
+.showcase-shine:has(> img[alt='Qitchen Sushi website design preview']) > img { opacity: 0 !important; }
 .showcase-shine:has(> img[alt='Qitchen Sushi website design preview']) > div:nth-of-type(1) {
   inset: 0 auto 0 0 !important;
   width: 72% !important;
@@ -279,9 +256,7 @@ a.inline-flex[class*='rounded-full'][href='#samples'] {
 .showcase-shine:has(> img[alt='Qitchen Sushi website design preview']) > div:nth-of-type(2) {
   top: 0 !important;
   bottom: auto !important;
-  background-image:
-    linear-gradient(to top, rgba(0, 0, 0, .76), rgba(0, 0, 0, .02) 62%),
-    url('https://framerusercontent.com/images/quqbVpcYdgH65rZqF71BSohYQ.webp?height=600&width=900') !important;
+  background-image: linear-gradient(to top, rgba(0,0,0,.76), rgba(0,0,0,.02) 62%), url('https://framerusercontent.com/images/quqbVpcYdgH65rZqF71BSohYQ.webp?height=600&width=900') !important;
 }
 
 .showcase-shine:has(> img[alt='Qitchen Sushi website design preview']) > div:nth-of-type(3) {
@@ -289,24 +264,18 @@ a.inline-flex[class*='rounded-full'][href='#samples'] {
   bottom: auto !important;
   max-width: none !important;
   color: white !important;
-  background-image:
-    linear-gradient(to top, rgba(0, 0, 0, .78), rgba(0, 0, 0, .05) 64%),
-    url('https://framerusercontent.com/images/I8AGYbzHAG3DaCqU2wYCmWnrFLw.webp?height=900&width=900') !important;
+  background-image: linear-gradient(to top, rgba(0,0,0,.78), rgba(0,0,0,.05) 64%), url('https://framerusercontent.com/images/I8AGYbzHAG3DaCqU2wYCmWnrFLw.webp?height=900&width=900') !important;
 }
 
 .showcase-shine:has(> img[alt='Qitchen Sushi website design preview']) > div:nth-of-type(4) {
   top: auto !important;
   bottom: 0 !important;
-  background-image:
-    linear-gradient(to top, rgba(0, 0, 0, .78), rgba(0, 0, 0, .05) 64%),
-    url('https://framerusercontent.com/images/SMJY8uQcFDPv5vRNMRmZijjygkM.webp?height=900&width=900') !important;
+  background-image: linear-gradient(to top, rgba(0,0,0,.78), rgba(0,0,0,.05) 64%), url('https://framerusercontent.com/images/SMJY8uQcFDPv5vRNMRmZijjygkM.webp?height=900&width=900') !important;
 }
 
 .showcase-shine:has(> img[alt='Qitchen Sushi website design preview']) > div:nth-of-type(2) > *,
 .showcase-shine:has(> img[alt='Qitchen Sushi website design preview']) > div:nth-of-type(3) > *,
-.showcase-shine:has(> img[alt='Qitchen Sushi website design preview']) > div:nth-of-type(4) > * {
-  display: none !important;
-}
+.showcase-shine:has(> img[alt='Qitchen Sushi website design preview']) > div:nth-of-type(4) > * { display: none !important; }
 
 .showcase-shine:has(> img[alt='Qitchen Sushi website design preview']) > div:nth-of-type(2)::after,
 .showcase-shine:has(> img[alt='Qitchen Sushi website design preview']) > div:nth-of-type(3)::after,
@@ -314,26 +283,18 @@ a.inline-flex[class*='rounded-full'][href='#samples'] {
   position: absolute;
   right: 8%;
   bottom: 10%;
-  color: rgba(255, 255, 255, .92);
+  color: rgba(255,255,255,.92);
   font-family: ui-sans-serif, system-ui, sans-serif;
-  font-size: clamp(5px, .62vw, 9px);
+  font-size: clamp(5px,.62vw,9px);
   font-weight: 600;
   letter-spacing: .12em;
   text-transform: uppercase;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, .65);
+  text-shadow: 0 1px 8px rgba(0,0,0,.65);
 }
 
-.showcase-shine:has(> img[alt='Qitchen Sushi website design preview']) > div:nth-of-type(2)::after {
-  content: 'Menu';
-}
-
-.showcase-shine:has(> img[alt='Qitchen Sushi website design preview']) > div:nth-of-type(3)::after {
-  content: 'Reservation';
-}
-
-.showcase-shine:has(> img[alt='Qitchen Sushi website design preview']) > div:nth-of-type(4)::after {
-  content: 'Our Restaurant';
-}
+.showcase-shine:has(> img[alt='Qitchen Sushi website design preview']) > div:nth-of-type(2)::after { content: 'Menu'; }
+.showcase-shine:has(> img[alt='Qitchen Sushi website design preview']) > div:nth-of-type(3)::after { content: 'Reservation'; }
+.showcase-shine:has(> img[alt='Qitchen Sushi website design preview']) > div:nth-of-type(4)::after { content: 'Our Restaurant'; }
 
 .showcase-shine:has(> img[alt='Qitchen Sushi website design preview']) > div:nth-of-type(2)::before,
 .showcase-shine:has(> img[alt='Qitchen Sushi website design preview']) > div:nth-of-type(3)::before,
@@ -346,7 +307,7 @@ a.inline-flex[class*='rounded-full'][href='#samples'] {
   place-items: center;
   width: 12px;
   height: 12px;
-  border: 1px solid rgba(255, 255, 255, .35);
+  border: 1px solid rgba(255,255,255,.35);
   border-radius: 999px;
   color: white;
   font-size: 8px;
@@ -359,9 +320,9 @@ a.inline-flex[class*='rounded-full'][href='#samples'] {
   z-index: 12;
   left: 4.5%;
   top: 5%;
-  color: rgba(255, 255, 255, .74);
+  color: rgba(255,255,255,.74);
   font-family: ui-sans-serif, system-ui, sans-serif;
-  font-size: clamp(6px, .65vw, 10px);
+  font-size: clamp(6px,.65vw,10px);
   font-weight: 600;
   letter-spacing: .3em;
   pointer-events: none;
@@ -375,7 +336,7 @@ a.inline-flex[class*='rounded-full'][href='#samples'] {
   background: none !important;
   color: #f5efe4;
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(1rem, 2.05vw, 2rem);
+  font-size: clamp(1rem,2.05vw,2rem);
   font-weight: 400;
   line-height: .9;
   letter-spacing: -.04em;
@@ -388,55 +349,18 @@ a.inline-flex[class*='rounded-full'][href='#samples'] {
 @media (prefers-reduced-motion: reduce) {
   .qitchen-hero-img,
   .qitchen-card > img,
-  .qitchen-view {
-    animation: none !important;
-  }
+  .qitchen-view { animation: none !important; }
 }
 
 /* Animations */
 @layer utilities {
-  /* Fade in animation */
-  .animate-fade-in {
-    @apply animate-in fade-in duration-700;
-  }
-  
-  /* Slide up animation */
-  .animate-slide-up {
-    @apply animate-in slide-in-from-bottom-8 duration-700;
-  }
-  
-  /* Fade in with scale */
-  .animate-scale-in {
-    @apply animate-in fade-in zoom-in-95 duration-700;
-  }
-  
-  /* Pulse subtle */
-  .animate-pulse-subtle {
-    animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-  
-  @keyframes pulse-subtle {
-    0%, 100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.8;
-    }
-  }
-  
-  /* Glow effect */
-  .animate-glow {
-    animation: glow 2s ease-in-out infinite;
-  }
-  
-  @keyframes glow {
-    0%, 100% {
-      box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
-    }
-    50% {
-      box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
-    }
-  }
+  .animate-fade-in { @apply animate-in fade-in duration-700; }
+  .animate-slide-up { @apply animate-in slide-in-from-bottom-8 duration-700; }
+  .animate-scale-in { @apply animate-in fade-in zoom-in-95 duration-700; }
+  .animate-pulse-subtle { animation: pulse-subtle 2s cubic-bezier(0.4,0,0.6,1) infinite; }
+  @keyframes pulse-subtle { 0%,100% { opacity: 1; } 50% { opacity: .8; } }
+  .animate-glow { animation: glow 2s ease-in-out infinite; }
+  @keyframes glow { 0%,100% { box-shadow: 0 0 0 0 rgba(99,102,241,.7); } 50% { box-shadow: 0 0 0 10px rgba(99,102,241,0); } }
 }
 
 /* Keep the stacked demo stage filling the phone viewport while it is sticky. */
@@ -448,5 +372,59 @@ a.inline-flex[class*='rounded-full'][href='#samples'] {
 
   .demo-showcase-scroll {
     height: calc(100dvh + 1080px) !important;
+  }
+}
+
+/* Stronger demo atmosphere + smoother compositing on desktop and mobile. */
+.demo-showcase-stage,
+.demo-showcase-scene,
+.demo-showcase-scene-content,
+.demo-showcase-card {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.demo-showcase-scene {
+  will-change: transform !important;
+  contain: layout paint;
+}
+
+.demo-showcase-scene-content {
+  background: #1d1d1d !important;
+}
+
+.demo-showcase-bg {
+  filter: blur(22px) saturate(1.08) brightness(.58) contrast(1.08) !important;
+  opacity: 1 !important;
+}
+
+.demo-showcase-bg::after {
+  display: block !important;
+  background: rgba(0,0,0,.16) !important;
+}
+
+.demo-showcase-card {
+  box-shadow: 0 34px 90px rgba(0,0,0,.34) !important;
+}
+
+@media (max-width: 900px) {
+  .demo-showcase-bg {
+    filter: none !important;
+    background: radial-gradient(circle at 50% 38%, #3f3f3f 0%, #242424 45%, #0c0c0c 100%) !important;
+  }
+
+  .demo-showcase-bg::after {
+    display: block !important;
+    background: rgba(0,0,0,.18) !important;
+  }
+
+  .demo-showcase-card {
+    box-shadow: 0 22px 56px rgba(0,0,0,.38) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-showcase-scene {
+    will-change: auto !important;
   }
 }
