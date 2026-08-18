@@ -39,14 +39,14 @@ function AutoScrollDemoCard({
   demo,
   index,
   isMobile,
-  activeMobileIndex,
-  setActiveMobileIndex,
+  activeMobileRow,
+  setActiveMobileRow,
 }: {
   demo: Demo;
   index: number;
   isMobile: boolean;
-  activeMobileIndex: number;
-  setActiveMobileIndex: (index: number) => void;
+  activeMobileRow: number;
+  setActiveMobileRow: (row: number) => void;
 }) {
   const cardRef = useRef<HTMLElement | null>(null);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
@@ -55,7 +55,8 @@ function AutoScrollDemoCard({
   const [inView, setInView] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [painted, setPainted] = useState(false);
-  const mobileActive = isMobile && activeMobileIndex === index;
+  const mobileRow = Math.floor(index / 2);
+  const mobileActive = isMobile && activeMobileRow === mobileRow;
   const shouldMountIframe = !isMobile || mobileActive;
 
   useEffect(() => {
@@ -71,7 +72,7 @@ function AutoScrollDemoCard({
           const closeToCenter = Math.abs(cardCenter - viewportCenter) < Math.min(window.innerHeight * 0.32, 260);
 
           if (entry.isIntersecting && closeToCenter) {
-            setActiveMobileIndex(index);
+            setActiveMobileRow(mobileRow);
           }
           setInView(entry.isIntersecting && closeToCenter);
         } else {
@@ -85,7 +86,7 @@ function AutoScrollDemoCard({
 
     observer.observe(card);
     return () => observer.disconnect();
-  }, [index, isMobile, setActiveMobileIndex]);
+  }, [isMobile, mobileRow, setActiveMobileRow]);
 
   useEffect(() => {
     cancelAnimationFrame(rafRef.current);
@@ -231,7 +232,7 @@ function AutoScrollDemoCard({
 export function AllDemosGallery() {
   const [activeCategory, setActiveCategory] = useState<DemoCategory>('All');
   const [isMobile, setIsMobile] = useState(false);
-  const [activeMobileIndex, setActiveMobileIndex] = useState(0);
+  const [activeMobileRow, setActiveMobileRow] = useState(0);
 
   useEffect(() => {
     const media = window.matchMedia('(max-width: 767px)');
@@ -244,7 +245,7 @@ export function AllDemosGallery() {
   const visibleDemos = activeCategory === 'All' ? demos : demos.filter((demo) => demo.category === activeCategory);
 
   useEffect(() => {
-    setActiveMobileIndex(0);
+    setActiveMobileRow(0);
   }, [activeCategory]);
 
   return (
@@ -275,7 +276,7 @@ export function AllDemosGallery() {
 
         <div className="flex items-center justify-between border-b border-black/10 py-6 text-xs text-black/45">
           <span>{visibleDemos.length} demos</span>
-          <span>{isMobile ? 'One live preview at a time' : 'Live previews · auto-scroll'}</span>
+          <span>{isMobile ? 'Two live previews per row' : 'Live previews · auto-scroll'}</span>
         </div>
 
         <div className="grid grid-cols-2 gap-x-3 gap-y-7 pt-6 md:gap-x-5 md:gap-y-10 lg:grid-cols-3">
@@ -285,8 +286,8 @@ export function AllDemosGallery() {
               demo={demo}
               index={index}
               isMobile={isMobile}
-              activeMobileIndex={activeMobileIndex}
-              setActiveMobileIndex={setActiveMobileIndex}
+              activeMobileRow={activeMobileRow}
+              setActiveMobileRow={setActiveMobileRow}
             />
           ))}
         </div>
