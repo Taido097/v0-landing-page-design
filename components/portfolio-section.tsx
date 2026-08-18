@@ -164,6 +164,10 @@ export function PortfolioSection() {
           transition: height .55s cubic-bezier(.22,1,.36,1);
         }
 
+        .portfolio-demo-button {
+          border-radius: 0 !important;
+        }
+
         @media (hover: hover) {
           .service-panel:not(.is-active) .service-trigger:hover {
             background: #f7f7f7;
@@ -437,7 +441,10 @@ export function PortfolioSection() {
 
                     <ProgressiveBlur />
 
-                    <span className="absolute bottom-4 right-4 z-20 inline-flex items-center gap-2 rounded-full bg-black px-4 py-2 text-xs font-semibold text-white transition-transform duration-300 group-hover:-translate-y-0.5">
+                    <span
+                      style={{ borderRadius: 0 }}
+                      className="portfolio-demo-button absolute bottom-4 right-4 z-20 inline-flex items-center gap-2 !rounded-none bg-black px-4 py-2 text-xs font-semibold text-white transition-transform duration-300 group-hover:-translate-y-0.5"
+                    >
                       View demos <span aria-hidden="true">↗</span>
                     </span>
                   </Link>
@@ -450,7 +457,8 @@ export function PortfolioSection() {
         <div className="mt-8 flex justify-center sm:justify-end">
           <Link
             href="/demos"
-            className="group inline-flex items-center gap-3 rounded-full bg-black px-6 py-3.5 text-sm font-semibold text-white shadow-[0_10px_30px_rgba(0,0,0,.14)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-black/85 hover:shadow-[0_14px_34px_rgba(0,0,0,.2)]"
+            style={{ borderRadius: 0 }}
+            className="portfolio-demo-button group inline-flex items-center gap-3 !rounded-none bg-black px-6 py-3.5 text-sm font-semibold text-white shadow-[0_10px_30px_rgba(0,0,0,.14)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-black/85 hover:shadow-[0_14px_34px_rgba(0,0,0,.2)]"
           >
             <span>View all demos</span>
             <span className="text-base transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
