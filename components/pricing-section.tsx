@@ -76,12 +76,12 @@ export function PricingSection() {
           {plans.map((plan, index) => (
             <article
               key={plan.name}
-              className={`flex min-h-[540px] flex-col rounded-xl border p-7 transition-all duration-700 [transition-timing-function:cubic-bezier(.22,1,.36,1)] sm:p-8 ${
+              className={`flex min-h-[540px] flex-col rounded-none border p-7 transition-all duration-700 [transition-timing-function:cubic-bezier(.22,1,.36,1)] sm:p-8 ${
                 plan.highlighted
                   ? 'border-black bg-[#121212] text-white'
                   : 'border-black/10 bg-white text-[#121212]'
               } ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-7 opacity-0'}`}
-              style={{ transitionDelay: `${index * 90}ms` }}
+              style={{ transitionDelay: `${index * 90}ms`, borderRadius: 0 }}
             >
               <div className={`text-[11px] uppercase tracking-[0.14em] ${plan.highlighted ? 'text-white/55' : 'text-black/40'}`}>
                 {plan.highlighted ? 'Most Chosen' : index === 1 ? 'For growing businesses' : 'Advanced projects'}
@@ -114,7 +114,8 @@ export function PricingSection() {
 
               <Link
                 href={plan.ctaLink || '/contact'}
-                className={`group inline-flex items-center justify-between rounded-full px-5 py-3.5 text-sm font-semibold transition-all duration-300 ${
+                style={{ borderRadius: 0 }}
+                className={`group inline-flex items-center justify-between rounded-none px-5 py-3.5 text-sm font-semibold transition-all duration-300 ${
                   plan.highlighted
                     ? 'bg-white text-black hover:bg-white/90'
                     : 'bg-[#121212] text-white hover:bg-black/85'
