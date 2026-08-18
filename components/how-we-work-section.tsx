@@ -85,18 +85,66 @@ function DemoCard({ demo, index }: { demo: ShowcaseDemo; index: number }) {
   );
 }
 
-function MobileDemoScene({ demo, index }: { demo: ShowcaseDemo; index: number }) {
+function MobileDemoScene({
+  demo,
+  index,
+  activeIndex,
+  setActiveIndex,
+}: {
+  demo: ShowcaseDemo;
+  index: number;
+  activeIndex: number;
+  setActiveIndex: (index: number) => void;
+}) {
+  const sceneRef = useRef<HTMLElement | null>(null);
   const fit = demo.mobileFit ?? 'cover';
+  const isActive = activeIndex === index;
+
+  useEffect(() => {
+    const node = sceneRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setActiveIndex(index);
+      },
+      {
+        rootMargin: '-34% 0px -34% 0px',
+        threshold: 0.01,
+      },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [index, setActiveIndex]);
+
+  const slug = demo.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
   return (
-    <article className={`mobile-demo-scene mobile-demo-scene-${demo.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>
+    <article ref={sceneRef} className={`mobile-demo-scene mobile-demo-scene-${slug}`}>
       <div className="mobile-demo-background" aria-hidden="true">
         <img src={demo.mobileImage} alt="" decoding="async" loading="lazy" />
       </div>
 
-      <Link href={demo.href} className="mobile-demo-card" aria-label={`Open ${demo.name} demo`}>
+      <div className="mobile-demo-card">
         <div className={`mobile-demo-preview mobile-demo-preview-${fit}`}>
           <img src={demo.mobileImage} alt={`${demo.name} website preview`} decoding="async" loading="lazy" />
+          {isActive && (
+            <iframe
+              key={`${demo.href}-mobile-live`}
+              className="mobile-demo-live"
+              src={demo.href}
+              title={`${demo.name} animated mobile preview`}
+              tabIndex={-1}
+              aria-hidden="true"
+              scrolling="no"
+            />
+          )}
+          <Link
+            href={demo.href}
+            aria-label={`Open ${demo.name} demo`}
+            className="absolute inset-0 z-20"
+          />
         </div>
         <div className="demo-showcase-info">
           <div className="min-w-0">
@@ -107,7 +155,7 @@ function MobileDemoScene({ demo, index }: { demo: ShowcaseDemo; index: number })
             {String(index + 1).padStart(2, '0')} / {String(demos.length).padStart(2, '0')}
           </span>
         </div>
-      </Link>
+      </div>
 
       <span className="demo-showcase-category">{demo.category}</span>
     </article>
@@ -117,6 +165,7 @@ function MobileDemoScene({ demo, index }: { demo: ShowcaseDemo; index: number })
 export function HowWeWorkSection() {
   const [isVisible, setIsVisible] = useState(false);
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
+  const [activeMobileIndex, setActiveMobileIndex] = useState(0);
   const stackRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const sceneRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -211,13 +260,13 @@ export function HowWeWorkSection() {
           .mobile-demo-background::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.10)}
           .mobile-demo-background img{width:100%;height:100%;object-fit:cover;filter:blur(22px) saturate(1.12) brightness(.82);transform:scale(1.15);transform-origin:center}
           .mobile-demo-card{position:absolute;left:18px;right:18px;top:50%;z-index:5;display:block;overflow:hidden;background:#fff;box-shadow:0 20px 52px rgba(0,0,0,.28);transform:translateY(-50%)}
-          .mobile-demo-preview{height:286px;overflow:hidden;background:#f2f2f2}
-          .mobile-demo-preview img{width:100%;height:100%;object-position:top center;display:block}
-          .mobile-demo-preview-cover img{object-fit:cover}
-          .mobile-demo-preview-contain img{object-fit:contain;background:#fff}
+          .mobile-demo-preview{position:relative;height:286px;overflow:hidden;background:#f2f2f2}
+          .mobile-demo-preview>img{width:100%;height:100%;object-position:top center;display:block}
+          .mobile-demo-preview-cover>img{object-fit:cover}
+          .mobile-demo-preview-contain>img{object-fit:contain;background:#fff}
+          .mobile-demo-live{position:absolute;left:0;top:0;z-index:10;width:200%;height:200%;border:0;background:#fff;pointer-events:none;transform:scale(.5);transform-origin:top left}
           .mobile-demo-scene-salonix .mobile-demo-preview{height:300px}
           .mobile-demo-scene-akjo .mobile-demo-preview{height:310px;background:#fff}
-          .mobile-demo-scene-akjo .mobile-demo-preview img{object-fit:contain;object-position:top center}
           .mobile-demo-scene .demo-showcase-info{min-height:88px;padding:15px 16px}
           .mobile-demo-scene .demo-showcase-title{font-size:19px}
           .mobile-demo-scene .demo-showcase-industry{margin-top:5px;font-size:12px}
@@ -257,7 +306,15 @@ export function HowWeWorkSection() {
 
           {isMobile === true && (
             <div className="mobile-demo-stack">
-              {demos.map((demo, index) => <MobileDemoScene key={demo.href} demo={demo} index={index} />)}
+              {demos.map((demo, index) => (
+                <MobileDemoScene
+                  key={demo.href}
+                  demo={demo}
+                  index={index}
+                  activeIndex={activeMobileIndex}
+                  setActiveIndex={setActiveMobileIndex}
+                />
+              ))}
             </div>
           )}
 
