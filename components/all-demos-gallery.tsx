@@ -177,7 +177,7 @@ function AutoScrollDemoCard({
         href={demo.href}
         className="block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black"
       >
-        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-black/10 bg-[#ececec] shadow-[0_1px_0_rgba(0,0,0,.03)] transition-transform duration-300 ease-out group-hover:-translate-y-0.5">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-black/10 bg-[#ececec] shadow-[0_1px_0_rgba(0,0,0,.03)] transition-transform duration-300 ease-out group-hover:-translate-y-0.5 sm:rounded-2xl">
           {isMobile && (
             <img
               src={snapshot(demo.href)}
@@ -210,18 +210,18 @@ function AutoScrollDemoCard({
             />
           )}
 
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] flex items-center justify-between border-t border-white/15 bg-black/72 px-4 py-2.5 text-[10px] uppercase tracking-[.14em] text-white/70 backdrop-blur-md">
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] flex items-center justify-between border-t border-white/15 bg-black/72 px-2 py-1.5 text-[7px] uppercase tracking-[.08em] text-white/70 backdrop-blur-md sm:px-4 sm:py-2.5 sm:text-[10px] sm:tracking-[.14em]">
             <span>{mobileActive && painted || !isMobile ? 'Live demo' : 'Preview'}</span>
             <span>{mobileActive && painted || !isMobile ? 'Auto-scroll' : 'Scroll to play'}</span>
           </div>
         </div>
 
-        <div className="flex items-start justify-between gap-4 pt-3">
+        <div className="flex items-start justify-between gap-2 pt-2.5 sm:gap-4 sm:pt-3">
           <div className="min-w-0">
-            <h2 className="truncate text-[15px] font-medium tracking-[-0.025em] text-black">{demo.name}</h2>
-            <p className="mt-1 text-xs text-black/45">{demo.category} · {demo.industry}</p>
+            <h2 className="truncate text-[13px] font-medium tracking-[-0.025em] text-black sm:text-[15px]">{demo.name}</h2>
+            <p className="mt-1 truncate text-[10px] leading-tight text-black/45 sm:text-xs">{demo.category} · {demo.industry}</p>
           </div>
-          <ArrowUpRight className="mt-0.5 h-4 w-4 shrink-0 text-black/30 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-black" />
+          <ArrowUpRight className="mt-0.5 h-3.5 w-3.5 shrink-0 text-black/30 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-black sm:h-4 sm:w-4" />
         </div>
       </Link>
     </article>
@@ -278,7 +278,7 @@ export function AllDemosGallery() {
           <span>{isMobile ? 'One live preview at a time' : 'Live previews · auto-scroll'}</span>
         </div>
 
-        <div className="grid gap-x-5 gap-y-10 pt-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-x-3 gap-y-7 pt-6 md:gap-x-5 md:gap-y-10 lg:grid-cols-3">
           {visibleDemos.map((demo, index) => (
             <AutoScrollDemoCard
               key={demo.name}
