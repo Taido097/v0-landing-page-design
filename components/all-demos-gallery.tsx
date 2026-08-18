@@ -51,8 +51,10 @@ function AutoScrollDemoCard({
   const cardRef = useRef<HTMLElement | null>(null);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const rafRef = useRef<number>(0);
+  const paintTimerRef = useRef<number>(0);
   const [inView, setInView] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [painted, setPainted] = useState(false);
   const mobileActive = isMobile && activeMobileIndex === index;
   const shouldMountIframe = !isMobile || mobileActive;
 
@@ -91,7 +93,7 @@ function AutoScrollDemoCard({
     const frame = iframeRef.current;
     const win = frame?.contentWindow;
     const doc = frame?.contentDocument;
-    const canAnimate = shouldMountIframe && inView && loaded;
+    const canAnimate = shouldMountIframe && inView && loaded && (!isMobile || painted);
 
     if (!canAnimate || !frame || !win || !doc) return;
 
@@ -99,7 +101,7 @@ function AutoScrollDemoCard({
     if (doc.body) doc.body.style.scrollBehavior = 'auto';
     win.scrollTo(0, 0);
 
-    const holdAtTop = isMobile ? 280 : 450;
+    const holdAtTop = isMobile ? 320 : 450;
     const scrollDuration = isMobile ? 7200 : 10500;
     const holdAtBottom = isMobile ? 700 : 900;
     const cycleDuration = holdAtTop + scrollDuration + holdAtBottom;
@@ -133,14 +135,41 @@ function AutoScrollDemoCard({
 
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [inView, loaded, isMobile, shouldMountIframe]);
+  }, [inView, loaded, painted, isMobile, shouldMountIframe]);
 
   useEffect(() => {
     if (!shouldMountIframe) {
       setLoaded(false);
+      setPainted(false);
       cancelAnimationFrame(rafRef.current);
+      window.clearTimeout(paintTimerRef.current);
     }
   }, [shouldMountIframe]);
+
+  useEffect(() => {
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      window.clearTimeout(paintTimerRef.current);
+    };
+  }, []);
+
+  const handleIframeLoad = () => {
+    setLoaded(true);
+
+    if (!isMobile) {
+      setPainted(true);
+      return;
+    }
+
+    setPainted(false);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        paintTimerRef.current = window.setTimeout(() => {
+          setPainted(true);
+        }, 140);
+      });
+    });
+  };
 
   return (
     <article ref={cardRef} className="group min-w-0">
@@ -149,13 +178,15 @@ function AutoScrollDemoCard({
         className="block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black"
       >
         <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-black/10 bg-[#ececec] shadow-[0_1px_0_rgba(0,0,0,.03)] transition-transform duration-300 ease-out group-hover:-translate-y-0.5">
-          {isMobile && !mobileActive && (
+          {isMobile && (
             <img
               src={snapshot(demo.href)}
               alt={`${demo.name} website preview`}
               loading="lazy"
               decoding="async"
-              className="absolute inset-0 h-full w-full object-cover object-top"
+              className={`absolute inset-0 z-[2] h-full w-full object-cover object-top transition-opacity duration-300 ease-out ${
+                mobileActive && painted ? 'opacity-0' : 'opacity-100'
+              }`}
             />
           )}
 
@@ -165,22 +196,23 @@ function AutoScrollDemoCard({
               src={demo.href}
               title={`${demo.name} live demo preview`}
               loading={isMobile ? 'eager' : 'lazy'}
-              onLoad={() => setLoaded(true)}
+              onLoad={handleIframeLoad}
               tabIndex={-1}
               aria-hidden="true"
-              className="pointer-events-none absolute left-0 top-0 border-0 bg-white"
+              className="pointer-events-none absolute left-0 top-0 z-[1] border-0 bg-white"
               style={{
                 width: '200%',
                 height: '200%',
                 transform: 'scale(.5)',
                 transformOrigin: 'top left',
+                opacity: isMobile && !loaded ? 0 : 1,
               }}
             />
           )}
 
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-between border-t border-white/15 bg-black/72 px-4 py-2.5 text-[10px] uppercase tracking-[.14em] text-white/70 backdrop-blur-md">
-            <span>{mobileActive || !isMobile ? 'Live demo' : 'Preview'}</span>
-            <span>{mobileActive || !isMobile ? 'Auto-scroll' : 'Scroll to play'}</span>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] flex items-center justify-between border-t border-white/15 bg-black/72 px-4 py-2.5 text-[10px] uppercase tracking-[.14em] text-white/70 backdrop-blur-md">
+            <span>{mobileActive && painted || !isMobile ? 'Live demo' : 'Preview'}</span>
+            <span>{mobileActive && painted || !isMobile ? 'Auto-scroll' : 'Scroll to play'}</span>
           </div>
         </div>
 
