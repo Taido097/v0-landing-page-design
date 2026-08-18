@@ -10,10 +10,11 @@ type ShowcaseDemo = {
   industry: string;
   href: string;
   mobileImage: string;
+  mobileFit?: 'cover' | 'contain';
 };
 
-const snapshot = (path: string) =>
-  `https://image.thum.io/get/width/1440/crop/900/noanimate/wait/2/https://designedbytd.com${path}`;
+const snapshot = (path: string, wait = 2) =>
+  `https://image.thum.io/get/width/1440/crop/900/noanimate/wait/${wait}/https://designedbytd.com${path}`;
 
 const demos: ShowcaseDemo[] = [
   {
@@ -35,14 +36,16 @@ const demos: ShowcaseDemo[] = [
     category: 'Scheduling',
     industry: 'Hair & beauty salon',
     href: '/portfolio/salon-spa',
-    mobileImage: snapshot('/portfolio/salon-spa'),
+    mobileImage: snapshot('/portfolio/salon-spa', 3),
+    mobileFit: 'contain',
   },
   {
     name: 'AKJO',
     category: 'Portfolio',
     industry: 'Creative portfolio',
     href: '/portfolio/akjo-portfolio',
-    mobileImage: snapshot('/portfolio/akjo-portfolio'),
+    mobileImage: 'https://image.thum.io/get/width/1440/crop/900/noanimate/wait/5/https://agreeable-light-499126.framer.app/',
+    mobileFit: 'contain',
   },
 ];
 
@@ -83,14 +86,16 @@ function DemoCard({ demo, index }: { demo: ShowcaseDemo; index: number }) {
 }
 
 function MobileDemoScene({ demo, index }: { demo: ShowcaseDemo; index: number }) {
+  const fit = demo.mobileFit ?? 'cover';
+
   return (
-    <article className="mobile-demo-scene">
+    <article className={`mobile-demo-scene mobile-demo-scene-${demo.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>
       <div className="mobile-demo-background" aria-hidden="true">
         <img src={demo.mobileImage} alt="" decoding="async" loading="lazy" />
       </div>
 
       <Link href={demo.href} className="mobile-demo-card" aria-label={`Open ${demo.name} demo`}>
-        <div className="mobile-demo-preview">
+        <div className={`mobile-demo-preview mobile-demo-preview-${fit}`}>
           <img src={demo.mobileImage} alt={`${demo.name} website preview`} decoding="async" loading="lazy" />
         </div>
         <div className="demo-showcase-info">
@@ -206,8 +211,13 @@ export function HowWeWorkSection() {
           .mobile-demo-background::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.10)}
           .mobile-demo-background img{width:100%;height:100%;object-fit:cover;filter:blur(22px) saturate(1.12) brightness(.82);transform:scale(1.15);transform-origin:center}
           .mobile-demo-card{position:absolute;left:18px;right:18px;top:50%;z-index:5;display:block;overflow:hidden;background:#fff;box-shadow:0 20px 52px rgba(0,0,0,.28);transform:translateY(-50%)}
-          .mobile-demo-preview{height:286px;overflow:hidden;background:#eee}
-          .mobile-demo-preview img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+          .mobile-demo-preview{height:286px;overflow:hidden;background:#f2f2f2}
+          .mobile-demo-preview img{width:100%;height:100%;object-position:top center;display:block}
+          .mobile-demo-preview-cover img{object-fit:cover}
+          .mobile-demo-preview-contain img{object-fit:contain;background:#fff}
+          .mobile-demo-scene-salonix .mobile-demo-preview{height:300px}
+          .mobile-demo-scene-akjo .mobile-demo-preview{height:310px;background:#fff}
+          .mobile-demo-scene-akjo .mobile-demo-preview img{object-fit:contain;object-position:top center}
           .mobile-demo-scene .demo-showcase-info{min-height:88px;padding:15px 16px}
           .mobile-demo-scene .demo-showcase-title{font-size:19px}
           .mobile-demo-scene .demo-showcase-industry{margin-top:5px;font-size:12px}
