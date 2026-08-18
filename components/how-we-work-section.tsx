@@ -435,12 +435,15 @@ export function HowWeWorkSection() {
             </div>
           </div>
 
-          <Link
-            href="/demos"
-            className="mt-5 inline-flex items-center gap-2 bg-black px-5 py-3.5 text-xs font-semibold uppercase tracking-[0.04em] text-white sm:hidden"
-          >
-            View all demos <ArrowUpRight className="h-4 w-4" />
-          </Link>
+          <div className="flex justify-center py-16 sm:py-20">
+            <Link
+              href="/demos"
+              className="group inline-flex min-w-[190px] items-center justify-center gap-3 bg-black px-7 py-4 text-xs font-semibold uppercase tracking-[0.04em] text-white transition-colors duration-300 hover:bg-black/80"
+            >
+              View all demos
+              <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </Link>
+          </div>
         </div>
 
         <div
