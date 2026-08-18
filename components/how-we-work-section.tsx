@@ -95,22 +95,14 @@ function DemoCard({ demo, index }: { demo: ShowcaseDemo; index: number }) {
   );
 }
 
-function DemoScene({ demo, index, mobile = false }: { demo: ShowcaseDemo; index: number; mobile?: boolean }) {
+function MobileDemoScene({ demo, index }: { demo: ShowcaseDemo; index: number }) {
   return (
-    <div className={mobile ? 'mobile-demo-scene' : 'demo-showcase-scene'} style={{ zIndex: 10 + index }}>
-      <div className="demo-showcase-scene-content">
-        <div className="demo-showcase-bg" aria-hidden="true">
-          {!mobile && (
-            <iframe src={demo.href} title="" loading="lazy" tabIndex={-1} />
-          )}
-        </div>
-
-        <div className="demo-showcase-card">
-          <DemoCard demo={demo} index={index} />
-        </div>
-
-        <span className="demo-showcase-category">{demo.category}</span>
+    <div className={`mobile-demo-scene mobile-demo-scene-${index + 1}`} style={{ zIndex: 10 + index }}>
+      <div className="mobile-demo-atmosphere" aria-hidden="true" />
+      <div className="demo-showcase-card">
+        <DemoCard demo={demo} index={index} />
       </div>
+      <span className="demo-showcase-category">{demo.category}</span>
     </div>
   );
 }
@@ -222,14 +214,10 @@ export function HowWeWorkSection() {
           contain: paint;
         }
 
-        .demo-showcase-scene:nth-child(1) .demo-showcase-scene-content,
-        .mobile-demo-scene:nth-child(1) .demo-showcase-scene-content { background: #252521; }
-        .demo-showcase-scene:nth-child(2) .demo-showcase-scene-content,
-        .mobile-demo-scene:nth-child(2) .demo-showcase-scene-content { background: #dcc8aa; }
-        .demo-showcase-scene:nth-child(3) .demo-showcase-scene-content,
-        .mobile-demo-scene:nth-child(3) .demo-showcase-scene-content { background: #d3bbb3; }
-        .demo-showcase-scene:nth-child(4) .demo-showcase-scene-content,
-        .mobile-demo-scene:nth-child(4) .demo-showcase-scene-content { background: #cdc7bc; }
+        .demo-showcase-scene:nth-child(1) .demo-showcase-scene-content { background: #252521; }
+        .demo-showcase-scene:nth-child(2) .demo-showcase-scene-content { background: #dcc8aa; }
+        .demo-showcase-scene:nth-child(3) .demo-showcase-scene-content { background: #d3bbb3; }
+        .demo-showcase-scene:nth-child(4) .demo-showcase-scene-content { background: #cdc7bc; }
 
         .demo-showcase-scene:not(:first-child)::before {
           content: '';
@@ -255,29 +243,25 @@ export function HowWeWorkSection() {
           -webkit-backface-visibility: hidden;
         }
 
-        .demo-showcase-scene:nth-child(1) .demo-showcase-bg,
-        .mobile-demo-scene:nth-child(1) .demo-showcase-bg {
+        .demo-showcase-scene:nth-child(1) .demo-showcase-bg {
           background:
             radial-gradient(circle at 42% 30%, rgba(130,129,111,.95) 0%, rgba(83,82,72,.95) 34%, transparent 62%),
             radial-gradient(circle at 72% 68%, #4b4b43 0%, #252521 48%, #151513 86%);
         }
 
-        .demo-showcase-scene:nth-child(2) .demo-showcase-bg,
-        .mobile-demo-scene:nth-child(2) .demo-showcase-bg {
+        .demo-showcase-scene:nth-child(2) .demo-showcase-bg {
           background:
             radial-gradient(circle at 40% 28%, #fff0cf 0%, #e8c99d 34%, transparent 63%),
             radial-gradient(circle at 72% 70%, #ca8d58 0%, #b27c55 34%, #7d5a43 78%);
         }
 
-        .demo-showcase-scene:nth-child(3) .demo-showcase-bg,
-        .mobile-demo-scene:nth-child(3) .demo-showcase-bg {
+        .demo-showcase-scene:nth-child(3) .demo-showcase-bg {
           background:
             radial-gradient(circle at 38% 28%, #f4dfd7 0%, #ddbdb3 36%, transparent 64%),
             radial-gradient(circle at 72% 68%, #c58f83 0%, #a7746d 40%, #735651 82%);
         }
 
-        .demo-showcase-scene:nth-child(4) .demo-showcase-bg,
-        .mobile-demo-scene:nth-child(4) .demo-showcase-bg {
+        .demo-showcase-scene:nth-child(4) .demo-showcase-bg {
           background:
             radial-gradient(circle at 38% 28%, #f0ece4 0%, #d4c9b9 36%, transparent 64%),
             radial-gradient(circle at 72% 68%, #b7aa98 0%, #948a7d 42%, #645e57 84%);
@@ -379,7 +363,6 @@ export function HowWeWorkSection() {
         }
 
         .view-all-demos-button { border-radius: 0 !important; }
-
         .mobile-demo-stack { display: none; }
 
         @media (max-width: 900px) and (min-width: 561px) {
@@ -412,42 +395,84 @@ export function HowWeWorkSection() {
 
         @media (max-width: 560px) {
           .desktop-demo-stack { display: none; }
+
           .mobile-demo-stack {
-            display: block;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
             position: relative;
+            padding-bottom: 8px;
           }
 
           .mobile-demo-scene {
-            position: sticky;
-            top: 68px;
-            height: calc(100svh - 68px);
-            min-height: 620px;
+            position: relative;
+            height: 620px;
             overflow: hidden;
             isolation: isolate;
-            background: #fafafa;
-            margin-bottom: 18px;
+            margin: 0;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
           }
 
-          .mobile-demo-scene .demo-showcase-scene-content {
-            position: absolute;
-            inset: 0;
-            overflow: hidden;
-            contain: paint;
+          .mobile-demo-scene:not(:first-child) {
+            margin-top: -70px;
           }
 
-          .mobile-demo-scene .demo-showcase-bg {
-            inset: -10%;
-            filter: blur(18px) saturate(1.22) brightness(1.06) contrast(1.05);
-            transform: scale(1.16) translateZ(0);
+          .mobile-demo-atmosphere {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+          }
+
+          .mobile-demo-scene-1 {
+            background: #24231f;
+          }
+          .mobile-demo-scene-1 .mobile-demo-atmosphere {
+            background:
+              radial-gradient(ellipse at 28% 22%, rgba(142,139,116,.92) 0%, rgba(92,89,74,.86) 28%, transparent 56%),
+              radial-gradient(ellipse at 76% 72%, #57564d 0%, #34332d 42%, #1b1b18 82%);
+          }
+
+          .mobile-demo-scene-2 {
+            background: #c9ad86;
+          }
+          .mobile-demo-scene-2 .mobile-demo-atmosphere {
+            background:
+              radial-gradient(ellipse at 30% 22%, #fff1cf 0%, #efcf9e 30%, rgba(239,207,158,.25) 58%, transparent 68%),
+              radial-gradient(ellipse at 78% 72%, #dd9a58 0%, #b97845 38%, #7d5439 78%);
+          }
+
+          .mobile-demo-scene-3 {
+            background: #c79d92;
+          }
+          .mobile-demo-scene-3 .mobile-demo-atmosphere {
+            background:
+              radial-gradient(ellipse at 30% 22%, #f6e1d9 0%, #e3beb3 31%, rgba(227,190,179,.26) 58%, transparent 68%),
+              radial-gradient(ellipse at 78% 72%, #d08f80 0%, #a96d64 40%, #744f4a 80%);
+          }
+
+          .mobile-demo-scene-4 {
+            background: #b9ad9d;
+          }
+          .mobile-demo-scene-4 .mobile-demo-atmosphere {
+            background:
+              radial-gradient(ellipse at 30% 22%, #f2eee7 0%, #d9cdbb 31%, rgba(217,205,187,.28) 58%, transparent 68%),
+              radial-gradient(ellipse at 78% 72%, #c4b39c 0%, #9a8977 40%, #665d54 80%);
+          }
+
+          .mobile-demo-atmosphere::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,.08));
           }
 
           .mobile-demo-scene .demo-showcase-card {
-            top: 46%;
+            top: 47%;
             width: calc(100% - 44px);
             min-width: 0;
-            box-shadow: 0 22px 58px rgba(0,0,0,.28);
+            box-shadow: 0 24px 60px rgba(0,0,0,.30);
           }
 
           .mobile-demo-scene .demo-showcase-preview { height: 300px; }
@@ -530,7 +555,7 @@ export function HowWeWorkSection() {
           {isMobile && (
             <div className="mobile-demo-stack">
               {demos.map((demo, index) => (
-                <DemoScene key={demo.href} demo={demo} index={index} mobile />
+                <MobileDemoScene key={demo.href} demo={demo} index={index} />
               ))}
             </div>
           )}
