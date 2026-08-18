@@ -177,8 +177,15 @@ export function HowWeWorkSection() {
           position: absolute;
           inset: 0;
           overflow: visible;
-          background: #d8d8d8;
+          background: transparent;
           will-change: transform;
+        }
+
+        .demo-showcase-scene-content {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          background: #d8d8d8;
         }
 
         .demo-showcase-scene:not(:first-child)::before {
@@ -187,7 +194,7 @@ export function HowWeWorkSection() {
           left: 0;
           right: 0;
           top: -24px;
-          z-index: 50;
+          z-index: 100;
           height: 24px;
           background: #fafafa;
           pointer-events: none;
@@ -421,20 +428,22 @@ export function HowWeWorkSection() {
                         : 'translateY(calc(100% + 24px))',
                   }}
                 >
-                  <div className="demo-showcase-bg" aria-hidden="true">
-                    <iframe
-                      src={demo.href}
-                      title=""
-                      loading={index === 0 ? 'eager' : 'lazy'}
-                      tabIndex={-1}
-                    />
-                  </div>
+                  <div className="demo-showcase-scene-content">
+                    <div className="demo-showcase-bg" aria-hidden="true">
+                      <iframe
+                        src={demo.href}
+                        title=""
+                        loading={index === 0 ? 'eager' : 'lazy'}
+                        tabIndex={-1}
+                      />
+                    </div>
 
-                  <div className="demo-showcase-card">
-                    <DemoCard demo={demo} index={index} />
-                  </div>
+                    <div className="demo-showcase-card">
+                      <DemoCard demo={demo} index={index} />
+                    </div>
 
-                  <span className="demo-showcase-category">{demo.category}</span>
+                    <span className="demo-showcase-category">{demo.category}</span>
+                  </div>
                 </div>
               ))}
             </div>
