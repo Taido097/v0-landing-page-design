@@ -25,6 +25,37 @@ const benefits = [
   { number: '04', title: 'Built for Local Businesses', description: 'The goal is not just a pretty site. The goal is to help customers trust you, call you, and request your service.' },
 ];
 
+function freezeBackgroundFrame(frame: HTMLIFrameElement) {
+  try {
+    const win = frame.contentWindow;
+    const doc = frame.contentDocument;
+    if (!win || !doc) return;
+
+    win.scrollTo(0, 0);
+    doc.documentElement.style.scrollBehavior = 'auto';
+    doc.documentElement.style.overflow = 'hidden';
+    if (doc.body) {
+      doc.body.style.scrollBehavior = 'auto';
+      doc.body.style.overflow = 'hidden';
+    }
+
+    if (!doc.getElementById('designedbytd-mobile-freeze')) {
+      const style = doc.createElement('style');
+      style.id = 'designedbytd-mobile-freeze';
+      style.textContent = `
+        html, body { overflow: hidden !important; scroll-behavior: auto !important; }
+        *, *::before, *::after {
+          animation-play-state: paused !important;
+          scroll-behavior: auto !important;
+        }
+      `;
+      doc.head.appendChild(style);
+    }
+  } catch {
+    // Same-origin proxy should allow this, but fail safely if a browser blocks access.
+  }
+}
+
 function DemoCard({ demo, index, shouldLoad = true }: { demo: ShowcaseDemo; index: number; shouldLoad?: boolean }) {
   return (
     <>
@@ -58,15 +89,17 @@ function DemoCard({ demo, index, shouldLoad = true }: { demo: ShowcaseDemo; inde
 
 function MobileDemoScene({ demo, index }: { demo: ShowcaseDemo; index: number }) {
   const sceneRef = useRef<HTMLDivElement | null>(null);
-  const [nearViewport, setNearViewport] = useState(index === 0);
+  const [active, setActive] = useState(index === 0);
 
   useEffect(() => {
     const node = sceneRef.current;
     if (!node) return;
 
     const observer = new IntersectionObserver(
-      ([entry]) => setNearViewport(entry.isIntersecting),
-      { rootMargin: '220px 0px 220px 0px', threshold: 0.01 },
+      ([entry]) => {
+        setActive(entry.isIntersecting && entry.intersectionRatio >= 0.18);
+      },
+      { rootMargin: '0px', threshold: [0, 0.18, 0.4, 0.7] },
     );
 
     observer.observe(node);
@@ -76,10 +109,19 @@ function MobileDemoScene({ demo, index }: { demo: ShowcaseDemo; index: number })
   return (
     <div ref={sceneRef} className="mobile-demo-scene">
       <div className="mobile-demo-background" aria-hidden="true">
-        {nearViewport && <iframe src={demo.href} title="" loading="lazy" tabIndex={-1} />}
+        {active && (
+          <iframe
+            src={demo.href}
+            title=""
+            loading="lazy"
+            tabIndex={-1}
+            scrolling="no"
+            onLoad={(event) => freezeBackgroundFrame(event.currentTarget)}
+          />
+        )}
       </div>
       <div className="demo-showcase-card">
-        <DemoCard demo={demo} index={index} shouldLoad={nearViewport} />
+        <DemoCard demo={demo} index={index} shouldLoad={active} />
       </div>
       <span className="demo-showcase-category">{demo.category}</span>
     </div>
@@ -178,10 +220,11 @@ export function HowWeWorkSection() {
 
         @media(max-width:560px){
           .mobile-demo-stack{display:block;position:relative;overflow:visible}
-          .mobile-demo-scene{position:relative;height:570px;overflow:hidden;isolation:isolate;margin:0 0 18px;background:#111;contain:layout paint style}
-          .mobile-demo-background{inset:-12%;filter:blur(18px) saturate(1.2) brightness(.92) contrast(1.02);transform:scale(1.2) translateZ(0)}
+          .mobile-demo-scene{position:relative;height:570px;overflow:hidden;isolation:isolate;margin:0 0 18px;background:#111;contain:layout paint style;transform:translateZ(0)}
+          .mobile-demo-background{inset:-12%;filter:blur(16px) saturate(1.16) brightness(.94) contrast(1.01);transform:scale(1.18) translateZ(0);will-change:auto}
           .mobile-demo-background::after{background:rgba(0,0,0,.02)}
-          .mobile-demo-scene .demo-showcase-card{top:48%;width:calc(100% - 36px);min-width:0;box-shadow:0 20px 52px rgba(0,0,0,.28)}
+          .mobile-demo-background iframe{position:absolute!important;top:0!important;left:0!important;transform:scale(.5)!important;will-change:auto!important}
+          .mobile-demo-scene .demo-showcase-card{top:48%;width:calc(100% - 36px);min-width:0;box-shadow:0 20px 52px rgba(0,0,0,.28);transform:translate3d(-50%,-50%,0)}
           .mobile-demo-scene .demo-showcase-preview{height:286px}
           .mobile-demo-scene .demo-showcase-info{min-height:88px;padding:15px 16px}
           .mobile-demo-scene .demo-showcase-title{font-size:19px}
