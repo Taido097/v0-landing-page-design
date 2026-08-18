@@ -65,16 +65,31 @@ const benefits = [
   },
 ];
 
-function DemoCard({ demo, index }: { demo: ShowcaseDemo; index: number }) {
+function DemoCard({
+  demo,
+  index,
+  renderLivePreview,
+}: {
+  demo: ShowcaseDemo;
+  index: number;
+  renderLivePreview: boolean;
+}) {
   return (
     <>
       <div className="demo-showcase-preview">
-        <iframe
-          src={demo.href}
-          title={`${demo.name} live demo preview`}
-          loading={index === 0 ? 'eager' : 'lazy'}
-          tabIndex={-1}
-        />
+        {renderLivePreview ? (
+          <iframe
+            src={demo.href}
+            title={`${demo.name} live demo preview`}
+            loading="lazy"
+            tabIndex={-1}
+          />
+        ) : (
+          <div className="demo-showcase-placeholder" aria-hidden="true">
+            <span>{demo.name}</span>
+            <small>Website preview</small>
+          </div>
+        )}
         <Link
           href={demo.href}
           aria-label={`Open ${demo.name} demo`}
@@ -97,12 +112,23 @@ function DemoCard({ demo, index }: { demo: ShowcaseDemo; index: number }) {
 
 export function HowWeWorkSection() {
   const [isVisible, setIsVisible] = useState(false);
+  const [isMobile, setIsMobile] = useState(true);
+  const [mobileVisibleRange, setMobileVisibleRange] = useState<[number, number]>([0, 1]);
+  const mobileVisibleRangeRef = useRef<[number, number]>([0, 1]);
   const stackRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const sceneRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   useEffect(() => {
     setIsVisible(true);
+  }, []);
+
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 900px)');
+    const sync = () => setIsMobile(media.matches);
+    sync();
+    media.addEventListener?.('change', sync);
+    return () => media.removeEventListener?.('change', sync);
   }, []);
 
   useEffect(() => {
@@ -121,6 +147,16 @@ export function HowWeWorkSection() {
       const travelled = Math.min(maxTravel, Math.max(0, stickyTop - stackRect.top));
       const position = (travelled / maxTravel) * (demos.length - 1);
       const gap = window.innerWidth <= 560 ? 18 : window.innerWidth <= 900 ? 20 : 24;
+
+      if (window.innerWidth <= 900) {
+        const lower = Math.max(0, Math.min(demos.length - 1, Math.floor(position)));
+        const upper = Math.min(demos.length - 1, lower + 1);
+        const current = mobileVisibleRangeRef.current;
+        if (current[0] !== lower || current[1] !== upper) {
+          mobileVisibleRangeRef.current = [lower, upper];
+          setMobileVisibleRange([lower, upper]);
+        }
+      }
 
       sceneRefs.current.forEach((scene, index) => {
         if (!scene) return;
@@ -233,6 +269,31 @@ export function HowWeWorkSection() {
           transform-origin: top left;
         }
 
+        .demo-showcase-placeholder {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 7px;
+          background: linear-gradient(145deg, #f5f5f5, #dedede);
+          color: #161616;
+        }
+
+        .demo-showcase-placeholder span {
+          font-size: clamp(24px, 5vw, 44px);
+          font-weight: 600;
+          letter-spacing: -.05em;
+        }
+
+        .demo-showcase-placeholder small {
+          font-size: 10px;
+          letter-spacing: .12em;
+          text-transform: uppercase;
+          color: rgba(18,18,18,.45);
+        }
+
         .demo-showcase-card {
           position: absolute;
           left: 50%;
@@ -316,6 +377,25 @@ export function HowWeWorkSection() {
             min-height: 620px;
           }
 
+          .demo-showcase-scene {
+            will-change: auto;
+          }
+
+          .demo-showcase-scene-content {
+            background: #202020;
+          }
+
+          .demo-showcase-bg {
+            inset: 0;
+            filter: none;
+            transform: none;
+            background: radial-gradient(circle at 50% 42%, #565656 0%, #303030 45%, #151515 100%);
+          }
+
+          .demo-showcase-bg::after {
+            display: none;
+          }
+
           .demo-showcase-scene:not(:first-child)::before {
             top: -20px;
             height: 20px;
@@ -324,6 +404,7 @@ export function HowWeWorkSection() {
           .demo-showcase-card {
             width: calc(100% - 84px);
             min-width: 0;
+            box-shadow: 0 16px 40px rgba(0,0,0,.18);
           }
 
           .demo-showcase-preview {
@@ -340,6 +421,8 @@ export function HowWeWorkSection() {
             bottom: 14px;
             padding: 9px 14px;
             font-size: 10px;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
           }
         }
 
@@ -413,39 +496,50 @@ export function HowWeWorkSection() {
 
           <div ref={stackRef} className="demo-showcase-scroll">
             <div ref={stageRef} className="demo-showcase-stage">
-              {demos.map((demo, index) => (
-                <div
-                  key={demo.href}
-                  ref={(node) => {
-                    sceneRefs.current[index] = node;
-                  }}
-                  className="demo-showcase-scene"
-                  style={{
-                    zIndex: 10 + index,
-                    transform:
-                      index === 0
-                        ? 'translateY(0)'
-                        : 'translateY(calc(100% + 24px))',
-                  }}
-                >
-                  <div className="demo-showcase-scene-content">
-                    <div className="demo-showcase-bg" aria-hidden="true">
-                      <iframe
-                        src={demo.href}
-                        title=""
-                        loading={index === 0 ? 'eager' : 'lazy'}
-                        tabIndex={-1}
-                      />
-                    </div>
+              {demos.map((demo, index) => {
+                const renderLivePreview =
+                  !isMobile || index === mobileVisibleRange[0] || index === mobileVisibleRange[1];
 
-                    <div className="demo-showcase-card">
-                      <DemoCard demo={demo} index={index} />
-                    </div>
+                return (
+                  <div
+                    key={demo.href}
+                    ref={(node) => {
+                      sceneRefs.current[index] = node;
+                    }}
+                    className="demo-showcase-scene"
+                    style={{
+                      zIndex: 10 + index,
+                      transform:
+                        index === 0
+                          ? 'translateY(0)'
+                          : 'translateY(calc(100% + 24px))',
+                    }}
+                  >
+                    <div className="demo-showcase-scene-content">
+                      <div className="demo-showcase-bg" aria-hidden="true">
+                        {!isMobile && (
+                          <iframe
+                            src={demo.href}
+                            title=""
+                            loading="lazy"
+                            tabIndex={-1}
+                          />
+                        )}
+                      </div>
 
-                    <span className="demo-showcase-category">{demo.category}</span>
+                      <div className="demo-showcase-card">
+                        <DemoCard
+                          demo={demo}
+                          index={index}
+                          renderLivePreview={renderLivePreview}
+                        />
+                      </div>
+
+                      <span className="demo-showcase-category">{demo.category}</span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
