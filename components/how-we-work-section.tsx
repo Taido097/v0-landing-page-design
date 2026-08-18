@@ -95,9 +95,29 @@ function DemoCard({ demo, index }: { demo: ShowcaseDemo; index: number }) {
   );
 }
 
+function DemoScene({ demo, index, mobile = false }: { demo: ShowcaseDemo; index: number; mobile?: boolean }) {
+  return (
+    <div className={mobile ? 'mobile-demo-scene' : 'demo-showcase-scene'} style={{ zIndex: 10 + index }}>
+      <div className="demo-showcase-scene-content">
+        <div className="demo-showcase-bg" aria-hidden="true">
+          {!mobile && (
+            <iframe src={demo.href} title="" loading="lazy" tabIndex={-1} />
+          )}
+        </div>
+
+        <div className="demo-showcase-card">
+          <DemoCard demo={demo} index={index} />
+        </div>
+
+        <span className="demo-showcase-category">{demo.category}</span>
+      </div>
+    </div>
+  );
+}
+
 export function HowWeWorkSection() {
   const [isVisible, setIsVisible] = useState(false);
-  const [isMobile, setIsMobile] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const stackRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const sceneRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -107,7 +127,7 @@ export function HowWeWorkSection() {
   }, []);
 
   useEffect(() => {
-    const media = window.matchMedia('(max-width: 900px)');
+    const media = window.matchMedia('(max-width: 560px)');
     const sync = () => setIsMobile(media.matches);
     sync();
     media.addEventListener?.('change', sync);
@@ -115,6 +135,8 @@ export function HowWeWorkSection() {
   }, []);
 
   useEffect(() => {
+    if (isMobile) return;
+
     let frame = 0;
 
     const updateStack = () => {
@@ -129,7 +151,7 @@ export function HowWeWorkSection() {
       const maxTravel = Math.max(1, stack.offsetHeight - stage.offsetHeight);
       const travelled = Math.min(maxTravel, Math.max(0, stickyTop - stackRect.top));
       const position = (travelled / maxTravel) * (demos.length - 1);
-      const gap = window.innerWidth <= 560 ? 18 : window.innerWidth <= 900 ? 20 : 24;
+      const gap = window.innerWidth <= 900 ? 20 : 24;
 
       sceneRefs.current.forEach((scene, index) => {
         if (!scene) return;
@@ -150,20 +172,16 @@ export function HowWeWorkSection() {
       frame = window.requestAnimationFrame(updateStack);
     };
 
-    const handleOrientationChange = () => {
-      window.setTimeout(requestUpdate, 180);
-    };
-
     updateStack();
     window.addEventListener('scroll', requestUpdate, { passive: true });
-    window.addEventListener('orientationchange', handleOrientationChange);
+    window.addEventListener('resize', requestUpdate);
 
     return () => {
       window.removeEventListener('scroll', requestUpdate);
-      window.removeEventListener('orientationchange', handleOrientationChange);
+      window.removeEventListener('resize', requestUpdate);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, []);
+  }, [isMobile]);
 
   return (
     <section
@@ -204,21 +222,14 @@ export function HowWeWorkSection() {
           contain: paint;
         }
 
-        .demo-showcase-scene:nth-child(1) .demo-showcase-scene-content {
-          background: #232321;
-        }
-
-        .demo-showcase-scene:nth-child(2) .demo-showcase-scene-content {
-          background: #d5c7b2;
-        }
-
-        .demo-showcase-scene:nth-child(3) .demo-showcase-scene-content {
-          background: #cdbcb6;
-        }
-
-        .demo-showcase-scene:nth-child(4) .demo-showcase-scene-content {
-          background: #c9c5bd;
-        }
+        .demo-showcase-scene:nth-child(1) .demo-showcase-scene-content,
+        .mobile-demo-scene:nth-child(1) .demo-showcase-scene-content { background: #252521; }
+        .demo-showcase-scene:nth-child(2) .demo-showcase-scene-content,
+        .mobile-demo-scene:nth-child(2) .demo-showcase-scene-content { background: #dcc8aa; }
+        .demo-showcase-scene:nth-child(3) .demo-showcase-scene-content,
+        .mobile-demo-scene:nth-child(3) .demo-showcase-scene-content { background: #d3bbb3; }
+        .demo-showcase-scene:nth-child(4) .demo-showcase-scene-content,
+        .mobile-demo-scene:nth-child(4) .demo-showcase-scene-content { background: #cdc7bc; }
 
         .demo-showcase-scene:not(:first-child)::before {
           content: '';
@@ -237,27 +248,39 @@ export function HowWeWorkSection() {
           inset: -6%;
           z-index: 0;
           overflow: hidden;
-          filter: blur(20px) saturate(1.06) brightness(.92) contrast(1.02);
+          filter: blur(16px) saturate(1.16) brightness(1.02) contrast(1.04);
           transform: scale(1.1) translateZ(0);
           opacity: 1;
           backface-visibility: hidden;
           -webkit-backface-visibility: hidden;
         }
 
-        .demo-showcase-scene:nth-child(1) .demo-showcase-bg {
-          background: radial-gradient(circle at 48% 36%, #575650 0%, #353532 44%, #1c1c1a 82%);
+        .demo-showcase-scene:nth-child(1) .demo-showcase-bg,
+        .mobile-demo-scene:nth-child(1) .demo-showcase-bg {
+          background:
+            radial-gradient(circle at 42% 30%, rgba(130,129,111,.95) 0%, rgba(83,82,72,.95) 34%, transparent 62%),
+            radial-gradient(circle at 72% 68%, #4b4b43 0%, #252521 48%, #151513 86%);
         }
 
-        .demo-showcase-scene:nth-child(2) .demo-showcase-bg {
-          background: radial-gradient(circle at 48% 34%, #f1e3c9 0%, #d9c5a8 42%, #9f8165 80%);
+        .demo-showcase-scene:nth-child(2) .demo-showcase-bg,
+        .mobile-demo-scene:nth-child(2) .demo-showcase-bg {
+          background:
+            radial-gradient(circle at 40% 28%, #fff0cf 0%, #e8c99d 34%, transparent 63%),
+            radial-gradient(circle at 72% 70%, #ca8d58 0%, #b27c55 34%, #7d5a43 78%);
         }
 
-        .demo-showcase-scene:nth-child(3) .demo-showcase-bg {
-          background: radial-gradient(circle at 50% 36%, #eadbd5 0%, #cfb7ae 44%, #9d7f78 82%);
+        .demo-showcase-scene:nth-child(3) .demo-showcase-bg,
+        .mobile-demo-scene:nth-child(3) .demo-showcase-bg {
+          background:
+            radial-gradient(circle at 38% 28%, #f4dfd7 0%, #ddbdb3 36%, transparent 64%),
+            radial-gradient(circle at 72% 68%, #c58f83 0%, #a7746d 40%, #735651 82%);
         }
 
-        .demo-showcase-scene:nth-child(4) .demo-showcase-bg {
-          background: radial-gradient(circle at 48% 36%, #e6e1d8 0%, #c7c0b5 44%, #8e887f 82%);
+        .demo-showcase-scene:nth-child(4) .demo-showcase-bg,
+        .mobile-demo-scene:nth-child(4) .demo-showcase-bg {
+          background:
+            radial-gradient(circle at 38% 28%, #f0ece4 0%, #d4c9b9 36%, transparent 64%),
+            radial-gradient(circle at 72% 68%, #b7aa98 0%, #948a7d 42%, #645e57 84%);
         }
 
         .demo-showcase-bg::after {
@@ -265,7 +288,7 @@ export function HowWeWorkSection() {
           position: absolute;
           inset: 0;
           z-index: 2;
-          background: rgba(255,255,255,.025);
+          background: rgba(255,255,255,.015);
           pointer-events: none;
         }
 
@@ -283,9 +306,7 @@ export function HowWeWorkSection() {
           transform-origin: top left;
         }
 
-        .demo-showcase-bg iframe {
-          opacity: .5;
-        }
+        .demo-showcase-bg iframe { opacity: .58; }
 
         .demo-showcase-card {
           position: absolute;
@@ -346,80 +367,100 @@ export function HowWeWorkSection() {
           z-index: 30;
           border: 1px solid rgba(255,255,255,.9);
           border-radius: 999px;
-          background: rgba(0,0,0,.22);
+          background: rgba(0,0,0,.24);
           padding: 11px 20px;
           color: #fff;
           font-size: 12px;
           font-weight: 600;
           letter-spacing: .02em;
           text-transform: uppercase;
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
         }
 
-        .view-all-demos-button {
-          border-radius: 0 !important;
-        }
+        .view-all-demos-button { border-radius: 0 !important; }
 
-        @media (max-width: 900px) {
-          .demo-showcase-scroll {
-            height: 1940px;
-          }
+        .mobile-demo-stack { display: none; }
 
+        @media (max-width: 900px) and (min-width: 561px) {
+          .demo-showcase-scroll { height: 1940px; }
           .demo-showcase-stage {
             top: 76px;
             height: 620px;
             min-height: 620px;
           }
-
-          .demo-showcase-bg {
-            inset: -8%;
-            filter: blur(24px) saturate(1.06) brightness(.94);
-            transform: scale(1.12) translateZ(0);
-          }
-
-          .demo-showcase-scene:nth-child(1) .demo-showcase-bg {
-            background: radial-gradient(circle at 45% 38%, #625f58 0%, #3c3b36 44%, #1d1d1a 82%);
-          }
-
-          .demo-showcase-scene:nth-child(2) .demo-showcase-bg {
-            background: radial-gradient(circle at 48% 34%, #f2e3c8 0%, #d7c09f 44%, #9c785b 82%);
-          }
-
-          .demo-showcase-scene:nth-child(3) .demo-showcase-bg {
-            background: radial-gradient(circle at 50% 36%, #ead8d1 0%, #cdb0a8 44%, #92736c 82%);
-          }
-
-          .demo-showcase-scene:nth-child(4) .demo-showcase-bg {
-            background: radial-gradient(circle at 48% 36%, #e4dfd5 0%, #c1baae 44%, #867f75 82%);
-          }
-
-          .demo-showcase-bg::after {
-            display: block;
-            background: rgba(255,255,255,.02);
-          }
-
-          .demo-showcase-scene:not(:first-child)::before {
-            top: -20px;
-            height: 20px;
-          }
-
           .demo-showcase-card {
             width: calc(100% - 84px);
             min-width: 0;
             box-shadow: 0 22px 56px rgba(0,0,0,.26);
           }
-
-          .demo-showcase-preview {
-            height: 390px;
-          }
-
-          .demo-showcase-info {
-            min-height: 104px;
-            padding: 20px;
-          }
-
+          .demo-showcase-preview { height: 390px; }
+          .demo-showcase-info { min-height: 104px; padding: 20px; }
           .demo-showcase-category {
+            left: 12px;
+            bottom: 14px;
+            padding: 9px 14px;
+            font-size: 10px;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+          }
+          .demo-showcase-scene:not(:first-child)::before {
+            top: -20px;
+            height: 20px;
+          }
+        }
+
+        @media (max-width: 560px) {
+          .desktop-demo-stack { display: none; }
+          .mobile-demo-stack {
+            display: block;
+            position: relative;
+          }
+
+          .mobile-demo-scene {
+            position: sticky;
+            top: 68px;
+            height: calc(100svh - 68px);
+            min-height: 620px;
+            overflow: hidden;
+            isolation: isolate;
+            background: #fafafa;
+            margin-bottom: 18px;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+          }
+
+          .mobile-demo-scene .demo-showcase-scene-content {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            contain: paint;
+          }
+
+          .mobile-demo-scene .demo-showcase-bg {
+            inset: -10%;
+            filter: blur(18px) saturate(1.22) brightness(1.06) contrast(1.05);
+            transform: scale(1.16) translateZ(0);
+          }
+
+          .mobile-demo-scene .demo-showcase-card {
+            top: 46%;
+            width: calc(100% - 44px);
+            min-width: 0;
+            box-shadow: 0 22px 58px rgba(0,0,0,.28);
+          }
+
+          .mobile-demo-scene .demo-showcase-preview { height: 300px; }
+          .mobile-demo-scene .demo-showcase-info {
+            min-height: 92px;
+            padding: 16px;
+          }
+          .mobile-demo-scene .demo-showcase-title { font-size: 19px; }
+          .mobile-demo-scene .demo-showcase-industry {
+            margin-top: 5px;
+            font-size: 12px;
+          }
+          .mobile-demo-scene .demo-showcase-category {
             left: 12px;
             bottom: 14px;
             padding: 9px 14px;
@@ -429,50 +470,8 @@ export function HowWeWorkSection() {
           }
         }
 
-        @media (max-width: 560px) {
-          .demo-showcase-scroll {
-            height: calc(100svh + 1080px) !important;
-          }
-
-          .demo-showcase-stage {
-            top: 68px;
-            height: calc(100svh - 68px) !important;
-            min-height: 620px !important;
-          }
-
-          .demo-showcase-scene:not(:first-child)::before {
-            top: -18px;
-            height: 18px;
-          }
-
-          .demo-showcase-card {
-            top: 46%;
-            width: calc(100% - 44px);
-          }
-
-          .demo-showcase-preview {
-            height: 300px;
-          }
-
-          .demo-showcase-info {
-            min-height: 92px;
-            padding: 16px;
-          }
-
-          .demo-showcase-title {
-            font-size: 19px;
-          }
-
-          .demo-showcase-industry {
-            margin-top: 5px;
-            font-size: 12px;
-          }
-        }
-
         @media (prefers-reduced-motion: reduce) {
-          .demo-showcase-scene {
-            will-change: auto;
-          }
+          .demo-showcase-scene { will-change: auto; }
         }
       `}</style>
 
@@ -497,7 +496,7 @@ export function HowWeWorkSection() {
             </Link>
           </div>
 
-          <div ref={stackRef} className="demo-showcase-scroll">
+          <div ref={stackRef} className="desktop-demo-stack demo-showcase-scroll">
             <div ref={stageRef} className="demo-showcase-stage">
               {demos.map((demo, index) => (
                 <div
@@ -516,26 +515,25 @@ export function HowWeWorkSection() {
                 >
                   <div className="demo-showcase-scene-content">
                     <div className="demo-showcase-bg" aria-hidden="true">
-                      {!isMobile && (
-                        <iframe
-                          src={demo.href}
-                          title=""
-                          loading="lazy"
-                          tabIndex={-1}
-                        />
-                      )}
+                      <iframe src={demo.href} title="" loading="lazy" tabIndex={-1} />
                     </div>
-
                     <div className="demo-showcase-card">
                       <DemoCard demo={demo} index={index} />
                     </div>
-
                     <span className="demo-showcase-category">{demo.category}</span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
+
+          {isMobile && (
+            <div className="mobile-demo-stack">
+              {demos.map((demo, index) => (
+                <DemoScene key={demo.href} demo={demo} index={index} mobile />
+              ))}
+            </div>
+          )}
 
           <div className="flex justify-center py-16 sm:py-20">
             <Link
