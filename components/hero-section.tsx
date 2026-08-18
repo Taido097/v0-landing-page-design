@@ -6,7 +6,7 @@ import { AnimatedDemoPreview } from '@/components/animated-demo-preview';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import type { MouseEvent, TouchEvent } from 'react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 type PreviewVariant = 'photography' | 'auto' | 'salon' | 'restaurant';
 
@@ -60,8 +60,17 @@ const projects: Project[] = [
 
 export function HeroSection() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const suppressClickRef = useRef(false);
+
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 767px)');
+    const sync = () => setIsMobile(media.matches);
+    sync();
+    media.addEventListener?.('change', sync);
+    return () => media.removeEventListener?.('change', sync);
+  }, []);
 
   const advanceDemo = useCallback(() => {
     setActiveIndex((current) => (current + 1) % projects.length);
@@ -76,6 +85,7 @@ export function HeroSection() {
   const activeProject = projects[activeIndex];
 
   const handlePointerMove = (event: MouseEvent<HTMLElement>) => {
+    if (isMobile) return;
     const rect = event.currentTarget.getBoundingClientRect();
     const x = (event.clientX - rect.left) / rect.width - 0.5;
     const y = (event.clientY - rect.top) / rect.height - 0.5;
@@ -154,6 +164,18 @@ export function HeroSection() {
           transform: translate3d(var(--right-x), var(--right-y), 0);
         }
 
+        @media (max-width: 767px) {
+          .showcase-center-card {
+            animation: none !important;
+          }
+
+          .showcase-center-wrap,
+          .showcase-left-wrap,
+          .showcase-right-wrap {
+            will-change: auto;
+          }
+        }
+
         @media (prefers-reduced-motion: reduce) {
           .showcase-center-card {
             animation: none !important;
@@ -162,13 +184,18 @@ export function HeroSection() {
       `}</style>
 
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-        {projects.map((project, index) => (
-          <HeroBackground
-            key={project.name}
-            project={project}
-            active={index === activeIndex}
-          />
-        ))}
+        {isMobile ? (
+          <HeroBackground project={activeProject} active playVideo={false} />
+        ) : (
+          projects.map((project, index) => (
+            <HeroBackground
+              key={project.name}
+              project={project}
+              active={index === activeIndex}
+              playVideo
+            />
+          ))
+        )}
         <div className="absolute inset-0 z-10 bg-[linear-gradient(to_bottom,rgba(0,0,0,.62)_0%,rgba(0,0,0,.5)_24%,rgba(0,0,0,.34)_55%,rgba(0,0,0,.76)_100%)]" />
         <div className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_50%_42%,transparent_0%,rgba(0,0,0,.08)_46%,rgba(0,0,0,.34)_100%)]" />
         <div className="absolute inset-x-0 bottom-0 z-10 h-40 bg-gradient-to-t from-black via-black/55 to-transparent" />
@@ -247,7 +274,7 @@ export function HeroSection() {
 
         <div className="relative z-40 mt-5 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
           <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/60">
-            Swipe left or right to browse · active demo auto-scrolls to halfway
+            Swipe left or right to browse · tap the active card to view
           </p>
           <div className="flex items-center gap-2" aria-label="Choose featured demo">
             {projects.map((project, index) => (
@@ -269,7 +296,7 @@ export function HeroSection() {
   );
 }
 
-function HeroBackground({ project, active }: { project: Project; active: boolean }) {
+function HeroBackground({ project, active, playVideo }: { project: Project; active: boolean; playVideo: boolean }) {
   return (
     <div
       className={`absolute inset-0 transition-opacity ${active ? 'opacity-100' : 'opacity-0'}`}
@@ -277,7 +304,7 @@ function HeroBackground({ project, active }: { project: Project; active: boolean
         zIndex: active ? 2 : 1,
         transitionDuration: '1800ms',
         transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
-        willChange: 'opacity',
+        willChange: active ? 'opacity' : 'auto',
         backfaceVisibility: 'hidden',
         transform: 'translateZ(0)',
       }}
@@ -290,8 +317,9 @@ function HeroBackground({ project, active }: { project: Project; active: boolean
         sizes="100vw"
         style={{ objectPosition: project.objectPosition }}
         className="object-cover brightness-[0.86] saturate-[0.92]"
+        priority={active}
       />
-      {active && (
+      {active && playVideo && (
         <video
           autoPlay
           muted
