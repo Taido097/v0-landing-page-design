@@ -438,3 +438,15 @@ a.inline-flex[class*='rounded-full'][href='#samples'] {
     }
   }
 }
+
+/* Keep the stacked demo stage filling the phone viewport while it is sticky. */
+@media (max-width: 560px) {
+  .demo-showcase-stage {
+    height: calc(100dvh - 68px) !important;
+    min-height: 620px !important;
+  }
+
+  .demo-showcase-scroll {
+    height: calc(100dvh + 1080px) !important;
+  }
+}
