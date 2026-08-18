@@ -268,14 +268,13 @@ export function HowWeWorkSection() {
           overflow: hidden;
           background: #fff;
           transform: translate(-50%, -50%);
-          will-change: transform, filter;
+          will-change: transform;
         }
 
         .demo-showcase-card-behind {
           z-index: 4;
           pointer-events: none;
-          box-shadow: 0 22px 52px rgba(0,0,0,.15);
-          animation: demo-card-settle-behind .82s cubic-bezier(.22,1,.36,1) both;
+          box-shadow: 0 28px 70px rgba(0,0,0,.18);
         }
 
         .demo-showcase-card-front {
@@ -422,30 +421,19 @@ export function HowWeWorkSection() {
 
         @keyframes demo-card-roll-next {
           from {
-            transform: translate(-50%, 72%) scale(.995);
+            transform: translate(-50%, 72%);
           }
           to {
-            transform: translate(-50%, -50%) scale(1);
+            transform: translate(-50%, -50%);
           }
         }
 
         @keyframes demo-card-roll-prev {
           from {
-            transform: translate(-50%, -172%) scale(.995);
+            transform: translate(-50%, -172%);
           }
           to {
-            transform: translate(-50%, -50%) scale(1);
-          }
-        }
-
-        @keyframes demo-card-settle-behind {
-          from {
-            filter: brightness(1);
-            transform: translate(-50%, -50%) scale(1);
-          }
-          to {
-            filter: brightness(.92);
-            transform: translate(-50%, -50%) scale(.975);
+            transform: translate(-50%, -50%);
           }
         }
 
@@ -552,19 +540,19 @@ export function HowWeWorkSection() {
 
           @keyframes demo-card-roll-next {
             from {
-              transform: translate(-50%, 84%) scale(.995);
+              transform: translate(-50%, 84%);
             }
             to {
-              transform: translate(-50%, -50%) scale(1);
+              transform: translate(-50%, -50%);
             }
           }
 
           @keyframes demo-card-roll-prev {
             from {
-              transform: translate(-50%, -184%) scale(.995);
+              transform: translate(-50%, -184%);
             }
             to {
-              transform: translate(-50%, -50%) scale(1);
+              transform: translate(-50%, -50%);
             }
           }
         }
