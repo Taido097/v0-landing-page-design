@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { ArrowUpRight } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -14,13 +15,23 @@ type AnimatedDemoPreviewProps = {
   onComplete?: () => void;
 };
 
-export function AnimatedDemoPreview({ name, href, isCenter, onComplete }: AnimatedDemoPreviewProps) {
+export function AnimatedDemoPreview({ name, href, image, isCenter, onComplete }: AnimatedDemoPreviewProps) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const rafRef = useRef<number>(0);
   const completedRef = useRef(false);
   const [inView, setInView] = useState(false);
-  const running = isCenter && inView;
+  const [isMobile, setIsMobile] = useState(false);
+  const renderLivePreview = isCenter && !isMobile;
+  const running = renderLivePreview && inView;
+
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 767px)');
+    const sync = () => setIsMobile(media.matches);
+    sync();
+    media.addEventListener?.('change', sync);
+    return () => media.removeEventListener?.('change', sync);
+  }, []);
 
   useEffect(() => {
     const node = rootRef.current;
@@ -56,12 +67,11 @@ export function AnimatedDemoPreview({ name, href, isCenter, onComplete }: Animat
     const frame = iframeRef.current;
     const win = frame?.contentWindow;
     const doc = frame?.contentDocument;
-    if (!frame || !win || !doc) return;
+    if (!frame || !win || !doc || !renderLivePreview) return;
 
     doc.documentElement.style.scrollBehavior = 'auto';
     if (doc.body) doc.body.style.scrollBehavior = 'auto';
 
-    // Side cards always show the top of the exact same live demo and remain frozen.
     if (!running) {
       win.scrollTo(0, 0);
       return;
@@ -70,13 +80,10 @@ export function AnimatedDemoPreview({ name, href, isCenter, onComplete }: Animat
     completedRef.current = false;
     win.scrollTo(0, 0);
 
-    // Begin almost immediately once the card becomes the active center preview.
     const holdAtTop = 100;
     const scrollDuration = 8200;
     const startedAt = performance.now();
 
-    // Fast at the beginning, intentionally slower through the middle,
-    // then accelerates again near the 50% destination.
     const fastSlowFast = (t: number) => {
       const shaped = t + (0.72 / (2 * Math.PI)) * Math.sin(2 * Math.PI * t);
       return Math.min(1, Math.max(0, shaped));
@@ -122,7 +129,7 @@ export function AnimatedDemoPreview({ name, href, isCenter, onComplete }: Animat
     };
 
     rafRef.current = requestAnimationFrame(tick);
-  }, [onComplete, running, stopPreview]);
+  }, [onComplete, renderLivePreview, running, stopPreview]);
 
   useEffect(() => {
     const frame = iframeRef.current;
@@ -151,28 +158,40 @@ export function AnimatedDemoPreview({ name, href, isCenter, onComplete }: Animat
       }`}
     >
       <div className="absolute inset-0 overflow-hidden bg-black">
-        <iframe
-          key={href}
-          ref={iframeRef}
-          src={href}
-          title={`${name} live website preview`}
-          onLoad={startPreview}
-          tabIndex={-1}
-          aria-hidden="true"
-          className="pointer-events-none absolute left-0 top-0 border-0 bg-black"
-          style={{
-            width: '200%',
-            height: '200%',
-            transform: 'scale(.5)',
-            transformOrigin: 'top left',
-          }}
-        />
+        {renderLivePreview ? (
+          <iframe
+            key={href}
+            ref={iframeRef}
+            src={href}
+            title={`${name} live website preview`}
+            onLoad={startPreview}
+            tabIndex={-1}
+            aria-hidden="true"
+            loading="lazy"
+            className="pointer-events-none absolute left-0 top-0 border-0 bg-black"
+            style={{
+              width: '200%',
+              height: '200%',
+              transform: 'scale(.5)',
+              transformOrigin: 'top left',
+            }}
+          />
+        ) : (
+          <Image
+            src={image}
+            alt=""
+            fill
+            sizes={isCenter ? '(max-width: 767px) 78vw, 47vw' : '(max-width: 767px) 59vw, 32vw'}
+            className="object-cover"
+            priority={isCenter && isMobile}
+          />
+        )}
       </div>
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-40 flex items-center justify-between border-t border-white/10 bg-black/72 px-4 py-2.5 text-[8px] uppercase tracking-[.14em] text-white/65 backdrop-blur-md sm:px-5">
         <span>{name}</span>
         <span className="inline-flex items-center gap-1.5 text-white/85">
-          {isCenter ? 'Real demo · auto scroll' : 'Real demo · paused'}
+          {isMobile ? 'Tap to view demo' : isCenter ? 'Real demo · auto scroll' : 'Preview'}
           <ArrowUpRight className="h-3 w-3" />
         </span>
       </div>
