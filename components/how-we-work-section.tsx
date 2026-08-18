@@ -294,6 +294,10 @@ export function HowWeWorkSection() {
           -webkit-backdrop-filter: blur(12px);
         }
 
+        .view-all-demos-button {
+          border-radius: 0 !important;
+        }
+
         @media (max-width: 900px) {
           .demo-showcase-scroll {
             height: 1940px;
@@ -392,7 +396,8 @@ export function HowWeWorkSection() {
             </div>
             <Link
               href="/demos"
-              className="group hidden shrink-0 items-center gap-3 bg-black px-5 py-4 text-xs font-semibold uppercase tracking-[0.04em] text-white sm:inline-flex"
+              style={{ borderRadius: 0 }}
+              className="view-all-demos-button group hidden shrink-0 items-center gap-3 !rounded-none bg-black px-5 py-4 text-xs font-semibold uppercase tracking-[0.04em] text-white sm:inline-flex"
             >
               View all demos
               <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
@@ -438,7 +443,8 @@ export function HowWeWorkSection() {
           <div className="flex justify-center py-16 sm:py-20">
             <Link
               href="/demos"
-              className="group inline-flex min-w-[190px] items-center justify-center gap-3 bg-black px-7 py-4 text-xs font-semibold uppercase tracking-[0.04em] text-white transition-colors duration-300 hover:bg-black/80"
+              style={{ borderRadius: 0 }}
+              className="view-all-demos-button group inline-flex min-w-[190px] items-center justify-center gap-3 !rounded-none bg-black px-7 py-4 text-xs font-semibold uppercase tracking-[0.04em] text-white transition-colors duration-300 hover:bg-black/80"
             >
               View all demos
               <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
