@@ -226,16 +226,16 @@ export function HowWeWorkSection() {
   return (
     <section id="process" className="scroll-mt-24 border-t border-black/10 bg-[#fafafa] py-20 text-[#121212] sm:py-24 lg:py-28">
       <style>{`
-        .demo-showcase-scroll{position:relative;height:2700px}
-        .demo-showcase-stage{position:sticky;top:72px;height:calc(100vh - 96px);min-height:700px;max-height:940px;overflow:hidden;isolation:isolate;background:#fafafa}
+        .demo-showcase-scroll{position:relative;height:2820px}
+        .demo-showcase-stage{position:sticky;top:64px;height:calc(100vh - 72px);min-height:740px;max-height:1010px;overflow:hidden;isolation:isolate;background:#fafafa}
         .demo-showcase-scene{position:absolute;inset:0;overflow:visible;background:transparent;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform-style:preserve-3d}
         .demo-showcase-scene-content{position:absolute;inset:0;overflow:hidden;contain:paint;background:#111}
         .demo-showcase-scene:not(:first-child)::before{content:'';position:absolute;left:0;right:0;top:-24px;z-index:100;height:24px;background:#fafafa;pointer-events:none}
         .demo-showcase-bg{position:absolute;inset:-10%;z-index:0;overflow:hidden;background:#111;filter:blur(24px) saturate(1.12) brightness(.82) contrast(1.03);transform:scale(1.16) translateZ(0);transform-origin:center;pointer-events:none}
         .demo-showcase-bg::after{content:'';position:absolute;inset:0;z-index:2;background:rgba(0,0,0,.06);pointer-events:none}
         .demo-showcase-bg iframe,.demo-showcase-preview iframe{position:absolute;left:0;top:0;width:200%;height:200%;max-width:none!important;border:0;background:#fff;pointer-events:none;transform:scale(.5);transform-origin:top left}
-        .demo-showcase-card{position:absolute;left:50%;top:50%;z-index:5;width:min(68%,980px);min-width:720px;overflow:hidden;background:#fff;box-shadow:0 34px 90px rgba(0,0,0,.24);transform:translate3d(-50%,-50%,0)}
-        .demo-showcase-preview{position:relative;height:clamp(500px,58vh,620px);overflow:hidden;background:#fff}
+        .demo-showcase-card{position:absolute;left:50%;top:50%;z-index:5;width:min(70%,1020px);min-width:740px;overflow:hidden;background:#fff;box-shadow:0 34px 90px rgba(0,0,0,.24);transform:translate3d(-50%,-50%,0)}
+        .demo-showcase-preview{position:relative;height:clamp(520px,61vh,660px);overflow:hidden;background:#fff}
         .demo-showcase-info{display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:122px;padding:24px 30px 26px;background:#fff}
         .demo-showcase-title{font-size:clamp(20px,2vw,28px);font-weight:500;line-height:1;letter-spacing:-.045em}
         .demo-showcase-industry{margin-top:8px;font-size:15px;color:rgba(18,18,18,.52)}
@@ -244,9 +244,9 @@ export function HowWeWorkSection() {
         .view-all-demos-button{border-radius:0!important}
 
         @media(max-width:1100px) and (min-width:901px){
-          .demo-showcase-stage{min-height:680px}
-          .demo-showcase-card{width:72%;min-width:650px}
-          .demo-showcase-preview{height:500px}
+          .demo-showcase-stage{min-height:700px}
+          .demo-showcase-card{width:74%;min-width:660px}
+          .demo-showcase-preview{height:520px}
         }
 
         @media(max-width:900px) and (min-width:561px){
