@@ -7,6 +7,90 @@
 /* Override Tailwind's default smooth scrolling */
 html {
   scroll-behavior: auto;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Site-wide responsive safety layer. Prevents individual sections, media, demos,
+   or long labels from forcing the page wider than the current device. */
+html,
+body {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+body {
+  margin: 0;
+  overflow-x: clip;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+img,
+picture,
+video,
+canvas {
+  height: auto;
+}
+
+iframe,
+embed,
+object {
+  max-width: 100%;
+}
+
+main,
+section,
+header,
+footer,
+nav,
+article,
+aside,
+div {
+  max-width: 100%;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+a,
+button,
+span {
+  overflow-wrap: break-word;
+}
+
+@supports not (overflow: clip) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+}
+
+@media (max-width: 359px) {
+  body {
+    font-size: 15px;
+  }
 }
 
 :root {
