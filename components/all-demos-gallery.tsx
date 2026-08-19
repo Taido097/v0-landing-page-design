@@ -204,6 +204,7 @@ function AutoScrollDemoCard({
               className="pointer-events-none absolute left-0 top-0 z-[1] border-0 bg-white"
               style={{
                 width: '200%',
+                maxWidth: 'none',
                 height: '200%',
                 transform: 'scale(.5)',
                 transformOrigin: 'top left',
