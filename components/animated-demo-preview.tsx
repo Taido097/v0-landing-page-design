@@ -160,6 +160,7 @@ export function AnimatedDemoPreview({ name, href, isCenter, onComplete }: Animat
           className="pointer-events-none absolute left-0 top-0 border-0 bg-black"
           style={{
             width: '200%',
+            maxWidth: 'none',
             height: '200%',
             transform: 'scale(.5)',
             transformOrigin: 'top left',
