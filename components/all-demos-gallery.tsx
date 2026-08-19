@@ -17,6 +17,7 @@ const categories: DemoCategory[] = ['All', 'Portfolio', 'Scheduling', 'Restauran
 
 const demos: Demo[] = [
   { name: 'Luna Frame Studio', category: 'Portfolio', industry: 'Photography studio', href: '/portfolio/photography-studio' },
+  { name: 'Orkan', category: 'Portfolio', industry: 'Cinematic photography portfolio', href: '/portfolio/orkan' },
   { name: 'Alex Kabiru', category: 'Portfolio', industry: 'Designer portfolio', href: '/portfolio/minimal-portfolio' },
   { name: 'Fuel', category: 'Portfolio', industry: 'Premium creative agency', href: '/portfolio/fuel-agency' },
   { name: 'JORGE', category: 'Portfolio', industry: 'Creative portfolio', href: '/portfolio/jorge-portfolio' },
