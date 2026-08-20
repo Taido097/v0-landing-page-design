@@ -60,6 +60,92 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/United Arab Emirates/gi, 'Orange County, CA'],
 ];
 
+const CLIENT_PATCH = `
+<script id="nguyen-arcsphere-content-patch">
+(() => {
+  const pairs = [
+    ['ArcSphere Studio', 'NGUYEN Architecture & Engineering'],
+    ['ArcSphere', 'NGUYEN'],
+    ['Interior & Architecture', 'Architecture · Engineering · Permit'],
+    ['Interior and Architecture', 'Architecture · Engineering · Permit'],
+    ['Where Architecture Meets Experience', 'Commercial Architecture — Engineering & Permit'],
+    ['Where Architecture', 'Commercial Architecture'],
+    ['Meets Experience', 'Engineering & Permit'],
+    ['Based in Dubai, we design residential and commercial spaces that elevate how people live, work, and interact with their environment', 'Based in Orange County, we provide commercial architecture, engineering and permit support from existing-condition survey and business layout through plan check and approval.'],
+    ['VIEW PROJECTS', 'VIEW PROJECT TYPES'],
+    ['BOOK CONSULTATION', 'START A PROJECT'],
+    ['DESIGN PROCESS', 'PROJECT PROCESS'],
+    ['Residential Interior', 'Architectural Design & Tenant Improvement (TI)'],
+    ['Commercial Interior', 'Commercial Architecture'],
+    ['Space Planning', 'Existing-Condition Survey & Business Layout'],
+    ['Design Consultation', 'Zoning, Occupancy & Local Requirements'],
+    ['Project Management', 'Building Permit, Plan Check & Corrections'],
+    ['Architecture Design', 'Architectural, Structural & MEP'],
+    ['Interior Styling', 'Electrical, Plumbing & HVAC Coordination'],
+    ['Furniture Selection', 'Title 24 & Code Compliance'],
+    ['Lighting Design', 'Electrical, Plumbing & HVAC Coordination'],
+    ['3D Visualization', 'Permit Drawing Documentation'],
+    ['Material Selection', 'Consultant & City Coordination'],
+    ['Renovation', 'Commercial Remodel & Renovation'],
+    ['Office Design', 'Office & Tenant Improvements'],
+    ['Retail Design', 'Retail Stores'],
+    ['Hospitality Design', 'Restaurants, Cafés & Boba Shops'],
+    ['Concept Development', 'Existing-Condition Survey & Project Planning'],
+    ['Design Development', 'Architecture & Engineering'],
+    ['Documentation', 'Permit Documentation'],
+    ['Implementation', 'Plan Check & Corrections'],
+    ['We begin by understanding your goals, requirements, and design vision.', 'We begin with existing conditions, business needs, zoning, occupancy and local requirements.'],
+    ['We refine the concept into a cohesive and functional design direction.', 'We develop coordinated Architectural, Structural and MEP documentation for the commercial project.'],
+    ['We prepare detailed drawings and specifications for execution.', 'We prepare permit-ready drawings with Title 24 and applicable code compliance.'],
+    ['We oversee the final execution to ensure the design is realized as intended.', 'We support building permit, plan check, corrections, consultants and city coordination through approval.'],
+    ['Functional and visually compelling spaces for offices, retail stores, hospitality, and businesses.', 'Commercial architecture and engineering for restaurants, cafés, boba shops, salons, retail stores, offices and tenant improvements.'],
+    ['Our Projects', 'Commercial Project Types'],
+    ['About Us', 'About NGUYEN'],
+    ['About us', 'About NGUYEN'],
+    ['Get in touch', 'Start a Project'],
+    ['Contact Us', 'Contact'],
+    ['Contact us', 'Contact'],
+    ['Dubai', 'Huntington Beach, CA'],
+    ['United Arab Emirates', 'Orange County, CA']
+  ];
+  const exact = new Map(pairs.map(([a,b]) => [a.replace(/\\s+/g, ' ').trim(), b]));
+  const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim();
+
+  function patchText() {
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+      const key = normalize(node.nodeValue);
+      const next = exact.get(key);
+      if (next && node.nodeValue !== next) node.nodeValue = next;
+    }
+
+    document.querySelectorAll('a[href^="mailto:"]').forEach((a) => {
+      a.setAttribute('href', 'mailto:info@nguyenarchitecture.com');
+      if (/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(normalize(a.textContent))) {
+        a.textContent = 'info@nguyenarchitecture.com';
+      }
+    });
+
+    const phones = ['(209) 233-8888', '(714) 707-8889'];
+    document.querySelectorAll('a[href^="tel:"]').forEach((a, index) => {
+      const phone = phones[Math.min(index, phones.length - 1)];
+      a.setAttribute('href', 'tel:' + phone.replace(/[^+\\d]/g, ''));
+      if (/^[+()\\d .-]{7,}$/.test(normalize(a.textContent))) a.textContent = phone;
+    });
+  }
+
+  patchText();
+  document.addEventListener('DOMContentLoaded', patchText, { once: true });
+  let runs = 0;
+  const timer = setInterval(() => {
+    patchText();
+    runs += 1;
+    if (runs >= 24) clearInterval(timer);
+  }, 250);
+})();
+</script>`;
+
 async function getSource() {
   let lastError: unknown = null;
 
@@ -103,7 +189,7 @@ export async function GET() {
     }
 
     html = html.replace(/info@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/gi, 'info@nguyenarchitecture.com');
-    html = html.replace(/\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}/g, '(714) 707-8889');
+    html = html.replace(/<\/body>/i, `${CLIENT_PATCH}</body>`);
 
     return new Response(html, {
       headers: {
