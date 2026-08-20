@@ -329,41 +329,14 @@ const CLIENT_PATCH = `
   const FACEBOOK = 'https://www.facebook.com/profile.php?id=61579114646057&mibextid=wwXIfr&mibextid=wwXIfr';
 
   const projectCards = [
-    {
-      oldTitle: 'Skyline Corporate Hub',
-      title: 'Boba Shops & Cafés',
-      replacements: {
-        'Office': 'Tenant Improvement',
-        'Central Business District.': 'Commercial Project',
-        '2022': 'Design',
-        '350,000 sq. ft.': 'Design + Permit'
-      },
-      image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1800&q=92'
-    },
-    {
-      oldTitle: 'LuxeHaven Villa',
-      title: 'Restaurants',
-      replacements: {
-        'Residential': 'Commercial',
-        'Luxury Villa': 'Restaurant Design',
-        'Savannah, Georgia': 'Commercial Project',
-        '2023': 'Engineering',
-        '4000sqft': 'Design + Engineering'
-      },
-      image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1800&q=92'
-    },
-    {
-      oldTitle: 'Celestial Towers Condominiums',
-      title: 'Office & Tenant Improvement',
-      replacements: {
-        'Residential': 'Commercial',
-        'Apartment and Condo': 'Tenant Improvement (TI)',
-        'New Orleans, Louisiana': 'Commercial Project',
-        '2024': 'Permit',
-        '300,000 sq. ft.': 'Design + Permit'
-      },
-      image: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1800&q=92'
-    }
+    { oldTitle:'Skyline Corporate Hub', title:'Boba Shops & Cafés', image:'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1800&q=92', replacements:{'Office':'Commercial','Central Business District.':'Boba Shops & Cafés','2022':'Project Type','350,000 sq. ft.':'Design • Engineering • Permit'} },
+    { oldTitle:'LuxeHaven Villa', title:'Restaurants', image:'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1800&q=92', replacements:{'Residential':'Commercial','Luxury Villa':'Restaurants','Savannah, Georgia':'Commercial Project','2023':'Project Type','4000sqft':'Design • Engineering • Permit'} },
+    { oldTitle:'Celestial Towers Condominiums', title:'Nail & Beauty Salons', image:'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1800&q=92', replacements:{'Residential':'Commercial','Apartment and Condo':'Nail & Beauty Salons','New Orleans, Louisiana':'Commercial Project','2024':'Project Type','300,000 sq. ft.':'Design • Engineering • Permit'} },
+    { oldTitle:'Skyline Corporate Hub', title:'Retail Stores', image:'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1800&q=92', replacements:{'Office':'Commercial','Central Business District.':'Retail Stores','2022':'Project Type','350,000 sq. ft.':'Design • Engineering • Permit'}, clone:true },
+    { oldTitle:'LuxeHaven Villa', title:'Office & Tenant Improvement', image:'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1800&q=92', replacements:{'Residential':'Commercial','Luxury Villa':'Office & Tenant Improvement','Savannah, Georgia':'Commercial Project','2023':'Project Type','4000sqft':'Design • Engineering • Permit'}, clone:true },
+    { oldTitle:'Celestial Towers Condominiums', title:'Commercial Remodel & Renovation', image:'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1800&q=92', replacements:{'Residential':'Commercial','Apartment and Condo':'Commercial Remodel & Renovation','New Orleans, Louisiana':'Commercial Project','2024':'Project Type','300,000 sq. ft.':'Design • Engineering • Permit'}, clone:true },
+    { oldTitle:'Skyline Corporate Hub', title:'New Commercial Buildings', image:'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1800&q=92', replacements:{'Office':'Commercial','Central Business District.':'New Commercial Buildings','2022':'Project Type','350,000 sq. ft.':'Design • Engineering • Permit'}, clone:true },
+    { oldTitle:'LuxeHaven Villa', title:'Tenant Improvement (TI)', image:'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1800&q=92', replacements:{'Residential':'Commercial','Luxury Villa':'Tenant Improvement (TI)','Savannah, Georgia':'Commercial Project','2023':'Project Type','4000sqft':'Design • Engineering • Permit'}, clone:true }
   ];
 
   const serviceCards = [
@@ -431,11 +404,11 @@ const CLIENT_PATCH = `
     ['Built in Framer', 'Design • Engineering • Permit']
   ];
 
-  const exact = new Map(pairs.map(([from, to]) => [normalize(from), to]));
-
   function normalize(value) {
     return (value || '').replace(/\\s+/g, ' ').trim();
   }
+
+  const exact = new Map(pairs.map(([from, to]) => [normalize(from), to]));
 
   function serviceMarkup() {
     const cards = serviceCards.map((service) => {
@@ -496,40 +469,59 @@ const CLIENT_PATCH = `
     });
   }
 
+  function findProjectCard(title) {
+    const node = Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6,p,span,div'))
+      .find((el) => normalize(el.textContent) === title);
+    if (!node) return null;
+    let card = node.closest('a');
+    if (!card) {
+      card = node;
+      for (let depth = 0; depth < 8 && card && !card.querySelector('img'); depth += 1) card = card.parentElement;
+    }
+    return card;
+  }
+
+  function patchProjectCard(card, config) {
+    if (!card) return;
+    const local = new Map([[config.oldTitle, config.title], ...Object.entries(config.replacements)]);
+    const walker = document.createTreeWalker(card, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+      const next = local.get(normalize(node.nodeValue));
+      if (next !== undefined) node.nodeValue = next;
+    }
+    if (card.tagName === 'A') card.setAttribute('href', PROJECTS_PATH);
+    const image = card.querySelector('img');
+    if (image) {
+      image.setAttribute('src', config.image);
+      image.removeAttribute('srcset');
+      image.setAttribute('loading', 'eager');
+      image.setAttribute('decoding', 'async');
+      image.style.objectFit = 'cover';
+      image.style.objectPosition = 'center';
+      const picture = image.closest('picture');
+      if (picture) picture.querySelectorAll('source').forEach((source) => source.removeAttribute('srcset'));
+    }
+  }
+
   function patchProjectCards() {
-    projectCards.forEach((config) => {
-      const titleNode = Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6,p,span,div'))
-        .find((el) => normalize(el.textContent) === config.oldTitle);
-      if (!titleNode) return;
+    const baseCards = projectCards.slice(0, 3).map((config) => findProjectCard(config.oldTitle) || findProjectCard(config.title));
+    projectCards.slice(0, 3).forEach((config, index) => patchProjectCard(baseCards[index], config));
 
-      let card = titleNode.closest('a');
-      if (!card) {
-        card = titleNode;
-        for (let depth = 0; depth < 8 && card && !card.querySelector('img'); depth += 1) card = card.parentElement;
-      }
-      if (!card) return;
+    const parent = baseCards[0] && baseCards[0].parentElement;
+    if (!parent) return;
 
-      const local = new Map([[config.oldTitle, config.title], ...Object.entries(config.replacements)]);
-      const walker = document.createTreeWalker(card, NodeFilter.SHOW_TEXT);
-      let node;
-      while ((node = walker.nextNode())) {
-        const key = normalize(node.nodeValue);
-        const next = local.get(key);
-        if (next !== undefined) node.nodeValue = next;
+    projectCards.slice(3).forEach((config, index) => {
+      const marker = 'project-' + (index + 4);
+      let clone = parent.querySelector('[data-nguyen-project-clone="' + marker + '"]');
+      if (!clone) {
+        const source = baseCards[index % baseCards.length];
+        if (!source) return;
+        clone = source.cloneNode(true);
+        clone.dataset.nguyenProjectClone = marker;
+        parent.appendChild(clone);
       }
-
-      if (card.tagName === 'A') card.setAttribute('href', PROJECTS_PATH);
-      const image = card.querySelector('img');
-      if (image) {
-        image.setAttribute('src', config.image);
-        image.removeAttribute('srcset');
-        image.setAttribute('loading', 'eager');
-        image.setAttribute('decoding', 'async');
-        image.style.objectFit = 'cover';
-        image.style.objectPosition = 'center';
-        const picture = image.closest('picture');
-        if (picture) picture.querySelectorAll('source').forEach((source) => source.removeAttribute('srcset'));
-      }
+      patchProjectCard(clone, config);
     });
   }
 
