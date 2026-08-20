@@ -83,6 +83,109 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/© 2026 Prismae\./gi, '© 2026 NGUYEN Architecture & Engineering.'],
 ];
 
+const CLIENT_PATCH = `
+<script id="nguyen-prismae-content-patch">
+(() => {
+  const pairs = [
+    ['PRISMAE', 'NGUYEN'],
+    ['Prismae', 'NGUYEN'],
+    ['Start Your Project', 'Start Your Commercial Project'],
+    ['View All Projects', 'View Commercial Projects'],
+    ['View Projects', 'View Commercial Projects'],
+    ['Explore Dowm', 'Explore Services'],
+    ['About Us', 'About NGUYEN'],
+    ['Our Approach', 'Our Process'],
+    ['Discovery & Strategy', 'Existing Conditions & Project Planning'],
+    ['Client Consultation', 'Business Needs Consultation'],
+    ['Site Analysis', 'Existing-Condition Survey'],
+    ['Budget Planning', 'Project Scope Planning'],
+    ['Project Brief', 'Zoning, Occupancy & Local Requirements'],
+    ['Concept & Design', 'Architecture & Tenant Improvement'],
+    ['Concept Design', 'Architectural Design & Tenant Improvement (TI)'],
+    ['Space Planning', 'Optimized Business Layout'],
+    ['3D Visualization', 'Architectural, Structural & MEP'],
+    ['Material Selection', 'Title 24 & Code Compliance'],
+    ['Development & Construction', 'Engineering & Permit Documentation'],
+    ['Technical Drawings', 'Architectural, Structural & MEP Documents'],
+    ['Construction Documents', 'Permit-Ready Documentation'],
+    ['Site Coordination', 'Consultant & City Coordination'],
+    ['Quality Control', 'Title 24 & Code Compliance'],
+    ['Completion & Handover', 'Building Permit & Plan Check'],
+    ['Final Inspection', 'Plan Check Review'],
+    ['Styling & Finishing', 'Corrections & Revisions'],
+    ['Project Handover', 'Building Permit Approval'],
+    ['Ongoing Support', 'City & Consultant Coordination'],
+    ['Boutique Hotel', 'Restaurants, Cafés & Boba Shops'],
+    ['Urban Apartment', 'Nail Salons & Beauty Salons'],
+    ['Luxury Retail Store', 'Retail Stores'],
+    ['Office Interior', 'Office & Tenant Improvements'],
+    ['Residential Renovation', 'Commercial Remodel & Renovation'],
+    ['New Residence', 'New Commercial Buildings'],
+    ['Commercial Design', 'Tenant Improvement (TI)'],
+    ['Interior Design', 'Engineering & Permit'],
+    ['Every successful project starts with understanding your vision. We explore your goals, lifestyle, site conditions, budget, and aspirations to build a strong creative foundation.', 'We begin with an existing-condition survey, optimized business layout, zoning, occupancy and local requirements to establish a clear commercial project foundation.'],
+    ['Once the design is approved, we prepare technical documentation and collaborate with contractors to ensure every element is executed with precision and craftsmanship.', 'We prepare coordinated Architectural, Structural and MEP documents, including Electrical, Plumbing and HVAC design and coordination, for building permit and plan check.'],
+    ['After detailed inspections and final refinements, we deliver a fully completed space that reflects your vision and exceeds expectations.', 'We support Building Permit, Plan Check, Corrections, consultants and city agencies through approval while helping reduce revisions, time and project cost.'],
+    ['An elegant hospitality destination blending local culture with refined contemporary architecture, creating timeless comfort and memorable experiences.', 'Commercial architecture, engineering and permit support for restaurants, coffee shops, cafés, boba shops and other hospitality spaces.'],
+    ['A premium retail space crafted to strengthen brand identity and elevate customer engagement through immersive design experiences daily.', 'Commercial design, Tenant Improvement, engineering and permit support for retail stores and commercial renovations.'],
+    ['Designing Homes That Blend Seamlessly with Nature', 'Commercial Architecture Built Around Business Needs'],
+    ['Discover how thoughtful planning, natural materials, and modern architecture create homes connected to their surroundings.', 'Commercial architecture planned around business operations, zoning, occupancy, building code and permit requirements.'],
+    ['Creating Workspaces That Inspire Innovation', 'Tenant Improvements for Offices and Commercial Spaces'],
+    ['Explore how flexible layouts, natural lighting, and employee-focused design improve productivity and workplace well-being.', 'Tenant Improvement design and coordinated engineering for offices, retail, restaurants, salons and other commercial spaces.'],
+    ['The Beauty of Minimalist Interiors in Modern Living', 'Engineering, MEP & Permit Coordination'],
+    ['Learn how simplicity, texture, and carefully selected materials transform everyday spaces into timeless interiors.', 'Architectural, Structural and MEP documentation with Title 24, Electrical, Plumbing, HVAC, plan check and corrections support.'],
+    ['Do you manage construction as well?', 'Do you help with Building Permits and Plan Check?'],
+    ['What types of projects do you specialize in?', 'What commercial projects do you specialize in?'],
+    ['How does your design process work?', 'How does your commercial design and permit process work?'],
+    ['Do you provide both architecture and interior design services?', 'Do you provide Architectural, Structural and MEP coordination?'],
+    ['How long does a typical project take?', 'Do you coordinate zoning, occupancy and local requirements?'],
+    ['Can you renovate or remodel an existing property?', 'Can you handle commercial remodels and Tenant Improvements?'],
+    ['Subscribe to Our Newsletter', 'Start a Commercial Project'],
+    ['Say Hello!', 'Contact NGUYEN'],
+    ['New York, USA', 'Huntington Beach, CA'],
+    ['London, UK', 'Orange County, CA'],
+    ['Toronto, Canada', '(209) 233-8888'],
+    ['hello@prismae.com', 'info@nguyenarchitecture.com'],
+    ['© 2026 Prismae.', '© 2026 NGUYEN Architecture & Engineering.']
+  ];
+  const exact = new Map(pairs.map(([a,b]) => [a.replace(/\\s+/g, ' ').trim(), b]));
+  const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim();
+
+  function patchText() {
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+      const key = normalize(node.nodeValue);
+      const next = exact.get(key);
+      if (next && node.nodeValue !== next) node.nodeValue = next;
+    }
+
+    document.querySelectorAll('a[href^="mailto:"]').forEach((a) => {
+      a.setAttribute('href', 'mailto:info@nguyenarchitecture.com');
+      if (/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(normalize(a.textContent))) {
+        a.textContent = 'info@nguyenarchitecture.com';
+      }
+    });
+
+    const phones = ['(209) 233-8888', '(714) 707-8889'];
+    document.querySelectorAll('a[href^="tel:"]').forEach((a, index) => {
+      const phone = phones[Math.min(index, phones.length - 1)];
+      a.setAttribute('href', 'tel:' + phone.replace(/[^+\\d]/g, ''));
+      if (/^[+()\\d .-]{7,}$/.test(normalize(a.textContent))) a.textContent = phone;
+    });
+  }
+
+  patchText();
+  document.addEventListener('DOMContentLoaded', patchText, { once: true });
+  let runs = 0;
+  const timer = setInterval(() => {
+    patchText();
+    runs += 1;
+    if (runs >= 24) clearInterval(timer);
+  }, 250);
+})();
+</script>`;
+
 async function getSource() {
   let lastError: unknown = null;
 
@@ -124,6 +227,8 @@ export async function GET() {
     for (const [pattern, replacement] of REPLACEMENTS) {
       html = html.replace(pattern, replacement);
     }
+
+    html = html.replace(/<\/body>/i, `${CLIENT_PATCH}</body>`);
 
     return new Response(html, {
       headers: {
