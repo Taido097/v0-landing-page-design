@@ -16,37 +16,55 @@ const CLIENT_DEMO_STYLES = `
 
 const REPLACEMENTS: Array<[RegExp, string]> = [
   [/ArcSphere Studio/gi, 'NGUYEN Architecture & Engineering'],
-  [/Interior & Architecture/gi, 'Commercial Architecture & Engineering'],
-  [/Interior and Architecture/gi, 'Commercial Architecture & Engineering'],
-  [/Interior Design/gi, 'Tenant Improvement & Commercial Design'],
+  [/ArcSphere/gi, 'NGUYEN'],
+  [/Interior & Architecture/gi, 'Architecture · Engineering · Permit'],
+  [/Interior and Architecture/gi, 'Architecture · Engineering · Permit'],
+  [/Interior Design/gi, 'Tenant Improvement Design'],
+  [/interior design/gi, 'tenant improvement design'],
+
+  [/Residential Interior/gi, 'Tenant Improvement (TI)'],
+  [/Commercial Interior/gi, 'Commercial Architecture'],
   [/Space Planning/gi, 'Existing-Condition Survey & Layout'],
   [/Design Consultation/gi, 'Zoning, Occupancy & Code Review'],
   [/Project Management/gi, 'Permit & Plan Check Coordination'],
   [/Architecture Design/gi, 'Architectural, Structural & MEP'],
-  [/Commercial Interior/gi, 'Commercial Architecture'],
-  [/Residential Interior/gi, 'Tenant Improvement'],
+  [/Interior Styling/gi, 'Electrical, Plumbing & HVAC Coordination'],
+  [/Renovation/gi, 'Commercial Remodel & Renovation'],
   [/Office Design/gi, 'Office & Tenant Improvements'],
   [/Retail Design/gi, 'Retail Stores'],
   [/Hospitality Design/gi, 'Restaurants, Cafés & Boba Shops'],
-  [/Interior Styling/gi, 'Electrical, Plumbing & HVAC'],
-  [/Renovation/gi, 'Commercial Remodel & Renovation'],
+  [/Furniture Selection/gi, 'Title 24 & Code Compliance'],
+  [/Lighting Design/gi, 'Electrical & Lighting Coordination'],
+  [/3D Visualization/gi, 'Permit Drawing Documentation'],
+  [/Material Selection/gi, 'Building Code Coordination'],
+
+  [/Concept Development/gi, 'Site Survey & Project Planning'],
+  [/Design Development/gi, 'Architecture & Engineering'],
+  [/Documentation/gi, 'Permit Documentation'],
+  [/Implementation/gi, 'Plan Check & Corrections'],
+  [/We begin by understanding your goals, requirements, and design vision\./gi, 'We begin with the existing conditions, business needs, zoning, occupancy and project requirements.'],
+  [/We refine the concept into a cohesive and functional design direction\./gi, 'We develop coordinated architectural, structural and MEP drawings for the commercial project.'],
+  [/We prepare detailed drawings and specifications for execution\./gi, 'We prepare permit-ready documentation with Title 24 and applicable code coordination.'],
+  [/We oversee the final execution to ensure the design is realized as intended\./gi, 'We support building permit, plan check, corrections, consultants and city coordination through approval.'],
+
+  [/Our Services/gi, 'Our Services'],
+  [/Our Projects/gi, 'Commercial Projects'],
+  [/Projects/gi, 'Commercial Projects'],
+  [/About Us/gi, 'About NGUYEN'],
+  [/About us/gi, 'About NGUYEN'],
   [/Get in touch/gi, 'Start a Project'],
   [/Contact Us/gi, 'Contact'],
   [/Contact us/gi, 'Contact'],
-  [/About Us/gi, 'About NGUYEN'],
-  [/About us/gi, 'About NGUYEN'],
+
   [/Functional and visually compelling spaces for offices, retail stores, hospitality, and businesses\./gi, 'Commercial architecture, engineering and permit support for restaurants, cafés, salons, retail stores, offices and other business spaces.'],
-  [/We create spaces that are both functional and beautiful\./gi, 'We coordinate design, engineering and permitting from concept through building permit.'],
+  [/We create spaces that are both functional and beautiful\./gi, 'We coordinate commercial design, engineering and permitting from concept through building permit.'],
   [/Transforming spaces with thoughtful design and attention to detail\./gi, 'Helping commercial projects move from concept to design, engineering and permit with coordinated documentation.'],
+  [/Interior spaces designed around how you live and work\./gi, 'Commercial spaces planned around business operations, code requirements and permit approval.'],
 ];
 
 export async function GET() {
   try {
     const response = await fetch(SOURCE_URL, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0',
-        Accept: 'text/html,application/xhtml+xml',
-      },
       next: { revalidate: 3600 },
     });
 
@@ -71,6 +89,7 @@ export async function GET() {
     }
 
     html = html.replace(/info@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/gi, 'info@nguyenarchitecture.com');
+    html = html.replace(/\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}/g, '(714) 707-8889');
 
     return new Response(html, {
       headers: {
