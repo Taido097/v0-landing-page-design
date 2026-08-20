@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
@@ -52,7 +51,7 @@ export default function NguyenClientDemosPage() {
           <div className="mt-12 grid gap-x-5 gap-y-10 sm:mt-16 md:grid-cols-2 xl:grid-cols-3">
             {demos.map((demo) => (
               <article key={demo.href} className="group min-w-0">
-                <Link href={demo.href} className="block">
+                <a href={demo.href} className="block cursor-pointer" aria-label={`Open ${demo.name}`}>
                   <div className="relative aspect-[4/3] overflow-hidden border border-black/10 bg-[#dedbd4]">
                     <iframe
                       src={demo.href}
@@ -83,7 +82,7 @@ export default function NguyenClientDemosPage() {
                     </div>
                     <ArrowUpRight className="mt-1 h-5 w-5 shrink-0 text-black/35 transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-black" />
                   </div>
-                </Link>
+                </a>
               </article>
             ))}
           </div>
