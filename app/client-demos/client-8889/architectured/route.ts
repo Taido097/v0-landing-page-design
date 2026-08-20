@@ -324,6 +324,7 @@ const CLIENT_PATCH = `
 <script id="nguyen-architectured-content-patch">
 (() => {
   const DEMO_PATH = '${DEMO_PATH}';
+  const PROJECTS_PATH = DEMO_PATH + '/projects';
   const SOURCE_ORIGIN = 'https://architectured.framer.website';
   const FACEBOOK = 'https://www.facebook.com/profile.php?id=61579114646057&mibextid=wwXIfr&mibextid=wwXIfr';
 
@@ -465,10 +466,16 @@ const CLIENT_PATCH = `
 
   function patchLogo() {
     document.querySelectorAll('a[aria-label="Company Logo"]').forEach((logo) => {
+      logo.setAttribute('href', DEMO_PATH);
       if (logo.dataset.nguyenLogo === 'true') return;
       logo.dataset.nguyenLogo = 'true';
-      logo.setAttribute('href', DEMO_PATH);
       logo.innerHTML = '<div class="nguyen-wordmark"><strong>NGUYEN</strong><span>Architecture &amp; Engineering</span></div>';
+      logo.addEventListener('click', (event) => {
+        event.preventDefault();
+        history.replaceState(null, '', DEMO_PATH);
+        window.scrollTo(0, 0);
+        window.location.reload();
+      });
     });
   }
 
@@ -511,6 +518,7 @@ const CLIENT_PATCH = `
         if (next !== undefined) node.nodeValue = next;
       }
 
+      if (card.tagName === 'A') card.setAttribute('href', PROJECTS_PATH);
       const image = card.querySelector('img');
       if (image) {
         image.setAttribute('src', config.image);
@@ -540,15 +548,18 @@ const CLIENT_PATCH = `
     document.querySelectorAll('a').forEach((anchor) => {
       const href = anchor.getAttribute('href') || '';
       const label = normalize(anchor.textContent);
-      if (href.startsWith(SOURCE_ORIGIN)) {
-        const url = new URL(href);
-        if (url.pathname.startsWith('/projects/')) anchor.setAttribute('href', DEMO_PATH + '#projects');
-        else if (url.pathname.startsWith('/services')) anchor.setAttribute('href', DEMO_PATH + '#services');
-        else if (url.pathname.startsWith('/about')) anchor.setAttribute('href', DEMO_PATH + '#about');
-        else if (url.pathname.startsWith('/contact')) anchor.setAttribute('href', 'mailto:info@nguyenarchitecture.com');
+      let url = null;
+      try { url = new URL(href, SOURCE_ORIGIN); } catch {}
+      if (url && url.origin === SOURCE_ORIGIN) {
+        if (url.pathname === '/projects' || url.pathname.startsWith('/projects/')) anchor.setAttribute('href', PROJECTS_PATH);
+        else if (url.pathname === '/services' || url.pathname.startsWith('/services/')) anchor.setAttribute('href', DEMO_PATH + '#services');
+        else if (url.pathname === '/about' || url.pathname.startsWith('/about/')) anchor.setAttribute('href', DEMO_PATH + '#about');
+        else if (url.pathname === '/contact' || url.pathname.startsWith('/contact/')) anchor.setAttribute('href', 'mailto:info@nguyenarchitecture.com');
         else if (url.pathname.startsWith('/blogs/')) anchor.setAttribute('href', DEMO_PATH + '#faq');
-        else anchor.setAttribute('href', DEMO_PATH + (url.hash || ''));
+        else if (url.pathname === '/') anchor.setAttribute('href', DEMO_PATH + (url.hash || ''));
       }
+      if (label === 'Projects' || label === 'Explore Project Types' || label === 'View Project') anchor.setAttribute('href', PROJECTS_PATH);
+      if (label === 'Home') anchor.setAttribute('href', DEMO_PATH);
       if (label === 'Request Consultation' || label === 'Send Message' || label === 'Contact NGUYEN') anchor.setAttribute('href', 'mailto:info@nguyenarchitecture.com');
       if (label === 'Facebook' || label === 'Instagram' || label === 'Linkedin' || label === 'Twitter/X' || label === 'Youtube' || label === 'Pinterest') {
         anchor.setAttribute('href', FACEBOOK);
