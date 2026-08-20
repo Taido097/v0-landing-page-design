@@ -30,153 +30,8 @@ const CLEANUP = `
     --token-37033d4e-1ccc-4cf2-bb27-e6ad4c96fbc3: #d99a2b !important;
   }
 
-  /* The stock template uses unsupported numeric claims. Keep the animated cards,
-     but remove the fabricated counters and use Nguyen service labels instead. */
   .framer-xrcGW .framer-1h0wd5 { display: none !important; }
-
-  /* Keep the template's full Framer motion while applying Nguyen's brand accent. */
-  a, button { --framer-text-color: inherit; }
 </style>`;
-
-const REPLACEMENTS: Array<[string, string]> = [
-  ['<title>Architectured - Architecture Firm Framer Template</title>', '<title>NGUYEN Architecture & Engineering — Commercial Design & Permit</title>'],
-  ['Best Architecture Framer Template for architects, interior designers, landscapers, builders, developers, real estate agencies', 'Commercial architecture, engineering, tenant improvement and permit support in Orange County.'],
-
-  ['Years of creating spaces', 'Architectural Design'],
-  ['Amazing projects brought to life', 'Structural Engineering'],
-  ['Happy clients, happy spaces', 'MEP Engineering'],
-  ['Designs that earn awards', 'Permit Services'],
-  ['Architecture that connects people and places', 'Commercial Design & Permit Solutions'],
-  ['We design more than buildings—we create spaces that foster connection, creativity, and community', 'One team. Complete solution. Architecture, engineering and permit support for commercial projects in Orange County.'],
-  ['Get Template', 'Request Consultation'],
-
-  ['Our Services', 'Our Services'],
-  ['Explore our services and see how we bring creativity and expertise to every project', 'Integrated commercial design, engineering and permit services from existing conditions through plan check and approval.'],
-  ['Architectural Design', 'Architectural Design & Tenant Improvement (TI)'],
-  ['Site Planning', 'Existing-Condition Survey & Business Layout'],
-  ['Layout Design', 'Space Planning'],
-  ['3D Visualization', '3D Renderings'],
-  ['Rendering', 'Elevations & Sections'],
-  ['Construction Documentation', 'Permit Documentation'],
-  ['Schematic Design Development', 'Concept Design'],
-  ['BIM', 'Coordinated Documents'],
-  ['Interior Design & Planning', 'Structural Engineering'],
-  ['Space Planning & Optimization', 'Structural Design'],
-  ['Furniture & Fixture Selection', 'Structural Details'],
-  ['Material Selection', 'Structural Calculations'],
-  ['Lighting Design', 'Foundation & Framing'],
-  ['Art & Accessory Curation', 'Existing Building Modification'],
-  ['Custom Cabinetry Design', 'Retaining Walls'],
-  ['Interior Landscaping', 'Engineering Coordination'],
-  ['Consulting Services', 'MEP Engineering'],
-  ['Site & Building Code Consultation', 'Electrical Design'],
-  ['Design & Concept Review', 'Plumbing Design'],
-  ['Technical Advisory Services', 'HVAC Design'],
-  ['Cost Estimation & Budgeting', 'Electrical Load Calculations'],
-  ['Project Feasibility Consulting', 'Equipment Coordination'],
-  ['Project Management', 'Code, Energy & Permit'],
-  ['Pre-Construction Planning', 'Title 24 & Energy Compliance'],
-  ['Site Inspection & Supervision', 'CalGreen & ADA Compliance'],
-  ['Cost Estimation', 'Zoning & Occupancy Review'],
-  ['Resource Allocation', 'Permit Submittal'],
-  ['Timeline & Milestone Tracking', 'Plan Check Coordination'],
-  ['Contractor & Vendor Management', 'Corrections & Resubmittal'],
-  ['Final Inspection & Handover', 'Permit Approval Support'],
-  ['Explore All Services', 'Explore Commercial Services'],
-
-  ['Our Best Projects', 'Commercial Project Types'],
-  ['What we’ve been up to—check out our latest projects', 'Commercial spaces designed around business operations, customer experience, code compliance and permit requirements.'],
-  ['Skyline Corporate Hub', 'Office & Tenant Improvement'],
-  ['Commercial', 'Tenant Improvement'],
-  ['Office', 'Commercial Office'],
-  ['Central Business District.', 'Orange County, CA'],
-  ['2022', 'Design + Permit'],
-  ['350,000 sq. ft.', 'Commercial TI'],
-  ['LuxeHaven Villa', 'Restaurant & Café'],
-  ['Residential', 'Food & Beverage'],
-  ['Luxury Villa', 'Restaurant Tenant Improvement'],
-  ['Savannah, Georgia', 'Orange County, CA'],
-  ['2023', 'Architecture + MEP'],
-  ['4000sqft', 'Commercial Project'],
-  ['Celestial Towers Condominiums', 'New Commercial Building'],
-  ['Apartment and Condo', 'Ground-Up Commercial'],
-  ['New Orleans, Louisiana', 'Southern California'],
-  ['300,000 sq. ft.', 'Architecture + Engineering'],
-  ['View All Projects', 'View Project Types'],
-
-  ['Welcome to our world of creativity, where every project', 'From concept through approval, every commercial project'],
-  ['starts with a dream', 'starts with your business needs'],
-  ['and ends with a', 'and moves through coordinated'],
-  ['space that', 'design and engineering that'],
-  ['feels like home.', 'supports permitting and construction.'],
-  ['Take a glimpse into our world of creativity and innovation.', 'NGUYEN Architecture & Engineering provides one coordinated team for design, engineering and permit support.'],
-  ['Know About Us', 'About NGUYEN'],
-
-  ['Our Differences', 'Why Choose NGUYEN'],
-  ['what makes us different (and totally awesome)', 'One team. Complete solution. Built around clear coordination, code compliance and efficient permitting.'],
-  ['Designs with heart and soul', 'One Team, Complete Solution'],
-  ['We don’t just design buildings; we craft spaces where life happens, memories are made, and dreams come true. Every project is as unique as the people living in it.', 'Architectural, Structural, MEP and Title 24 disciplines coordinated around one commercial project scope.'],
-  ['Expert guidance', 'Code & Permit Expertise'],
-  ['Smooth and stress-free process', 'Cost & Time Efficiency'],
-  ['Save time and stay on budget', 'Client Focused Coordination'],
-  ['Orion Caldwell, Home Owner', 'NGUYEN Architecture & Engineering'],
-
-  ['How we work', 'Our Process'],
-  ['Let’s turn your big ideas into a masterpiece with a clear and fun process', 'A clear process from consultation and feasibility through design, engineering, permit submittal and plan check approval.'],
-  ['Initial Consultation', 'Consultation'],
-  ['Once we have a clear understanding of your goals, we move on to brainstorming and designing. We create initial sketches, layouts, and concepts tailored to your unique vision.', 'We discuss project goals, business use, scope, budget and schedule, then review initial feasibility.'],
-  ['Concept Development', 'Site Analysis & Feasibility'],
-  ['Planning & Preparation', 'Design & Engineering'],
-  ['Execution & Delivery', 'Permit Submittal & Plan Check'],
-
-  ['Project images', 'Commercial Project Types'],
-  ['Gallery', 'Our Work'],
-  ['Don’t just take our word for it—see how we turn ideas into stunning spaces. Our gallery is full of inspiration for your next big project!', 'Commercial project types include boba and coffee shops, restaurants, nail and beauty salons, retail stores, offices and tenant improvements, remodels and new commercial buildings.'],
-  ['Browse Gallery', 'Explore Project Types'],
-
-  ['Blogs', 'Project Guidance'],
-  ['No fluff, no jargon—just simple, practical advice for making your space look and feel amazing. .', 'Practical commercial design, engineering, zoning, code and permit guidance for business owners and project teams.'],
-  ['How to turn “cozy” into “wow”: 5 Pro Tips for Making the Most of Small Spaces', 'Site Survey & Existing Conditions: Starting a Commercial Project Right'],
-  ['Latest Blogs', 'Commercial Guidance'],
-  ['Design & Inspiration', 'Design & Planning'],
-  ['Turning Spaces into Stories: How We Create Meaningful Architecture', 'Tenant Improvement: Coordinating Architecture, Structure & MEP'],
-  ['Industry Insights', 'Code & Permit'],
-  ['Retail Revolution: How Architecture Is Transforming Shopping Experiences', 'Plan Check & Corrections: What Happens After Permit Submittal'],
-  ['Tiny but Mighty: 7 Genius Design Hacks for Compact Living', 'Title 24, CalGreen, ADA & Code Compliance for Commercial Projects'],
-  ['From Chaos to Cozy: Tips to Turn Your Cramped Space into a Stylish Sanctuary', 'Zoning, Occupancy and Local Requirements Before Design Begins'],
-  ['All Blogs', 'View Guidance'],
-
-  ['FAQs', 'Commercial Project FAQs'],
-  ['We’ve answered the big questions, but if you still have something on your mind, we’re here to help.', 'Common questions about Nguyen’s commercial architecture, engineering and permit support.'],
-  ['We’re just a form away—send us your question, and we’ll be happy to help!', 'Tell us about your project scope, business use and permit needs.'],
-  ['Do you handle all the permits and paperwork?', 'Do you handle permit submittal and plan check?'],
-  ['Absolutely! We take care of all the boring-but-important stuff, like permits and paperwork, so you don’t have to stress about it.', 'Yes. Permit support includes permit-ready documentation, city or agency submittal, plan check coordination, corrections, resubmittal and approval support.'],
-  ['Can I make changes during the design process?', 'What services can be coordinated in-house?'],
-  ['Of course! Your input is always welcome. We want you to be thrilled with the final design, so feel free to share your ideas as we go along.', 'Architectural design, Structural Engineering, MEP coordination, Title 24 and code compliance can be coordinated as one commercial project package.'],
-  ['Do you only design residential spaces?', 'What commercial project types do you work on?'],
-  ['Not at all! While we love creating dream homes, we also work on commercial projects, office spaces, and more. If you’ve got a vision, we’re here to bring it to life.', 'Boba shops, coffee shops, cafés, restaurants, nail and beauty salons, retail stores, offices, tenant improvements, commercial remodels and new commercial buildings.'],
-  ['Can I see a 3D model of my design?', 'Can you provide renderings and design drawings?'],
-  ['Absolutely! We love showing off our work with 3D models or renderings to help you visualize your space before construction begins.', 'Yes. Architectural services can include floor plans, elevations and sections, reflected ceiling plans, construction details and 3D renderings.'],
-  ['Do you work with contractors?', 'Do you coordinate with consultants and city agencies?'],
-  ['Yes! We collaborate with trusted contractors to ensure your design is executed perfectly. If you have your own team, we’re happy to work with them too!', 'Yes. Nguyen coordinates with project consultants and city agencies during permitting and plan check.'],
-  ['Can you help with interior design too?', 'Do you support Tenant Improvement projects?'],
-  ['You bet! From furniture layouts to color schemes, we can assist with the finishing touches that make your space feel like home.', 'Yes. Tenant Improvement services can include existing-condition survey, business layout planning, architecture, engineering, code review and permit support.'],
-  ['What happens if I still have questions?', 'How do we get started?'],
-  ['We’re here to help! If you can’t find the answer you’re looking for, just drop us a message or fill out the form. We’ll get back to you in no time!', 'Contact NGUYEN Architecture & Engineering to discuss the project scope, existing conditions, business use and permit requirements.'],
-
-  ['Architect', 'NGUYEN'],
-  ['(217) 555-0134', '(209) 233-8888'],
-  ['(217) 444-0134', '(714) 707-8889'],
-  ['architect@email.com', 'info@nguyenarchitecture.com'],
-  ['123 Main Street, Suite 200, Austin, TX 78701', '7171 Warner Ave. Ste. B, Huntington Beach, CA 92647'],
-  ['Mon to Sat: 9.00am - 8.30pm', 'Orange County / Southern California'],
-  ['Sun: Closed', 'Design • Engineer • Permit'],
-  ['Subscribe to the newsletter', 'Commercial Design • Engineering • Permit'],
-  ['Subscribe', 'Contact NGUYEN'],
-  ['©Template by RealMehedi', '© NGUYEN Architecture & Engineering'],
-  ['Built in Framer', 'Commercial Architecture & Engineering'],
-  ['Create a free website with Framer, the website builder loved by startups, designers and agencies.', ''],
-];
 
 const CLIENT_PATCH = `
 <script id="nguyen-architectured-content-patch">
@@ -187,103 +42,140 @@ const CLIENT_PATCH = `
 
   const pairs = ${JSON.stringify([
     ['Years of creating spaces', 'Architectural Design'],
-    ['Amazing projects brought to life', 'Structural Engineering'],
-    ['Happy clients, happy spaces', 'MEP Engineering'],
-    ['Designs that earn awards', 'Permit Services'],
-    ['Architecture that connects people and places', 'Commercial Design & Permit Solutions'],
-    ['We design more than buildings—we create spaces that foster connection, creativity, and community', 'One team. Complete solution. Architecture, engineering and permit support for commercial projects in Orange County.'],
+    ['Amazing projects brought to life', 'Engineering'],
+    ['Happy clients, happy spaces', 'Permit Support'],
+    ['Designs that earn awards', 'Residential + Commercial'],
+    ['Architecture that connects people and places', 'Residential & Commercial Design Solutions'],
+    ['We design more than buildings—we create spaces that foster connection, creativity, and community', 'One team for custom homes, ADUs, residential and commercial projects — from design and engineering through permit support.'],
     ['Get Template', 'Request Consultation'],
-    ['Explore our services and see how we bring creativity and expertise to every project', 'Integrated commercial design, engineering and permit services from existing conditions through plan check and approval.'],
-    ['Architectural Design', 'Architectural Design & Tenant Improvement (TI)'],
-    ['Site Planning', 'Existing-Condition Survey & Business Layout'],
-    ['Layout Design', 'Space Planning'],
+
+    ['Explore our services and see how we bring creativity and expertise to every project', 'Architecture, engineering and permit support for custom homes, ADUs, residential improvements and commercial projects across Southern California.'],
+    ['Architectural Design', 'Architectural Design'],
+    ['Site Planning', 'Existing-Condition Survey & Site Planning'],
+    ['Layout Design', 'Floor Plans & Space Planning'],
     ['3D Visualization', '3D Renderings'],
     ['Rendering', 'Elevations & Sections'],
-    ['Construction Documentation', 'Permit Documentation'],
-    ['Schematic Design Development', 'Concept Design'],
-    ['BIM', 'Coordinated Documents'],
-    ['Interior Design & Planning', 'Structural Engineering'],
-    ['Space Planning & Optimization', 'Structural Design'],
-    ['Furniture & Fixture Selection', 'Structural Details'],
-    ['Material Selection', 'Structural Calculations'],
-    ['Lighting Design', 'Foundation & Framing'],
-    ['Art & Accessory Curation', 'Existing Building Modification'],
-    ['Custom Cabinetry Design', 'Retaining Walls'],
-    ['Interior Landscaping', 'Engineering Coordination'],
-    ['Consulting Services', 'MEP Engineering'],
-    ['Site & Building Code Consultation', 'Electrical Design'],
-    ['Design & Concept Review', 'Plumbing Design'],
-    ['Technical Advisory Services', 'HVAC Design'],
-    ['Cost Estimation & Budgeting', 'Electrical Load Calculations'],
-    ['Project Feasibility Consulting', 'Equipment Coordination'],
-    ['Project Management', 'Code, Energy & Permit'],
-    ['Pre-Construction Planning', 'Title 24 & Energy Compliance'],
-    ['Site Inspection & Supervision', 'CalGreen & ADA Compliance'],
-    ['Cost Estimation', 'Zoning & Occupancy Review'],
-    ['Resource Allocation', 'Permit Submittal'],
-    ['Timeline & Milestone Tracking', 'Plan Check Coordination'],
-    ['Contractor & Vendor Management', 'Corrections & Resubmittal'],
-    ['Final Inspection & Handover', 'Permit Approval Support'],
-    ['Explore All Services', 'Explore Commercial Services'],
-    ['Our Best Projects', 'Commercial Project Types'],
-    ['What we’ve been up to—check out our latest projects', 'Commercial spaces designed around business operations, customer experience, code compliance and permit requirements.'],
-    ['Skyline Corporate Hub', 'Office & Tenant Improvement'],
-    ['Commercial', 'Tenant Improvement'],
-    ['Office', 'Commercial Office'],
+    ['Construction Documentation', 'Permit & Construction Documents'],
+    ['Schematic Design Development', 'Concept & Schematic Design'],
+    ['BIM', 'Coordinated Drawings'],
+
+    ['Interior Design & Planning', 'Residential Design'],
+    ['Space Planning & Optimization', 'Custom Homes'],
+    ['Furniture & Fixture Selection', 'ADUs'],
+    ['Material Selection', 'Home Additions'],
+    ['Lighting Design', 'Residential Remodels'],
+    ['Art & Accessory Curation', 'Garage Conversions'],
+    ['Custom Cabinetry Design', 'Interior Reconfiguration'],
+    ['Interior Landscaping', 'Residential Permit Support'],
+
+    ['Consulting Services', 'Commercial Design'],
+    ['Site & Building Code Consultation', 'Tenant Improvement (TI)'],
+    ['Design & Concept Review', 'Restaurants, Cafés & Boba Shops'],
+    ['Technical Advisory Services', 'Retail, Office & Salon Projects'],
+    ['Cost Estimation & Budgeting', 'Zoning & Occupancy Review'],
+    ['Project Feasibility Consulting', 'Commercial Remodel & Renovation'],
+
+    ['Project Management', 'Engineering & Permit'],
+    ['Pre-Construction Planning', 'Structural Engineering'],
+    ['Site Inspection & Supervision', 'MEP Coordination'],
+    ['Cost Estimation', 'Title 24 & Energy Compliance'],
+    ['Resource Allocation', 'CalGreen & ADA Compliance'],
+    ['Timeline & Milestone Tracking', 'Permit Submittal'],
+    ['Contractor & Vendor Management', 'Plan Check & Corrections'],
+    ['Final Inspection & Handover', 'City & Consultant Coordination'],
+    ['Explore All Services', 'Explore Our Services'],
+
+    ['Our Best Projects', 'Project Types'],
+    ['What we’ve been up to—check out our latest projects', 'We support residential and commercial projects from early planning and feasibility through coordinated design, engineering and permit approval.'],
+    ['Skyline Corporate Hub', 'Commercial Tenant Improvement'],
+    ['Commercial', 'Commercial'],
+    ['Office', 'Office & Tenant Improvement'],
     ['Central Business District.', 'Orange County, CA'],
     ['2022', 'Design + Permit'],
-    ['350,000 sq. ft.', 'Commercial TI'],
-    ['LuxeHaven Villa', 'Restaurant & Café'],
-    ['Residential', 'Food & Beverage'],
-    ['Luxury Villa', 'Restaurant Tenant Improvement'],
-    ['Savannah, Georgia', 'Orange County, CA'],
-    ['2023', 'Architecture + MEP'],
-    ['4000sqft', 'Commercial Project'],
-    ['Celestial Towers Condominiums', 'New Commercial Building'],
-    ['Apartment and Condo', 'Ground-Up Commercial'],
-    ['New Orleans, Louisiana', 'Southern California'],
-    ['300,000 sq. ft.', 'Architecture + Engineering'],
+    ['350,000 sq. ft.', 'Commercial Project'],
+    ['LuxeHaven Villa', 'Custom Home & Residential'],
+    ['Residential', 'Residential'],
+    ['Luxury Villa', 'Custom Home'],
+    ['Savannah, Georgia', 'Southern California'],
+    ['2023', 'Architecture + Engineering'],
+    ['4000sqft', 'Residential Project'],
+    ['Celestial Towers Condominiums', 'ADU & Residential Addition'],
+    ['Apartment and Condo', 'ADU / Addition'],
+    ['New Orleans, Louisiana', 'Orange County, CA'],
+    ['300,000 sq. ft.', 'Design + Permit'],
     ['View All Projects', 'View Project Types'],
+
+    ['Welcome to our world of creativity, where every project', 'From custom homes and ADUs to commercial spaces, every project'],
+    ['starts with a dream', 'starts with your goals'],
+    ['and ends with a', 'and moves through coordinated'],
+    ['space that', 'design and engineering that'],
+    ['feels like home.', 'supports permitting and construction.'],
+    ['Take a glimpse into our world of creativity and innovation.', 'NGUYEN Architecture & Engineering provides coordinated architecture, engineering and permit support for residential and commercial projects.'],
+    ['Know About Us', 'About NGUYEN'],
+
     ['Our Differences', 'Why Choose NGUYEN'],
-    ['what makes us different (and totally awesome)', 'One team. Complete solution. Built around clear coordination, code compliance and efficient permitting.'],
-    ['Designs with heart and soul', 'One Team, Complete Solution'],
+    ['what makes us different (and totally awesome)', 'One team. Complete solution. Residential and commercial design coordinated around code compliance, engineering and permitting.'],
+    ['Designs with heart and soul', 'Residential + Commercial Expertise'],
+    ['We don’t just design buildings; we craft spaces where life happens, memories are made, and dreams come true. Every project is as unique as the people living in it.', 'Custom homes, ADUs, residential remodels, additions, commercial tenant improvements and new commercial projects supported through one coordinated process.'],
     ['Expert guidance', 'Code & Permit Expertise'],
-    ['Smooth and stress-free process', 'Cost & Time Efficiency'],
-    ['Save time and stay on budget', 'Client Focused Coordination'],
+    ['Smooth and stress-free process', 'Coordinated Design & Engineering'],
+    ['Save time and stay on budget', 'Plan Check & Approval Support'],
     ['Orion Caldwell, Home Owner', 'NGUYEN Architecture & Engineering'],
+
     ['How we work', 'Our Process'],
-    ['Let’s turn your big ideas into a masterpiece with a clear and fun process', 'A clear process from consultation and feasibility through design, engineering, permit submittal and plan check approval.'],
+    ['Let’s turn your big ideas into a masterpiece with a clear and fun process', 'A clear process for residential and commercial projects — consultation, feasibility, design, engineering, permit submittal and plan check.'],
     ['Initial Consultation', 'Consultation'],
+    ['Once we have a clear understanding of your goals, we move on to brainstorming and designing. We create initial sketches, layouts, and concepts tailored to your unique vision.', 'We review your goals, project type, existing conditions, scope and permitting needs before moving into design.'],
     ['Concept Development', 'Site Analysis & Feasibility'],
     ['Planning & Preparation', 'Design & Engineering'],
     ['Execution & Delivery', 'Permit Submittal & Plan Check'],
-    ['Project images', 'Commercial Project Types'],
+
+    ['Project images', 'Residential & Commercial Projects'],
     ['Gallery', 'Our Work'],
+    ['Don’t just take our word for it—see how we turn ideas into stunning spaces. Our gallery is full of inspiration for your next big project!', 'Project types include custom homes, ADUs, additions, residential remodels, boba and coffee shops, restaurants, nail and beauty salons, retail stores, offices, tenant improvements, commercial remodels and new commercial buildings.'],
     ['Browse Gallery', 'Explore Project Types'],
+
     ['Blogs', 'Project Guidance'],
-    ['Latest Blogs', 'Commercial Guidance'],
-    ['Design & Inspiration', 'Design & Planning'],
-    ['Industry Insights', 'Code & Permit'],
+    ['No fluff, no jargon—just simple, practical advice for making your space look and feel amazing. .', 'Practical guidance for residential and commercial design, engineering, zoning, code compliance and permits.'],
+    ['How to turn “cozy” into “wow”: 5 Pro Tips for Making the Most of Small Spaces', 'Planning a Custom Home, ADU or Commercial Project'],
+    ['Latest Blogs', 'Design & Permit Guidance'],
+    ['Design & Inspiration', 'Residential Design'],
+    ['Turning Spaces into Stories: How We Create Meaningful Architecture', 'Custom Homes, Additions & ADUs: From Concept to Permit'],
+    ['Industry Insights', 'Commercial Projects'],
+    ['Retail Revolution: How Architecture Is Transforming Shopping Experiences', 'Tenant Improvement: Coordinating Architecture, Structure & MEP'],
+    ['Tiny but Mighty: 7 Genius Design Hacks for Compact Living', 'ADU Planning, Design & Permit Documentation'],
+    ['From Chaos to Cozy: Tips to Turn Your Cramped Space into a Stylish Sanctuary', 'Title 24, CalGreen, ADA, Zoning & Code Compliance'],
     ['All Blogs', 'View Guidance'],
-    ['FAQs', 'Commercial Project FAQs'],
+
+    ['FAQs', 'Project FAQs'],
+    ['We’ve answered the big questions, but if you still have something on your mind, we’re here to help.', 'Common questions about residential and commercial architecture, engineering and permit support.'],
+    ['We’re just a form away—send us your question, and we’ll be happy to help!', 'Tell us whether you are planning a custom home, ADU, remodel, addition, tenant improvement or other commercial project.'],
     ['Do you handle all the permits and paperwork?', 'Do you handle permit submittal and plan check?'],
-    ['Can I make changes during the design process?', 'What services can be coordinated in-house?'],
-    ['Do you only design residential spaces?', 'What commercial project types do you work on?'],
+    ['Absolutely! We take care of all the boring-but-important stuff, like permits and paperwork, so you don’t have to stress about it.', 'Permit support can include permit-ready drawings, city or agency submittal, plan check coordination, corrections, resubmittal and approval support.'],
+    ['Can I make changes during the design process?', 'What services can be coordinated?'],
+    ['Of course! Your input is always welcome. We want you to be thrilled with the final design, so feel free to share your ideas as we go along.', 'Services can include architectural design, structural engineering, MEP coordination, Title 24, code compliance and permit documentation depending on the project.'],
+    ['Do you only design residential spaces?', 'Do you work on both residential and commercial projects?'],
+    ['Not at all! While we love creating dream homes, we also work on commercial projects, office spaces, and more. If you’ve got a vision, we’re here to bring it to life.', 'Yes. Residential work can include custom homes, ADUs, additions and remodels. Commercial work can include tenant improvements, restaurants, cafés, boba shops, salons, retail, offices, remodels and new commercial buildings.'],
     ['Can I see a 3D model of my design?', 'Can you provide renderings and design drawings?'],
+    ['Absolutely! We love showing off our work with 3D models or renderings to help you visualize your space before construction begins.', 'Architectural services can include floor plans, elevations and sections, reflected ceiling plans, construction details and 3D renderings.'],
     ['Do you work with contractors?', 'Do you coordinate with consultants and city agencies?'],
-    ['Can you help with interior design too?', 'Do you support Tenant Improvement projects?'],
+    ['Yes! We collaborate with trusted contractors to ensure your design is executed perfectly. If you have your own team, we’re happy to work with them too!', 'Project coordination can include structural and MEP consultants as well as city or agency communication during permitting and plan check.'],
+    ['Can you help with interior design too?', 'Do you support ADUs and Tenant Improvement projects?'],
+    ['You bet! From furniture layouts to color schemes, we can assist with the finishing touches that make your space feel like home.', 'Yes. ADU and Tenant Improvement services can include existing-condition survey, space planning, architecture, engineering, code review and permit support.'],
     ['What happens if I still have questions?', 'How do we get started?'],
+    ['We’re here to help! If you can’t find the answer you’re looking for, just drop us a message or fill out the form. We’ll get back to you in no time!', 'Contact NGUYEN Architecture & Engineering to discuss the project type, scope, existing conditions and permit requirements.'],
+
     ['Architect', 'NGUYEN'],
     ['(217) 555-0134', '(209) 233-8888'],
     ['(217) 444-0134', '(714) 707-8889'],
     ['architect@email.com', 'info@nguyenarchitecture.com'],
     ['123 Main Street, Suite 200, Austin, TX 78701', '7171 Warner Ave. Ste. B, Huntington Beach, CA 92647'],
     ['Mon to Sat: 9.00am - 8.30pm', 'Orange County / Southern California'],
-    ['Sun: Closed', 'Design • Engineer • Permit'],
-    ['Subscribe to the newsletter', 'Commercial Design • Engineering • Permit'],
+    ['Sun: Closed', 'Design • Engineering • Permit'],
+    ['Subscribe to the newsletter', 'Custom Homes • ADUs • Residential • Commercial'],
     ['Subscribe', 'Contact NGUYEN'],
     ['©Template by RealMehedi', '© NGUYEN Architecture & Engineering'],
-    ['Built in Framer', 'Commercial Architecture & Engineering']
+    ['Built in Framer', 'Design • Engineering • Permit']
   ])};
 
   const exact = new Map(pairs.map(([from, to]) => [normalize(from), to]));
@@ -306,19 +198,12 @@ const CLIENT_PATCH = `
 
       if (href.startsWith(SOURCE_ORIGIN)) {
         const url = new URL(href);
-        if (url.pathname.startsWith('/projects/')) {
-          anchor.setAttribute('href', DEMO_PATH + '#projects');
-        } else if (url.pathname.startsWith('/services')) {
-          anchor.setAttribute('href', DEMO_PATH + '#services');
-        } else if (url.pathname.startsWith('/about')) {
-          anchor.setAttribute('href', DEMO_PATH + '#about');
-        } else if (url.pathname.startsWith('/contact')) {
-          anchor.setAttribute('href', 'mailto:info@nguyenarchitecture.com');
-        } else if (url.pathname.startsWith('/blogs/')) {
-          anchor.setAttribute('href', DEMO_PATH + '#faq');
-        } else {
-          anchor.setAttribute('href', DEMO_PATH + (url.hash || ''));
-        }
+        if (url.pathname.startsWith('/projects/')) anchor.setAttribute('href', DEMO_PATH + '#projects');
+        else if (url.pathname.startsWith('/services')) anchor.setAttribute('href', DEMO_PATH + '#services');
+        else if (url.pathname.startsWith('/about')) anchor.setAttribute('href', DEMO_PATH + '#about');
+        else if (url.pathname.startsWith('/contact')) anchor.setAttribute('href', 'mailto:info@nguyenarchitecture.com');
+        else if (url.pathname.startsWith('/blogs/')) anchor.setAttribute('href', DEMO_PATH + '#faq');
+        else anchor.setAttribute('href', DEMO_PATH + (url.hash || ''));
       }
 
       if (label === 'Request Consultation' || label === 'Send Message' || label === 'Contact NGUYEN') {
@@ -337,10 +222,12 @@ const CLIENT_PATCH = `
     });
 
     document.querySelectorAll('form').forEach((form) => {
+      if (form.dataset.nguyenPatched === 'true') return;
+      form.dataset.nguyenPatched = 'true';
       form.addEventListener('submit', (event) => {
         event.preventDefault();
         window.location.href = 'mailto:info@nguyenarchitecture.com';
-      }, { once: true });
+      });
     });
   }
 
@@ -386,10 +273,13 @@ export async function GET() {
 
     html = html.replace(
       /<head([^>]*)>/i,
-      `<head$1><base href="${SOURCE_URL}"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="description" content="NGUYEN Architecture & Engineering — commercial architecture, engineering, Tenant Improvement and permit support in Orange County.">${CLEANUP}`,
+      `<head$1><base href="${SOURCE_URL}"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="description" content="NGUYEN Architecture & Engineering — custom homes, ADUs, residential and commercial architecture, engineering and permit support in Southern California.">${CLEANUP}`,
     );
 
-    for (const [from, to] of REPLACEMENTS) html = html.split(from).join(to);
+    html = html.replace(
+      /<title>[^<]*<\/title>/i,
+      '<title>NGUYEN Architecture & Engineering — Residential & Commercial Design</title>',
+    );
 
     html = html.replace(/<\/body>/i, `${CLIENT_PATCH}</body>`);
 
@@ -402,7 +292,7 @@ export async function GET() {
     });
   } catch {
     return new Response(
-      '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta http-equiv="refresh" content="2"><title>Loading NGUYEN Concept 04</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#061b36;color:white;font-family:Arial,sans-serif}main{text-align:center;padding:24px}p{opacity:.65;color:#d99a2b}</style></head><body><main><h1>NGUYEN Architecture & Engineering</h1><p>Loading Concept 04…</p></main></body></html>',
+      '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta http-equiv="refresh" content="2"><title>Loading NGUYEN Concept 04</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#061b36;color:white;font-family:Arial,sans-serif}main{text-align:center;padding:24px}p{opacity:.75;color:#d99a2b}</style></head><body><main><h1>NGUYEN Architecture & Engineering</h1><p>Loading Concept 04…</p></main></body></html>',
       {
         status: 200,
         headers: {
