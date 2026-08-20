@@ -180,7 +180,7 @@ const CLEANUP = `
 
   .nguyen-service-media {
     position: relative;
-    min-height: 100%;
+    min-height: 315px;
     overflow: hidden;
     background: #e9edf1;
   }
@@ -194,6 +194,7 @@ const CLEANUP = `
     object-position: center;
     display: block;
     transition: transform .6s cubic-bezier(.2,.7,.2,1);
+    image-rendering: auto;
   }
 
   .nguyen-service-card:hover .nguyen-service-media img { transform: scale(1.035); }
@@ -299,7 +300,7 @@ const CLEANUP = `
     .nguyen-services-brand { font-size: 9px; }
     .nguyen-services-title { font-size: clamp(38px, 14vw, 56px); }
     .nguyen-service-card { grid-template-columns: 1fr; min-height: 0; }
-    .nguyen-service-media { min-height: 230px; }
+    .nguyen-service-media { min-height: 250px; }
     .nguyen-service-copy { padding: 24px 22px 26px; }
     .nguyen-service-list { font-size: 13px; }
     .nguyen-services-strip { grid-template-columns: repeat(2, 1fr); }
@@ -333,12 +334,12 @@ const CLIENT_PATCH = `
   };
 
   const serviceCards = [
-    { number: '01', title: 'Site & Planning', image: '/nguyen-service-images/site-planning.jpg', items: ['Site Survey & Existing Conditions', 'Zoning & Code Review', 'Space Planning', 'Concept Design'] },
-    { number: '02', title: 'Architectural Design', image: '/nguyen-service-images/architectural-design.jpg', items: ['Floor Plans', 'Elevations & Sections', 'Reflected Ceiling Plans', 'Construction Details', '3D Renderings', 'Tenant Improvement Plans'] },
-    { number: '03', title: 'Structural Engineering', image: '/nguyen-service-images/structural-engineering.jpg', items: ['Structural Design', 'Structural Details', 'Structural Calculations', 'Foundation & Framing', 'Retaining Walls', 'Existing Building Modification'] },
-    { number: '04', title: 'MEP Engineering', image: '/nguyen-service-images/mep-engineering.jpg', items: ['Electrical Design', 'Plumbing Design', 'HVAC Design', 'Electrical Load Calculations', 'Equipment Coordination'] },
-    { number: '05', title: 'Code & Energy Compliance', image: '/nguyen-service-images/code-energy-compliance.jpg', items: ['Title 24', 'CalGreen', 'ADA Compliance', 'Building Code Review', 'Accessibility', 'Occupancy & Egress'] },
-    { number: '06', title: 'Permit Services', image: '/nguyen-service-images/permit-services.jpg', items: ['Permit Submittal', 'City Submittal', 'Plan Check Coordination', 'Corrections & Resubmittal', 'Permit Approval Support', 'Construction Support'] }
+    { number: '01', title: 'Site & Planning', image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1800&q=92', items: ['Site Survey & Existing Conditions', 'Zoning & Code Review', 'Space Planning', 'Concept Design'] },
+    { number: '02', title: 'Architectural Design', image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1800&q=92', items: ['Floor Plans', 'Elevations & Sections', 'Reflected Ceiling Plans', 'Construction Details', '3D Renderings', 'Tenant Improvement Plans'] },
+    { number: '03', title: 'Structural Engineering', image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1800&q=92', items: ['Structural Design', 'Structural Details', 'Structural Calculations', 'Foundation & Framing', 'Retaining Walls', 'Existing Building Modification'] },
+    { number: '04', title: 'MEP Engineering', image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=1800&q=92', items: ['Electrical Design', 'Plumbing Design', 'HVAC Design', 'Electrical Load Calculations', 'Equipment Coordination'] },
+    { number: '05', title: 'Code & Energy Compliance', image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1800&q=92', items: ['Title 24', 'CalGreen', 'ADA Compliance', 'Building Code Review', 'Accessibility', 'Occupancy & Egress'] },
+    { number: '06', title: 'Permit Services', image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1800&q=92', items: ['Permit Submittal', 'City Submittal', 'Plan Check Coordination', 'Corrections & Resubmittal', 'Permit Approval Support', 'Construction Support'] }
   ];
 
   const pairs = [
@@ -422,9 +423,8 @@ const CLIENT_PATCH = `
   function serviceMarkup() {
     const cards = serviceCards.map((service) => {
       const bullets = service.items.map((item) => '<li>' + item + '</li>').join('');
-      const imageUrl = new URL(service.image, window.location.origin).href;
       return '<article class="nguyen-service-card">' +
-        '<div class="nguyen-service-media"><img src="' + imageUrl + '" alt="' + service.title + '" loading="eager" decoding="async"></div>' +
+        '<div class="nguyen-service-media"><img src="' + service.image + '" alt="' + service.title + '" loading="eager" decoding="async"></div>' +
         '<div class="nguyen-service-copy">' +
           '<div class="nguyen-service-topline"><span class="nguyen-service-index">' + service.number + '</span><h3 class="nguyen-service-name">' + service.title + '</h3></div>' +
           '<ul class="nguyen-service-list">' + bullets + '</ul>' +
@@ -499,9 +499,7 @@ const CLIENT_PATCH = `
         image.style.objectPosition = 'center';
 
         const picture = image.closest('picture');
-        if (picture) {
-          picture.querySelectorAll('source').forEach((source) => source.removeAttribute('srcset'));
-        }
+        if (picture) picture.querySelectorAll('source').forEach((source) => source.removeAttribute('srcset'));
       });
     });
   }
@@ -533,9 +531,7 @@ const CLIENT_PATCH = `
         else anchor.setAttribute('href', DEMO_PATH + (url.hash || ''));
       }
 
-      if (label === 'Request Consultation' || label === 'Send Message' || label === 'Contact NGUYEN') {
-        anchor.setAttribute('href', 'mailto:info@nguyenarchitecture.com');
-      }
+      if (label === 'Request Consultation' || label === 'Send Message' || label === 'Contact NGUYEN') anchor.setAttribute('href', 'mailto:info@nguyenarchitecture.com');
       if (label === 'Facebook') {
         anchor.setAttribute('href', FACEBOOK);
         anchor.setAttribute('target', '_blank');
