@@ -21,6 +21,12 @@ const demos = [
     style: 'Commercial architecture · engineering · permit',
     href: '/client-demos/client-8889/arcsphere',
   },
+  {
+    number: '02',
+    name: 'NGUYEN Concept 02',
+    style: 'Commercial architecture · TI · permit',
+    href: '/client-demos/client-8889/prismae',
+  },
 ];
 
 export default function NguyenClientDemosPage() {
