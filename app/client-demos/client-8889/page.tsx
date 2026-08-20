@@ -17,8 +17,8 @@ export const metadata: Metadata = {
 const demos = [
   {
     number: '01',
-    name: 'ArcSphere',
-    style: 'Modern architecture studio',
+    name: 'NGUYEN Concept 01',
+    style: 'Commercial architecture · engineering · permit',
     href: '/client-demos/client-8889/arcsphere',
   },
 ];
