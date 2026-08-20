@@ -33,15 +33,20 @@ const CLEANUP = `
   .framer-xrcGW .framer-1h0wd5 { display: none !important; }
 
   a[aria-label="Company Logo"] {
-    width: 220px !important;
-    min-width: 180px !important;
+    width: clamp(132px, 21vw, 220px) !important;
+    min-width: 0 !important;
+    max-width: min(220px, calc(100vw - 118px)) !important;
     height: 48px !important;
+    overflow: hidden !important;
     text-decoration: none !important;
+    flex-shrink: 1 !important;
   }
 
   .nguyen-wordmark {
     width: 100%;
+    max-width: 100%;
     height: 100%;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -49,32 +54,47 @@ const CLEANUP = `
     color: #061b36;
     line-height: 1;
     white-space: nowrap;
+    overflow: hidden;
   }
 
   .nguyen-wordmark strong {
+    max-width: 100%;
+    overflow: hidden;
     font-family: Geist, Arial, sans-serif;
-    font-size: 21px;
+    font-size: clamp(16px, 2vw, 21px);
     font-weight: 800;
-    letter-spacing: .12em;
+    letter-spacing: .1em;
   }
 
   .nguyen-wordmark span {
+    max-width: 100%;
     margin-top: 5px;
+    overflow: hidden;
     font-family: Geist, Arial, sans-serif;
-    font-size: 8px;
+    font-size: clamp(6px, .8vw, 8px);
     font-weight: 700;
-    letter-spacing: .24em;
+    letter-spacing: .16em;
     text-transform: uppercase;
     color: #d99a2b;
   }
 
   @media (max-width: 809px) {
     a[aria-label="Company Logo"] {
-      width: 170px !important;
-      min-width: 150px !important;
+      width: clamp(132px, 42vw, 176px) !important;
+      max-width: calc(100vw - 112px) !important;
+      height: 44px !important;
     }
-    .nguyen-wordmark strong { font-size: 18px; }
-    .nguyen-wordmark span { font-size: 7px; letter-spacing: .17em; }
+    .nguyen-wordmark strong { font-size: clamp(15px, 4.5vw, 18px); letter-spacing: .08em; }
+    .nguyen-wordmark span { font-size: clamp(5.8px, 1.75vw, 7px); letter-spacing: .11em; }
+  }
+
+  @media (max-width: 390px) {
+    a[aria-label="Company Logo"] {
+      width: 138px !important;
+      max-width: calc(100vw - 104px) !important;
+    }
+    .nguyen-wordmark strong { font-size: 15px; }
+    .nguyen-wordmark span { font-size: 5.8px; letter-spacing: .08em; }
   }
 </style>`;
 
@@ -93,49 +113,49 @@ const CLIENT_PATCH = `
     ['Architecture that connects people and places', 'Residential & Commercial Design Solutions'],
     ['We design more than buildings—we create spaces that foster connection, creativity, and community', 'One team for custom homes, ADUs, residential and commercial projects — from design and engineering through permit support.'],
     ['Get Template', 'Request Consultation'],
-    ['Explore our services and see how we bring creativity and expertise to every project', 'Architecture, engineering and permit support for custom homes, ADUs, residential improvements and commercial projects across Southern California.'],
+    ['Explore our services and see how we bring creativity and expertise to every project', 'Architecture, engineering and permit support for custom homes, ADUs, residential projects and commercial projects across Southern California.'],
     ['Site Planning', 'Existing-Condition Survey & Site Planning'],
-    ['Layout Design', 'Floor Plans & Space Planning'],
+    ['Layout Design', 'Business Layout & Space Planning'],
     ['3D Visualization', '3D Renderings'],
     ['Rendering', 'Elevations & Sections'],
-    ['Construction Documentation', 'Permit & Construction Documents'],
-    ['Schematic Design Development', 'Concept & Schematic Design'],
-    ['BIM', 'Coordinated Drawings'],
+    ['Construction Documentation', 'Architectural, Structural & MEP Documents'],
+    ['Schematic Design Development', 'Concept & Architectural Design'],
+    ['BIM', 'Coordinated Technical Documents'],
     ['Interior Design & Planning', 'Residential Design'],
     ['Space Planning & Optimization', 'Custom Homes'],
     ['Furniture & Fixture Selection', 'ADUs'],
-    ['Material Selection', 'Home Additions'],
-    ['Lighting Design', 'Residential Remodels'],
-    ['Art & Accessory Curation', 'Garage Conversions'],
-    ['Custom Cabinetry Design', 'Interior Reconfiguration'],
-    ['Interior Landscaping', 'Residential Permit Support'],
+    ['Material Selection', 'Residential Projects'],
+    ['Lighting Design', 'Residential Remodel & Renovation'],
+    ['Art & Accessory Curation', 'Residential Permit Support'],
+    ['Custom Cabinetry Design', 'Residential Space Planning'],
+    ['Interior Landscaping', 'Existing-Condition Survey'],
     ['Consulting Services', 'Commercial Design'],
     ['Site & Building Code Consultation', 'Tenant Improvement (TI)'],
-    ['Design & Concept Review', 'Restaurants, Cafés & Boba Shops'],
-    ['Technical Advisory Services', 'Retail, Office & Salon Projects'],
-    ['Cost Estimation & Budgeting', 'Zoning & Occupancy Review'],
+    ['Design & Concept Review', 'Boba Shops, Coffee Shops & Cafés'],
+    ['Technical Advisory Services', 'Restaurants, Retail, Offices & Salons'],
+    ['Cost Estimation & Budgeting', 'Zoning, Occupancy & Local Requirements'],
     ['Project Feasibility Consulting', 'Commercial Remodel & Renovation'],
     ['Project Management', 'Engineering & Permit'],
     ['Pre-Construction Planning', 'Structural Engineering'],
-    ['Site Inspection & Supervision', 'MEP Coordination'],
-    ['Cost Estimation', 'Title 24 & Energy Compliance'],
-    ['Resource Allocation', 'CalGreen & ADA Compliance'],
+    ['Site Inspection & Supervision', 'Electrical, Plumbing & HVAC Coordination'],
+    ['Cost Estimation', 'Title 24 & Code Compliance'],
+    ['Resource Allocation', 'Building Permit & Plan Check'],
     ['Timeline & Milestone Tracking', 'Permit Submittal'],
     ['Contractor & Vendor Management', 'Plan Check & Corrections'],
-    ['Final Inspection & Handover', 'City & Consultant Coordination'],
+    ['Final Inspection & Handover', 'Consultant & City Agency Coordination'],
     ['Explore All Services', 'Explore Our Services'],
     ['Our Best Projects', 'Project Types'],
-    ['What we’ve been up to—check out our latest projects', 'We support custom homes, ADUs, residential improvements and commercial projects from planning through coordinated design, engineering and permit approval.'],
+    ['What we’ve been up to—check out our latest projects', 'We support custom homes, ADUs, residential projects and commercial projects from planning through coordinated design, engineering and permit approval.'],
     ['Skyline Corporate Hub', 'Commercial Tenant Improvement'],
     ['Office', 'Office & Tenant Improvement'],
     ['Central Business District.', 'Orange County, CA'],
     ['350,000 sq. ft.', 'Commercial Project'],
-    ['LuxeHaven Villa', 'Custom Home & Residential'],
-    ['Luxury Villa', 'Custom Home'],
+    ['LuxeHaven Villa', 'Custom Home'],
+    ['Luxury Villa', 'Residential'],
     ['Savannah, Georgia', 'Southern California'],
     ['4000sqft', 'Residential Project'],
-    ['Celestial Towers Condominiums', 'ADU & Residential Addition'],
-    ['Apartment and Condo', 'ADU / Addition'],
+    ['Celestial Towers Condominiums', 'ADU'],
+    ['Apartment and Condo', 'Residential / ADU'],
     ['New Orleans, Louisiana', 'Orange County, CA'],
     ['300,000 sq. ft.', 'Design + Permit'],
     ['View All Projects', 'View Project Types'],
@@ -147,12 +167,12 @@ const CLIENT_PATCH = `
     ['Take a glimpse into our world of creativity and innovation.', 'NGUYEN Architecture & Engineering provides coordinated architecture, engineering and permit support for residential and commercial projects.'],
     ['Know About Us', 'About NGUYEN'],
     ['Our Differences', 'Why Choose NGUYEN'],
-    ['what makes us different (and totally awesome)', 'One team. Complete solution. Residential and commercial design coordinated around code compliance, engineering and permitting.'],
+    ['what makes us different (and totally awesome)', 'One team. Complete solution. Residential and commercial design coordinated around engineering, code requirements and permitting.'],
     ['Designs with heart and soul', 'Residential + Commercial Expertise'],
-    ['We don’t just design buildings; we craft spaces where life happens, memories are made, and dreams come true. Every project is as unique as the people living in it.', 'Custom homes, ADUs, residential remodels, additions, commercial tenant improvements and new commercial projects supported through one coordinated process.'],
+    ['We don’t just design buildings; we craft spaces where life happens, memories are made, and dreams come true. Every project is as unique as the people living in it.', 'Custom homes, ADUs, residential projects, tenant improvements and commercial projects supported through one coordinated process.'],
     ['Expert guidance', 'Code & Permit Expertise'],
     ['Smooth and stress-free process', 'Coordinated Design & Engineering'],
-    ['Save time and stay on budget', 'Plan Check & Approval Support'],
+    ['Save time and stay on budget', 'Plan Check & Corrections Support'],
     ['Orion Caldwell, Home Owner', 'NGUYEN Architecture & Engineering'],
     ['How we work', 'Our Process'],
     ['Let’s turn your big ideas into a masterpiece with a clear and fun process', 'A clear process for residential and commercial projects — consultation, feasibility, design, engineering, permit submittal and plan check.'],
@@ -163,17 +183,17 @@ const CLIENT_PATCH = `
     ['Execution & Delivery', 'Permit Submittal & Plan Check'],
     ['Project images', 'Residential & Commercial Projects'],
     ['Gallery', 'Our Work'],
-    ['Don’t just take our word for it—see how we turn ideas into stunning spaces. Our gallery is full of inspiration for your next big project!', 'Project types include custom homes, ADUs, additions, residential remodels, boba and coffee shops, restaurants, nail and beauty salons, retail stores, offices, tenant improvements, commercial remodels and new commercial buildings.'],
+    ['Don’t just take our word for it—see how we turn ideas into stunning spaces. Our gallery is full of inspiration for your next big project!', 'Project types include custom homes, ADUs, residential projects, boba shops, coffee shops, cafés, restaurants, nail and beauty salons, retail stores, offices, tenant improvements, commercial remodels and new commercial buildings.'],
     ['Browse Gallery', 'Explore Project Types'],
     ['FAQs', 'Project FAQs'],
     ['Do you handle all the permits and paperwork?', 'Do you handle permit submittal and plan check?'],
-    ['Absolutely! We take care of all the boring-but-important stuff, like permits and paperwork, so you don’t have to stress about it.', 'Permit support can include permit-ready drawings, city or agency submittal, plan check coordination, corrections, resubmittal and approval support.'],
+    ['Absolutely! We take care of all the boring-but-important stuff, like permits and paperwork, so you don’t have to stress about it.', 'Permit support includes building permit documentation, permit submittal, plan check coordination, corrections and resubmittal support.'],
     ['Do you only design residential spaces?', 'Do you work on both residential and commercial projects?'],
-    ['Not at all! While we love creating dream homes, we also work on commercial projects, office spaces, and more. If you’ve got a vision, we’re here to bring it to life.', 'Yes. Residential work can include custom homes, ADUs, additions and remodels. Commercial work can include tenant improvements, restaurants, cafés, boba shops, salons, retail, offices, remodels and new commercial buildings.'],
+    ['Not at all! While we love creating dream homes, we also work on commercial projects, office spaces, and more. If you’ve got a vision, we’re here to bring it to life.', 'Yes. Residential work includes custom homes and ADUs. Commercial work includes tenant improvements, boba and coffee shops, cafés, restaurants, nail and beauty salons, retail stores, offices, remodels and new commercial buildings.'],
     ['Can you help with interior design too?', 'Do you support ADUs and Tenant Improvement projects?'],
-    ['You bet! From furniture layouts to color schemes, we can assist with the finishing touches that make your space feel like home.', 'Yes. ADU and Tenant Improvement services can include existing-condition survey, space planning, architecture, engineering, code review and permit support.'],
+    ['You bet! From furniture layouts to color schemes, we can assist with the finishing touches that make your space feel like home.', 'Yes. ADU and Tenant Improvement projects can be supported with architectural design, engineering coordination, code review and permit services.'],
     ['What happens if I still have questions?', 'How do we get started?'],
-    ['We’re here to help! If you can’t find the answer you’re looking for, just drop us a message or fill out the form. We’ll get back to you in no time!', 'Contact NGUYEN Architecture & Engineering to discuss the project type, scope, existing conditions and permit requirements.'],
+    ['We’re here to help! If you can’t find the answer you’re looking for, just drop us a message or fill out the form. We’ll get back to you in no time!', 'Contact NGUYEN Architecture & Engineering to discuss the project type, existing conditions, business or residential use, scope and permit requirements.'],
     ['Architect', 'NGUYEN'],
     ['(217) 555-0134', '(209) 233-8888'],
     ['(217) 444-0134', '(714) 707-8889'],
