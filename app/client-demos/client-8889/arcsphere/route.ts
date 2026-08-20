@@ -60,13 +60,6 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/United Arab Emirates/gi, 'Orange County, CA'],
 ];
 
-function stripFramerRuntime(html: string) {
-  return html
-    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
-    .replace(/<link\b[^>]*rel=["']modulepreload["'][^>]*>/gi, '')
-    .replace(/<meta\b[^>]*name=["']framer-search-index[^"']*["'][^>]*>/gi, '');
-}
-
 async function getSource() {
   let lastError: unknown = null;
 
@@ -111,7 +104,6 @@ export async function GET() {
 
     html = html.replace(/info@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/gi, 'info@nguyenarchitecture.com');
     html = html.replace(/\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}/g, '(714) 707-8889');
-    html = stripFramerRuntime(html);
 
     return new Response(html, {
       headers: {
