@@ -151,6 +151,25 @@ const CLIENT_PATCH = `
   const exact = new Map(pairs.map(([a,b]) => [a.replace(/\\s+/g, ' ').trim(), b]));
   const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim();
 
+  function patchHeroBrand() {
+    document.querySelectorAll('[data-framer-name="Hero"] p').forEach((el) => {
+      if (normalize(el.textContent).toUpperCase() !== 'PRISMAE') return;
+
+      const leaves = Array.from(el.querySelectorAll('span')).filter((span) => {
+        return span.children.length === 0 && normalize(span.textContent).length === 1;
+      });
+
+      if (leaves.length >= 7) {
+        const letters = ['N', 'G', 'U', 'Y', 'E', 'N'];
+        leaves.forEach((span, index) => {
+          span.textContent = letters[index] || '';
+        });
+      } else {
+        el.textContent = 'NGUYEN';
+      }
+    });
+  }
+
   function patchText() {
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     let node;
@@ -159,6 +178,8 @@ const CLIENT_PATCH = `
       const next = exact.get(key);
       if (next && node.nodeValue !== next) node.nodeValue = next;
     }
+
+    patchHeroBrand();
 
     document.querySelectorAll('a[href^="mailto:"]').forEach((a) => {
       a.setAttribute('href', 'mailto:info@nguyenarchitecture.com');
