@@ -35,7 +35,7 @@ const demos = [
   {
     number: '04',
     name: 'NGUYEN Concept 04',
-    style: 'Commercial design · engineering · code · permit',
+    style: 'Custom homes · ADUs · residential · commercial',
     href: '/client-demos/client-8889/architectured',
   },
 ];
