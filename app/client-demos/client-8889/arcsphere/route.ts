@@ -21,7 +21,6 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/Interior and Architecture/gi, 'Architecture · Engineering · Permit'],
   [/Interior Design/gi, 'Tenant Improvement Design'],
   [/interior design/gi, 'tenant improvement design'],
-
   [/Residential Interior/gi, 'Tenant Improvement (TI)'],
   [/Commercial Interior/gi, 'Commercial Architecture'],
   [/Space Planning/gi, 'Existing-Condition Survey & Layout'],
@@ -37,17 +36,10 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/Lighting Design/gi, 'Electrical & Lighting Coordination'],
   [/3D Visualization/gi, 'Permit Drawing Documentation'],
   [/Material Selection/gi, 'Building Code Coordination'],
-
   [/Concept Development/gi, 'Site Survey & Project Planning'],
   [/Design Development/gi, 'Architecture & Engineering'],
   [/Documentation/gi, 'Permit Documentation'],
   [/Implementation/gi, 'Plan Check & Corrections'],
-  [/We begin by understanding your goals, requirements, and design vision\./gi, 'We begin with the existing conditions, business needs, zoning, occupancy and project requirements.'],
-  [/We refine the concept into a cohesive and functional design direction\./gi, 'We develop coordinated architectural, structural and MEP drawings for the commercial project.'],
-  [/We prepare detailed drawings and specifications for execution\./gi, 'We prepare permit-ready documentation with Title 24 and applicable code coordination.'],
-  [/We oversee the final execution to ensure the design is realized as intended\./gi, 'We support building permit, plan check, corrections, consultants and city coordination through approval.'],
-
-  [/Our Services/gi, 'Our Services'],
   [/Our Projects/gi, 'Commercial Projects'],
   [/Projects/gi, 'Commercial Projects'],
   [/About Us/gi, 'About NGUYEN'],
@@ -55,12 +47,93 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/Get in touch/gi, 'Start a Project'],
   [/Contact Us/gi, 'Contact'],
   [/Contact us/gi, 'Contact'],
-
-  [/Functional and visually compelling spaces for offices, retail stores, hospitality, and businesses\./gi, 'Commercial architecture, engineering and permit support for restaurants, cafés, salons, retail stores, offices and other business spaces.'],
-  [/We create spaces that are both functional and beautiful\./gi, 'We coordinate commercial design, engineering and permitting from concept through building permit.'],
-  [/Transforming spaces with thoughtful design and attention to detail\./gi, 'Helping commercial projects move from concept to design, engineering and permit with coordinated documentation.'],
-  [/Interior spaces designed around how you live and work\./gi, 'Commercial spaces planned around business operations, code requirements and permit approval.'],
 ];
+
+const RENDERED_CONTENT_PATCH = `
+<script id="nguyen-rendered-content-patch">
+(function () {
+  var swaps = [
+    [/ArcSphere Studio/gi, 'NGUYEN Architecture & Engineering'],
+    [/ArcSphere/gi, 'NGUYEN'],
+    [/Where Architecture\\s+Meets Experience/gi, 'Commercial Design\\nEngineering & Permit'],
+    [/Based in Dubai, we design residential and commercial spaces that elevate how people live, work, and interact with their environment\\.?/gi, 'Based in Orange County, we provide commercial architecture, engineering and permit support from existing-condition survey and layout through plan check and approval.'],
+    [/VIEW PROJECTS/gi, 'VIEW PROJECT TYPES'],
+    [/BOOK CONSULTATION/gi, 'START A PROJECT'],
+    [/DESIGN PROCESS/gi, 'PROJECT PROCESS'],
+    [/PROJECTS/gi, 'PROJECT TYPES'],
+    [/SERVICES/gi, 'SERVICES'],
+    [/CONTACT US/gi, 'CONTACT'],
+    [/Residential Interior/gi, 'Tenant Improvement (TI)'],
+    [/Commercial Interior/gi, 'Commercial Architecture'],
+    [/Space Planning/gi, 'Existing-Condition Survey & Layout'],
+    [/Design Consultation/gi, 'Zoning, Occupancy & Code Review'],
+    [/Project Management/gi, 'Permit & Plan Check Coordination'],
+    [/Architecture Design/gi, 'Architectural, Structural & MEP'],
+    [/Interior Styling/gi, 'Electrical, Plumbing & HVAC Coordination'],
+    [/Furniture Selection/gi, 'Title 24 & Code Compliance'],
+    [/Lighting Design/gi, 'Electrical & Lighting Coordination'],
+    [/3D Visualization/gi, 'Permit Drawing Documentation'],
+    [/Material Selection/gi, 'Building Code Coordination'],
+    [/Office Design/gi, 'Office & Tenant Improvements'],
+    [/Retail Design/gi, 'Retail Stores'],
+    [/Hospitality Design/gi, 'Restaurants, Cafés & Boba Shops'],
+    [/Renovation/gi, 'Commercial Remodel & Renovation'],
+    [/Concept Development/gi, 'Site Survey & Project Planning'],
+    [/Design Development/gi, 'Architecture & Engineering'],
+    [/Documentation/gi, 'Permit Documentation'],
+    [/Implementation/gi, 'Plan Check & Corrections'],
+    [/We begin by understanding your goals, requirements, and design vision\\.?/gi, 'We begin with existing conditions, business needs, zoning, occupancy and local requirements.'],
+    [/We refine the concept into a cohesive and functional design direction\\.?/gi, 'We develop coordinated architectural, structural and MEP documentation for the project.'],
+    [/We prepare detailed drawings and specifications for execution\\.?/gi, 'We prepare permit-ready drawings with Title 24 and applicable code compliance.'],
+    [/We oversee the final execution to ensure the design is realized as intended\\.?/gi, 'We support building permit, plan check, corrections, consultants and city coordination through approval.'],
+    [/Functional and visually compelling spaces for offices, retail stores, hospitality, and businesses\\.?/gi, 'Commercial architecture, engineering and permit support for restaurants, cafés, salons, retail stores, offices and other business spaces.'],
+    [/We create spaces that are both functional and beautiful\\.?/gi, 'We coordinate commercial design, engineering and permitting from concept through building permit.'],
+    [/Transforming spaces with thoughtful design and attention to detail\\.?/gi, 'Helping commercial projects move from concept to design, engineering and permit with coordinated documentation.'],
+    [/Interior spaces designed around how you live and work\\.?/gi, 'Commercial spaces planned around business operations, code requirements and permit approval.']
+  ];
+
+  function patchTextNodes(root) {
+    if (!root) return;
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    var nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(function (node) {
+      var original = node.nodeValue || '';
+      var next = original;
+      swaps.forEach(function (swap) { next = next.replace(swap[0], swap[1]); });
+      if (next !== original) node.nodeValue = next;
+    });
+  }
+
+  function patchContacts() {
+    document.querySelectorAll('a[href^="mailto:"]').forEach(function (a) {
+      a.setAttribute('href', 'mailto:info@nguyenarchitecture.com');
+      if ((a.textContent || '').indexOf('@') !== -1) a.textContent = 'info@nguyenarchitecture.com';
+    });
+    var phones = document.querySelectorAll('a[href^="tel:"]');
+    if (phones[0]) { phones[0].setAttribute('href', 'tel:+12092338888'); phones[0].textContent = '(209) 233-8888'; }
+    if (phones[1]) { phones[1].setAttribute('href', 'tel:+17147078889'); phones[1].textContent = '(714) 707-8889'; }
+  }
+
+  function patch() {
+    patchTextNodes(document.body);
+    patchContacts();
+  }
+
+  var runs = 0;
+  function runPatch() {
+    patch();
+    runs += 1;
+    if (runs < 24) setTimeout(runPatch, 250);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runPatch, { once: true });
+  } else {
+    runPatch();
+  }
+})();
+</script>`;
 
 export async function GET() {
   try {
@@ -90,6 +163,7 @@ export async function GET() {
 
     html = html.replace(/info@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/gi, 'info@nguyenarchitecture.com');
     html = html.replace(/\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}/g, '(714) 707-8889');
+    html = html.replace(/<\/body>/i, `${RENDERED_CONTENT_PATCH}</body>`);
 
     return new Response(html, {
       headers: {
