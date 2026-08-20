@@ -12,215 +12,117 @@ const CLIENT_DEMO_STYLES = `
     opacity: 0 !important;
     pointer-events: none !important;
   }
-
-  #nguyen-client-intro {
-    box-sizing: border-box !important;
-    width: 100% !important;
-    max-width: none !important;
-    background: #f0ebe6 !important;
-    color: #181818 !important;
-    padding: 112px 4.5vw 88px !important;
-    border-bottom: 1px solid rgba(24,24,24,.14) !important;
-    font-family: "Inter Display", Inter, Arial, sans-serif !important;
-  }
-
-  #nguyen-client-intro * {
-    box-sizing: border-box !important;
-    font-family: inherit !important;
-  }
-
-  #nguyen-client-intro .nguyen-kicker {
-    margin: 0 0 22px !important;
-    font-size: 12px !important;
-    font-weight: 600 !important;
-    letter-spacing: .12em !important;
-    text-transform: uppercase !important;
-    opacity: .58 !important;
-  }
-
-  #nguyen-client-intro h1 {
-    max-width: 1100px !important;
-    margin: 0 !important;
-    font-size: clamp(48px, 7vw, 112px) !important;
-    line-height: .91 !important;
-    letter-spacing: -.055em !important;
-    font-weight: 500 !important;
-  }
-
-  #nguyen-client-intro .nguyen-lede {
-    max-width: 860px !important;
-    margin: 34px 0 0 !important;
-    font-size: clamp(17px, 1.55vw, 24px) !important;
-    line-height: 1.45 !important;
-    letter-spacing: -.02em !important;
-    opacity: .72 !important;
-  }
-
-  #nguyen-client-intro .nguyen-flow {
-    margin: 42px 0 0 !important;
-    font-size: 13px !important;
-    font-weight: 600 !important;
-    letter-spacing: .05em !important;
-    text-transform: uppercase !important;
-  }
-
-  #nguyen-client-intro .nguyen-grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 0 !important;
-    margin-top: 64px !important;
-    border-top: 1px solid rgba(24,24,24,.18) !important;
-    border-left: 1px solid rgba(24,24,24,.18) !important;
-  }
-
-  #nguyen-client-intro .nguyen-block {
-    min-width: 0 !important;
-    padding: 30px 32px 34px !important;
-    border-right: 1px solid rgba(24,24,24,.18) !important;
-    border-bottom: 1px solid rgba(24,24,24,.18) !important;
-  }
-
-  #nguyen-client-intro .nguyen-block h2 {
-    margin: 0 0 20px !important;
-    font-size: 13px !important;
-    font-weight: 700 !important;
-    letter-spacing: .09em !important;
-    text-transform: uppercase !important;
-  }
-
-  #nguyen-client-intro .nguyen-block ul {
-    margin: 0 !important;
-    padding: 0 !important;
-    list-style: none !important;
-    display: grid !important;
-    gap: 11px !important;
-  }
-
-  #nguyen-client-intro .nguyen-block li,
-  #nguyen-client-intro .nguyen-contact p {
-    margin: 0 !important;
-    font-size: clamp(14px, 1.05vw, 17px) !important;
-    line-height: 1.5 !important;
-    letter-spacing: -.01em !important;
-  }
-
-  #nguyen-client-intro .nguyen-block li::before {
-    content: "↗" !important;
-    margin-right: 10px !important;
-    opacity: .45 !important;
-  }
-
-  #nguyen-client-intro .nguyen-contact {
-    display: grid !important;
-    gap: 9px !important;
-  }
-
-  #nguyen-client-intro .nguyen-contact a {
-    color: inherit !important;
-    text-decoration: none !important;
-  }
-
-  @media (max-width: 809.98px) {
-    #nguyen-client-intro {
-      padding: 86px 20px 52px !important;
-    }
-
-    #nguyen-client-intro h1 {
-      font-size: clamp(44px, 14vw, 68px) !important;
-    }
-
-    #nguyen-client-intro .nguyen-lede {
-      margin-top: 24px !important;
-      font-size: 17px !important;
-    }
-
-    #nguyen-client-intro .nguyen-flow {
-      margin-top: 30px !important;
-      line-height: 1.7 !important;
-    }
-
-    #nguyen-client-intro .nguyen-grid {
-      grid-template-columns: 1fr !important;
-      margin-top: 44px !important;
-    }
-
-    #nguyen-client-intro .nguyen-block {
-      padding: 24px 20px 28px !important;
-    }
-  }
 </style>`;
-
-const BUSINESS_INTRO = `
-<section id="nguyen-client-intro" aria-label="Nguyen Architecture and Engineering business information">
-  <p class="nguyen-kicker">Commercial Architecture · Engineering · Permit</p>
-  <h1>NGUYEN Architecture & Engineering</h1>
-  <p class="nguyen-lede">Full-service commercial design, engineering and permit support in Orange County. From existing-condition surveys and layout concepts through architectural, structural and MEP documentation, zoning and code coordination, plan check and building permit support.</p>
-  <p class="nguyen-flow">Concept → Design → Engineering → Permit</p>
-
-  <div class="nguyen-grid">
-    <div class="nguyen-block">
-      <h2>Services</h2>
-      <ul>
-        <li>Existing-condition survey & business layout planning</li>
-        <li>Architectural design & Tenant Improvement (TI)</li>
-        <li>Zoning, occupancy & local requirement review</li>
-        <li>Architectural, Structural & MEP documentation</li>
-        <li>Title 24 & code compliance</li>
-        <li>Electrical, Plumbing & HVAC coordination</li>
-        <li>Building Permit, Plan Check & Corrections</li>
-        <li>Consultant & city-agency coordination during permitting</li>
-      </ul>
-    </div>
-
-    <div class="nguyen-block">
-      <h2>Specialized Commercial Projects</h2>
-      <ul>
-        <li>Boba Shops, Coffee Shops & Cafés</li>
-        <li>Restaurants</li>
-        <li>Nail Salons & Beauty Salons</li>
-        <li>Retail Stores</li>
-        <li>Office & Tenant Improvements</li>
-        <li>Commercial Remodel & Renovation</li>
-        <li>New Commercial Buildings</li>
-      </ul>
-    </div>
-
-    <div class="nguyen-block">
-      <h2>Project Approach</h2>
-      <ul>
-        <li>Optimize function and layout for business use</li>
-        <li>Coordinate zoning and building-code requirements</li>
-        <li>Prepare coordinated technical documents for permit</li>
-        <li>Reduce avoidable revisions, time and project cost</li>
-      </ul>
-    </div>
-
-    <div class="nguyen-block nguyen-contact">
-      <h2>Contact</h2>
-      <p>Orange County · Huntington Beach, CA</p>
-      <p><a href="tel:+12092338888">(209) 233-8888</a> · <a href="tel:+17147078889">(714) 707-8889</a></p>
-      <p><a href="mailto:info@nguyenarchitecture.com">info@nguyenarchitecture.com</a></p>
-      <p>Design · Engineering · Permit</p>
-    </div>
-  </div>
-</section>`;
 
 const REPLACEMENTS: Array<[RegExp, string]> = [
   [/ArcSphere Studio/gi, 'NGUYEN Architecture & Engineering'],
   [/Interior & Architecture/gi, 'Commercial Architecture & Engineering'],
-  [/Interior Design/gi, 'Commercial Design & Tenant Improvement'],
-  [/interior and architecture/gi, 'commercial architecture and engineering'],
-  [/interior design/gi, 'commercial design and tenant improvement'],
-  [/Functional and visually compelling spaces for offices, retail stores, hospitality, and businesses\./gi, 'Commercial architecture, engineering and permit support for restaurants, cafés, salons, retail, offices and other business spaces.'],
-  [/Get in touch/gi, 'Start a Commercial Project'],
-  [/Contact Us/gi, 'Contact NGUYEN'],
-  [/Contact us/gi, 'Contact NGUYEN'],
-  [/Our Services/gi, 'Commercial Services'],
-  [/Services/gi, 'Commercial Services'],
+  [/Interior and Architecture/gi, 'Commercial Architecture & Engineering'],
+  [/Interior Design/gi, 'Tenant Improvement & Commercial Design'],
+  [/interior design/gi, 'tenant improvement and commercial design'],
+  [/Our Services/gi, 'Our Services'],
+  [/Our Projects/gi, 'Commercial Projects'],
   [/Projects/gi, 'Commercial Projects'],
   [/About Us/gi, 'About NGUYEN'],
   [/About us/gi, 'About NGUYEN'],
+  [/Get in touch/gi, 'Start a Project'],
+  [/Contact Us/gi, 'Contact'],
+  [/Contact us/gi, 'Contact'],
+  [/Residential Interior/gi, 'Tenant Improvement'],
+  [/Commercial Interior/gi, 'Commercial Architecture'],
+  [/Space Planning/gi, 'Existing-Condition Survey & Layout'],
+  [/Design Consultation/gi, 'Zoning, Occupancy & Code Review'],
+  [/Project Management/gi, 'Permit & Plan Check Coordination'],
+  [/Architecture Design/gi, 'Architectural, Structural & MEP'],
+  [/Interior Styling/gi, 'Electrical, Plumbing & HVAC'],
+  [/Renovation/gi, 'Commercial Remodel & Renovation'],
+  [/Office Design/gi, 'Office & Tenant Improvements'],
+  [/Retail Design/gi, 'Retail Stores'],
+  [/Hospitality Design/gi, 'Restaurants, Cafés & Boba Shops'],
+  [/Functional and visually compelling spaces for offices, retail stores, hospitality, and businesses\./gi, 'Commercial architecture, engineering and permit support for restaurants, cafés, salons, retail stores, offices and other business spaces.'],
+  [/We create spaces that are both functional and beautiful\./gi, 'We coordinate design, engineering and permitting from concept through building permit.'],
+  [/Transforming spaces with thoughtful design and attention to detail\./gi, 'Helping commercial projects move from concept to design, engineering and permit with coordinated documentation.'],
 ];
+
+const BUSINESS_DETAILS_SCRIPT = `
+<script id="nguyen-business-content">
+(function () {
+  const swaps = [
+    ['ArcSphere Studio', 'NGUYEN Architecture & Engineering'],
+    ['Interior & Architecture', 'Commercial Architecture & Engineering'],
+    ['Interior and Architecture', 'Commercial Architecture & Engineering'],
+    ['Interior Design', 'Tenant Improvement & Commercial Design'],
+    ['Space Planning', 'Existing-Condition Survey & Layout'],
+    ['Design Consultation', 'Zoning, Occupancy & Code Review'],
+    ['Project Management', 'Permit & Plan Check Coordination'],
+    ['Architecture Design', 'Architectural, Structural & MEP'],
+    ['Commercial Interior', 'Commercial Architecture'],
+    ['Residential Interior', 'Tenant Improvement'],
+    ['Office Design', 'Office & Tenant Improvements'],
+    ['Retail Design', 'Retail Stores'],
+    ['Hospitality Design', 'Restaurants, Cafés & Boba Shops'],
+    ['Interior Styling', 'Electrical, Plumbing & HVAC'],
+    ['Get in touch', 'Start a Project'],
+    ['Contact Us', 'Contact'],
+    ['About Us', 'About NGUYEN']
+  ];
+
+  const details = {
+    email: 'info@nguyenarchitecture.com',
+    phone1: '(209) 233-8888',
+    phone2: '(714) 707-8889',
+    location: 'Orange County · Huntington Beach, CA'
+  };
+
+  function replaceTextNode(node) {
+    let value = node.nodeValue || '';
+    let next = value;
+    swaps.forEach(function (pair) {
+      next = next.split(pair[0]).join(pair[1]);
+    });
+    if (next !== value) node.nodeValue = next;
+  }
+
+  function walk(root) {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(replaceTextNode);
+  }
+
+  function patchContact() {
+    document.querySelectorAll('a[href^="mailto:"]').forEach(function (a) {
+      a.href = 'mailto:' + details.email;
+      if ((a.textContent || '').includes('@')) a.textContent = details.email;
+    });
+
+    const phoneLinks = Array.from(document.querySelectorAll('a[href^="tel:"]'));
+    if (phoneLinks[0]) {
+      phoneLinks[0].href = 'tel:+12092338888';
+      phoneLinks[0].textContent = details.phone1;
+    }
+    if (phoneLinks[1]) {
+      phoneLinks[1].href = 'tel:+17147078889';
+      phoneLinks[1].textContent = details.phone2;
+    }
+  }
+
+  function patch() {
+    walk(document.body);
+    patchContact();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', patch, { once: true });
+  } else {
+    patch();
+  }
+
+  const observer = new MutationObserver(function () { patch(); });
+  observer.observe(document.documentElement, { subtree: true, childList: true });
+  setTimeout(function () { observer.disconnect(); patch(); }, 5000);
+})();
+</script>`;
 
 export async function GET() {
   try {
@@ -249,9 +151,8 @@ export async function GET() {
     }
 
     html = html.replace(/info@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/gi, 'info@nguyenarchitecture.com');
-    html = html.replace(/\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}/g, '(714) 707-8889');
 
-    html = html.replace(/<body([^>]*)>/i, `<body$1>${BUSINESS_INTRO}`);
+    html = html.replace(/<\/body>/i, `${BUSINESS_DETAILS_SCRIPT}</body>`);
 
     return new Response(html, {
       headers: {
