@@ -1,6 +1,6 @@
 const SOURCE_URL = 'https://arcsphere-studio.framer.website/';
 
-export const revalidate = 3600;
+export const revalidate = 0;
 
 const CLIENT_DEMO_STYLES = `
 <style id="designedbytd-client-demo-cleanup">
@@ -14,7 +14,7 @@ const CLIENT_DEMO_STYLES = `
   }
 </style>`;
 
-const REPLACEMENTS: Array<[RegExp, string]> = [
+const SERVER_REPLACEMENTS: Array<[RegExp, string]> = [
   [/ArcSphere Studio/gi, 'NGUYEN Architecture & Engineering'],
   [/ArcSphere/gi, 'NGUYEN'],
   [/Interior & Architecture/gi, 'Architecture · Engineering · Permit'],
@@ -37,8 +37,6 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/Hospitality Design/gi, 'Restaurants, Cafés & Boba Shops'],
   [/Concept Development/gi, 'Existing-Condition Survey & Project Planning'],
   [/Design Development/gi, 'Architecture & Engineering'],
-  [/Documentation/gi, 'Permit Documentation'],
-  [/Implementation/gi, 'Plan Check & Corrections'],
   [/Our Projects/gi, 'Commercial Project Types'],
   [/Projects/gi, 'Commercial Project Types'],
   [/About Us/gi, 'About NGUYEN'],
@@ -52,18 +50,16 @@ const RENDERED_CONTENT_PATCH = `
 <script id="nguyen-rendered-content-patch">
 (function () {
   var processed = new WeakSet();
-
   var swaps = [
     [/ArcSphere Studio/gi, 'NGUYEN Architecture & Engineering'],
     [/ArcSphere/gi, 'NGUYEN'],
-    [/Where Architecture\\s+Meets Experience/gi, 'Commercial Architecture\\nEngineering & Permit'],
+    [/Where Architecture\\s+Meets Experience/gi, 'Commercial Architecture — Engineering & Permit'],
     [/Based in Dubai, we design residential and commercial spaces that elevate how people live, work, and interact with their environment\\.?/gi, 'Based in Orange County, we provide commercial architecture, engineering and permit support from existing-condition survey and business layout through coordinated permit documents, plan check and approval.'],
     [/VIEW PROJECTS/gi, 'VIEW PROJECT TYPES'],
     [/BOOK CONSULTATION/gi, 'START A PROJECT'],
     [/DESIGN PROCESS/gi, 'PROJECT PROCESS'],
     [/PROJECTS/gi, 'PROJECT TYPES'],
     [/CONTACT US/gi, 'CONTACT'],
-
     [/Residential Interior/gi, 'Architectural Design & Tenant Improvement (TI)'],
     [/Commercial Interior/gi, 'Commercial Architecture'],
     [/Space Planning/gi, 'Existing-Condition Survey & Business Layout'],
@@ -79,22 +75,18 @@ const RENDERED_CONTENT_PATCH = `
     [/Retail Design/gi, 'Retail Stores'],
     [/Hospitality Design/gi, 'Restaurants, Cafés & Boba Shops'],
     [/Renovation/gi, 'Commercial Remodel & Renovation'],
-
     [/Concept Development/gi, 'Existing-Condition Survey & Project Planning'],
     [/Design Development/gi, 'Architecture & Engineering'],
-    [/^\\s*Documentation\\s*$/gi, 'Permit Documentation'],
-    [/^\\s*Implementation\\s*$/gi, 'Plan Check & Corrections'],
-
+    [/^\\s*Documentation\\s*$/i, 'Permit Documentation'],
+    [/^\\s*Implementation\\s*$/i, 'Plan Check & Corrections'],
     [/We begin by understanding your goals, requirements, and design vision\\.?/gi, 'We begin with an existing-condition survey, business layout needs, zoning, occupancy and local requirements.'],
     [/We refine the concept into a cohesive and functional design direction\\.?/gi, 'We develop coordinated architectural, structural and MEP documents for the commercial project.'],
     [/We prepare detailed drawings and specifications for execution\\.?/gi, 'We prepare permit-ready drawings with Title 24 and applicable code compliance.'],
     [/We oversee the final execution to ensure the design is realized as intended\\.?/gi, 'We support building permit, plan check, corrections, consultant coordination and city review through approval.'],
-
     [/Functional and visually compelling spaces for offices, retail stores, hospitality, and businesses\\.?/gi, 'Commercial architecture and engineering for boba shops, coffee shops, cafés, restaurants, nail and beauty salons, retail stores, offices and tenant improvements.'],
-    [/We create spaces that are both functional and beautiful\\.?/gi, 'We coordinate design, engineering and permit requirements to reduce avoidable revisions, time and project cost.'],
+    [/We create spaces that are both functional and beautiful\\.?/gi, 'We coordinate commercial design, engineering and permit requirements to reduce avoidable revisions, time and project cost.'],
     [/Transforming spaces with thoughtful design and attention to detail\\.?/gi, 'Commercial design, engineering and permit support from concept through plan check and corrections.'],
     [/Interior spaces designed around how you live and work\\.?/gi, 'Commercial spaces planned around business operations, zoning, building code and permit approval.'],
-
     [/Dubai/gi, 'Huntington Beach, CA'],
     [/United Arab Emirates/gi, 'Orange County, CA']
   ];
@@ -104,7 +96,6 @@ const RENDERED_CONTENT_PATCH = `
     var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
     var nodes = [];
     while (walker.nextNode()) nodes.push(walker.currentNode);
-
     nodes.forEach(function (node) {
       if (processed.has(node)) return;
       var original = node.nodeValue || '';
@@ -120,7 +111,6 @@ const RENDERED_CONTENT_PATCH = `
       a.setAttribute('href', 'mailto:info@nguyenarchitecture.com');
       if ((a.textContent || '').indexOf('@') !== -1) a.textContent = 'info@nguyenarchitecture.com';
     });
-
     var phones = document.querySelectorAll('a[href^="tel:"]');
     if (phones[0]) {
       phones[0].setAttribute('href', 'tel:+12092338888');
@@ -137,27 +127,38 @@ const RENDERED_CONTENT_PATCH = `
     patchContacts();
   }
 
-  var runs = 0;
-  function runPatch() {
+  function start() {
     patch();
-    runs += 1;
-    if (runs < 24) setTimeout(runPatch, 250);
+    var observer = new MutationObserver(function (mutations) {
+      mutations.forEach(function (mutation) {
+        mutation.addedNodes.forEach(function (node) {
+          if (node.nodeType === Node.TEXT_NODE) {
+            if (!processed.has(node)) {
+              var holder = node.parentNode || document.body;
+              patchTextNodes(holder);
+            }
+          } else if (node.nodeType === Node.ELEMENT_NODE) {
+            patchTextNodes(node);
+          }
+        });
+      });
+      patchContacts();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    setTimeout(function () { observer.disconnect(); patch(); }, 6000);
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', runPatch, { once: true });
+    document.addEventListener('DOMContentLoaded', start, { once: true });
   } else {
-    runPatch();
+    start();
   }
 })();
 </script>`;
 
 export async function GET() {
   try {
-    const response = await fetch(SOURCE_URL, {
-      next: { revalidate: 3600 },
-    });
-
+    const response = await fetch(SOURCE_URL, { cache: 'no-store' });
     if (!response.ok) {
       return new Response('Client demo unavailable', { status: 502 });
     }
@@ -170,22 +171,22 @@ export async function GET() {
     );
 
     html = html.replace(
-      /<title>[^<]*<\\/title>/i,
+      /<title>[^<]*<\/title>/i,
       '<title>NGUYEN Architecture & Engineering — Website Demo</title>',
     );
 
-    for (const [pattern, replacement] of REPLACEMENTS) {
+    for (const [pattern, replacement] of SERVER_REPLACEMENTS) {
       html = html.replace(pattern, replacement);
     }
 
-    html = html.replace(/info@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}/gi, 'info@nguyenarchitecture.com');
-    html = html.replace(/\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}/g, '(714) 707-8889');
-    html = html.replace(/<\\/body>/i, `${RENDERED_CONTENT_PATCH}</body>`);
+    html = html.replace(/info@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/gi, 'info@nguyenarchitecture.com');
+    html = html.replace(/\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}/g, '(714) 707-8889');
+    html = html.replace(/<\/body>/i, `${RENDERED_CONTENT_PATCH}</body>`);
 
     return new Response(html, {
       headers: {
         'Content-Type': 'text/html; charset=utf-8',
-        'Cache-Control': 'private, max-age=0, s-maxage=3600, stale-while-revalidate=86400',
+        'Cache-Control': 'private, no-store, max-age=0',
         'X-Robots-Tag': 'noindex, nofollow, noarchive',
       },
     });
