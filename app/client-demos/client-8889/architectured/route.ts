@@ -297,11 +297,11 @@ export async function GET() {
     );
 
     html = html.replace(
-      /<title>[^<]*<\\/title>/i,
+      /<title>[^<]*<\/title>/i,
       '<title>NGUYEN Architecture & Engineering — Residential & Commercial Design</title>',
     );
 
-    html = html.replace(/<\\/body>/i, `${CLIENT_PATCH}</body>`);
+    html = html.replace(/<\/body>/i, `${CLIENT_PATCH}</body>`);
 
     return new Response(html, {
       headers: {
