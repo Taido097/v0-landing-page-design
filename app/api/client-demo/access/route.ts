@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 
 const CLIENT_DEMOS: Record<string, string> = {
   DESIGNEDBYTD: '/demos',
+  '8889': '/client-demos/client-8889',
 };
 
 export async function POST(request: Request) {
