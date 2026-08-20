@@ -45,16 +45,18 @@ const CLIENT_PATCH = `
   const FACEBOOK = 'https://www.facebook.com/profile.php?id=61579114646057&mibextid=wwXIfr&mibextid=wwXIfr';
 
   const projects = [
-    { oldTitle:'Skyline Corporate Hub', title:'Boba Shop & Café', image:'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1800&q=92', replacements:{'Office':'Tenant Improvement','Central Business District.':'Commercial Project','2022':'Design','350,000 sq. ft.':'Design + Permit'} },
-    { oldTitle:'LuxeHaven Villa', title:'Restaurant', image:'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1800&q=92', replacements:{'Residential':'Commercial','Luxury Villa':'Restaurant Design','Savannah, Georgia':'Commercial Project','2023':'Engineering','4000sqft':'Design + Engineering'} },
-    { oldTitle:'Celestial Towers Condominiums', title:'Retail Store', image:'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1800&q=92', replacements:{'Residential':'Commercial','Apartment and Condo':'Retail / Tenant Improvement','New Orleans, Louisiana':'Commercial Project','2024':'Design','300,000 sq. ft.':'Design + Permit'} },
-    { oldTitle:'The Sunny Haven Residence', title:'Office Build-Out', image:'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1800&q=92', replacements:{'Residential':'Commercial','Single Family Home':'Office & Tenant Improvement','Austin, Texas':'Commercial Project','2023':'Engineering','12000sqft':'Design + Engineering'} },
-    { oldTitle:'SkyBloom Residences', title:'Commercial Remodel & TI', image:'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1800&q=92', replacements:{'Residential':'Commercial','Multi-Family Residential Complex':'Commercial Remodel & Renovation','San Francisco, California':'Commercial Project','2024':'Permit','10000sqft':'Design + Permit'} },
-    { oldTitle:'SkyBloom Residences', title:'New Commercial Building', image:'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1800&q=92', replacements:{'Residential':'Commercial','Multi-Family Residential Complex':'New Commercial Building','San Francisco, California':'Commercial Project','2024':'Design','10000sqft':'Design + Engineering'}, clone:true }
+    { oldTitle:'Skyline Corporate Hub', title:'Boba Shops & Cafés', image:'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1800&q=92', replacements:{'Office':'Commercial','Central Business District.':'Boba Shops & Cafés','2022':'Project Type','350,000 sq. ft.':'Design • Engineering • Permit'} },
+    { oldTitle:'LuxeHaven Villa', title:'Restaurants', image:'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1800&q=92', replacements:{'Residential':'Commercial','Luxury Villa':'Restaurants','Savannah, Georgia':'Commercial Project','2023':'Project Type','4000sqft':'Design • Engineering • Permit'} },
+    { oldTitle:'Celestial Towers Condominiums', title:'Nail & Beauty Salons', image:'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1800&q=92', replacements:{'Residential':'Commercial','Apartment and Condo':'Nail & Beauty Salons','New Orleans, Louisiana':'Commercial Project','2024':'Project Type','300,000 sq. ft.':'Design • Engineering • Permit'} },
+    { oldTitle:'The Sunny Haven Residence', title:'Retail Stores', image:'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1800&q=92', replacements:{'Residential':'Commercial','Single Family Home':'Retail Stores','Austin, Texas':'Commercial Project','2023':'Project Type','12000sqft':'Design • Engineering • Permit'} },
+    { oldTitle:'SkyBloom Residences', title:'Office & Tenant Improvement', image:'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1800&q=92', replacements:{'Residential':'Commercial','Multi-Family Residential Complex':'Office & Tenant Improvement','San Francisco, California':'Commercial Project','2024':'Project Type','10000sqft':'Design • Engineering • Permit'} },
+    { oldTitle:'SkyBloom Residences', title:'Commercial Remodel & Renovation', image:'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1800&q=92', replacements:{'Residential':'Commercial','Multi-Family Residential Complex':'Commercial Remodel & Renovation','San Francisco, California':'Commercial Project','2024':'Project Type','10000sqft':'Design • Engineering • Permit'}, clone:true },
+    { oldTitle:'SkyBloom Residences', title:'New Commercial Buildings', image:'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1800&q=92', replacements:{'Residential':'Commercial','Multi-Family Residential Complex':'New Commercial Buildings','San Francisco, California':'Commercial Project','2024':'Project Type','10000sqft':'Design • Engineering • Permit'}, clone:true },
+    { oldTitle:'SkyBloom Residences', title:'Tenant Improvement (TI)', image:'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1800&q=92', replacements:{'Residential':'Commercial','Multi-Family Residential Complex':'Tenant Improvement (TI)','San Francisco, California':'Commercial Project','2024':'Project Type','10000sqft':'Design • Engineering • Permit'}, clone:true }
   ];
 
   const exact = new Map([
-    ['Explore a collection of spaces we’ve brought to life, each crafted with passion, precision, and a little sprinkle of genius.','Commercial project types supported with coordinated design, engineering and permit services.'],
+    ['Explore a collection of spaces we’ve brought to life, each crafted with passion, precision, and a little sprinkle of genius.','Explore eight commercial project types supported with coordinated design, engineering and permit services.'],
     ['The #1 architecture firm in Texas turning dreams into beautiful, functional spaces. from cozy homes to innovative designs, we bring your vision to life—one detail at a time. let’s create something amazing together!','NGUYEN Architecture & Engineering provides coordinated architecture, engineering and permit support for commercial and residential projects.'],
     ['(217) 555-0134','(209) 233-8888'],
     ['(217) 444-0134','(714) 707-8889'],
@@ -102,26 +104,37 @@ const CLIENT_PATCH = `
     }
   }
 
-  function addSixthProject(){
-    const nodes = Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6,p,span,div')).filter((el)=>normalize(el.textContent)==='SkyBloom Residences');
-    const cards = [...new Set(nodes.map(getCard).filter(Boolean))];
-    cards.forEach((card)=>{
-      const parent=card.parentElement;
-      if(!parent || parent.querySelector('[data-nguyen-sixth="true"]')) return;
-      const clone=card.cloneNode(true);
-      clone.dataset.nguyenSixth='true';
-      parent.insertBefore(clone,card.nextSibling);
-      patchCard(clone,projects[5]);
+  function findCardsByTitle(title){
+    const nodes = Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6,p,span,div')).filter((el)=>normalize(el.textContent)===title);
+    return [...new Set(nodes.map(getCard).filter(Boolean))];
+  }
+
+  function addClonedProjects(baseCard){
+    if(!baseCard || !baseCard.parentElement) return;
+    const parent = baseCard.parentElement;
+    projects.slice(5).forEach((config,index)=>{
+      const marker='nguyen-project-clone-'+index;
+      if(parent.querySelector('[data-nguyen-project-clone="'+marker+'"]')) return;
+      const clone=baseCard.cloneNode(true);
+      clone.dataset.nguyenProjectClone=marker;
+      parent.appendChild(clone);
+      patchCard(clone,config);
     });
   }
 
   function patchProjects(){
-    addSixthProject();
-    projects.slice(0,5).forEach((config)=>{
-      const nodes=Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6,p,span,div')).filter((el)=>normalize(el.textContent)===config.oldTitle);
-      const cards=[...new Set(nodes.map(getCard).filter(Boolean))];
-      cards.forEach((card)=>patchCard(card,config));
+    const originalTitles = projects.slice(0,5).map((project)=>project.oldTitle);
+    const baseCards = originalTitles.map((title,index)=>{
+      const oldMatch=findCardsByTitle(title)[0];
+      if(oldMatch) return oldMatch;
+      return findCardsByTitle(projects[index].title)[0];
     });
+
+    projects.slice(0,5).forEach((config,index)=>{
+      if(baseCards[index]) patchCard(baseCards[index],config);
+    });
+
+    addClonedProjects(baseCards[4]);
   }
 
   function patchLogo(){
