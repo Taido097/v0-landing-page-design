@@ -29,11 +29,6 @@ const CLEANUP = `
   .nguyen-wordmark { width:100%; max-width:100%; height:100%; min-width:0; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; color:#061b36; line-height:1; white-space:nowrap; overflow:hidden; }
   .nguyen-wordmark strong { max-width:100%; overflow:hidden; font-family:Geist,Arial,sans-serif; font-size:clamp(16px,2vw,21px); font-weight:800; letter-spacing:.1em; }
   .nguyen-wordmark span { max-width:100%; margin-top:5px; overflow:hidden; font-family:Geist,Arial,sans-serif; font-size:clamp(6px,.8vw,8px); font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#d99a2b; }
-  [data-nguyen-project-card="true"] { transition:transform .55s cubic-bezier(.2,.75,.2,1),opacity .55s ease!important; will-change:transform,opacity; }
-  [data-nguyen-project-card="true"].nguyen-project-enter { opacity:0!important; transform:translateY(42px) scale(.985)!important; }
-  [data-nguyen-project-card="true"].nguyen-project-visible { opacity:1!important; transform:translateY(0) scale(1)!important; }
-  [data-nguyen-project-card="true"] img { transition:transform .65s cubic-bezier(.2,.75,.2,1)!important; }
-  [data-nguyen-project-card="true"]:hover img { transform:scale(1.045)!important; }
   @media(max-width:620px){
     a[aria-label="Company Logo"]{width:clamp(132px,42vw,176px)!important;max-width:calc(100vw - 112px)!important;height:44px!important}
     .nguyen-wordmark strong{font-size:clamp(15px,4.5vw,18px);letter-spacing:.08em}
@@ -56,12 +51,12 @@ const CLIENT_PATCH = `
     { oldTitle:'The Sunny Haven Residence', title:'Retail Stores', image:'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1800&q=92', replacements:{'Residential':'Commercial','Single Family Home':'Retail Stores','Austin, Texas':'Commercial Project','2023':'Project Type','12000sqft':'Design • Engineering • Permit'} },
     { oldTitle:'SkyBloom Residences', title:'Office & Tenant Improvement', image:'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1800&q=92', replacements:{'Residential':'Commercial','Multi-Family Residential Complex':'Office & Tenant Improvement','San Francisco, California':'Commercial Project','2024':'Project Type','10000sqft':'Design • Engineering • Permit'} },
     { oldTitle:'SkyBloom Residences', title:'Commercial Remodel & Renovation', image:'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1800&q=92', replacements:{'Residential':'Commercial','Multi-Family Residential Complex':'Commercial Remodel & Renovation','San Francisco, California':'Commercial Project','2024':'Project Type','10000sqft':'Design • Engineering • Permit'}, clone:true },
-    { oldTitle:'Skyline Corporate Hub', title:'New Commercial Buildings', image:'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1800&q=92', replacements:{'Office':'Commercial','Central Business District.':'New Commercial Buildings','2022':'Project Type','350,000 sq. ft.':'Design • Engineering • Permit'}, clone:true },
-    { oldTitle:'LuxeHaven Villa', title:'Tenant Improvement (TI)', image:'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1800&q=92', replacements:{'Residential':'Commercial','Luxury Villa':'Tenant Improvement (TI)','Savannah, Georgia':'Commercial Project','2023':'Project Type','4000sqft':'Design • Engineering • Permit'}, clone:true }
+    { oldTitle:'SkyBloom Residences', title:'New Commercial Buildings', image:'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1800&q=92', replacements:{'Residential':'Commercial','Multi-Family Residential Complex':'New Commercial Buildings','San Francisco, California':'Commercial Project','2024':'Project Type','10000sqft':'Design • Engineering • Permit'}, clone:true },
+    { oldTitle:'SkyBloom Residences', title:'Tenant Improvement (TI)', image:'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1800&q=92', replacements:{'Residential':'Commercial','Multi-Family Residential Complex':'Tenant Improvement (TI)','San Francisco, California':'Commercial Project','2024':'Project Type','10000sqft':'Design • Engineering • Permit'}, clone:true }
   ];
 
   const exact = new Map([
-    ['Explore a collection of spaces we’ve brought to life, each crafted with passion, precision, and a little sprinkle of genius.','Eight commercial project types supported with coordinated design, engineering and permit services.'],
+    ['Explore a collection of spaces we’ve brought to life, each crafted with passion, precision, and a little sprinkle of genius.','Explore eight commercial project types supported with coordinated design, engineering and permit services.'],
     ['The #1 architecture firm in Texas turning dreams into beautiful, functional spaces. from cozy homes to innovative designs, we bring your vision to life—one detail at a time. let’s create something amazing together!','NGUYEN Architecture & Engineering provides coordinated architecture, engineering and permit support for commercial and residential projects.'],
     ['(217) 555-0134','(209) 233-8888'],
     ['(217) 444-0134','(714) 707-8889'],
@@ -86,19 +81,7 @@ const CLIENT_PATCH = `
     return card;
   }
 
-  function animateCard(card, index){
-    if(!card || card.dataset.nguyenAnimated==='true') return;
-    card.dataset.nguyenAnimated='true';
-    card.dataset.nguyenProjectCard='true';
-    card.classList.add('nguyen-project-enter');
-    const show=()=>{ card.classList.remove('nguyen-project-enter'); card.classList.add('nguyen-project-visible'); };
-    if('IntersectionObserver' in window){
-      const observer=new IntersectionObserver((entries)=>{ entries.forEach((entry)=>{ if(entry.isIntersecting){ setTimeout(show,index*65); observer.disconnect(); } }); },{threshold:.12});
-      observer.observe(card);
-    }else setTimeout(show,index*65);
-  }
-
-  function patchCard(card, config, index){
+  function patchCard(card, config){
     if(!card) return;
     const local = new Map([[config.oldTitle,config.title],...Object.entries(config.replacements)]);
     const walker = document.createTreeWalker(card,NodeFilter.SHOW_TEXT);
@@ -119,43 +102,39 @@ const CLIENT_PATCH = `
       const picture=image.closest('picture');
       if(picture) picture.querySelectorAll('source').forEach((source)=>source.removeAttribute('srcset'));
     }
-    animateCard(card,index);
   }
 
   function findCardsByTitle(title){
-    const nodes=Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6,p,span,div')).filter((el)=>normalize(el.textContent)===title);
+    const nodes = Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6,p,span,div')).filter((el)=>normalize(el.textContent)===title);
     return [...new Set(nodes.map(getCard).filter(Boolean))];
   }
 
-  function patchProjects(){
-    const originals=[];
-    projects.slice(0,5).forEach((config,index)=>{
-      const cards=findCardsByTitle(config.oldTitle);
-      const card=cards.find((candidate)=>!originals.includes(candidate));
-      if(card){ originals.push(card); patchCard(card,config,index); }
-    });
-    const parent=originals[0] && originals[0].parentElement;
-    if(!parent) return;
+  function addClonedProjects(baseCard){
+    if(!baseCard || !baseCard.parentElement) return;
+    const parent = baseCard.parentElement;
     projects.slice(5).forEach((config,index)=>{
-      const marker='project-'+(index+6);
-      let clone=parent.querySelector('[data-nguyen-project-clone="'+marker+'"]');
-      if(!clone){
-        const source=originals[index % originals.length];
-        if(!source) return;
-        clone=source.cloneNode(true);
-        clone.dataset.nguyenProjectClone=marker;
-        clone.removeAttribute('data-nguyen-animated');
-        clone.removeAttribute('data-nguyen-project-card');
-        clone.classList.remove('nguyen-project-enter','nguyen-project-visible');
-        parent.appendChild(clone);
-      }
-      patchCard(clone,config,index+5);
+      const marker='nguyen-project-clone-'+index;
+      if(parent.querySelector('[data-nguyen-project-clone="'+marker+'"]')) return;
+      const clone=baseCard.cloneNode(true);
+      clone.dataset.nguyenProjectClone=marker;
+      parent.appendChild(clone);
+      patchCard(clone,config);
     });
   }
 
-  function goHome(event){
-    if(event) event.preventDefault();
-    window.location.assign(DEMO_PATH);
+  function patchProjects(){
+    const originalTitles = projects.slice(0,5).map((project)=>project.oldTitle);
+    const baseCards = originalTitles.map((title,index)=>{
+      const oldMatch=findCardsByTitle(title)[0];
+      if(oldMatch) return oldMatch;
+      return findCardsByTitle(projects[index].title)[0];
+    });
+
+    projects.slice(0,5).forEach((config,index)=>{
+      if(baseCards[index]) patchCard(baseCards[index],config);
+    });
+
+    addClonedProjects(baseCards[4]);
   }
 
   function patchLogo(){
@@ -164,12 +143,26 @@ const CLIENT_PATCH = `
       if(logo.dataset.nguyenLogo!=='true'){
         logo.dataset.nguyenLogo='true';
         logo.innerHTML='<div class="nguyen-wordmark"><strong>NGUYEN</strong><span>Architecture &amp; Engineering</span></div>';
-        logo.addEventListener('click',goHome);
+        logo.addEventListener('click',(event)=>{
+          event.preventDefault();
+          history.replaceState(null,'',DEMO_PATH);
+          window.scrollTo(0,0);
+          window.location.reload();
+        });
       }
     });
   }
 
-  function patchNavigation(){
+  function patchText(){
+    patchLogo();
+    patchProjects();
+    const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+    let node;
+    while((node=walker.nextNode())){
+      const next=exact.get(normalize(node.nodeValue));
+      if(next!==undefined && node.nodeValue!==next) node.nodeValue=next;
+    }
+
     document.querySelectorAll('a').forEach((anchor)=>{
       const href=anchor.getAttribute('href')||'';
       const label=normalize(anchor.textContent);
@@ -182,13 +175,7 @@ const CLIENT_PATCH = `
         else if(url.pathname==='/contact' || url.pathname.startsWith('/contact/')) anchor.setAttribute('href','mailto:info@nguyenarchitecture.com');
         else if(url.pathname==='/') anchor.setAttribute('href',DEMO_PATH);
       }
-      if(label==='Home' || label==='Back' || label==='Back Home' || label==='Back to Home' || label==='Go Back'){
-        anchor.setAttribute('href',DEMO_PATH);
-        if(anchor.dataset.nguyenHomeLink!=='true'){
-          anchor.dataset.nguyenHomeLink='true';
-          anchor.addEventListener('click',goHome);
-        }
-      }
+      if(label==='Home') anchor.setAttribute('href',DEMO_PATH);
       if(label==='Projects') anchor.setAttribute('href',PROJECTS_PATH);
       if(label==='Services') anchor.setAttribute('href',DEMO_PATH+'#services');
       if(label==='About' || label==='About us') anchor.setAttribute('href',DEMO_PATH+'#about');
@@ -202,19 +189,6 @@ const CLIENT_PATCH = `
     });
   }
 
-  function patchText(){
-    patchLogo();
-    patchProjects();
-    const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
-    let node;
-    while((node=walker.nextNode())){
-      const next=exact.get(normalize(node.nodeValue));
-      if(next!==undefined && node.nodeValue!==next) node.nodeValue=next;
-    }
-    patchNavigation();
-  }
-
-  try{ history.replaceState({nguyenDemo:true},'',PROJECTS_PATH); }catch{}
   patchText();
   document.addEventListener('DOMContentLoaded',patchText,{once:true});
   let runs=0;
