@@ -25,9 +25,9 @@ const REPLACEMENTS: Array<[string, string]> = [
   ['<title>Forma Studio</title>', '<title>NGUYEN Architecture & Engineering — Website Demo</title>'],
   ['content="Forma Studio"', 'content="NGUYEN Architecture & Engineering"'],
   ['A minimal Framer template for interior designers, architects, and creative studios. Showcase projects, services, and studio information with a clean layout and CMS-powered project pages.', 'NGUYEN Architecture & Engineering provides commercial architecture, engineering, tenant improvement and permit support in Orange County.'],
-  ['Forma Studio®', 'NGUYEN A&E®'],
-  ['Forma Studio', 'NGUYEN Architecture & Engineering'],
-  ['Forma®', 'NGUYEN®'],
+  ['Forma Studio®', 'NGUYEN'],
+  ['Forma Studio', 'NGUYEN'],
+  ['Forma®', 'NGUYEN'],
   ['About Us', 'About NGUYEN'],
   ['Projects', 'Commercial Projects'],
   ['Selected Work', 'Commercial Project Types'],
@@ -104,9 +104,9 @@ const CLIENT_PATCH = `
   const FACEBOOK = 'https://www.facebook.com/profile.php?id=61579114646057&mibextid=wwXIfr&mibextid=wwXIfr';
 
   const pairs = [
-    ['Forma Studio®', 'NGUYEN A&E®'],
-    ['Forma Studio', 'NGUYEN Architecture & Engineering'],
-    ['Forma®', 'NGUYEN®'],
+    ['Forma Studio®', 'NGUYEN'],
+    ['Forma Studio', 'NGUYEN'],
+    ['Forma®', 'NGUYEN'],
     ['About Us', 'About NGUYEN'],
     ['Projects', 'Commercial Projects'],
     ['Selected Work', 'Commercial Project Types'],
@@ -208,7 +208,7 @@ const CLIENT_PATCH = `
     );
     patchAnimatedPhrase(
       'Forma® a studio focused on crafting calm, intentional interiors that balance aesthetics, functionality, and everyday living.',
-      'NGUYEN® provides architecture, engineering, and permit services for restaurants, cafés, salons, retail, offices, and tenant improvements.'
+      'NGUYEN provides architecture, engineering, and permit services for restaurants, cafés, salons, retail, offices, and tenant improvements.'
     );
     patchAnimatedPhrase(
       '"The design decisions were practical and well thought out, making the space easy to use and maintain."',
