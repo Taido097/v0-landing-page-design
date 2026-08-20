@@ -43,6 +43,10 @@ const CLIENT_PATCH = `
   const PROJECTS_PATH = '${PROJECTS_PATH}';
   const SOURCE_ORIGIN = 'https://architectured.framer.website';
   const FACEBOOK = 'https://www.facebook.com/profile.php?id=61579114646057&mibextid=wwXIfr&mibextid=wwXIfr';
+  const HOME_URL = window.location.origin + DEMO_PATH;
+  const PROJECTS_URL = window.location.origin + PROJECTS_PATH;
+  const SERVICES_URL = HOME_URL + '#services';
+  const ABOUT_URL = HOME_URL + '#about';
 
   const projects = [
     { oldTitle:'Skyline Corporate Hub', title:'Boba Shops & Cafés', image:'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1800&q=92', replacements:{'Office':'Commercial','Central Business District.':'Boba Shops & Cafés','2022':'Project Type','350,000 sq. ft.':'Design • Engineering • Permit'} },
@@ -74,24 +78,24 @@ const CLIENT_PATCH = `
   function normalize(value){ return (value || '').replace(/\\s+/g,' ').trim(); }
 
   function getCard(node){
-    let card = node.closest && node.closest('a');
-    if (card) return card;
-    card = node;
-    for(let i=0;i<8 && card && !card.querySelector('img');i+=1) card = card.parentElement;
+    let card=node.closest && node.closest('a');
+    if(card) return card;
+    card=node;
+    for(let i=0;i<8 && card && !card.querySelector('img');i+=1) card=card.parentElement;
     return card;
   }
 
-  function patchCard(card, config){
+  function patchCard(card,config){
     if(!card) return;
-    const local = new Map([[config.oldTitle,config.title],...Object.entries(config.replacements)]);
-    const walker = document.createTreeWalker(card,NodeFilter.SHOW_TEXT);
+    const local=new Map([[config.oldTitle,config.title],...Object.entries(config.replacements)]);
+    const walker=document.createTreeWalker(card,NodeFilter.SHOW_TEXT);
     let node;
     while((node=walker.nextNode())){
-      const next = local.get(normalize(node.nodeValue));
-      if(next !== undefined) node.nodeValue = next;
+      const next=local.get(normalize(node.nodeValue));
+      if(next!==undefined) node.nodeValue=next;
     }
-    if(card.tagName === 'A') card.setAttribute('href', PROJECTS_PATH);
-    const image = card.querySelector('img');
+    if(card.tagName==='A') card.setAttribute('href',PROJECTS_URL);
+    const image=card.querySelector('img');
     if(image){
       image.setAttribute('src',config.image);
       image.removeAttribute('srcset');
@@ -105,13 +109,13 @@ const CLIENT_PATCH = `
   }
 
   function findCardsByTitle(title){
-    const nodes = Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6,p,span,div')).filter((el)=>normalize(el.textContent)===title);
+    const nodes=Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6,p,span,div')).filter((el)=>normalize(el.textContent)===title);
     return [...new Set(nodes.map(getCard).filter(Boolean))];
   }
 
   function addClonedProjects(baseCard){
     if(!baseCard || !baseCard.parentElement) return;
-    const parent = baseCard.parentElement;
+    const parent=baseCard.parentElement;
     projects.slice(5).forEach((config,index)=>{
       const marker='nguyen-project-clone-'+index;
       if(parent.querySelector('[data-nguyen-project-clone="'+marker+'"]')) return;
@@ -123,33 +127,62 @@ const CLIENT_PATCH = `
   }
 
   function patchProjects(){
-    const originalTitles = projects.slice(0,5).map((project)=>project.oldTitle);
-    const baseCards = originalTitles.map((title,index)=>{
-      const oldMatch=findCardsByTitle(title)[0];
-      if(oldMatch) return oldMatch;
-      return findCardsByTitle(projects[index].title)[0];
-    });
-
-    projects.slice(0,5).forEach((config,index)=>{
-      if(baseCards[index]) patchCard(baseCards[index],config);
-    });
-
+    const originalTitles=projects.slice(0,5).map((project)=>project.oldTitle);
+    const baseCards=originalTitles.map((title,index)=>findCardsByTitle(title)[0] || findCardsByTitle(projects[index].title)[0]);
+    projects.slice(0,5).forEach((config,index)=>{ if(baseCards[index]) patchCard(baseCards[index],config); });
     addClonedProjects(baseCards[4]);
+  }
+
+  function isHomeControl(anchor){
+    const label=normalize(anchor.textContent).toLowerCase();
+    return anchor.getAttribute('aria-label')==='Company Logo' || ['home','back','back home','back to home','go back'].includes(label);
+  }
+
+  function forceHome(event){
+    const target=event.target;
+    if(!(target instanceof Element)) return;
+    const anchor=target.closest('a');
+    if(!anchor || !isHomeControl(anchor)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if(typeof event.stopImmediatePropagation==='function') event.stopImmediatePropagation();
+    window.location.assign(HOME_URL);
   }
 
   function patchLogo(){
     document.querySelectorAll('a[aria-label="Company Logo"]').forEach((logo)=>{
-      logo.setAttribute('href',DEMO_PATH);
+      logo.setAttribute('href',HOME_URL);
       if(logo.dataset.nguyenLogo!=='true'){
         logo.dataset.nguyenLogo='true';
         logo.innerHTML='<div class="nguyen-wordmark"><strong>NGUYEN</strong><span>Architecture &amp; Engineering</span></div>';
-        logo.addEventListener('click',(event)=>{
-          event.preventDefault();
-          history.replaceState(null,'',DEMO_PATH);
-          window.scrollTo(0,0);
-          window.location.reload();
-        });
       }
+    });
+  }
+
+  function patchNavigation(){
+    document.querySelectorAll('a').forEach((anchor)=>{
+      const href=anchor.getAttribute('href')||'';
+      const label=normalize(anchor.textContent);
+      let url=null;
+      try{ url=new URL(href,SOURCE_ORIGIN); }catch{}
+      if(url && url.origin===SOURCE_ORIGIN){
+        if(url.pathname==='/projects' || url.pathname.startsWith('/projects/')) anchor.setAttribute('href',PROJECTS_URL);
+        else if(url.pathname==='/services' || url.pathname.startsWith('/services/')) anchor.setAttribute('href',SERVICES_URL);
+        else if(url.pathname==='/about' || url.pathname.startsWith('/about/')) anchor.setAttribute('href',ABOUT_URL);
+        else if(url.pathname==='/contact' || url.pathname.startsWith('/contact/')) anchor.setAttribute('href','mailto:info@nguyenarchitecture.com');
+        else if(url.pathname==='/') anchor.setAttribute('href',HOME_URL);
+      }
+      if(label==='Home' || label==='Back' || label==='Back Home' || label==='Back to Home' || label==='Go Back') anchor.setAttribute('href',HOME_URL);
+      if(label==='Projects') anchor.setAttribute('href',PROJECTS_URL);
+      if(label==='Services') anchor.setAttribute('href',SERVICES_URL);
+      if(label==='About' || label==='About us') anchor.setAttribute('href',ABOUT_URL);
+      if(label==='Get Template' || label==='Contact NGUYEN') anchor.setAttribute('href','mailto:info@nguyenarchitecture.com');
+      if(['Facebook','Instagram','Linkedin','Twitter/X','Youtube','Pinterest'].includes(label)){
+        anchor.setAttribute('href',FACEBOOK);
+        anchor.setAttribute('target','_blank');
+      }
+      if(href.startsWith('mailto:')) anchor.setAttribute('href','mailto:info@nguyenarchitecture.com');
+      if(href.startsWith('tel:')) anchor.setAttribute('href','tel:7147078889');
     });
   }
 
@@ -162,33 +195,10 @@ const CLIENT_PATCH = `
       const next=exact.get(normalize(node.nodeValue));
       if(next!==undefined && node.nodeValue!==next) node.nodeValue=next;
     }
-
-    document.querySelectorAll('a').forEach((anchor)=>{
-      const href=anchor.getAttribute('href')||'';
-      const label=normalize(anchor.textContent);
-      let url=null;
-      try{ url=new URL(href,SOURCE_ORIGIN); }catch{}
-      if(url && url.origin===SOURCE_ORIGIN){
-        if(url.pathname==='/projects' || url.pathname.startsWith('/projects/')) anchor.setAttribute('href',PROJECTS_PATH);
-        else if(url.pathname==='/services' || url.pathname.startsWith('/services/')) anchor.setAttribute('href',DEMO_PATH+'#services');
-        else if(url.pathname==='/about' || url.pathname.startsWith('/about/')) anchor.setAttribute('href',DEMO_PATH+'#about');
-        else if(url.pathname==='/contact' || url.pathname.startsWith('/contact/')) anchor.setAttribute('href','mailto:info@nguyenarchitecture.com');
-        else if(url.pathname==='/') anchor.setAttribute('href',DEMO_PATH);
-      }
-      if(label==='Home') anchor.setAttribute('href',DEMO_PATH);
-      if(label==='Projects') anchor.setAttribute('href',PROJECTS_PATH);
-      if(label==='Services') anchor.setAttribute('href',DEMO_PATH+'#services');
-      if(label==='About' || label==='About us') anchor.setAttribute('href',DEMO_PATH+'#about');
-      if(label==='Get Template' || label==='Contact NGUYEN') anchor.setAttribute('href','mailto:info@nguyenarchitecture.com');
-      if(['Facebook','Instagram','Linkedin','Twitter/X','Youtube','Pinterest'].includes(label)){
-        anchor.setAttribute('href',FACEBOOK);
-        anchor.setAttribute('target','_blank');
-      }
-      if(href.startsWith('mailto:')) anchor.setAttribute('href','mailto:info@nguyenarchitecture.com');
-      if(href.startsWith('tel:')) anchor.setAttribute('href','tel:7147078889');
-    });
+    patchNavigation();
   }
 
+  document.addEventListener('click',forceHome,true);
   patchText();
   document.addEventListener('DOMContentLoaded',patchText,{once:true});
   let runs=0;
@@ -217,6 +227,6 @@ export async function GET(){
     html=html.replace(/<\/body>/i,`${CLIENT_PATCH}</body>`);
     return new Response(html,{headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store, max-age=0','X-Robots-Tag':'noindex, nofollow, noarchive'}});
   }catch{
-    return new Response(`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta http-equiv="refresh" content="2"><title>Loading Our Projects</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#061b36;color:#fff;font-family:Arial,sans-serif}p{color:#d99a2b}</style></head><body><main><h1>NGUYEN Architecture & Engineering</h1><p>Loading Our Projects…</p></main></body></html>`,{status:200,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','X-Robots-Tag':'noindex, nofollow, noarchive'}});
+    return new Response('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta http-equiv="refresh" content="2"><title>Loading Our Projects</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#061b36;color:#fff;font-family:Arial,sans-serif}p{color:#d99a2b}</style></head><body><main><h1>NGUYEN Architecture & Engineering</h1><p>Loading Our Projects…</p></main></body></html>',{status:200,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','X-Robots-Tag':'noindex, nofollow, noarchive'}});
   }
 }
