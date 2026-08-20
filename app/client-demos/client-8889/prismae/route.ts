@@ -201,20 +201,48 @@ const CLIENT_PATCH = `
 })();
 </script>`;
 
-export async function GET() {
+async function fetchSource(attempt: number) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+
   try {
-    const response = await fetch(SOURCE_URL, {
-      cache: 'no-store',
+    return await fetch(SOURCE_URL, {
+      next: { revalidate: 3600 },
+      signal: controller.signal,
       headers: {
         'User-Agent': 'Mozilla/5.0',
         Accept: 'text/html,application/xhtml+xml',
+        'Cache-Control': attempt === 0 ? 'max-age=0' : 'no-cache',
       },
     });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
 
-    if (!response.ok) {
-      return new Response('Client demo unavailable', { status: 502 });
+async function getSourceResponse() {
+  let lastError: unknown = null;
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      const response = await fetchSource(attempt);
+      if (response.ok) return response;
+      lastError = new Error(`Upstream returned ${response.status}`);
+    } catch (error) {
+      lastError = error;
     }
 
+    if (attempt < 2) {
+      await new Promise((resolve) => setTimeout(resolve, 250 * (attempt + 1)));
+    }
+  }
+
+  throw lastError instanceof Error ? lastError : new Error('Unable to load source');
+}
+
+export async function GET() {
+  try {
+    const response = await getSourceResponse();
     let html = await response.text();
 
     html = html.replace(
@@ -236,11 +264,21 @@ export async function GET() {
     return new Response(html, {
       headers: {
         'Content-Type': 'text/html; charset=utf-8',
-        'Cache-Control': 'private, no-store, max-age=0',
+        'Cache-Control': 'public, max-age=60, s-maxage=3600, stale-while-revalidate=86400',
         'X-Robots-Tag': 'noindex, nofollow, noarchive',
       },
     });
   } catch {
-    return new Response('Client demo unavailable', { status: 502 });
+    return new Response(
+      '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta http-equiv="refresh" content="2"><title>Loading NGUYEN Concept 02</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#fbf8f2;color:#211b16;font-family:Arial,sans-serif}main{text-align:center;padding:24px}p{opacity:.6}</style></head><body><main><h1>NGUYEN Architecture & Engineering</h1><p>Loading Concept 02…</p></main></body></html>',
+      {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/html; charset=utf-8',
+          'Cache-Control': 'no-store',
+          'X-Robots-Tag': 'noindex, nofollow, noarchive',
+        },
+      },
+    );
   }
 }
