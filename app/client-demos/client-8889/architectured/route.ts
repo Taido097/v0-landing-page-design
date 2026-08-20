@@ -119,6 +119,7 @@ const CLEANUP = `
     letter-spacing: -.045em;
     font-weight: 850;
     text-transform: uppercase;
+    color: #d99a2b;
   }
 
   .nguyen-services-title span { color: #d99a2b; }
@@ -421,8 +422,9 @@ const CLIENT_PATCH = `
   function serviceMarkup() {
     const cards = serviceCards.map((service) => {
       const bullets = service.items.map((item) => '<li>' + item + '</li>').join('');
+      const imageUrl = new URL(service.image, window.location.origin).href;
       return '<article class="nguyen-service-card">' +
-        '<div class="nguyen-service-media"><img src="' + service.image + '" alt="' + service.title + '" loading="eager" decoding="async"></div>' +
+        '<div class="nguyen-service-media"><img src="' + imageUrl + '" alt="' + service.title + '" loading="eager" decoding="async"></div>' +
         '<div class="nguyen-service-copy">' +
           '<div class="nguyen-service-topline"><span class="nguyen-service-index">' + service.number + '</span><h3 class="nguyen-service-name">' + service.title + '</h3></div>' +
           '<ul class="nguyen-service-list">' + bullets + '</ul>' +
