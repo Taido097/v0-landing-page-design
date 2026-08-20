@@ -105,6 +105,12 @@ const CLIENT_PATCH = `
   const SOURCE_ORIGIN = 'https://architectured.framer.website';
   const FACEBOOK = 'https://www.facebook.com/profile.php?id=61579114646057&mibextid=wwXIfr&mibextid=wwXIfr';
 
+  const projectImages = {
+    'Commercial Tenant Improvement': 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1800&q=88',
+    'Custom Home': 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1800&q=88',
+    'ADU': 'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=1800&q=88'
+  };
+
   const pairs = ${JSON.stringify([
     ['Years of creating spaces', 'Architectural Design'],
     ['Amazing projects brought to life', 'Engineering'],
@@ -222,6 +228,39 @@ const CLIENT_PATCH = `
     });
   }
 
+  function patchProjectImages() {
+    Object.entries(projectImages).forEach(([label, src]) => {
+      const candidates = Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6,p,span,div'))
+        .filter((el) => normalize(el.textContent) === label);
+
+      candidates.forEach((labelEl) => {
+        let card = labelEl;
+        let image = null;
+
+        for (let depth = 0; depth < 8 && card; depth += 1) {
+          image = card.querySelector && card.querySelector('img');
+          if (image) break;
+          card = card.parentElement;
+        }
+
+        if (!image) return;
+        if (image.getAttribute('src') !== src) image.setAttribute('src', src);
+        image.removeAttribute('srcset');
+        image.setAttribute('loading', 'eager');
+        image.setAttribute('decoding', 'async');
+        image.style.objectFit = 'cover';
+        image.style.objectPosition = 'center';
+
+        const picture = image.closest('picture');
+        if (picture) {
+          picture.querySelectorAll('source').forEach((source) => {
+            source.removeAttribute('srcset');
+          });
+        }
+      });
+    });
+  }
+
   function patchText() {
     patchLogo();
 
@@ -231,6 +270,8 @@ const CLIENT_PATCH = `
       const next = exact.get(normalize(node.nodeValue));
       if (next !== undefined && node.nodeValue !== next) node.nodeValue = next;
     }
+
+    patchProjectImages();
 
     document.querySelectorAll('a').forEach((anchor) => {
       const href = anchor.getAttribute('href') || '';
