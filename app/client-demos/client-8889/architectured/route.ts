@@ -1,7 +1,8 @@
 const SOURCE_URL = 'https://architectured.framer.website/';
 const DEMO_PATH = '/client-demos/client-8889/architectured';
 
-export const revalidate = 3600;
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 const CLEANUP = `
 <style id="designedbytd-architectured-cleanup">
@@ -78,7 +79,214 @@ const CLEANUP = `
     color: #d99a2b;
   }
 
-  @media (max-width: 809px) {
+  .nguyen-services-shell {
+    width: min(1180px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: clamp(58px, 7vw, 92px) 0 clamp(50px, 6vw, 78px);
+    color: #061b36;
+    font-family: Geist, Arial, sans-serif;
+  }
+
+  .nguyen-services-head {
+    position: relative;
+    margin-bottom: 34px;
+    padding-right: 130px;
+  }
+
+  .nguyen-services-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .nguyen-services-brand::before {
+    content: '';
+    width: 36px;
+    height: 2px;
+    background: #d99a2b;
+    flex: 0 0 auto;
+  }
+
+  .nguyen-services-title {
+    margin: 0;
+    font-size: clamp(42px, 6vw, 76px);
+    line-height: .95;
+    letter-spacing: -.045em;
+    font-weight: 850;
+    text-transform: uppercase;
+  }
+
+  .nguyen-services-title span { color: #d99a2b; }
+
+  .nguyen-services-intro {
+    max-width: 660px;
+    margin: 22px 0 0;
+    font-size: clamp(15px, 1.4vw, 18px);
+    line-height: 1.6;
+    color: #24364d;
+  }
+
+  .nguyen-services-number {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 104px;
+    padding: 15px 16px 13px;
+    background: #061b36;
+    color: white;
+    text-align: center;
+  }
+
+  .nguyen-services-number strong {
+    display: block;
+    font-size: 34px;
+    line-height: 1;
+    font-weight: 800;
+  }
+
+  .nguyen-services-number span {
+    display: block;
+    margin-top: 7px;
+    color: #d99a2b;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+  }
+
+  .nguyen-services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: 1px solid #d5d8dc;
+    border-left: 1px solid #d5d8dc;
+    background: white;
+  }
+
+  .nguyen-service-card {
+    display: grid;
+    grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
+    min-height: 315px;
+    border-right: 1px solid #d5d8dc;
+    border-bottom: 1px solid #d5d8dc;
+    background: #fff;
+    overflow: hidden;
+  }
+
+  .nguyen-service-media {
+    position: relative;
+    min-height: 100%;
+    overflow: hidden;
+    background: #e9edf1;
+  }
+
+  .nguyen-service-media img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: transform .6s cubic-bezier(.2,.7,.2,1);
+  }
+
+  .nguyen-service-card:hover .nguyen-service-media img { transform: scale(1.035); }
+
+  .nguyen-service-copy {
+    position: relative;
+    padding: 27px 28px 26px;
+    background: #fff;
+  }
+
+  .nguyen-service-topline {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    margin-bottom: 16px;
+  }
+
+  .nguyen-service-index {
+    color: #d99a2b;
+    font-size: 27px;
+    line-height: 1;
+    font-weight: 800;
+    flex: 0 0 auto;
+  }
+
+  .nguyen-service-name {
+    margin: 0;
+    font-size: clamp(19px, 2vw, 27px);
+    line-height: 1.05;
+    font-weight: 850;
+    letter-spacing: -.02em;
+    text-transform: uppercase;
+  }
+
+  .nguyen-service-list {
+    margin: 0;
+    padding-left: 18px;
+    display: grid;
+    gap: 8px;
+    color: #22344c;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .nguyen-service-list li::marker { color: #d99a2b; }
+
+  .nguyen-services-strip {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    border: 1px solid #d5d8dc;
+    border-top: 0;
+    background: #fbfbfa;
+  }
+
+  .nguyen-services-strip span {
+    min-height: 86px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 10px;
+    text-align: center;
+    font-size: 11px;
+    line-height: 1.25;
+    font-weight: 800;
+    text-transform: uppercase;
+    border-right: 1px solid #d5d8dc;
+  }
+
+  .nguyen-services-strip span:last-child { border-right: 0; }
+
+  .nguyen-services-footerline {
+    padding: 15px 18px;
+    background: #061b36;
+    color: #fff;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 750;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .nguyen-services-footerline b { color: #d99a2b; }
+
+  @media (max-width: 900px) {
+    .nguyen-services-shell { width: min(100% - 28px, 760px); }
+    .nguyen-services-head { padding-right: 0; }
+    .nguyen-services-number { position: static; width: max-content; margin: 20px 0 0 auto; }
+    .nguyen-services-grid { grid-template-columns: 1fr; }
+    .nguyen-services-strip { grid-template-columns: repeat(3, 1fr); }
+    .nguyen-services-strip span:nth-child(3) { border-right: 0; }
+    .nguyen-services-strip span:nth-child(-n+3) { border-bottom: 1px solid #d5d8dc; }
+  }
+
+  @media (max-width: 620px) {
     a[aria-label="Company Logo"] {
       width: clamp(132px, 42vw, 176px) !important;
       max-width: calc(100vw - 112px) !important;
@@ -86,6 +294,18 @@ const CLEANUP = `
     }
     .nguyen-wordmark strong { font-size: clamp(15px, 4.5vw, 18px); letter-spacing: .08em; }
     .nguyen-wordmark span { font-size: clamp(5.8px, 1.75vw, 7px); letter-spacing: .11em; }
+    .nguyen-services-shell { width: calc(100% - 20px); padding-top: 44px; }
+    .nguyen-services-brand { font-size: 9px; }
+    .nguyen-services-title { font-size: clamp(38px, 14vw, 56px); }
+    .nguyen-service-card { grid-template-columns: 1fr; min-height: 0; }
+    .nguyen-service-media { min-height: 230px; }
+    .nguyen-service-copy { padding: 24px 22px 26px; }
+    .nguyen-service-list { font-size: 13px; }
+    .nguyen-services-strip { grid-template-columns: repeat(2, 1fr); }
+    .nguyen-services-strip span { min-height: 72px; border-bottom: 1px solid #d5d8dc; }
+    .nguyen-services-strip span:nth-child(odd) { border-right: 1px solid #d5d8dc; }
+    .nguyen-services-strip span:nth-child(even) { border-right: 0; }
+    .nguyen-services-strip span:nth-last-child(-n+2) { border-bottom: 0; }
   }
 
   @media (max-width: 390px) {
@@ -111,7 +331,16 @@ const CLIENT_PATCH = `
     'ADU': 'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=1800&q=88'
   };
 
-  const pairs = ${JSON.stringify([
+  const serviceCards = [
+    { number: '01', title: 'Site & Planning', image: '/nguyen-service-images/site-planning.jpg', items: ['Site Survey & Existing Conditions', 'Zoning & Code Review', 'Space Planning', 'Concept Design'] },
+    { number: '02', title: 'Architectural Design', image: '/nguyen-service-images/architectural-design.jpg', items: ['Floor Plans', 'Elevations & Sections', 'Reflected Ceiling Plans', 'Construction Details', '3D Renderings', 'Tenant Improvement Plans'] },
+    { number: '03', title: 'Structural Engineering', image: '/nguyen-service-images/structural-engineering.jpg', items: ['Structural Design', 'Structural Details', 'Structural Calculations', 'Foundation & Framing', 'Retaining Walls', 'Existing Building Modification'] },
+    { number: '04', title: 'MEP Engineering', image: '/nguyen-service-images/mep-engineering.jpg', items: ['Electrical Design', 'Plumbing Design', 'HVAC Design', 'Electrical Load Calculations', 'Equipment Coordination'] },
+    { number: '05', title: 'Code & Energy Compliance', image: '/nguyen-service-images/code-energy-compliance.jpg', items: ['Title 24', 'CalGreen', 'ADA Compliance', 'Building Code Review', 'Accessibility', 'Occupancy & Egress'] },
+    { number: '06', title: 'Permit Services', image: '/nguyen-service-images/permit-services.jpg', items: ['Permit Submittal', 'City Submittal', 'Plan Check Coordination', 'Corrections & Resubmittal', 'Permit Approval Support', 'Construction Support'] }
+  ];
+
+  const pairs = [
     ['Years of creating spaces', 'Architectural Design'],
     ['Amazing projects brought to life', 'Engineering'],
     ['Happy clients, happy spaces', 'Permit Support'],
@@ -119,36 +348,6 @@ const CLIENT_PATCH = `
     ['Architecture that connects people and places', 'Residential & Commercial Design Solutions'],
     ['We design more than buildings—we create spaces that foster connection, creativity, and community', 'One team for custom homes, ADUs, residential and commercial projects — from design and engineering through permit support.'],
     ['Get Template', 'Request Consultation'],
-    ['Explore our services and see how we bring creativity and expertise to every project', 'Architecture, engineering and permit support for custom homes, ADUs, residential projects and commercial projects across Southern California.'],
-    ['Site Planning', 'Existing-Condition Survey & Site Planning'],
-    ['Layout Design', 'Business Layout & Space Planning'],
-    ['3D Visualization', '3D Renderings'],
-    ['Rendering', 'Elevations & Sections'],
-    ['Construction Documentation', 'Architectural, Structural & MEP Documents'],
-    ['Schematic Design Development', 'Concept & Architectural Design'],
-    ['BIM', 'Coordinated Technical Documents'],
-    ['Interior Design & Planning', 'Residential Design'],
-    ['Space Planning & Optimization', 'Custom Homes'],
-    ['Furniture & Fixture Selection', 'ADUs'],
-    ['Material Selection', 'Residential Projects'],
-    ['Lighting Design', 'Residential Remodel & Renovation'],
-    ['Art & Accessory Curation', 'Residential Permit Support'],
-    ['Custom Cabinetry Design', 'Residential Space Planning'],
-    ['Interior Landscaping', 'Existing-Condition Survey'],
-    ['Consulting Services', 'Commercial Design'],
-    ['Site & Building Code Consultation', 'Tenant Improvement (TI)'],
-    ['Design & Concept Review', 'Boba Shops, Coffee Shops & Cafés'],
-    ['Technical Advisory Services', 'Restaurants, Retail, Offices & Salons'],
-    ['Cost Estimation & Budgeting', 'Zoning, Occupancy & Local Requirements'],
-    ['Project Feasibility Consulting', 'Commercial Remodel & Renovation'],
-    ['Project Management', 'Engineering & Permit'],
-    ['Pre-Construction Planning', 'Structural Engineering'],
-    ['Site Inspection & Supervision', 'Electrical, Plumbing & HVAC Coordination'],
-    ['Cost Estimation', 'Title 24 & Code Compliance'],
-    ['Resource Allocation', 'Building Permit & Plan Check'],
-    ['Timeline & Milestone Tracking', 'Permit Submittal'],
-    ['Contractor & Vendor Management', 'Plan Check & Corrections'],
-    ['Final Inspection & Handover', 'Consultant & City Agency Coordination'],
     ['Explore All Services', 'Explore Our Services'],
     ['Our Best Projects', 'Project Types'],
     ['What we’ve been up to—check out our latest projects', 'We support custom homes, ADUs, residential projects and commercial projects from planning through coordinated design, engineering and permit approval.'],
@@ -211,12 +410,39 @@ const CLIENT_PATCH = `
     ['Subscribe', 'Contact NGUYEN'],
     ['©Template by RealMehedi', '© NGUYEN Architecture & Engineering'],
     ['Built in Framer', 'Design • Engineering • Permit']
-  ])};
+  ];
 
   const exact = new Map(pairs.map(([from, to]) => [normalize(from), to]));
 
   function normalize(value) {
     return (value || '').replace(/\\s+/g, ' ').trim();
+  }
+
+  function serviceMarkup() {
+    const cards = serviceCards.map((service) => {
+      const bullets = service.items.map((item) => '<li>' + item + '</li>').join('');
+      return '<article class="nguyen-service-card">' +
+        '<div class="nguyen-service-media"><img src="' + service.image + '" alt="' + service.title + '" loading="eager" decoding="async"></div>' +
+        '<div class="nguyen-service-copy">' +
+          '<div class="nguyen-service-topline"><span class="nguyen-service-index">' + service.number + '</span><h3 class="nguyen-service-name">' + service.title + '</h3></div>' +
+          '<ul class="nguyen-service-list">' + bullets + '</ul>' +
+        '</div>' +
+      '</article>';
+    }).join('');
+
+    return '<div class="nguyen-services-shell" id="services">' +
+      '<header class="nguyen-services-head">' +
+        '<div class="nguyen-services-brand">NGUYEN Architecture &amp; Engineering</div>' +
+        '<h2 class="nguyen-services-title">Our <span>Services</span></h2>' +
+        '<p class="nguyen-services-intro">We provide comprehensive design, engineering, and permit support services for commercial projects — all in one place.</p>' +
+        '<div class="nguyen-services-number"><strong>03</strong><span>Our Services</span></div>' +
+      '</header>' +
+      '<div class="nguyen-services-grid">' + cards + '</div>' +
+      '<div class="nguyen-services-strip">' +
+        '<span>Architectural Design</span><span>Structural Engineering</span><span>MEP Engineering</span><span>Title 24 &amp; Code</span><span>Permit Services</span><span>Construction Support</span>' +
+      '</div>' +
+      '<div class="nguyen-services-footerline"><b>Design</b> &nbsp;•&nbsp; Engineer &nbsp;•&nbsp; Permit &nbsp; | &nbsp; All in one. From concept to approval.</div>' +
+    '</div>';
   }
 
   function patchLogo() {
@@ -225,6 +451,25 @@ const CLIENT_PATCH = `
       logo.dataset.nguyenLogo = 'true';
       logo.setAttribute('href', DEMO_PATH);
       logo.innerHTML = '<div class="nguyen-wordmark"><strong>NGUYEN</strong><span>Architecture &amp; Engineering</span></div>';
+    });
+  }
+
+  function patchServicesSection() {
+    const markers = Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6,p'))
+      .filter((el) => normalize(el.textContent) === 'Explore our services and see how we bring creativity and expertise to every project');
+
+    markers.forEach((marker) => {
+      let root = marker.parentElement;
+
+      for (let depth = 0; depth < 12 && root && root !== document.body; depth += 1) {
+        const text = normalize(root.textContent);
+        if (text.includes('Architectural Design') && text.includes('Interior Design & Planning') && text.includes('Consulting Services') && text.includes('Project Management')) break;
+        root = root.parentElement;
+      }
+
+      if (!root || root === document.body || root.dataset.nguyenServices === 'true') return;
+      root.dataset.nguyenServices = 'true';
+      root.innerHTML = serviceMarkup();
     });
   }
 
@@ -253,9 +498,7 @@ const CLIENT_PATCH = `
 
         const picture = image.closest('picture');
         if (picture) {
-          picture.querySelectorAll('source').forEach((source) => {
-            source.removeAttribute('srcset');
-          });
+          picture.querySelectorAll('source').forEach((source) => source.removeAttribute('srcset'));
         }
       });
     });
@@ -263,6 +506,7 @@ const CLIENT_PATCH = `
 
   function patchText() {
     patchLogo();
+    patchServicesSection();
 
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     let node;
@@ -318,7 +562,7 @@ const CLIENT_PATCH = `
   const timer = setInterval(() => {
     patchText();
     runs += 1;
-    if (runs >= 40) clearInterval(timer);
+    if (runs >= 48) clearInterval(timer);
   }, 250);
 })();
 </script>`;
@@ -329,7 +573,7 @@ async function getSource() {
   for (let attempt = 0; attempt < 3; attempt += 1) {
     try {
       const response = await fetch(SOURCE_URL, {
-        next: { revalidate: 3600 },
+        cache: 'no-store',
         headers: {
           'User-Agent': 'Mozilla/5.0',
           Accept: 'text/html,application/xhtml+xml',
@@ -367,7 +611,7 @@ export async function GET() {
     return new Response(html, {
       headers: {
         'Content-Type': 'text/html; charset=utf-8',
-        'Cache-Control': 'public, max-age=60, s-maxage=3600, stale-while-revalidate=86400',
+        'Cache-Control': 'no-store, max-age=0',
         'X-Robots-Tag': 'noindex, nofollow, noarchive',
       },
     });
