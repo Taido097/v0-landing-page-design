@@ -27,6 +27,7 @@ export function Header() {
     { href: '/#pricing', label: 'Pricing' },
     { href: '/#faq', label: 'FAQ' },
     { href: '/#about', label: 'About' },
+    { href: '/client-demo', label: 'Client Demo' },
   ];
 
   const isHome = pathname === '/';
@@ -88,7 +89,7 @@ export function Header() {
             DesignedbyTD Studio
           </Link>
 
-          <div className="hidden items-center gap-10 md:flex">
+          <div className="hidden items-center gap-7 lg:gap-9 md:flex">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -122,7 +123,7 @@ export function Header() {
       {isMenuOpen && (
         <div className="border-t border-black/10 bg-white text-black shadow-[0_18px_40px_rgba(0,0,0,.08)]">
           <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
-            <div className="grid gap-1 md:grid-cols-5">
+            <div className="grid gap-1 md:grid-cols-6">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
