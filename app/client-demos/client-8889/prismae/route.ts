@@ -83,13 +83,6 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/© 2026 Prismae\./gi, '© 2026 NGUYEN Architecture & Engineering.'],
 ];
 
-function stripFramerRuntime(html: string) {
-  return html
-    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
-    .replace(/<link\b[^>]*rel=["']modulepreload["'][^>]*>/gi, '')
-    .replace(/<meta\b[^>]*name=["']framer-search-index[^"']*["'][^>]*>/gi, '');
-}
-
 async function getSource() {
   let lastError: unknown = null;
 
@@ -131,8 +124,6 @@ export async function GET() {
     for (const [pattern, replacement] of REPLACEMENTS) {
       html = html.replace(pattern, replacement);
     }
-
-    html = stripFramerRuntime(html);
 
     return new Response(html, {
       headers: {
