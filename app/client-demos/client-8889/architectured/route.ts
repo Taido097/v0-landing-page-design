@@ -327,11 +327,43 @@ const CLIENT_PATCH = `
   const SOURCE_ORIGIN = 'https://architectured.framer.website';
   const FACEBOOK = 'https://www.facebook.com/profile.php?id=61579114646057&mibextid=wwXIfr&mibextid=wwXIfr';
 
-  const projectImages = {
-    'Commercial Tenant Improvement': 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1800&q=88',
-    'Custom Home': 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1800&q=88',
-    'ADU': 'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=1800&q=88'
-  };
+  const projectCards = [
+    {
+      oldTitle: 'Skyline Corporate Hub',
+      title: 'Boba Shops & Cafés',
+      replacements: {
+        'Office': 'Tenant Improvement',
+        'Central Business District.': 'Commercial Project',
+        '2022': 'Design',
+        '350,000 sq. ft.': 'Design + Permit'
+      },
+      image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1800&q=92'
+    },
+    {
+      oldTitle: 'LuxeHaven Villa',
+      title: 'Restaurants',
+      replacements: {
+        'Residential': 'Commercial',
+        'Luxury Villa': 'Restaurant Design',
+        'Savannah, Georgia': 'Commercial Project',
+        '2023': 'Engineering',
+        '4000sqft': 'Design + Engineering'
+      },
+      image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1800&q=92'
+    },
+    {
+      oldTitle: 'Celestial Towers Condominiums',
+      title: 'Office & Tenant Improvement',
+      replacements: {
+        'Residential': 'Commercial',
+        'Apartment and Condo': 'Tenant Improvement (TI)',
+        'New Orleans, Louisiana': 'Commercial Project',
+        '2024': 'Permit',
+        '300,000 sq. ft.': 'Design + Permit'
+      },
+      image: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1800&q=92'
+    }
+  ];
 
   const serviceCards = [
     { number: '01', title: 'Site & Planning', image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1800&q=92', items: ['Site Survey & Existing Conditions', 'Zoning & Code Review', 'Space Planning', 'Concept Design'] },
@@ -352,26 +384,10 @@ const CLIENT_PATCH = `
     ['Get Template', 'Request Consultation'],
     ['Explore All Services', 'Explore Our Services'],
     ['Our Best Projects', 'Project Types'],
-    ['What we’ve been up to—check out our latest projects', 'We support custom homes, ADUs, residential projects and commercial projects from planning through coordinated design, engineering and permit approval.'],
-    ['Skyline Corporate Hub', 'Commercial Tenant Improvement'],
-    ['Office', 'Office & Tenant Improvement'],
-    ['Central Business District.', 'Orange County, CA'],
-    ['350,000 sq. ft.', 'Commercial Project'],
-    ['LuxeHaven Villa', 'Custom Home'],
-    ['Luxury Villa', 'Residential'],
-    ['Savannah, Georgia', 'Southern California'],
-    ['4000sqft', 'Residential Project'],
-    ['Celestial Towers Condominiums', 'ADU'],
-    ['Apartment and Condo', 'Residential / ADU'],
-    ['New Orleans, Louisiana', 'Orange County, CA'],
-    ['300,000 sq. ft.', 'Design + Permit'],
-    ['View All Projects', 'View Project Types'],
-    ['Welcome to our world of creativity, where every project', 'From custom homes and ADUs to commercial spaces, every project'],
-    ['starts with a dream', 'starts with your goals'],
-    ['and ends with a', 'and moves through coordinated'],
-    ['space that', 'design and engineering that'],
-    ['feels like home.', 'supports permitting and construction.'],
-    ['Take a glimpse into our world of creativity and innovation.', 'NGUYEN Architecture & Engineering provides coordinated architecture, engineering and permit support for residential and commercial projects.'],
+    ['What we’ve been up to—check out our latest projects', 'We design a wide range of commercial spaces tailored to your business goals and customer experience.'],
+    ['View All Projects', 'Explore Project Types'],
+    ['Welcome to our world of creativity, where every project starts with a dream and ends with a space that feels like home.', 'Commercial project types include Boba Shops & Cafés, Restaurants, Nail & Beauty Salons, Retail Stores, Office & Tenant Improvement, Commercial Remodel & Renovation, New Commercial Buildings, and Tenant Improvement (TI).'],
+    ['Take a glimpse into our world of creativity and innovation.', 'Residential services also include custom homes and ADUs, supported by coordinated design, engineering and permit services.'],
     ['Know About Us', 'About NGUYEN'],
     ['Our Differences', 'Why Choose NGUYEN'],
     ['what makes us different (and totally awesome)', 'One team. Complete solution. Residential and commercial design coordinated around engineering, code requirements and permitting.'],
@@ -390,13 +406,13 @@ const CLIENT_PATCH = `
     ['Execution & Delivery', 'Permit Submittal & Plan Check'],
     ['Project images', 'Residential & Commercial Projects'],
     ['Gallery', 'Our Work'],
-    ['Don’t just take our word for it—see how we turn ideas into stunning spaces. Our gallery is full of inspiration for your next big project!', 'Project types include custom homes, ADUs, residential projects, boba shops, coffee shops, cafés, restaurants, nail and beauty salons, retail stores, offices, tenant improvements, commercial remodels and new commercial buildings.'],
+    ['Don’t just take our word for it—see how we turn ideas into stunning spaces. Our gallery is full of inspiration for your next big project!', 'Commercial project types include Boba Shops & Cafés, Restaurants, Nail & Beauty Salons, Retail Stores, Office & Tenant Improvement, Commercial Remodel & Renovation, New Commercial Buildings, and Tenant Improvement (TI). Residential services include custom homes and ADUs.'],
     ['Browse Gallery', 'Explore Project Types'],
     ['FAQs', 'Project FAQs'],
     ['Do you handle all the permits and paperwork?', 'Do you handle permit submittal and plan check?'],
     ['Absolutely! We take care of all the boring-but-important stuff, like permits and paperwork, so you don’t have to stress about it.', 'Permit support includes building permit documentation, permit submittal, plan check coordination, corrections and resubmittal support.'],
-    ['Do you only design residential spaces?', 'Do you work on both residential and commercial projects?'],
-    ['Not at all! While we love creating dream homes, we also work on commercial projects, office spaces, and more. If you’ve got a vision, we’re here to bring it to life.', 'Yes. Residential work includes custom homes and ADUs. Commercial work includes tenant improvements, boba and coffee shops, cafés, restaurants, nail and beauty salons, retail stores, offices, remodels and new commercial buildings.'],
+    ['Do you only design residential spaces?', 'What project types do you work on?'],
+    ['Not at all! While we love creating dream homes, we also work on commercial projects, office spaces, and more. If you’ve got a vision, we’re here to bring it to life.', 'Commercial project types include Boba Shops & Cafés, Restaurants, Nail & Beauty Salons, Retail Stores, Office & Tenant Improvement, Commercial Remodel & Renovation, New Commercial Buildings, and Tenant Improvement (TI). Residential work includes custom homes and ADUs.'],
     ['Can you help with interior design too?', 'Do you support ADUs and Tenant Improvement projects?'],
     ['You bet! From furniture layouts to color schemes, we can assist with the finishing touches that make your space feel like home.', 'Yes. ADU and Tenant Improvement projects can be supported with architectural design, engineering coordination, code review and permit services.'],
     ['What happens if I still have questions?', 'How do we get started?'],
@@ -462,51 +478,57 @@ const CLIENT_PATCH = `
 
     markers.forEach((marker) => {
       let root = marker.parentElement;
-
       for (let depth = 0; depth < 12 && root && root !== document.body; depth += 1) {
         const text = normalize(root.textContent);
         if (text.includes('Architectural Design') && text.includes('Interior Design & Planning') && text.includes('Consulting Services') && text.includes('Project Management')) break;
         root = root.parentElement;
       }
-
       if (!root || root === document.body || root.dataset.nguyenServices === 'true') return;
       root.dataset.nguyenServices = 'true';
       root.innerHTML = serviceMarkup();
     });
   }
 
-  function patchProjectImages() {
-    Object.entries(projectImages).forEach(([label, src]) => {
-      const candidates = Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6,p,span,div'))
-        .filter((el) => normalize(el.textContent) === label);
+  function patchProjectCards() {
+    projectCards.forEach((config) => {
+      const titleNode = Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6,p,span,div'))
+        .find((el) => normalize(el.textContent) === config.oldTitle);
+      if (!titleNode) return;
 
-      candidates.forEach((labelEl) => {
-        let card = labelEl;
-        let image = null;
+      let card = titleNode.closest('a');
+      if (!card) {
+        card = titleNode;
+        for (let depth = 0; depth < 8 && card && !card.querySelector('img'); depth += 1) card = card.parentElement;
+      }
+      if (!card) return;
 
-        for (let depth = 0; depth < 8 && card; depth += 1) {
-          image = card.querySelector && card.querySelector('img');
-          if (image) break;
-          card = card.parentElement;
-        }
+      const local = new Map([[config.oldTitle, config.title], ...Object.entries(config.replacements)]);
+      const walker = document.createTreeWalker(card, NodeFilter.SHOW_TEXT);
+      let node;
+      while ((node = walker.nextNode())) {
+        const key = normalize(node.nodeValue);
+        const next = local.get(key);
+        if (next !== undefined) node.nodeValue = next;
+      }
 
-        if (!image) return;
-        if (image.getAttribute('src') !== src) image.setAttribute('src', src);
+      const image = card.querySelector('img');
+      if (image) {
+        image.setAttribute('src', config.image);
         image.removeAttribute('srcset');
         image.setAttribute('loading', 'eager');
         image.setAttribute('decoding', 'async');
         image.style.objectFit = 'cover';
         image.style.objectPosition = 'center';
-
         const picture = image.closest('picture');
         if (picture) picture.querySelectorAll('source').forEach((source) => source.removeAttribute('srcset'));
-      });
+      }
     });
   }
 
   function patchText() {
     patchLogo();
     patchServicesSection();
+    patchProjectCards();
 
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     let node;
@@ -515,12 +537,9 @@ const CLIENT_PATCH = `
       if (next !== undefined && node.nodeValue !== next) node.nodeValue = next;
     }
 
-    patchProjectImages();
-
     document.querySelectorAll('a').forEach((anchor) => {
       const href = anchor.getAttribute('href') || '';
       const label = normalize(anchor.textContent);
-
       if (href.startsWith(SOURCE_ORIGIN)) {
         const url = new URL(href);
         if (url.pathname.startsWith('/projects/')) anchor.setAttribute('href', DEMO_PATH + '#projects');
@@ -530,13 +549,8 @@ const CLIENT_PATCH = `
         else if (url.pathname.startsWith('/blogs/')) anchor.setAttribute('href', DEMO_PATH + '#faq');
         else anchor.setAttribute('href', DEMO_PATH + (url.hash || ''));
       }
-
       if (label === 'Request Consultation' || label === 'Send Message' || label === 'Contact NGUYEN') anchor.setAttribute('href', 'mailto:info@nguyenarchitecture.com');
-      if (label === 'Facebook') {
-        anchor.setAttribute('href', FACEBOOK);
-        anchor.setAttribute('target', '_blank');
-      }
-      if (label === 'Instagram' || label === 'Linkedin' || label === 'Twitter/X' || label === 'Youtube' || label === 'Pinterest') {
+      if (label === 'Facebook' || label === 'Instagram' || label === 'Linkedin' || label === 'Twitter/X' || label === 'Youtube' || label === 'Pinterest') {
         anchor.setAttribute('href', FACEBOOK);
         anchor.setAttribute('target', '_blank');
       }
@@ -567,7 +581,6 @@ const CLIENT_PATCH = `
 
 async function getSource() {
   let lastError: unknown = null;
-
   for (let attempt = 0; attempt < 3; attempt += 1) {
     try {
       const response = await fetch(SOURCE_URL, {
@@ -577,35 +590,28 @@ async function getSource() {
           Accept: 'text/html,application/xhtml+xml',
         },
       });
-
       if (response.ok) return response.text();
       lastError = new Error(`Upstream returned ${response.status}`);
     } catch (error) {
       lastError = error;
     }
-
     if (attempt < 2) await new Promise((resolve) => setTimeout(resolve, 200 * (attempt + 1)));
   }
-
   throw lastError instanceof Error ? lastError : new Error('Unable to load source');
 }
 
 export async function GET() {
   try {
     let html = await getSource();
-
     html = html.replace(
       /<head([^>]*)>/i,
       `<head$1><base href="${SOURCE_URL}"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="description" content="NGUYEN Architecture & Engineering — custom homes, ADUs, residential and commercial architecture, engineering and permit support in Southern California.">${CLEANUP}`,
     );
-
     html = html.replace(
       /<title>[^<]*<\/title>/i,
       '<title>NGUYEN Architecture & Engineering — Residential & Commercial Design</title>',
     );
-
     html = html.replace(/<\/body>/i, `${CLIENT_PATCH}</body>`);
-
     return new Response(html, {
       headers: {
         'Content-Type': 'text/html; charset=utf-8',
