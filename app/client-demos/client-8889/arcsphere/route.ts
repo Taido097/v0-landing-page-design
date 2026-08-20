@@ -46,6 +46,97 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/Contact us/gi, 'Contact'],
 ];
 
+const HYDRATION_SAFE_PATCH = `
+<script id="nguyen-hydration-safe-patch">
+(function () {
+  var exact = {
+    'ArcSphere Studio': 'NGUYEN Architecture & Engineering',
+    'ArcSphere': 'NGUYEN',
+    'DESIGN PROCESS': 'PROJECT PROCESS',
+    'PROJECTS': 'PROJECT TYPES',
+    'SERVICES': 'SERVICES',
+    'CONTACT US': 'CONTACT',
+    'Where Architecture': 'Commercial Architecture',
+    'Meets Experience': 'Engineering & Permit',
+    'Where Architecture Meets Experience': 'Commercial Architecture — Engineering & Permit',
+    'Based in Dubai, we design residential and commercial spaces that elevate how people live, work, and interact with their environment': 'Based in Orange County, we provide commercial architecture, engineering and permit support from existing-condition survey and business layout through plan check and approval.',
+    'VIEW PROJECTS': 'VIEW PROJECT TYPES',
+    'BOOK CONSULTATION': 'START A PROJECT',
+    'Residential Interior': 'Architectural Design & Tenant Improvement (TI)',
+    'Commercial Interior': 'Commercial Architecture',
+    'Space Planning': 'Existing-Condition Survey & Business Layout',
+    'Design Consultation': 'Zoning, Occupancy & Local Requirements',
+    'Project Management': 'Building Permit, Plan Check & Corrections',
+    'Architecture Design': 'Architectural, Structural & MEP',
+    'Interior Styling': 'Electrical, Plumbing & HVAC Coordination',
+    'Furniture Selection': 'Title 24 & Code Compliance',
+    'Lighting Design': 'Electrical, Plumbing & HVAC Coordination',
+    '3D Visualization': 'Permit Drawing Documentation',
+    'Material Selection': 'Consultant & City Coordination',
+    'Renovation': 'Commercial Remodel & Renovation',
+    'Office Design': 'Office & Tenant Improvements',
+    'Retail Design': 'Retail Stores',
+    'Hospitality Design': 'Restaurants, Cafés & Boba Shops',
+    'Concept Development': 'Existing-Condition Survey & Project Planning',
+    'Design Development': 'Architecture & Engineering',
+    'Documentation': 'Permit Documentation',
+    'Implementation': 'Plan Check & Corrections',
+    'Dubai': 'Huntington Beach, CA',
+    'United Arab Emirates': 'Orange County, CA'
+  };
+
+  function patchText() {
+    if (!document.body) return;
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    var node;
+    while ((node = walker.nextNode())) {
+      var raw = node.nodeValue || '';
+      var trimmed = raw.trim();
+      var replacement = exact[trimmed];
+      if (!replacement || replacement === trimmed) continue;
+      var start = raw.indexOf(trimmed);
+      if (start < 0) {
+        node.nodeValue = replacement;
+      } else {
+        node.nodeValue = raw.slice(0, start) + replacement + raw.slice(start + trimmed.length);
+      }
+    }
+  }
+
+  function patchContacts() {
+    var mailLinks = document.querySelectorAll('a[href^="mailto:"]');
+    mailLinks.forEach(function (a) {
+      a.setAttribute('href', 'mailto:info@nguyenarchitecture.com');
+      if ((a.textContent || '').indexOf('@') !== -1) a.textContent = 'info@nguyenarchitecture.com';
+    });
+
+    var phoneLinks = document.querySelectorAll('a[href^="tel:"]');
+    if (phoneLinks[0]) {
+      phoneLinks[0].setAttribute('href', 'tel:+12092338888');
+      if ((phoneLinks[0].textContent || '').trim()) phoneLinks[0].textContent = '(209) 233-8888';
+    }
+    if (phoneLinks[1]) {
+      phoneLinks[1].setAttribute('href', 'tel:+17147078889');
+      if ((phoneLinks[1].textContent || '').trim()) phoneLinks[1].textContent = '(714) 707-8889';
+    }
+  }
+
+  var count = 0;
+  function run() {
+    patchText();
+    patchContacts();
+    count += 1;
+    if (count < 30) setTimeout(run, 300);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run, { once: true });
+  } else {
+    run();
+  }
+})();
+</script>`;
+
 export async function GET() {
   try {
     const response = await fetch(SOURCE_URL, {
@@ -74,6 +165,7 @@ export async function GET() {
 
     html = html.replace(/info@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/gi, 'info@nguyenarchitecture.com');
     html = html.replace(/\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}/g, '(714) 707-8889');
+    html = html.replace(/<\/body>/i, `${HYDRATION_SAFE_PATCH}</body>`);
 
     return new Response(html, {
       headers: {
