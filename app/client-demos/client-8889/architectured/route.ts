@@ -129,7 +129,7 @@ const CLEANUP = `
     margin: 22px 0 0;
     font-size: clamp(15px, 1.4vw, 18px);
     line-height: 1.6;
-    color: #24364d;
+    color: #ffffff;
   }
 
   .nguyen-services-number {
