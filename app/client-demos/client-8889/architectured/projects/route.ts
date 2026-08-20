@@ -29,6 +29,11 @@ const CLEANUP = `
   .nguyen-wordmark { width:100%; max-width:100%; height:100%; min-width:0; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; color:#061b36; line-height:1; white-space:nowrap; overflow:hidden; }
   .nguyen-wordmark strong { max-width:100%; overflow:hidden; font-family:Geist,Arial,sans-serif; font-size:clamp(16px,2vw,21px); font-weight:800; letter-spacing:.1em; }
   .nguyen-wordmark span { max-width:100%; margin-top:5px; overflow:hidden; font-family:Geist,Arial,sans-serif; font-size:clamp(6px,.8vw,8px); font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#d99a2b; }
+  [data-nguyen-project-card="true"] { transition:transform .55s cubic-bezier(.2,.75,.2,1),opacity .55s ease!important; will-change:transform,opacity; }
+  [data-nguyen-project-card="true"].nguyen-project-enter { opacity:0!important; transform:translateY(42px) scale(.985)!important; }
+  [data-nguyen-project-card="true"].nguyen-project-visible { opacity:1!important; transform:translateY(0) scale(1)!important; }
+  [data-nguyen-project-card="true"] img { transition:transform .65s cubic-bezier(.2,.75,.2,1)!important; }
+  [data-nguyen-project-card="true"]:hover img { transform:scale(1.045)!important; }
   @media(max-width:620px){
     a[aria-label="Company Logo"]{width:clamp(132px,42vw,176px)!important;max-width:calc(100vw - 112px)!important;height:44px!important}
     .nguyen-wordmark strong{font-size:clamp(15px,4.5vw,18px);letter-spacing:.08em}
@@ -85,7 +90,31 @@ const CLIENT_PATCH = `
     return card;
   }
 
-  function patchCard(card,config){
+  function animateCard(card,index){
+    if(!card || card.dataset.nguyenAnimated==='true') return;
+    card.dataset.nguyenAnimated='true';
+    card.dataset.nguyenProjectCard='true';
+    card.classList.add('nguyen-project-enter');
+    const show=()=>{
+      card.classList.remove('nguyen-project-enter');
+      card.classList.add('nguyen-project-visible');
+    };
+    if('IntersectionObserver' in window){
+      const observer=new IntersectionObserver((entries)=>{
+        entries.forEach((entry)=>{
+          if(entry.isIntersecting){
+            setTimeout(show,index*65);
+            observer.disconnect();
+          }
+        });
+      },{threshold:.12});
+      observer.observe(card);
+    }else{
+      setTimeout(show,index*65);
+    }
+  }
+
+  function patchCard(card,config,index){
     if(!card) return;
     const local=new Map([[config.oldTitle,config.title],...Object.entries(config.replacements)]);
     const walker=document.createTreeWalker(card,NodeFilter.SHOW_TEXT);
@@ -106,6 +135,7 @@ const CLIENT_PATCH = `
       const picture=image.closest('picture');
       if(picture) picture.querySelectorAll('source').forEach((source)=>source.removeAttribute('srcset'));
     }
+    animateCard(card,index);
   }
 
   function findCardsByTitle(title){
@@ -113,29 +143,49 @@ const CLIENT_PATCH = `
     return [...new Set(nodes.map(getCard).filter(Boolean))];
   }
 
-  function addClonedProjects(baseCard){
-    if(!baseCard || !baseCard.parentElement) return;
-    const parent=baseCard.parentElement;
+  function addClonedProjects(baseCards){
+    const parent=baseCards[0] && baseCards[0].parentElement;
+    if(!parent) return;
     projects.slice(5).forEach((config,index)=>{
       const marker='nguyen-project-clone-'+index;
-      if(parent.querySelector('[data-nguyen-project-clone="'+marker+'"]')) return;
-      const clone=baseCard.cloneNode(true);
-      clone.dataset.nguyenProjectClone=marker;
-      parent.appendChild(clone);
-      patchCard(clone,config);
+      let clone=parent.querySelector('[data-nguyen-project-clone="'+marker+'"]');
+      if(!clone){
+        const source=baseCards[index % baseCards.length];
+        if(!source) return;
+        clone=source.cloneNode(true);
+        clone.dataset.nguyenProjectClone=marker;
+        clone.removeAttribute('data-nguyen-animated');
+        clone.removeAttribute('data-nguyen-project-card');
+        clone.classList.remove('nguyen-project-enter','nguyen-project-visible');
+        parent.appendChild(clone);
+      }
+      patchCard(clone,config,index+5);
     });
   }
 
   function patchProjects(){
     const originalTitles=projects.slice(0,5).map((project)=>project.oldTitle);
     const baseCards=originalTitles.map((title,index)=>findCardsByTitle(title)[0] || findCardsByTitle(projects[index].title)[0]);
-    projects.slice(0,5).forEach((config,index)=>{ if(baseCards[index]) patchCard(baseCards[index],config); });
-    addClonedProjects(baseCards[4]);
+    projects.slice(0,5).forEach((config,index)=>{ if(baseCards[index]) patchCard(baseCards[index],config,index); });
+    addClonedProjects(baseCards.filter(Boolean));
   }
 
   function isHomeControl(anchor){
+    if(!anchor) return false;
     const label=normalize(anchor.textContent).toLowerCase();
-    return anchor.getAttribute('aria-label')==='Company Logo' || ['home','back','back home','back to home','go back'].includes(label);
+    if(anchor.getAttribute('aria-label')==='Company Logo') return true;
+    if(anchor.querySelector('.nguyen-wordmark')) return true;
+    if(['home','back','back home','back to home','go back'].includes(label)) return true;
+    const href=anchor.getAttribute('href') || '';
+    try{
+      const sourceUrl=new URL(href,SOURCE_ORIGIN);
+      if(sourceUrl.origin===SOURCE_ORIGIN && sourceUrl.pathname==='/') return true;
+    }catch{}
+    try{
+      const localUrl=new URL(href,window.location.href);
+      if(localUrl.origin===window.location.origin && localUrl.pathname.replace(/\/$/,'')===DEMO_PATH) return true;
+    }catch{}
+    return false;
   }
 
   function forceHome(event){
@@ -152,6 +202,8 @@ const CLIENT_PATCH = `
   function patchLogo(){
     document.querySelectorAll('a[aria-label="Company Logo"]').forEach((logo)=>{
       logo.setAttribute('href',HOME_URL);
+      logo.setAttribute('target','_self');
+      logo.removeAttribute('rel');
       if(logo.dataset.nguyenLogo!=='true'){
         logo.dataset.nguyenLogo='true';
         logo.innerHTML='<div class="nguyen-wordmark"><strong>NGUYEN</strong><span>Architecture &amp; Engineering</span></div>';
@@ -198,7 +250,9 @@ const CLIENT_PATCH = `
     patchNavigation();
   }
 
-  document.addEventListener('click',forceHome,true);
+  ['pointerdown','mousedown','touchstart','click'].forEach((eventName)=>{
+    document.addEventListener(eventName,forceHome,true);
+  });
   patchText();
   document.addEventListener('DOMContentLoaded',patchText,{once:true});
   let runs=0;
