@@ -31,6 +31,51 @@ const CLEANUP = `
   }
 
   .framer-xrcGW .framer-1h0wd5 { display: none !important; }
+
+  a[aria-label="Company Logo"] {
+    width: 220px !important;
+    min-width: 180px !important;
+    height: 48px !important;
+    text-decoration: none !important;
+  }
+
+  .nguyen-wordmark {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    color: #061b36;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .nguyen-wordmark strong {
+    font-family: Geist, Arial, sans-serif;
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: .12em;
+  }
+
+  .nguyen-wordmark span {
+    margin-top: 5px;
+    font-family: Geist, Arial, sans-serif;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: .24em;
+    text-transform: uppercase;
+    color: #d99a2b;
+  }
+
+  @media (max-width: 809px) {
+    a[aria-label="Company Logo"] {
+      width: 170px !important;
+      min-width: 150px !important;
+    }
+    .nguyen-wordmark strong { font-size: 18px; }
+    .nguyen-wordmark span { font-size: 7px; letter-spacing: .17em; }
+  }
 </style>`;
 
 const CLIENT_PATCH = `
@@ -48,9 +93,7 @@ const CLIENT_PATCH = `
     ['Architecture that connects people and places', 'Residential & Commercial Design Solutions'],
     ['We design more than buildings—we create spaces that foster connection, creativity, and community', 'One team for custom homes, ADUs, residential and commercial projects — from design and engineering through permit support.'],
     ['Get Template', 'Request Consultation'],
-
     ['Explore our services and see how we bring creativity and expertise to every project', 'Architecture, engineering and permit support for custom homes, ADUs, residential improvements and commercial projects across Southern California.'],
-    ['Architectural Design', 'Architectural Design'],
     ['Site Planning', 'Existing-Condition Survey & Site Planning'],
     ['Layout Design', 'Floor Plans & Space Planning'],
     ['3D Visualization', '3D Renderings'],
@@ -58,7 +101,6 @@ const CLIENT_PATCH = `
     ['Construction Documentation', 'Permit & Construction Documents'],
     ['Schematic Design Development', 'Concept & Schematic Design'],
     ['BIM', 'Coordinated Drawings'],
-
     ['Interior Design & Planning', 'Residential Design'],
     ['Space Planning & Optimization', 'Custom Homes'],
     ['Furniture & Fixture Selection', 'ADUs'],
@@ -67,14 +109,12 @@ const CLIENT_PATCH = `
     ['Art & Accessory Curation', 'Garage Conversions'],
     ['Custom Cabinetry Design', 'Interior Reconfiguration'],
     ['Interior Landscaping', 'Residential Permit Support'],
-
     ['Consulting Services', 'Commercial Design'],
     ['Site & Building Code Consultation', 'Tenant Improvement (TI)'],
     ['Design & Concept Review', 'Restaurants, Cafés & Boba Shops'],
     ['Technical Advisory Services', 'Retail, Office & Salon Projects'],
     ['Cost Estimation & Budgeting', 'Zoning & Occupancy Review'],
     ['Project Feasibility Consulting', 'Commercial Remodel & Renovation'],
-
     ['Project Management', 'Engineering & Permit'],
     ['Pre-Construction Planning', 'Structural Engineering'],
     ['Site Inspection & Supervision', 'MEP Coordination'],
@@ -84,27 +124,21 @@ const CLIENT_PATCH = `
     ['Contractor & Vendor Management', 'Plan Check & Corrections'],
     ['Final Inspection & Handover', 'City & Consultant Coordination'],
     ['Explore All Services', 'Explore Our Services'],
-
     ['Our Best Projects', 'Project Types'],
-    ['What we’ve been up to—check out our latest projects', 'We support residential and commercial projects from early planning and feasibility through coordinated design, engineering and permit approval.'],
+    ['What we’ve been up to—check out our latest projects', 'We support custom homes, ADUs, residential improvements and commercial projects from planning through coordinated design, engineering and permit approval.'],
     ['Skyline Corporate Hub', 'Commercial Tenant Improvement'],
-    ['Commercial', 'Commercial'],
     ['Office', 'Office & Tenant Improvement'],
     ['Central Business District.', 'Orange County, CA'],
-    ['2022', 'Design + Permit'],
     ['350,000 sq. ft.', 'Commercial Project'],
     ['LuxeHaven Villa', 'Custom Home & Residential'],
-    ['Residential', 'Residential'],
     ['Luxury Villa', 'Custom Home'],
     ['Savannah, Georgia', 'Southern California'],
-    ['2023', 'Architecture + Engineering'],
     ['4000sqft', 'Residential Project'],
     ['Celestial Towers Condominiums', 'ADU & Residential Addition'],
     ['Apartment and Condo', 'ADU / Addition'],
     ['New Orleans, Louisiana', 'Orange County, CA'],
     ['300,000 sq. ft.', 'Design + Permit'],
     ['View All Projects', 'View Project Types'],
-
     ['Welcome to our world of creativity, where every project', 'From custom homes and ADUs to commercial spaces, every project'],
     ['starts with a dream', 'starts with your goals'],
     ['and ends with a', 'and moves through coordinated'],
@@ -112,7 +146,6 @@ const CLIENT_PATCH = `
     ['feels like home.', 'supports permitting and construction.'],
     ['Take a glimpse into our world of creativity and innovation.', 'NGUYEN Architecture & Engineering provides coordinated architecture, engineering and permit support for residential and commercial projects.'],
     ['Know About Us', 'About NGUYEN'],
-
     ['Our Differences', 'Why Choose NGUYEN'],
     ['what makes us different (and totally awesome)', 'One team. Complete solution. Residential and commercial design coordinated around code compliance, engineering and permitting.'],
     ['Designs with heart and soul', 'Residential + Commercial Expertise'],
@@ -121,7 +154,6 @@ const CLIENT_PATCH = `
     ['Smooth and stress-free process', 'Coordinated Design & Engineering'],
     ['Save time and stay on budget', 'Plan Check & Approval Support'],
     ['Orion Caldwell, Home Owner', 'NGUYEN Architecture & Engineering'],
-
     ['How we work', 'Our Process'],
     ['Let’s turn your big ideas into a masterpiece with a clear and fun process', 'A clear process for residential and commercial projects — consultation, feasibility, design, engineering, permit submittal and plan check.'],
     ['Initial Consultation', 'Consultation'],
@@ -129,42 +161,19 @@ const CLIENT_PATCH = `
     ['Concept Development', 'Site Analysis & Feasibility'],
     ['Planning & Preparation', 'Design & Engineering'],
     ['Execution & Delivery', 'Permit Submittal & Plan Check'],
-
     ['Project images', 'Residential & Commercial Projects'],
     ['Gallery', 'Our Work'],
     ['Don’t just take our word for it—see how we turn ideas into stunning spaces. Our gallery is full of inspiration for your next big project!', 'Project types include custom homes, ADUs, additions, residential remodels, boba and coffee shops, restaurants, nail and beauty salons, retail stores, offices, tenant improvements, commercial remodels and new commercial buildings.'],
     ['Browse Gallery', 'Explore Project Types'],
-
-    ['Blogs', 'Project Guidance'],
-    ['No fluff, no jargon—just simple, practical advice for making your space look and feel amazing. .', 'Practical guidance for residential and commercial design, engineering, zoning, code compliance and permits.'],
-    ['How to turn “cozy” into “wow”: 5 Pro Tips for Making the Most of Small Spaces', 'Planning a Custom Home, ADU or Commercial Project'],
-    ['Latest Blogs', 'Design & Permit Guidance'],
-    ['Design & Inspiration', 'Residential Design'],
-    ['Turning Spaces into Stories: How We Create Meaningful Architecture', 'Custom Homes, Additions & ADUs: From Concept to Permit'],
-    ['Industry Insights', 'Commercial Projects'],
-    ['Retail Revolution: How Architecture Is Transforming Shopping Experiences', 'Tenant Improvement: Coordinating Architecture, Structure & MEP'],
-    ['Tiny but Mighty: 7 Genius Design Hacks for Compact Living', 'ADU Planning, Design & Permit Documentation'],
-    ['From Chaos to Cozy: Tips to Turn Your Cramped Space into a Stylish Sanctuary', 'Title 24, CalGreen, ADA, Zoning & Code Compliance'],
-    ['All Blogs', 'View Guidance'],
-
     ['FAQs', 'Project FAQs'],
-    ['We’ve answered the big questions, but if you still have something on your mind, we’re here to help.', 'Common questions about residential and commercial architecture, engineering and permit support.'],
-    ['We’re just a form away—send us your question, and we’ll be happy to help!', 'Tell us whether you are planning a custom home, ADU, remodel, addition, tenant improvement or other commercial project.'],
     ['Do you handle all the permits and paperwork?', 'Do you handle permit submittal and plan check?'],
     ['Absolutely! We take care of all the boring-but-important stuff, like permits and paperwork, so you don’t have to stress about it.', 'Permit support can include permit-ready drawings, city or agency submittal, plan check coordination, corrections, resubmittal and approval support.'],
-    ['Can I make changes during the design process?', 'What services can be coordinated?'],
-    ['Of course! Your input is always welcome. We want you to be thrilled with the final design, so feel free to share your ideas as we go along.', 'Services can include architectural design, structural engineering, MEP coordination, Title 24, code compliance and permit documentation depending on the project.'],
     ['Do you only design residential spaces?', 'Do you work on both residential and commercial projects?'],
     ['Not at all! While we love creating dream homes, we also work on commercial projects, office spaces, and more. If you’ve got a vision, we’re here to bring it to life.', 'Yes. Residential work can include custom homes, ADUs, additions and remodels. Commercial work can include tenant improvements, restaurants, cafés, boba shops, salons, retail, offices, remodels and new commercial buildings.'],
-    ['Can I see a 3D model of my design?', 'Can you provide renderings and design drawings?'],
-    ['Absolutely! We love showing off our work with 3D models or renderings to help you visualize your space before construction begins.', 'Architectural services can include floor plans, elevations and sections, reflected ceiling plans, construction details and 3D renderings.'],
-    ['Do you work with contractors?', 'Do you coordinate with consultants and city agencies?'],
-    ['Yes! We collaborate with trusted contractors to ensure your design is executed perfectly. If you have your own team, we’re happy to work with them too!', 'Project coordination can include structural and MEP consultants as well as city or agency communication during permitting and plan check.'],
     ['Can you help with interior design too?', 'Do you support ADUs and Tenant Improvement projects?'],
     ['You bet! From furniture layouts to color schemes, we can assist with the finishing touches that make your space feel like home.', 'Yes. ADU and Tenant Improvement services can include existing-condition survey, space planning, architecture, engineering, code review and permit support.'],
     ['What happens if I still have questions?', 'How do we get started?'],
     ['We’re here to help! If you can’t find the answer you’re looking for, just drop us a message or fill out the form. We’ll get back to you in no time!', 'Contact NGUYEN Architecture & Engineering to discuss the project type, scope, existing conditions and permit requirements.'],
-
     ['Architect', 'NGUYEN'],
     ['(217) 555-0134', '(209) 233-8888'],
     ['(217) 444-0134', '(714) 707-8889'],
@@ -184,7 +193,18 @@ const CLIENT_PATCH = `
     return (value || '').replace(/\\s+/g, ' ').trim();
   }
 
+  function patchLogo() {
+    document.querySelectorAll('a[aria-label="Company Logo"]').forEach((logo) => {
+      if (logo.dataset.nguyenLogo === 'true') return;
+      logo.dataset.nguyenLogo = 'true';
+      logo.setAttribute('href', DEMO_PATH);
+      logo.innerHTML = '<div class="nguyen-wordmark"><strong>NGUYEN</strong><span>Architecture &amp; Engineering</span></div>';
+    });
+  }
+
   function patchText() {
+    patchLogo();
+
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     let node;
     while ((node = walker.nextNode())) {
@@ -237,7 +257,7 @@ const CLIENT_PATCH = `
   const timer = setInterval(() => {
     patchText();
     runs += 1;
-    if (runs >= 36) clearInterval(timer);
+    if (runs >= 40) clearInterval(timer);
   }, 250);
 })();
 </script>`;
@@ -277,11 +297,11 @@ export async function GET() {
     );
 
     html = html.replace(
-      /<title>[^<]*<\/title>/i,
+      /<title>[^<]*<\\/title>/i,
       '<title>NGUYEN Architecture & Engineering — Residential & Commercial Design</title>',
     );
 
-    html = html.replace(/<\/body>/i, `${CLIENT_PATCH}</body>`);
+    html = html.replace(/<\\/body>/i, `${CLIENT_PATCH}</body>`);
 
     return new Response(html, {
       headers: {
