@@ -164,6 +164,11 @@ const BRAND_CSS = String.raw`<style id="nguyen-brand-css">
   .nguyen-brand-heading { color: var(--nguyen-blue) !important; }
   .nguyen-brand-heading-on-dark { color: var(--nguyen-blue-tint) !important; }
 
+  .nguyen-brand-dark-surface {
+    background: var(--nguyen-blue) !important;
+    background-color: var(--nguyen-blue) !important;
+  }
+
   .nguyen-brand-button {
     background-color: var(--nguyen-blue) !important;
     border-color: var(--nguyen-blue) !important;
@@ -237,6 +242,23 @@ const BRAND_RUNTIME = String.raw`<script id="nguyen-brand-runtime">
     });
   }
 
+  function styleDarkSurfaces() {
+    document.querySelectorAll('section,main > div,[data-framer-name*="Section" i],div[class*="framer-"]').forEach((el) => {
+      const style = getComputedStyle(el);
+      const background = rgbFrom(style.backgroundColor);
+      if (!background || background.a < 0.35) return;
+      if (style.backgroundImage && style.backgroundImage.includes('url(')) return;
+
+      const spread = Math.max(background.r, background.g, background.b) - Math.min(background.r, background.g, background.b);
+      const isDarkNeutral = luminance(background) < 0.055 && spread < 18;
+      if (!isDarkNeutral) return;
+
+      const rect = el.getBoundingClientRect();
+      const isLargeSurface = rect.width >= Math.max(280, window.innerWidth * 0.72) && rect.height >= 150;
+      if (isLargeSurface) el.classList.add('nguyen-brand-dark-surface');
+    });
+  }
+
   function styleButtons() {
     document.querySelectorAll('a,button').forEach((el) => {
       const text = normalize(el.textContent);
@@ -258,6 +280,7 @@ const BRAND_RUNTIME = String.raw`<script id="nguyen-brand-runtime">
 
   function applyBrand() {
     try {
+      styleDarkSurfaces();
       styleHeadings();
       styleButtons();
       styleAccents();
