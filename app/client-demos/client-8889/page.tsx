@@ -32,6 +32,12 @@ const demos = [
     style: 'Commercial design · engineering · permit',
     href: '/client-demos/client-8889/forma',
   },
+  {
+    number: '04',
+    name: 'NGUYEN Concept 04',
+    style: 'One team · architecture · engineering · permit',
+    href: '/client-demos/client-8889/architectured',
+  },
 ];
 
 export default function NguyenClientDemosPage() {
