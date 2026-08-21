@@ -35,7 +35,7 @@ const EXACT_TESTIMONIAL_REPLACEMENT = String.raw`<script id="td-exact-concept04-
     host.style.setProperty('opacity', '1', 'important');
 
     const frame = document.createElement('iframe');
-    frame.src = '/client-demos/client-8889/architectured/handbook';
+    frame.src = location.origin + '/client-demos/client-8889/architectured/handbook';
     frame.title = 'NGUYEN Architecture & Engineering Project Handbook';
     frame.setAttribute('loading', 'eager');
     frame.setAttribute('data-td-handbook-frame', 'true');
