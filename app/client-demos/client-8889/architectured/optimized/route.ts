@@ -149,7 +149,7 @@ const BRAND_CSS = String.raw`<style id="nguyen-brand-css">
     display: none !important;
   }
   a[aria-label="Company Logo"]::after {
-    content: "Nguyen";
+    content: "NGUYEN";
     color: var(--nguyen-blue);
     font-family: "Geist", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 26px;
@@ -157,7 +157,7 @@ const BRAND_CSS = String.raw`<style id="nguyen-brand-css">
     font-weight: 650;
     letter-spacing: -0.045em;
     line-height: 1;
-    text-transform: none;
+    text-transform: uppercase;
     white-space: nowrap;
   }
 
