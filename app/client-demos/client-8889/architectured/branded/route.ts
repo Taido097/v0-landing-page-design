@@ -6,7 +6,7 @@ export const revalidate = 0
 
 const EXACT_TESTIMONIAL_REPLACEMENT = String.raw`<script id="td-concept04-exact-testimonial-replacement">
 (() => {
-  const HANDBOOK_URL = location.origin + '/client-demos/client-8889/architectured/handbook?v=exact-testimonial';
+  const HANDBOOK_URL = location.origin + '/client-demos/client-8889/architectured/handbook?v=expanded-handbook';
 
   function normalized(value) {
     return (value || '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
@@ -67,8 +67,8 @@ const EXACT_TESTIMONIAL_REPLACEMENT = String.raw`<script id="td-concept04-exact-
       position: 'relative',
       width: '100%',
       maxWidth: 'none',
-      height: '760px',
-      minHeight: '760px',
+      height: 'clamp(940px, 76vw, 1080px)',
+      minHeight: '940px',
       margin: '0',
       padding: '0',
       overflow: 'hidden',
@@ -110,8 +110,8 @@ const EXACT_TESTIMONIAL_REPLACEMENT = String.raw`<script id="td-concept04-exact-
 
     frame.style.setProperty('display', 'block', 'important');
     frame.style.setProperty('width', '100%', 'important');
-    frame.style.setProperty('height', '760px', 'important');
-    frame.style.setProperty('min-height', '760px', 'important');
+    frame.style.setProperty('height', 'clamp(940px, 76vw, 1080px)', 'important');
+    frame.style.setProperty('min-height', '940px', 'important');
     frame.style.setProperty('border', '0', 'important');
     frame.style.setProperty('margin', '0', 'important');
     frame.style.setProperty('padding', '0', 'important');
