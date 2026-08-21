@@ -6,7 +6,7 @@ export const revalidate = 0
 
 const EXACT_TESTIMONIAL_REPLACEMENT = String.raw`<script id="td-concept04-exact-testimonial-replacement">
 (() => {
-  const HANDBOOK_URL = location.origin + '/client-demos/client-8889/architectured/handbook?v=expanded-handbook';
+  const HANDBOOK_URL = location.origin + '/client-demos/client-8889/architectured/handbook?v=e28f86d-artwork-fix';
 
   function normalized(value) {
     return (value || '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
@@ -100,13 +100,15 @@ const EXACT_TESTIMONIAL_REPLACEMENT = String.raw`<script id="td-concept04-exact-
         frame = document.createElement('iframe');
         frame.setAttribute('data-td-exact-handbook-frame', 'true');
         frame.title = 'NGUYEN Architecture & Engineering Project Handbook';
-        frame.src = HANDBOOK_URL;
         frame.setAttribute('loading', 'eager');
         frame.setAttribute('allow', 'fullscreen');
       }
 
       target.replaceChildren(frame);
     }
+
+    const wantedUrl = new URL(HANDBOOK_URL, location.href).href;
+    if (frame.src !== wantedUrl) frame.src = HANDBOOK_URL;
 
     frame.style.setProperty('display', 'block', 'important');
     frame.style.setProperty('width', '100%', 'important');
