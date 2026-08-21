@@ -273,8 +273,9 @@ const HANDBOOK_RUNTIME = String.raw`<style id="nguyen-handbook-css">
   ];
 
   const TOKENS = [
-    'deliver exceptional service',
-    'exceeded our expectations'
+    'deliverexceptionalservice',
+    'exceededourexpectations',
+    'nguyenarchitectureengineering'
   ];
 
   const normalize = (value) => (value || '')
@@ -283,19 +284,31 @@ const HANDBOOK_RUNTIME = String.raw`<style id="nguyen-handbook-css">
     .trim()
     .toLowerCase();
 
+  const compact = (value) => normalize(value).replace(/[^a-z0-9]+/g, '');
+
   function hasQuote(el) {
-    const text = normalize(el && el.textContent);
+    const text = compact(el && el.textContent);
     return TOKENS.some((token) => text.includes(token));
   }
 
   function findTestimonialHost() {
-    const nodes = Array.from(document.querySelectorAll('p,h1,h2,h3,h4,h5,h6,span,div'));
-    const quoteNode = nodes.find((node) => hasQuote(node));
-    if (!(quoteNode instanceof HTMLElement)) return null;
+    const nodes = Array.from(document.querySelectorAll('p,h1,h2,h3,h4,h5,h6,span,div'))
+      .filter((node) => node instanceof HTMLElement && hasQuote(node));
+    if (!nodes.length) return null;
 
+    nodes.sort((a, b) => {
+      const aText = compact(a.textContent).length;
+      const bText = compact(b.textContent).length;
+      if (aText !== bText) return aText - bText;
+      const aRect = a.getBoundingClientRect();
+      const bRect = b.getBoundingClientRect();
+      return (aRect.width * aRect.height) - (bRect.width * bRect.height);
+    });
+
+    const quoteNode = nodes[0];
     const candidates = [];
     let node = quoteNode;
-    for (let depth = 0; node && depth < 12; depth += 1, node = node.parentElement) {
+    for (let depth = 0; node && depth < 14; depth += 1, node = node.parentElement) {
       if (!hasQuote(node)) continue;
       const rect = node.getBoundingClientRect();
       const imageCount = node.querySelectorAll('img').length;
