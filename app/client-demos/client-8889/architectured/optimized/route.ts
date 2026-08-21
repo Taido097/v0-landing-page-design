@@ -111,6 +111,188 @@ const FRAME_BATCHED_SCHEDULER = String.raw`let queued = false;
     }
   }, 6000);`
 
+const BRAND_CSS = String.raw`<style id="nguyen-brand-css">
+  :root {
+    --nguyen-blue: #00102A;
+    --nguyen-blue-rgb: 0, 16, 42;
+    --nguyen-blue-dark: #000B1D;
+    --nguyen-blue-tint: #EEF3F7;
+    --nguyen-blue-soft: #D7E0E8;
+
+    /* Architectured's primary accent token. Replacing the token lets all
+       native Framer accent states inherit the Nguyen brand color. */
+    --token-230c3248-009b-4ccd-bda2-d16c47a758d2: #00102A !important;
+  }
+
+  /* Replace the original raster logo with a crisp wordmark without changing
+     the existing link box, navigation geometry, or responsive layout. */
+  a[aria-label="Company Logo"] {
+    color: var(--nguyen-blue) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    text-decoration: none !important;
+  }
+  a[aria-label="Company Logo"] [data-framer-background-image-wrapper] {
+    display: none !important;
+  }
+  a[aria-label="Company Logo"]::after {
+    content: "Nguyen";
+    color: var(--nguyen-blue);
+    font-family: "Geist", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 26px;
+    font-style: normal;
+    font-weight: 650;
+    letter-spacing: -0.045em;
+    line-height: 1;
+    text-transform: none;
+    white-space: nowrap;
+  }
+
+  .nguyen-brand-heading {
+    color: var(--nguyen-blue) !important;
+  }
+  .nguyen-brand-heading-on-dark {
+    color: var(--nguyen-blue-tint) !important;
+  }
+
+  .nguyen-brand-button {
+    background-color: var(--nguyen-blue) !important;
+    border-color: var(--nguyen-blue) !important;
+    color: #fff !important;
+  }
+  .nguyen-brand-button:hover,
+  .nguyen-brand-button:focus-visible {
+    background-color: var(--nguyen-blue-dark) !important;
+    border-color: var(--nguyen-blue-dark) !important;
+  }
+  .nguyen-brand-button,
+  .nguyen-brand-button * {
+    color: #fff !important;
+  }
+  .nguyen-brand-button svg,
+  .nguyen-brand-button svg * {
+    color: #fff !important;
+    fill: currentColor !important;
+  }
+
+  .nguyen-brand-accent {
+    border-color: var(--nguyen-blue) !important;
+  }
+  .nguyen-brand-highlight {
+    background-color: var(--nguyen-blue-tint) !important;
+    border-color: var(--nguyen-blue-soft) !important;
+    color: var(--nguyen-blue-dark) !important;
+  }
+  .nguyen-brand-highlight * {
+    color: var(--nguyen-blue-dark) !important;
+  }
+
+  ::selection {
+    background: var(--nguyen-blue);
+    color: #fff;
+  }
+</style>`
+
+const BRAND_RUNTIME = String.raw`<script id="nguyen-brand-runtime">
+(() => {
+  const CTA_TEXT = new Set([
+    'request consultation',
+    'start a project',
+    'view project types',
+    'about nguyen',
+    'email nguyen',
+    'email us'
+  ]);
+
+  const normalize = (value) => (value || '').replace(/\s+/g, ' ').trim().toLowerCase();
+
+  function rgbFrom(value) {
+    const match = value && value.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*([\d.]+))?\s*\)/i);
+    if (!match) return null;
+    return {
+      r: Number(match[1]),
+      g: Number(match[2]),
+      b: Number(match[3]),
+      a: match[4] === undefined ? 1 : Number(match[4])
+    };
+  }
+
+  function luminance(color) {
+    const convert = (channel) => {
+      const value = channel / 255;
+      return value <= 0.04045 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4);
+    };
+    return 0.2126 * convert(color.r) + 0.7152 * convert(color.g) + 0.0722 * convert(color.b);
+  }
+
+  function styleHeadings() {
+    document.querySelectorAll('h1,h2,h3,h4,h5,h6').forEach((heading) => {
+      const current = rgbFrom(getComputedStyle(heading).color);
+      const designedForDarkSurface = current ? luminance(current) > 0.62 : false;
+      heading.classList.toggle('nguyen-brand-heading-on-dark', designedForDarkSurface);
+      heading.classList.toggle('nguyen-brand-heading', !designedForDarkSurface);
+    });
+  }
+
+  function styleButtons() {
+    document.querySelectorAll('a,button').forEach((el) => {
+      const text = normalize(el.textContent);
+      if (!text || !CTA_TEXT.has(text)) return;
+
+      const background = rgbFrom(getComputedStyle(el).backgroundColor);
+      const hasButtonSurface = el.tagName === 'BUTTON' || (background && background.a > 0.05);
+      if (hasButtonSurface) el.classList.add('nguyen-brand-button');
+    });
+  }
+
+  function styleAccents() {
+    document.querySelectorAll('[data-framer-name*="Accent" i]').forEach((el) => {
+      el.classList.add('nguyen-brand-accent');
+    });
+    document.querySelectorAll('[data-framer-name*="Highlight" i],[data-framer-name*="Tag" i],[data-framer-name*="Badge" i]').forEach((el) => {
+      el.classList.add('nguyen-brand-highlight');
+    });
+  }
+
+  function applyBrand() {
+    styleHeadings();
+    styleButtons();
+    styleAccents();
+  }
+
+  let queued = false;
+  const schedule = () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => {
+      queued = false;
+      applyBrand();
+    });
+  };
+
+  const observer = new MutationObserver(schedule);
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+    characterData: true
+  });
+
+  applyBrand();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', schedule, { once: true });
+  }
+  window.addEventListener('load', schedule, { once: true });
+
+  // Framer hydration settles quickly; disconnect so branding adds no steady-
+  // state observer cost after the initial page boot.
+  window.setTimeout(() => {
+    observer.disconnect();
+    schedule();
+  }, 6000);
+})();
+</script>`
+
 function replaceOnce(html: string, pattern: RegExp, replacement: string, label: string) {
   if (!pattern.test(html)) {
     console.warn(`[Concept04 performance] ${label} optimization pattern not found`)
@@ -130,11 +312,11 @@ export async function GET() {
   html = replaceOnce(html, FIND_BY_TEXT_RE, FAST_FIND_BY_TEXT, "findByText")
   html = replaceOnce(html, SCHEDULER_RE, FRAME_BATCHED_SCHEDULER, "scheduler")
 
-  // Keep the native Framer motion system untouched. We optimize only the
-  // NGUYEN content-patching work around it.
+  // Keep the native Framer motion system untouched. Branding only overrides
+  // color/text presentation and the existing primary accent token.
   html = html.replace(
     "</head>",
-    `<style id="nguyen-performance-css">
+    `${BRAND_CSS}<style id="nguyen-performance-css">
       /* Isolate paint/layout work for major Framer sections without changing
          their authored animation values or transition curves. */
       @media (min-width: 810px) {
@@ -147,6 +329,8 @@ export async function GET() {
       }
     </style></head>`,
   )
+
+  html = html.replace("</body>", `${BRAND_RUNTIME}</body>`)
 
   const headers = new Headers(sourceResponse.headers)
   headers.set("Content-Type", "text/html; charset=utf-8")
