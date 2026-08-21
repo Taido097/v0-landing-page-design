@@ -1,55 +1,49 @@
-// Final Concept 04 handbook mount: targets the exact Framer Testimonial 1 section.
+// Concept 04: keep the live handbook mounted in the exact Framer testimonial section.
 import { GET as getHandbookDemo } from "./route-handbook-live"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
 
-const EXACT_TESTIMONIAL_REPLACEMENT = String.raw`<script id="td-exact-concept04-handbook-replacement">
+const EXACT_TESTIMONIAL_PIN = String.raw`<script id="td-concept04-handbook-pin">
 (() => {
-  function findCurrentTestimonialSection() {
-    return document.querySelector('section[data-framer-name="Testimonial 1"]')
-      || document.querySelector('[data-framer-name="Testimonial 1"]')
-      || document.getElementById('testimonial');
-  }
+  const findTarget = () =>
+    document.querySelector('section[data-framer-name="Testimonial 1"]')
+    || document.querySelector('[data-framer-name="Testimonial 1"]')
+    || document.getElementById('testimonial');
 
-  function mount() {
-    const host = findCurrentTestimonialSection();
-    if (!host) return false;
-    if (host.getAttribute('data-td-exact-concept04-handbook') === 'true') return true;
+  const ensureTrigger = (target) => {
+    if (target.querySelector('[data-td-handbook-trigger="true"]')) return;
+    const trigger = document.createElement('span');
+    trigger.setAttribute('data-td-handbook-trigger', 'true');
+    trigger.textContent = 'Client Testimonial';
+    trigger.setAttribute('aria-hidden', 'true');
+    trigger.style.cssText = 'position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;opacity:0!important;pointer-events:none!important;';
+    target.appendChild(trigger);
+  };
 
-    host.innerHTML = '';
-    host.setAttribute('data-td-exact-concept04-handbook', 'true');
-    host.removeAttribute('data-td-nguyen-handbook-host');
+  const pin = () => {
+    const target = findTarget();
+    if (!target) return false;
 
-    host.style.setProperty('display', 'block', 'important');
-    host.style.setProperty('position', 'relative', 'important');
-    host.style.setProperty('width', '100%', 'important');
-    host.style.setProperty('max-width', 'none', 'important');
-    host.style.setProperty('height', 'auto', 'important');
-    host.style.setProperty('min-height', '760px', 'important');
-    host.style.setProperty('margin', '0', 'important');
-    host.style.setProperty('padding', '0', 'important');
-    host.style.setProperty('overflow', 'hidden', 'important');
-    host.style.setProperty('background', '#1d1b18', 'important');
-    host.style.setProperty('visibility', 'visible', 'important');
-    host.style.setProperty('opacity', '1', 'important');
+    target.setAttribute('data-td-nguyen-handbook-host', 'true');
+    target.setAttribute('data-td-exact-concept04-handbook', 'true');
+    ensureTrigger(target);
 
-    const frame = document.createElement('iframe');
-    frame.src = location.origin + '/client-demos/client-8889/architectured/handbook';
-    frame.title = 'NGUYEN Architecture & Engineering Project Handbook';
-    frame.setAttribute('loading', 'eager');
-    frame.setAttribute('data-td-handbook-frame', 'true');
-    frame.style.setProperty('display', 'block', 'important');
-    frame.style.setProperty('width', '100%', 'important');
-    frame.style.setProperty('height', '760px', 'important');
-    frame.style.setProperty('border', '0', 'important');
-    frame.style.setProperty('background', '#1d1b18', 'important');
-    frame.style.setProperty('visibility', 'visible', 'important');
-    frame.style.setProperty('opacity', '1', 'important');
+    const book = document.querySelector('[data-td-nguyen-handbook="true"]');
+    if (!book) return false;
 
-    host.appendChild(frame);
+    const oldHost = book.parentElement;
+    if (oldHost && oldHost !== target) {
+      oldHost.removeAttribute('data-td-nguyen-handbook-host');
+    }
+
+    if (book.parentElement !== target) {
+      target.appendChild(book);
+    }
+
+    target.querySelectorAll('[data-td-handbook-frame="true"]').forEach((node) => node.remove());
     return true;
-  }
+  };
 
   let queued = false;
   const schedule = () => {
@@ -57,20 +51,17 @@ const EXACT_TESTIMONIAL_REPLACEMENT = String.raw`<script id="td-exact-concept04-
     queued = true;
     requestAnimationFrame(() => {
       queued = false;
-      mount();
+      pin();
     });
   };
 
-  const observer = new MutationObserver(() => {
-    const host = findCurrentTestimonialSection();
-    if (!host || host.getAttribute('data-td-exact-concept04-handbook') !== 'true') schedule();
-  });
+  const observer = new MutationObserver(schedule);
+  observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
 
-  observer.observe(document.documentElement, { childList: true, subtree: true });
   document.addEventListener('DOMContentLoaded', schedule, { once: true });
   window.addEventListener('load', schedule, { once: true });
   schedule();
-  [50, 120, 250, 500, 900, 1500, 2500, 4000, 7000].forEach((delay) => window.setTimeout(schedule, delay));
+  [40, 100, 180, 300, 500, 800, 1200, 1800, 2600, 4000, 6500, 9000].forEach((delay) => window.setTimeout(schedule, delay));
 })();
 </script>`
 
@@ -79,7 +70,7 @@ export async function GET() {
   if (!response.ok) return response
 
   let html = await response.text()
-  html = html.replace("</body>", `${EXACT_TESTIMONIAL_REPLACEMENT}</body>`)
+  html = html.replace("</body>", `${EXACT_TESTIMONIAL_PIN}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set("Content-Type", "text/html; charset=utf-8")
