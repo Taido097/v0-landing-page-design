@@ -130,12 +130,12 @@ const FRAME_BATCHED_SCHEDULER = String.raw`let queued = false;
 
 const BRAND_CSS = String.raw`<style id="nguyen-brand-css">
   :root {
-    --nguyen-blue: #00102A;
-    --nguyen-blue-rgb: 0, 16, 42;
-    --nguyen-blue-dark: #000B1D;
+    --nguyen-blue: #021736;
+    --nguyen-blue-rgb: 2, 23, 54;
+    --nguyen-blue-dark: #001530;
     --nguyen-blue-tint: #EEF3F7;
     --nguyen-blue-soft: #D7E0E8;
-    --token-230c3248-009b-4ccd-bda2-d16c47a758d2: #00102A !important;
+    --token-230c3248-009b-4ccd-bda2-d16c47a758d2: #021736 !important;
   }
 
   a[aria-label="Company Logo"] {
