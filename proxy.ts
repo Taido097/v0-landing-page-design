@@ -2,15 +2,28 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const NGUYEN_CONCEPT04 = '/client-demos/client-8889/architectured';
 const NGUYEN_CONCEPT04_FIXED = '/client-demos/client-8889/architectured/fixed';
+const NGUYEN_PROJECTS = '/client-demos/client-8889/architectured/projects';
+const NGUYEN_PROJECTS_FIXED = '/client-demos/client-8889/architectured/projects/fixed';
 
 export function proxy(request: NextRequest) {
-  if (request.nextUrl.pathname !== NGUYEN_CONCEPT04) return NextResponse.next();
-
   const rewriteUrl = request.nextUrl.clone();
-  rewriteUrl.pathname = NGUYEN_CONCEPT04_FIXED;
-  return NextResponse.rewrite(rewriteUrl);
+
+  if (request.nextUrl.pathname === NGUYEN_CONCEPT04) {
+    rewriteUrl.pathname = NGUYEN_CONCEPT04_FIXED;
+    return NextResponse.rewrite(rewriteUrl);
+  }
+
+  if (request.nextUrl.pathname === NGUYEN_PROJECTS) {
+    rewriteUrl.pathname = NGUYEN_PROJECTS_FIXED;
+    return NextResponse.rewrite(rewriteUrl);
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/client-demos/client-8889/architectured'],
+  matcher: [
+    '/client-demos/client-8889/architectured',
+    '/client-demos/client-8889/architectured/projects',
+  ],
 };
