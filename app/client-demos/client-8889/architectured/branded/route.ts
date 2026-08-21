@@ -5,21 +5,23 @@ export const revalidate = 0
 
 const FINAL_BRAND_CSS = String.raw`<style id="nguyen-final-brand-css">
   :root {
-    --nguyen-navy: #001b46;
-    --nguyen-navy-line: rgba(171, 195, 222, 0.24);
+    --nguyen-service-navy: #001b46;
+    --nguyen-service-line: rgba(171, 195, 222, 0.24);
   }
 
-  .nguyen-hard-navy,
-  .nguyen-hard-navy::before,
-  .nguyen-hard-navy::after {
-    background: #001b46 !important;
-    background-color: #001b46 !important;
+  .nguyen-service-row-navy,
+  .nguyen-service-row-navy::before,
+  .nguyen-service-row-navy::after,
+  .nguyen-service-pill-navy,
+  .nguyen-service-pill-navy::before,
+  .nguyen-service-pill-navy::after {
+    background: var(--nguyen-service-navy) !important;
+    background-color: var(--nguyen-service-navy) !important;
     background-image: none !important;
-    border-color: var(--nguyen-navy-line) !important;
-  }
-
-  .nguyen-hard-navy * {
-    border-color: var(--nguyen-navy-line);
+    border-color: var(--nguyen-service-line) !important;
+    opacity: 1 !important;
+    mix-blend-mode: normal !important;
+    filter: none !important;
   }
 </style>`
 
@@ -28,93 +30,11 @@ const FINAL_BRAND_RUNTIME = String.raw`<script id="nguyen-final-brand-runtime">
   const NAVY = '#001b46';
   const LINE = 'rgba(171, 195, 222, 0.24)';
 
-  const SERVICE_HEADINGS = [
-    'Site & Planning + Architectural Design',
-    'Structural Engineering',
-    'MEP Engineering',
-    'Code, Energy & Permit Services'
-  ];
-
-  const SERVICE_TAGS = [
-    'Site Survey & Existing Conditions',
-    'Zoning & Code Review',
-    'Space Planning',
-    'Concept Design',
-    'Floor Plans',
-    'Elevations & Sections',
-    'Reflected Ceiling Plans',
-    'Construction Details · 3D Renderings · TI Plans',
-    'Structural Design',
-    'Structural Details',
-    'Structural Calculations',
-    'Foundation & Framing',
-    'Retaining Walls',
-    'Existing Building Modification',
-    'ADU & Commercial TI Structural Support',
-    'Electrical Design',
-    'Plumbing Design',
-    'HVAC Design',
-    'Electrical Load Calculations',
-    'Equipment Coordination',
-    'Title 24',
-    'CalGreen',
-    'ADA Compliance',
-    'Building Code Review',
-    'Accessibility · Occupancy & Egress',
-    'Permit Submittal · City Submittal',
-    'Plan Check · Corrections · Resubmittal · Approval Support'
-  ];
-
-  const PROJECT_TEXT = [
-    'Boba Shops & Cafés',
-    'Restaurants',
-    'New Commercial Buildings',
-    'Garden Grove, CA',
-    'Interior TI',
-    '1,200 SF',
-    'View Project'
-  ];
-
-  const normalize = (value) => (value || '').replace(/\s+/g, ' ').trim();
-
-  function exactMatches(text) {
-    const wanted = normalize(text);
-    return Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6,p,a,span,div,li,button')).filter(
-      (el) => normalize(el.textContent) === wanted
-    );
-  }
-
-  function ancestors(el, limit = 14) {
-    const result = [];
-    let node = el instanceof HTMLElement ? el : null;
-    let depth = 0;
-    while (node && depth < limit && node !== document.body && node !== document.documentElement) {
-      result.push(node);
-      node = node.parentElement;
-      depth += 1;
-    }
-    return result;
-  }
-
-  function hardNavy(el, clearImage = true) {
-    if (!(el instanceof HTMLElement)) return;
-
-    el.classList.add('nguyen-hard-navy');
-    el.style.setProperty('background', NAVY, 'important');
-    el.style.setProperty('background-color', NAVY, 'important');
-    if (clearImage) el.style.setProperty('background-image', 'none', 'important');
-    el.style.setProperty('border-color', LINE, 'important');
-  }
-
-  function hasVisualSurface(el) {
-    if (!(el instanceof HTMLElement)) return false;
-    const style = getComputedStyle(el);
-    const bg = style.backgroundColor;
-    const image = style.backgroundImage;
-    const paintedColor = bg && bg !== 'transparent' && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'rgb(0, 0, 0, 0)';
-    const paintedImage = image && image !== 'none';
-    return paintedColor || paintedImage;
-  }
+  const normalize = (value) => (value || '')
+    .replace(/\u00a0/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
 
   function parseRgb(value) {
     if (!value || value === 'transparent') return null;
@@ -128,165 +48,121 @@ const FINAL_BRAND_RUNTIME = String.raw`<script id="nguyen-final-brand-runtime">
     };
   }
 
-  function isNeutralGraySurface(el) {
+  function isNeutralPaintedSurface(el) {
     if (!(el instanceof HTMLElement)) return false;
-    if (el.classList.contains('nguyen-hard-navy')) return false;
-
-    const tag = el.tagName.toLowerCase();
-    if (['html', 'body', 'img', 'picture', 'video', 'canvas', 'svg', 'path', 'iframe'].includes(tag)) return false;
-
-    const rect = el.getBoundingClientRect();
-    if (rect.width < 90 || rect.height < 38 || rect.width * rect.height < 7000) return false;
-
     const style = getComputedStyle(el);
     const rgb = parseRgb(style.backgroundColor);
-    if (!rgb || rgb.a < 0.45) return false;
+    if (!rgb || rgb.a < 0.2) return false;
 
     const max = Math.max(rgb.r, rgb.g, rgb.b);
     const min = Math.min(rgb.r, rgb.g, rgb.b);
-    const chroma = max - min;
     const brightness = (rgb.r + rgb.g + rgb.b) / 3;
 
-    // Catch the actual Framer gray/charcoal card layer even when its text is
-    // nested somewhere else. Pure white and colored surfaces are left alone.
-    return chroma <= 22 && brightness >= 14 && brightness <= 251;
+    return max - min <= 28 && brightness >= 10 && brightness <= 245;
   }
 
-  function paintDetectedGraySurfaces() {
-    document.querySelectorAll('main,section,article,aside,div,li').forEach((node) => {
-      if (!(node instanceof HTMLElement)) return;
-      if (isNeutralGraySurface(node)) hardNavy(node, true);
+  function forceNavy(el, pill = false) {
+    if (!(el instanceof HTMLElement)) return;
+    el.classList.add(pill ? 'nguyen-service-pill-navy' : 'nguyen-service-row-navy');
+    el.style.setProperty('background', NAVY, 'important');
+    el.style.setProperty('background-color', NAVY, 'important');
+    el.style.setProperty('background-image', 'none', 'important');
+    el.style.setProperty('border-color', LINE, 'important');
+    el.style.setProperty('opacity', '1', 'important');
+    el.style.setProperty('mix-blend-mode', 'normal', 'important');
+    el.style.setProperty('filter', 'none', 'important');
+  }
+
+  function findFirstServiceRow() {
+    const candidates = Array.from(document.querySelectorAll(
+      '[data-framer-name="Section"], section, article, main > div, div[class*="framer-"]'
+    ));
+
+    const matches = candidates.filter((el) => {
+      if (!(el instanceof HTMLElement)) return false;
+      const text = normalize(el.textContent);
+      if (!text) return false;
+
+      const hasHeading =
+        text.includes('site & planning + architectural design') ||
+        text.includes('architectural design');
+      const hasTag =
+        text.includes('site survey & existing conditions') ||
+        text.includes('site planning');
+      const hasDetails = text.includes('show details');
+
+      if (!hasHeading || !hasTag || !hasDetails) return false;
+
+      const rect = el.getBoundingClientRect();
+      return rect.width >= Math.max(320, window.innerWidth * 0.72) &&
+        rect.height >= 180 &&
+        rect.height <= 900;
     });
+
+    matches.sort((a, b) => {
+      const ar = a.getBoundingClientRect();
+      const br = b.getBoundingClientRect();
+      return ar.width * ar.height - br.width * br.height;
+    });
+
+    return matches[0] || null;
   }
 
-  function paintSurfaceTree(root) {
-    if (!(root instanceof HTMLElement)) return;
-    hardNavy(root, true);
+  function paintFirstServiceRow() {
+    const row = findFirstServiceRow();
+    if (!row) return;
 
-    root.querySelectorAll('*').forEach((node) => {
+    forceNavy(row, false);
+
+    // Framer paints the service chips on nested wrappers. Paint only neutral
+    // backgrounds inside this one row so text/icons remain untouched.
+    row.querySelectorAll('div,li,span,a,button').forEach((node) => {
       if (!(node instanceof HTMLElement)) return;
       const rect = node.getBoundingClientRect();
-      if (rect.width < 20 || rect.height < 14) return;
-      if (hasVisualSurface(node)) hardNavy(node, true);
-    });
-  }
-
-  function paintServiceRows() {
-    const roots = new Set();
-    const viewportWidth = Math.max(window.innerWidth, document.documentElement.clientWidth || 0);
-
-    SERVICE_HEADINGS.forEach((heading) => {
-      exactMatches(heading).forEach((anchor) => {
-        const chain = ancestors(anchor, 16);
-
-        // Framer nests each service row several levels deep. Paint every wide
-        // row/section ancestor, not just the heading or chip wrapper.
-        chain.forEach((node) => {
-          const rect = node.getBoundingClientRect();
-          if (
-            rect.width >= Math.max(300, viewportWidth * 0.78) &&
-            rect.height >= 150 &&
-            rect.height <= 2800
-          ) {
-            roots.add(node);
-          }
-        });
-      });
+      if (rect.width < 45 || rect.height < 16) return;
+      if (isNeutralPaintedSurface(node)) forceNavy(node, true);
     });
 
-    roots.forEach(paintSurfaceTree);
-
-    // Also force the individual pill/tag wrappers, in case a Framer variant
-    // gives them their own opaque background after hydration or interaction.
-    SERVICE_TAGS.forEach((label) => {
-      exactMatches(label).forEach((anchor) => {
-        ancestors(anchor, 7).forEach((node) => {
-          const rect = node.getBoundingClientRect();
-          if (rect.width >= 55 && rect.height >= 18 && rect.height <= 110 && hasVisualSurface(node)) {
-            hardNavy(node, true);
-          }
-        });
-      });
-    });
-  }
-
-  function paintProjectPanels() {
-    const roots = new Set();
-
-    PROJECT_TEXT.forEach((text) => {
-      exactMatches(text).forEach((anchor) => {
-        ancestors(anchor, 11).forEach((node) => {
-          const rect = node.getBoundingClientRect();
-          if (
-            rect.width >= Math.min(250, window.innerWidth * 0.66) &&
-            rect.height >= 180 &&
-            rect.height <= 780
-          ) {
-            roots.add(node);
-          }
-        });
-      });
-    });
-
-    roots.forEach(paintSurfaceTree);
-  }
-
-  function findFooterRoot() {
-    const anchor = exactMatches('info@nguyenarchitecture.com')[0] || exactMatches('(209) 233-8888')[0];
-    if (!anchor) return null;
-
-    const semanticFooter = anchor.closest('footer');
-    if (semanticFooter instanceof HTMLElement) return semanticFooter;
-
-    return ancestors(anchor, 18).find((node) => {
+    // Catch a separate full-width inner panel if Framer keeps the visible
+    // charcoal background on a child instead of the row wrapper.
+    row.querySelectorAll(':scope > div').forEach((node) => {
+      if (!(node instanceof HTMLElement)) return;
       const rect = node.getBoundingClientRect();
-      return rect.width >= Math.min(300, window.innerWidth * 0.78) && rect.height >= 450;
-    }) || null;
-  }
-
-  function paintFooter() {
-    const footer = findFooterRoot();
-    if (footer) paintSurfaceTree(footer);
-  }
-
-  function paintKnownGraySurfaces() {
-    paintDetectedGraySurfaces();
-    paintServiceRows();
-    paintProjectPanels();
-    paintFooter();
+      if (rect.width >= row.getBoundingClientRect().width * 0.85 && rect.height >= 150) {
+        if (isNeutralPaintedSurface(node)) forceNavy(node, false);
+      }
+    });
   }
 
   let queued = false;
-  function schedule() {
+  const schedule = () => {
     if (queued) return;
     queued = true;
     requestAnimationFrame(() => {
       queued = false;
-      paintKnownGraySurfaces();
+      paintFirstServiceRow();
     });
-  }
+  };
 
   const observer = new MutationObserver(schedule);
   observer.observe(document.documentElement, {
     childList: true,
     subtree: true,
+    characterData: true,
     attributes: true,
     attributeFilter: ['style', 'class']
   });
 
-  paintKnownGraySurfaces();
+  paintFirstServiceRow();
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', schedule, { once: true });
   }
   window.addEventListener('load', schedule, { once: true });
   window.addEventListener('resize', schedule, { passive: true });
-  window.addEventListener('orientationchange', schedule, { passive: true });
 
-  [50, 120, 250, 500, 900, 1500, 2500, 4000, 7000, 11000, 16000].forEach((delay) => {
+  [50, 120, 250, 500, 900, 1500, 2500, 4000, 7000].forEach((delay) => {
     window.setTimeout(schedule, delay);
   });
-
-  window.setInterval(schedule, 2200);
 })();
 </script>`
 
