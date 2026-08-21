@@ -99,9 +99,9 @@ const HANDBOOK_RUNTIME = String.raw`<style id="nguyen-live-handbook-css">
     box-sizing: border-box !important;
     width: 100% !important;
     max-width: none !important;
-    min-height: clamp(560px, 61vw, 800px) !important;
+    min-height: clamp(520px, 55vw, 760px) !important;
     margin: 0 !important;
-    padding: clamp(48px, 6vw, 82px) clamp(12px, 3vw, 42px) !important;
+    padding: clamp(28px, 4vw, 58px) clamp(8px, 2vw, 28px) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -117,27 +117,41 @@ const HANDBOOK_RUNTIME = String.raw`<style id="nguyen-live-handbook-css">
   [data-td-nguyen-handbook="true"] {
     position: relative !important;
     z-index: 1000 !important;
-    width: min(920px, 90vw) !important;
+    width: min(1080px, 96vw) !important;
+    height: auto !important;
     margin: 0 auto !important;
+    box-sizing: border-box !important;
     display: flex !important;
-    flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    box-sizing: border-box !important;
     visibility: visible !important;
     opacity: 1 !important;
+  }
+
+  .td-nguyen-flipbook-shell {
+    position: relative !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    perspective: 2000px !important;
+    -webkit-perspective: 2000px !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
   }
 
   .td-nguyen-live-book {
     position: relative !important;
     width: 100% !important;
+    max-width: 90% !important;
     aspect-ratio: 10 / 7 !important;
-    perspective: 2000px !important;
+    display: flex !important;
+    gap: 0 !important;
     transform-style: preserve-3d !important;
+    -webkit-transform-style: preserve-3d !important;
     transition: transform .7s cubic-bezier(.44,0,.56,1) !important;
     touch-action: pan-y !important;
-    user-select: none !important;
-    -webkit-user-select: none !important;
     cursor: pointer !important;
     outline: none !important;
   }
@@ -149,11 +163,11 @@ const HANDBOOK_RUNTIME = String.raw`<style id="nguyen-live-handbook-css">
     left: 50%;
     top: 1.5%;
     bottom: 1.5%;
-    width: 2px;
+    width: 1px;
     transform: translateX(-50%);
     pointer-events: none;
-    background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(0,0,0,.54), rgba(255,255,255,.16));
-    box-shadow: 0 0 18px rgba(0,0,0,.25);
+    background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(0,0,0,.42), rgba(255,255,255,.12));
+    box-shadow: 0 0 14px rgba(0,0,0,.18);
   }
 
   .td-nguyen-live-sheet {
@@ -164,6 +178,7 @@ const HANDBOOK_RUNTIME = String.raw`<style id="nguyen-live-handbook-css">
     height: 100% !important;
     transform-origin: left center !important;
     transform-style: preserve-3d !important;
+    -webkit-transform-style: preserve-3d !important;
     transition: transform .7s cubic-bezier(.44,0,.56,1) !important;
     will-change: transform !important;
   }
@@ -178,17 +193,17 @@ const HANDBOOK_RUNTIME = String.raw`<style id="nguyen-live-handbook-css">
     overflow: hidden !important;
     backface-visibility: hidden !important;
     -webkit-backface-visibility: hidden !important;
-    background: #fff !important;
-    box-shadow: 0 24px 64px rgba(0,0,0,.34) !important;
+    background: #f8f8f8 !important;
+    box-shadow: 0 20px 55px rgba(0,0,0,.28) !important;
   }
 
   .td-nguyen-live-front {
-    transform: rotateY(0deg) !important;
+    transform: rotateY(0deg) translateZ(.1px) !important;
     border-radius: 2px 8px 8px 2px !important;
   }
 
   .td-nguyen-live-back {
-    transform: rotateY(180deg) !important;
+    transform: rotateY(180deg) translateZ(.1px) !important;
     border-radius: 8px 2px 2px 8px !important;
   }
 
@@ -196,62 +211,83 @@ const HANDBOOK_RUNTIME = String.raw`<style id="nguyen-live-handbook-css">
     display: block !important;
     width: 100% !important;
     height: 100% !important;
+    min-width: 100% !important;
+    min-height: 100% !important;
     object-fit: cover !important;
-    object-position: center !important;
+    object-position: center center !important;
     opacity: 1 !important;
     visibility: visible !important;
     pointer-events: none !important;
     -webkit-user-drag: none !important;
   }
 
-  .td-nguyen-live-controls {
+  .td-nguyen-live-control {
+    position: absolute !important;
+    z-index: 1200 !important;
+    top: 50% !important;
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    transform: translateY(-50%) !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: rgba(255,255,255,.92) !important;
+    color: #000 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 18px !important;
-    margin-top: 28px !important;
+    font: 500 22px/1 Arial, sans-serif !important;
+    cursor: pointer !important;
+    transition: opacity 200ms ease !important;
   }
 
-  .td-nguyen-live-control {
-    width: 48px !important;
-    height: 48px !important;
-    padding: 0 !important;
-    border: 1px solid currentColor !important;
-    border-radius: 999px !important;
-    background: transparent !important;
-    color: inherit !important;
-    display: grid !important;
-    place-items: center !important;
-    font: 400 21px/1 Arial, sans-serif !important;
-    cursor: pointer !important;
-    opacity: .78 !important;
-  }
+  .td-nguyen-live-prev { left: 20px !important; }
+  .td-nguyen-live-next { right: 20px !important; }
 
   .td-nguyen-live-control:disabled {
-    opacity: .25 !important;
-    cursor: default !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
   }
 
   .td-nguyen-live-indicator {
-    min-width: 94px !important;
-    color: inherit !important;
-    font: 500 11px/1 Arial, sans-serif !important;
-    letter-spacing: .12em !important;
-    text-align: center !important;
-    text-transform: uppercase !important;
-    opacity: .75 !important;
+    position: absolute !important;
+    z-index: 1200 !important;
+    bottom: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    padding: 8px 16px !important;
+    border-radius: 20px !important;
+    background: rgba(0,0,0,.62) !important;
+    color: #fff !important;
+    font: 500 12px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    white-space: nowrap !important;
+    pointer-events: none !important;
   }
 
   @media (max-width: 700px) {
     [data-td-nguyen-handbook-host="true"] {
-      min-height: 470px !important;
-      padding: 48px 8px !important;
+      min-height: 390px !important;
+      padding: 32px 0 !important;
     }
+
     [data-td-nguyen-handbook="true"] {
-      width: min(96vw, 620px) !important;
+      width: 100vw !important;
     }
-    .td-nguyen-live-controls { margin-top: 20px !important; }
-    .td-nguyen-live-control { width: 42px !important; height: 42px !important; }
+
+    .td-nguyen-live-book {
+      max-width: 96% !important;
+    }
+
+    .td-nguyen-live-control {
+      width: 36px !important;
+      height: 36px !important;
+      font-size: 19px !important;
+    }
+
+    .td-nguyen-live-prev { left: 8px !important; }
+    .td-nguyen-live-next { right: 8px !important; }
+    .td-nguyen-live-indicator { bottom: 10px !important; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -280,66 +316,63 @@ const HANDBOOK_RUNTIME = String.raw`<style id="nguyen-live-handbook-css">
     .trim()
     .toLowerCase();
 
-  const QUOTE = 'pinterest board full of ideas';
-  const AUTHOR = 'orion caldwell';
-
-  function hasTargetText(element) {
-    const text = normalize(element && element.textContent);
-    return text.includes(QUOTE) && text.includes(AUTHOR);
-  }
-
   function findTargetHost() {
-    const elements = Array.from(document.querySelectorAll('p,h1,h2,h3,h4,h5,h6,span,div'));
-    const authorNodes = elements.filter((element) => normalize(element.textContent).includes(AUTHOR));
-    if (!authorNodes.length) return null;
+    const viewportWidth = Math.max(window.innerWidth || 0, 320);
+    const all = Array.from(document.querySelectorAll('button,a,p,span,div,h1,h2,h3,h4,h5,h6'));
+    const anchors = all.filter((element) => {
+      const text = normalize(element.textContent);
+      return text === 'client testimonial' || text.includes('client testimonial');
+    });
 
-    const candidates = [];
-    authorNodes.forEach((anchor) => {
-      let node = anchor;
-      for (let depth = 0; node && depth < 18; depth += 1, node = node.parentElement) {
-        if (!(node instanceof HTMLElement) || !hasTargetText(node)) continue;
+    const fallbackAnchors = anchors.length
+      ? anchors
+      : all.filter((element) => normalize(element.textContent).includes('nguyen architecture'));
+
+    for (const anchor of fallbackAnchors) {
+      let node = anchor instanceof HTMLElement ? anchor : null;
+      let compactCandidate = null;
+
+      for (let depth = 0; node && depth < 16; depth += 1, node = node.parentElement) {
+        if (!(node instanceof HTMLElement)) continue;
+        const text = normalize(node.textContent);
+        if (!text.includes('client testimonial') && !text.includes('nguyen architecture')) continue;
+
         const rect = node.getBoundingClientRect();
-        if (rect.width < 280 || rect.height < 220) continue;
-        candidates.push(node);
+        if (rect.width >= 320 && rect.height >= 260 && rect.height <= 1100 && !compactCandidate) {
+          compactCandidate = node;
+        }
+
+        if (
+          rect.width >= viewportWidth * .72 &&
+          rect.height >= 360 &&
+          rect.height <= 1100
+        ) {
+          return node;
+        }
       }
-    });
 
-    if (!candidates.length) return null;
-
-    const unique = Array.from(new Set(candidates));
-    unique.sort((a, b) => {
-      const ar = a.getBoundingClientRect();
-      const br = b.getBoundingClientRect();
-      return ar.width * ar.height - br.width * br.height;
-    });
-
-    let host = unique[0];
-    const targetWidth = Math.min(760, Math.max(window.innerWidth, 320) * .68);
-
-    for (let depth = 0; host.parentElement && depth < 8; depth += 1) {
-      const parent = host.parentElement;
-      if (!hasTargetText(parent)) break;
-      const rect = parent.getBoundingClientRect();
-      host = parent;
-      if (rect.width >= targetWidth && rect.height >= 420) break;
+      if (compactCandidate) return compactCandidate;
     }
 
-    return host;
+    return null;
   }
 
   function createBook(host) {
     host.setAttribute('data-td-nguyen-handbook-host', 'true');
+
     const existing = host.querySelector('[data-td-nguyen-handbook="true"]');
     if (existing) return existing;
 
     const root = document.createElement('div');
     root.setAttribute('data-td-nguyen-handbook', 'true');
-    root.innerHTML = '<div class="td-nguyen-live-book" tabindex="0" role="group" aria-label="Interactive 3D handbook"></div>' +
-      '<div class="td-nguyen-live-controls">' +
-      '<button class="td-nguyen-live-control td-nguyen-live-prev" type="button" aria-label="Previous pages">←</button>' +
-      '<div class="td-nguyen-live-indicator">Cover · 1 / ' + PAGE_URLS.length + '</div>' +
-      '<button class="td-nguyen-live-control td-nguyen-live-next" type="button" aria-label="Next pages">→</button>' +
+    root.innerHTML =
+      '<div class="td-nguyen-flipbook-shell">' +
+        '<div class="td-nguyen-live-book" tabindex="0" role="group" aria-label="Interactive 3D handbook"></div>' +
+        '<button class="td-nguyen-live-control td-nguyen-live-prev" type="button" aria-label="Previous page">‹</button>' +
+        '<button class="td-nguyen-live-control td-nguyen-live-next" type="button" aria-label="Next page">›</button>' +
+        '<div class="td-nguyen-live-indicator">Cover 1 / ' + PAGE_URLS.length + '</div>' +
       '</div>';
+
     host.appendChild(root);
 
     const stage = root.querySelector('.td-nguyen-live-book');
@@ -348,10 +381,21 @@ const HANDBOOK_RUNTIME = String.raw`<style id="nguyen-live-handbook-css">
     const nextButton = root.querySelector('.td-nguyen-live-next');
     const sheets = [];
 
+    if (!(stage instanceof HTMLElement)) return root;
+    if (!(indicator instanceof HTMLElement)) return root;
+    if (!(previousButton instanceof HTMLButtonElement)) return root;
+    if (!(nextButton instanceof HTMLButtonElement)) return root;
+
+    PAGE_URLS.forEach((url) => {
+      const image = new Image();
+      image.src = url;
+    });
+
     for (let index = 0; index < PAGE_URLS.length; index += 2) {
       const sheet = document.createElement('div');
       sheet.className = 'td-nguyen-live-sheet';
-      sheet.innerHTML = '<div class="td-nguyen-live-face td-nguyen-live-front"><img src="' + PAGE_URLS[index] + '" alt="Handbook page ' + (index + 1) + '" draggable="false"></div>' +
+      sheet.innerHTML =
+        '<div class="td-nguyen-live-face td-nguyen-live-front"><img src="' + PAGE_URLS[index] + '" alt="Handbook page ' + (index + 1) + '" draggable="false"></div>' +
         '<div class="td-nguyen-live-face td-nguyen-live-back"><img src="' + PAGE_URLS[index + 1] + '" alt="Handbook page ' + (index + 2) + '" draggable="false"></div>';
       stage.appendChild(sheet);
       sheets.push(sheet);
@@ -368,18 +412,31 @@ const HANDBOOK_RUNTIME = String.raw`<style id="nguyen-live-handbook-css">
         sheet.style.zIndex = String(flipped ? index + 1 : 100 - index);
       });
 
-      stage.style.transform = page === 0 ? 'translateX(-25%)' : page === sheets.length ? 'translateX(25%)' : 'translateX(0)';
-      indicator.textContent = page === 0
-        ? 'Cover · 1 / ' + PAGE_URLS.length
+      stage.style.transform = page === 0
+        ? 'translateX(-25%)'
         : page === sheets.length
-          ? 'Back · ' + PAGE_URLS.length + ' / ' + PAGE_URLS.length
-          : (page * 2) + '–' + (page * 2 + 1) + ' / ' + PAGE_URLS.length;
+          ? 'translateX(25%)'
+          : 'translateX(0)';
+
+      indicator.textContent = page === 0
+        ? 'Cover 1 / ' + PAGE_URLS.length
+        : page === sheets.length
+          ? PAGE_URLS.length + '-' + PAGE_URLS.length + ' / ' + PAGE_URLS.length
+          : (page * 2) + '-' + (page * 2 + 1) + ' / ' + PAGE_URLS.length;
+
       previousButton.disabled = page === 0;
       nextButton.disabled = page === sheets.length;
     };
 
-    const next = () => { page = Math.min(sheets.length, page + 1); render(); };
-    const previous = () => { page = Math.max(0, page - 1); render(); };
+    const next = () => {
+      page = Math.min(sheets.length, page + 1);
+      render();
+    };
+
+    const previous = () => {
+      page = Math.max(0, page - 1);
+      render();
+    };
 
     previousButton.addEventListener('click', (event) => {
       event.preventDefault();
@@ -401,8 +458,14 @@ const HANDBOOK_RUNTIME = String.raw`<style id="nguyen-live-handbook-css">
     });
 
     stage.addEventListener('keydown', (event) => {
-      if (event.key === 'ArrowLeft') { event.preventDefault(); previous(); }
-      if (event.key === 'ArrowRight') { event.preventDefault(); next(); }
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        previous();
+      }
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        next();
+      }
     });
 
     stage.addEventListener('pointerdown', (event) => {
@@ -444,7 +507,12 @@ const HANDBOOK_RUNTIME = String.raw`<style id="nguyen-live-handbook-css">
   const observer = new MutationObserver(() => {
     if (!document.querySelector('[data-td-nguyen-handbook="true"]')) schedule();
   });
-  observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+    characterData: true
+  });
 
   mount();
   document.addEventListener('DOMContentLoaded', schedule, { once: true });
