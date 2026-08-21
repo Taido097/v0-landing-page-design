@@ -63,7 +63,7 @@ export default function ArchitecturedClientDemoPage() {
         })
 
         const handbook = doc.createElement("iframe")
-        handbook.src = HANDBOOK_SRC
+        handbook.src = new URL(HANDBOOK_SRC, window.location.origin).href
         handbook.title = "NGUYEN Architecture & Engineering Project Handbook"
         handbook.setAttribute("data-td-handbook-frame", "true")
         handbook.setAttribute("loading", "eager")
