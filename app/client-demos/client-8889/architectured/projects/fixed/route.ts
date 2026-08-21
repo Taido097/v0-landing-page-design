@@ -239,8 +239,13 @@ export async function GET() {
   const response = await getProjects();
   let html = await response.text();
 
-  if (/<\\/body>/i.test(html)) html = html.replace(/<\\/body>/i, `${PROJECTS_MOTION_FIX}</body>`);
-  else html += PROJECTS_MOTION_FIX;
+  const closingTag = '</body>';
+  const closingIndex = html.toLowerCase().lastIndexOf(closingTag);
+  if (closingIndex >= 0) {
+    html = html.slice(0, closingIndex) + PROJECTS_MOTION_FIX + html.slice(closingIndex);
+  } else {
+    html += PROJECTS_MOTION_FIX;
+  }
 
   const headers = new Headers(response.headers);
   headers.delete('content-length');
