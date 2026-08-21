@@ -1,12 +1,9 @@
 import { NextResponse } from "next/server"
-import { HANDBOOK_SPRITE_1 } from "../branded/handbook-sprite-1"
-import { HANDBOOK_SPRITE_R1 } from "../branded/handbook-sprite-r1"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
 
 export async function GET() {
-  const sprite = JSON.stringify(HANDBOOK_SPRITE_1 + HANDBOOK_SPRITE_R1)
   const html = `<!doctype html>
 <html lang="en">
 <head>
@@ -70,13 +67,13 @@ h1{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:clamp(4
 </section>
 <script>
 (()=>{
-const sprite=${sprite};
+const sprite='/client-demos/client-8889/architectured/handbook/sprite?v=d76b342';
 const positions=['0%','16.6667%','33.3333%','50%','66.6667%','83.3333%','100%'];
 const labels=['1 — Cover','2 — About Us','3 — Our Services','4 — Project Types','5 — Our Process','6 — Featured Projects','7 — Why Choose Us'];
 const spreads=[[null,0],[1,2],[3,4],[5,6]];
 const spread=document.getElementById('spread'),book=document.getElementById('book'),prevBtn=document.getElementById('prev'),nextBtn=document.getElementById('next'),turnNext=document.getElementById('turnNext'),turnPrev=document.getElementById('turnPrev'),nextFront=document.getElementById('nextFront'),nextBack=document.getElementById('nextBack'),prevFront=document.getElementById('prevFront'),prevBack=document.getElementById('prevBack');
 let index=0,busy=false,startX=null,suppressUntil=0;
-function imageMarkup(i){if(i===null)return '<div class="blank">NGUYEN ARCHITECTURE<br>&amp; ENGINEERING</div>';return '<div class="page-image" role="img" aria-label="'+labels[i]+'" style="background-image:url('+sprite+');background-position:center '+positions[i]+'"></div>'}
+function imageMarkup(i){if(i===null)return '<div class="blank">NGUYEN ARCHITECTURE<br>&amp; ENGINEERING</div>';return '<div class="page-image" role="img" aria-label="'+labels[i]+'" style="background-image:url(&quot;'+sprite+'&quot;);background-position:center '+positions[i]+'"></div>'}
 function pageMarkup(i,side){return '<div class="page '+side+'">'+imageMarkup(i)+'</div>'}
 function render(){const pair=spreads[index];spread.innerHTML=pageMarkup(pair[0],'left')+pageMarkup(pair[1],'right');prevBtn.disabled=index===0;nextBtn.disabled=index===spreads.length-1}
 function goNext(target=index+1){if(busy||index>=spreads.length-1)return;busy=true;nextFront.innerHTML=imageMarkup(spreads[index][1]);nextBack.innerHTML=imageMarkup(spreads[target][0]);turnNext.classList.remove('anim-next');void turnNext.offsetWidth;turnNext.classList.add('anim-next');setTimeout(()=>{index=target;render()},360);setTimeout(()=>{turnNext.classList.remove('anim-next');busy=false},740)}
