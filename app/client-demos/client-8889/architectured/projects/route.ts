@@ -144,14 +144,13 @@ const CLIENT_PATCH = `
   }
 
   function addClonedProjects(baseCards){
-    const parent=baseCards[0] && baseCards[0].parentElement;
-    if(!parent) return;
+    const source=baseCards[4] || baseCards.filter(Boolean).slice(-1)[0];
+    const parent=source && source.parentElement;
+    if(!source || !parent) return;
     projects.slice(5).forEach((config,index)=>{
       const marker='nguyen-project-clone-'+index;
       let clone=parent.querySelector('[data-nguyen-project-clone="'+marker+'"]');
       if(!clone){
-        const source=baseCards[index % baseCards.length];
-        if(!source) return;
         clone=source.cloneNode(true);
         clone.dataset.nguyenProjectClone=marker;
         clone.removeAttribute('data-nguyen-animated');
@@ -166,8 +165,8 @@ const CLIENT_PATCH = `
   function patchProjects(){
     const originalTitles=projects.slice(0,5).map((project)=>project.oldTitle);
     const baseCards=originalTitles.map((title,index)=>findCardsByTitle(title)[0] || findCardsByTitle(projects[index].title)[0]);
+    addClonedProjects(baseCards);
     projects.slice(0,5).forEach((config,index)=>{ if(baseCards[index]) patchCard(baseCards[index],config,index); });
-    addClonedProjects(baseCards.filter(Boolean));
   }
 
   function isHomeControl(anchor){
