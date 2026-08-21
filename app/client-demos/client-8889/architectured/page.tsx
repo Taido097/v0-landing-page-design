@@ -10,7 +10,7 @@ export default function ArchitecturedClientDemoPage() {
       }}
     >
       <iframe
-        src="/client-demos/client-8889/architectured/branded"
+        src="/client-demos/client-8889/architectured/branded?v=d56485c-testimonial-replace"
         title="NGUYEN Architecture & Engineering — Concept 04"
         style={{
           display: "block",
