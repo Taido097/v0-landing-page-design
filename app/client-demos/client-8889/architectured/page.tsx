@@ -1,7 +1,7 @@
 export default function NguyenConcept04() {
   return (
     <iframe
-      src="/client-demos/client-8889/architectured/optimized"
+      src="/client-demos/client-8889/architectured/branded"
       title="NGUYEN Architecture & Engineering — Concept 04"
       style={{
         position: 'fixed',
