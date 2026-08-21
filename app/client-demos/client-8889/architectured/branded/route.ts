@@ -9,26 +9,32 @@ const FINAL_BRAND_CSS = String.raw`<style id="nguyen-final-brand-css">
     --nguyen-service-line: rgba(171, 195, 222, 0.24);
   }
 
-  .nguyen-service-row-navy,
-  .nguyen-service-row-navy::before,
-  .nguyen-service-row-navy::after,
-  .nguyen-service-pill-navy,
-  .nguyen-service-pill-navy::before,
-  .nguyen-service-pill-navy::after {
-    background: var(--nguyen-service-navy) !important;
-    background-color: var(--nguyen-service-navy) !important;
-    background-image: none !important;
-    border-color: var(--nguyen-service-line) !important;
-    opacity: 1 !important;
-    mix-blend-mode: normal !important;
-    filter: none !important;
+  /*
+   * The first Architectured service card is rendered by Framer with two
+   * inherited color tokens. Override those tokens on this card only, rather
+   * than repainting generic divs. This preserves layout, typography, motion,
+   * sizing, controls and all other component behavior.
+   */
+  #services [data-highlight="true"],
+  .nguyen-first-service-card {
+    --token-c8809533-d74e-4474-af14-ef3a211efd13: #001b46 !important;
+    --token-48491f83-896f-4e01-8893-2183c442eb00: #001b46 !important;
+    background-color: #001b46 !important;
+  }
+
+  #services [data-highlight="true"] [data-framer-name="Sub Services"],
+  #services [data-highlight="true"] [data-framer-name="Light Text"],
+  .nguyen-first-service-card [data-framer-name="Sub Services"],
+  .nguyen-first-service-card [data-framer-name="Light Text"] {
+    background-color: #001b46 !important;
   }
 </style>`
 
 const FINAL_BRAND_RUNTIME = String.raw`<script id="nguyen-final-brand-runtime">
 (() => {
   const NAVY = '#001b46';
-  const LINE = 'rgba(171, 195, 222, 0.24)';
+  const CARD_TOKEN = '--token-c8809533-d74e-4474-af14-ef3a211efd13';
+  const PILL_TOKEN = '--token-48491f83-896f-4e01-8893-2183c442eb00';
 
   const normalize = (value) => (value || '')
     .replace(/\u00a0/g, ' ')
@@ -36,102 +42,54 @@ const FINAL_BRAND_RUNTIME = String.raw`<script id="nguyen-final-brand-runtime">
     .trim()
     .toLowerCase();
 
-  function parseRgb(value) {
-    if (!value || value === 'transparent') return null;
-    const match = value.match(/rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)(?:\s*[,/]\s*([\d.]+))?\s*\)/i);
-    if (!match) return null;
-    return {
-      r: Number(match[1]),
-      g: Number(match[2]),
-      b: Number(match[3]),
-      a: match[4] == null ? 1 : Number(match[4])
-    };
+  function isFirstServiceHeading(el) {
+    const text = normalize(el && el.textContent);
+    return text === 'site & planning + architectural design' ||
+      text === 'architectural design';
   }
 
-  function isNeutralPaintedSurface(el) {
-    if (!(el instanceof HTMLElement)) return false;
-    const style = getComputedStyle(el);
-    const rgb = parseRgb(style.backgroundColor);
-    if (!rgb || rgb.a < 0.2) return false;
+  function findCardRoot(heading) {
+    if (!(heading instanceof HTMLElement)) return null;
 
-    const max = Math.max(rgb.r, rgb.g, rgb.b);
-    const min = Math.min(rgb.r, rgb.g, rgb.b);
-    const brightness = (rgb.r + rgb.g + rgb.b) / 3;
+    const namedVariant = heading.closest(
+      '[data-highlight="true"], [data-framer-name="Desktop - Closed"], [data-framer-name="Desktop - Open"], [data-framer-name="Tablet and Phone"]'
+    );
+    if (namedVariant instanceof HTMLElement) return namedVariant;
 
-    return max - min <= 28 && brightness >= 10 && brightness <= 245;
+    const bordered = heading.closest('[data-border="true"]');
+    return bordered instanceof HTMLElement ? bordered : null;
   }
 
-  function forceNavy(el, pill = false) {
-    if (!(el instanceof HTMLElement)) return;
-    el.classList.add(pill ? 'nguyen-service-pill-navy' : 'nguyen-service-row-navy');
-    el.style.setProperty('background', NAVY, 'important');
-    el.style.setProperty('background-color', NAVY, 'important');
-    el.style.setProperty('background-image', 'none', 'important');
-    el.style.setProperty('border-color', LINE, 'important');
-    el.style.setProperty('opacity', '1', 'important');
-    el.style.setProperty('mix-blend-mode', 'normal', 'important');
-    el.style.setProperty('filter', 'none', 'important');
+  function forceExactServiceColors(card) {
+    if (!(card instanceof HTMLElement)) return;
+
+    card.classList.add('nguyen-first-service-card');
+    card.style.setProperty(CARD_TOKEN, NAVY, 'important');
+    card.style.setProperty(PILL_TOKEN, NAVY, 'important');
+    card.style.setProperty('background-color', NAVY, 'important');
+
+    card.querySelectorAll('[data-framer-name="Sub Services"], [data-framer-name="Light Text"]').forEach((surface) => {
+      if (!(surface instanceof HTMLElement)) return;
+      surface.style.setProperty(CARD_TOKEN, NAVY, 'important');
+      surface.style.setProperty(PILL_TOKEN, NAVY, 'important');
+      surface.style.setProperty('background-color', NAVY, 'important');
+    });
   }
 
-  function findFirstServiceRow() {
-    const candidates = Array.from(document.querySelectorAll(
-      '[data-framer-name="Section"], section, article, main > div, div[class*="framer-"]'
-    ));
+  function fixFirstServiceCard() {
+    const roots = new Set();
 
-    const matches = candidates.filter((el) => {
-      if (!(el instanceof HTMLElement)) return false;
-      const text = normalize(el.textContent);
-      if (!text) return false;
-
-      const hasHeading =
-        text.includes('site & planning + architectural design') ||
-        text.includes('architectural design');
-      const hasTag =
-        text.includes('site survey & existing conditions') ||
-        text.includes('site planning');
-      const hasDetails = text.includes('show details');
-
-      if (!hasHeading || !hasTag || !hasDetails) return false;
-
-      const rect = el.getBoundingClientRect();
-      return rect.width >= Math.max(320, window.innerWidth * 0.72) &&
-        rect.height >= 180 &&
-        rect.height <= 900;
+    document.querySelectorAll('[data-highlight="true"]').forEach((card) => {
+      if (card instanceof HTMLElement) roots.add(card);
     });
 
-    matches.sort((a, b) => {
-      const ar = a.getBoundingClientRect();
-      const br = b.getBoundingClientRect();
-      return ar.width * ar.height - br.width * br.height;
+    document.querySelectorAll('h1,h2,h3,h4,h5,h6').forEach((heading) => {
+      if (!isFirstServiceHeading(heading)) return;
+      const card = findCardRoot(heading);
+      if (card) roots.add(card);
     });
 
-    return matches[0] || null;
-  }
-
-  function paintFirstServiceRow() {
-    const row = findFirstServiceRow();
-    if (!row) return;
-
-    forceNavy(row, false);
-
-    // Framer paints the service chips on nested wrappers. Paint only neutral
-    // backgrounds inside this one row so text/icons remain untouched.
-    row.querySelectorAll('div,li,span,a,button').forEach((node) => {
-      if (!(node instanceof HTMLElement)) return;
-      const rect = node.getBoundingClientRect();
-      if (rect.width < 45 || rect.height < 16) return;
-      if (isNeutralPaintedSurface(node)) forceNavy(node, true);
-    });
-
-    // Catch a separate full-width inner panel if Framer keeps the visible
-    // charcoal background on a child instead of the row wrapper.
-    row.querySelectorAll(':scope > div').forEach((node) => {
-      if (!(node instanceof HTMLElement)) return;
-      const rect = node.getBoundingClientRect();
-      if (rect.width >= row.getBoundingClientRect().width * 0.85 && rect.height >= 150) {
-        if (isNeutralPaintedSurface(node)) forceNavy(node, false);
-      }
-    });
+    roots.forEach(forceExactServiceColors);
   }
 
   let queued = false;
@@ -140,7 +98,7 @@ const FINAL_BRAND_RUNTIME = String.raw`<script id="nguyen-final-brand-runtime">
     queued = true;
     requestAnimationFrame(() => {
       queued = false;
-      paintFirstServiceRow();
+      fixFirstServiceCard();
     });
   };
 
@@ -150,10 +108,10 @@ const FINAL_BRAND_RUNTIME = String.raw`<script id="nguyen-final-brand-runtime">
     subtree: true,
     characterData: true,
     attributes: true,
-    attributeFilter: ['style', 'class']
+    attributeFilter: ['style', 'class', 'data-framer-name', 'data-highlight']
   });
 
-  paintFirstServiceRow();
+  fixFirstServiceCard();
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', schedule, { once: true });
   }
