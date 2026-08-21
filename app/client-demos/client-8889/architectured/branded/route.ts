@@ -6,7 +6,7 @@ export const revalidate = 0
 
 const EXACT_TESTIMONIAL_REPLACEMENT = String.raw`<script id="td-concept04-exact-testimonial-replacement">
 (() => {
-  const HANDBOOK_URL = location.origin + '/client-demos/client-8889/architectured/handbook?v=e28f86d-artwork-fix';
+  const HANDBOOK_URL = location.origin + '/client-demos/client-8889/architectured/handbook?v=7de8941-exact-images';
 
   function normalized(value) {
     return (value || '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
