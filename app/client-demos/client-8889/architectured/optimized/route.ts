@@ -25,11 +25,11 @@ const FAST_PATCH_MAP = String.raw`const patchLookupCache = new WeakMap();
     const elements = root.querySelectorAll('h1,h2,h3,h4,h5,h6,p,a,span,div,button,label,li');
     for (let i = 0; i < elements.length; i += 1) {
       const el = elements[i];
-      if (skip(el) || el.children.length > 0) continue;
+      if (blocked.has(el.tagName) || el.children.length > 0) continue;
       const current = norm(el.textContent);
       if (!current) continue;
       const replacement = lookup.get(current) ?? lookup.get(compact(current));
-      if (replacement !== undefined) writeText(el, replacement);
+      if (replacement !== undefined) writePreservingStructure(el, replacement);
     }
   }
 
@@ -40,7 +40,7 @@ const FAST_FIND_BY_TEXT = String.raw`function findByText(text, root = document) 
     const elements = root.querySelectorAll('h1,h2,h3,h4,h5,h6,p,a,span,div,li,button');
     for (let i = 0; i < elements.length; i += 1) {
       const el = elements[i];
-      if (!skip(el) && compact(el.textContent) === wanted) return el;
+      if (!blocked.has(el.tagName) && compact(el.textContent) === wanted) return el;
     }
     return null;
   }
@@ -50,6 +50,11 @@ const FAST_FIND_BY_TEXT = String.raw`function findByText(text, root = document) 
 const FRAME_BATCHED_SCHEDULER = String.raw`let queued = false;
   let observerActive = false;
   let hydrationWindowOpen = true;
+
+  const revealPage = () => {
+    document.documentElement.classList.remove('nguyen-template-boot');
+    document.documentElement.classList.add('nguyen-template-ready');
+  };
 
   const connectObserver = () => {
     if (observerActive || !hydrationWindowOpen) return;
@@ -61,17 +66,25 @@ const FRAME_BATCHED_SCHEDULER = String.raw`let queued = false;
     observerActive = true;
   };
 
+  const safePatch = () => {
+    try {
+      patchAll();
+    } catch (error) {
+      console.error('[NGUYEN Concept 04] content patch failed', error);
+    } finally {
+      revealPage();
+    }
+  };
+
   const runPatch = () => {
     queued = false;
 
-    // Do not observe our own text writes. This prevents the patcher from
-    // recursively scheduling itself while Framer is animating/hydrating.
     if (observerActive) {
       observer.disconnect();
       observerActive = false;
     }
 
-    patchAll();
+    safePatch();
     connectObserver();
   };
 
@@ -81,24 +94,27 @@ const FRAME_BATCHED_SCHEDULER = String.raw`let queued = false;
     requestAnimationFrame(runPatch);
   };
 
-  // Child/text mutations are relevant during Framer hydration. Attribute
-  // mutations (including transforms/styles used by animation) are purposely
-  // ignored so animation frames never trigger content rescans.
   const observer = new MutationObserver(queuePatch);
   connectObserver();
 
-  patchAll();
+  // Never allow a patching error to strand the document in the hidden boot state.
+  safePatch();
 
   document.addEventListener('DOMContentLoaded', () => {
+    revealPage();
     queuePatch();
-    document.documentElement.classList.add('nguyen-template-ready');
     requestAnimationFrame(() => requestAnimationFrame(queuePatch));
   }, { once: true });
 
-  window.addEventListener('load', queuePatch, { once: true });
+  window.addEventListener('load', () => {
+    revealPage();
+    queuePatch();
+  }, { once: true });
 
-  // The old implementation forced 40 full-document patch passes every 125ms.
-  // Keep the observer only for the hydration window, then disconnect it.
+  // Mobile Safari can delay or interrupt hydration callbacks. This independent
+  // fallback guarantees the page becomes visible even if Framer fails to hydrate.
+  window.setTimeout(revealPage, 700);
+
   window.setTimeout(() => {
     hydrationWindowOpen = false;
     if (observerActive) {
@@ -107,8 +123,9 @@ const FRAME_BATCHED_SCHEDULER = String.raw`let queued = false;
     }
     if (queued) {
       queued = false;
-      patchAll();
+      safePatch();
     }
+    revealPage();
   }, 6000);`
 
 const BRAND_CSS = String.raw`<style id="nguyen-brand-css">
@@ -118,14 +135,9 @@ const BRAND_CSS = String.raw`<style id="nguyen-brand-css">
     --nguyen-blue-dark: #000B1D;
     --nguyen-blue-tint: #EEF3F7;
     --nguyen-blue-soft: #D7E0E8;
-
-    /* Architectured's primary accent token. Replacing the token lets all
-       native Framer accent states inherit the Nguyen brand color. */
     --token-230c3248-009b-4ccd-bda2-d16c47a758d2: #00102A !important;
   }
 
-  /* Replace the original raster logo with a crisp wordmark without changing
-     the existing link box, navigation geometry, or responsive layout. */
   a[aria-label="Company Logo"] {
     color: var(--nguyen-blue) !important;
     display: flex !important;
@@ -149,12 +161,8 @@ const BRAND_CSS = String.raw`<style id="nguyen-brand-css">
     white-space: nowrap;
   }
 
-  .nguyen-brand-heading {
-    color: var(--nguyen-blue) !important;
-  }
-  .nguyen-brand-heading-on-dark {
-    color: var(--nguyen-blue-tint) !important;
-  }
+  .nguyen-brand-heading { color: var(--nguyen-blue) !important; }
+  .nguyen-brand-heading-on-dark { color: var(--nguyen-blue-tint) !important; }
 
   .nguyen-brand-button {
     background-color: var(--nguyen-blue) !important;
@@ -167,26 +175,20 @@ const BRAND_CSS = String.raw`<style id="nguyen-brand-css">
     border-color: var(--nguyen-blue-dark) !important;
   }
   .nguyen-brand-button,
-  .nguyen-brand-button * {
-    color: #fff !important;
-  }
+  .nguyen-brand-button * { color: #fff !important; }
   .nguyen-brand-button svg,
   .nguyen-brand-button svg * {
     color: #fff !important;
     fill: currentColor !important;
   }
 
-  .nguyen-brand-accent {
-    border-color: var(--nguyen-blue) !important;
-  }
+  .nguyen-brand-accent { border-color: var(--nguyen-blue) !important; }
   .nguyen-brand-highlight {
     background-color: var(--nguyen-blue-tint) !important;
     border-color: var(--nguyen-blue-soft) !important;
     color: var(--nguyen-blue-dark) !important;
   }
-  .nguyen-brand-highlight * {
-    color: var(--nguyen-blue-dark) !important;
-  }
+  .nguyen-brand-highlight * { color: var(--nguyen-blue-dark) !important; }
 
   ::selection {
     background: var(--nguyen-blue);
@@ -239,7 +241,6 @@ const BRAND_RUNTIME = String.raw`<script id="nguyen-brand-runtime">
     document.querySelectorAll('a,button').forEach((el) => {
       const text = normalize(el.textContent);
       if (!text || !CTA_TEXT.has(text)) return;
-
       const background = rgbFrom(getComputedStyle(el).backgroundColor);
       const hasButtonSurface = el.tagName === 'BUTTON' || (background && background.a > 0.05);
       if (hasButtonSurface) el.classList.add('nguyen-brand-button');
@@ -256,9 +257,13 @@ const BRAND_RUNTIME = String.raw`<script id="nguyen-brand-runtime">
   }
 
   function applyBrand() {
-    styleHeadings();
-    styleButtons();
-    styleAccents();
+    try {
+      styleHeadings();
+      styleButtons();
+      styleAccents();
+    } catch (error) {
+      console.error('[NGUYEN Concept 04] branding pass failed', error);
+    }
   }
 
   let queued = false;
@@ -284,8 +289,6 @@ const BRAND_RUNTIME = String.raw`<script id="nguyen-brand-runtime">
   }
   window.addEventListener('load', schedule, { once: true });
 
-  // Framer hydration settles quickly; disconnect so branding adds no steady-
-  // state observer cost after the initial page boot.
   window.setTimeout(() => {
     observer.disconnect();
     schedule();
@@ -312,19 +315,13 @@ export async function GET() {
   html = replaceOnce(html, FIND_BY_TEXT_RE, FAST_FIND_BY_TEXT, "findByText")
   html = replaceOnce(html, SCHEDULER_RE, FRAME_BATCHED_SCHEDULER, "scheduler")
 
-  // Keep the native Framer motion system untouched. Branding only overrides
-  // color/text presentation and the existing primary accent token.
   html = html.replace(
     "</head>",
     `${BRAND_CSS}<style id="nguyen-performance-css">
-      /* Isolate paint/layout work for major Framer sections without changing
-         their authored animation values or transition curves. */
       @media (min-width: 810px) {
         [data-framer-name="Section"] { contain: paint; }
       }
       @media (prefers-reduced-motion: reduce) {
-        /* Respect the operating-system preference without modifying the
-           default animation experience for other visitors. */
         html { scroll-behavior: auto !important; }
       }
     </style></head>`,
@@ -334,7 +331,11 @@ export async function GET() {
 
   const headers = new Headers(sourceResponse.headers)
   headers.set("Content-Type", "text/html; charset=utf-8")
-  headers.set("Cache-Control", "public, s-maxage=300, stale-while-revalidate=86400")
+  // Keep the hotfix uncached so mobile clients cannot remain stuck on the
+  // previously broken boot script for up to five minutes.
+  headers.set("Cache-Control", "no-store, max-age=0, must-revalidate")
+  headers.set("Pragma", "no-cache")
+  headers.set("Expires", "0")
   headers.set("Vary", "Accept-Encoding")
 
   return new Response(html, {
