@@ -27,7 +27,23 @@ const FINAL_BRAND_RUNTIME = String.raw`<script id="nguyen-final-brand-runtime">
 (() => {
   const NAVY = '#001b46';
   const LINE = 'rgba(171, 195, 222, 0.24)';
+
+  const SERVICE_HEADINGS = [
+    'Site & Planning + Architectural Design',
+    'Structural Engineering',
+    'MEP Engineering',
+    'Code, Energy & Permit Services'
+  ];
+
   const SERVICE_TAGS = [
+    'Site Survey & Existing Conditions',
+    'Zoning & Code Review',
+    'Space Planning',
+    'Concept Design',
+    'Floor Plans',
+    'Elevations & Sections',
+    'Reflected Ceiling Plans',
+    'Construction Details · 3D Renderings · TI Plans',
     'Structural Design',
     'Structural Details',
     'Structural Calculations',
@@ -48,6 +64,7 @@ const FINAL_BRAND_RUNTIME = String.raw`<script id="nguyen-final-brand-runtime">
     'Permit Submittal · City Submittal',
     'Plan Check · Corrections · Resubmittal · Approval Support'
   ];
+
   const PROJECT_TEXT = [
     'Boba Shops & Cafés',
     'Restaurants',
@@ -62,10 +79,12 @@ const FINAL_BRAND_RUNTIME = String.raw`<script id="nguyen-final-brand-runtime">
 
   function exactMatches(text) {
     const wanted = normalize(text);
-    return Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6,p,a,span,div,li,button')).filter((el) => normalize(el.textContent) === wanted);
+    return Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6,p,a,span,div,li,button')).filter(
+      (el) => normalize(el.textContent) === wanted
+    );
   }
 
-  function ancestors(el, limit) {
+  function ancestors(el, limit = 14) {
     const result = [];
     let node = el instanceof HTMLElement ? el : null;
     let depth = 0;
@@ -77,98 +96,96 @@ const FINAL_BRAND_RUNTIME = String.raw`<script id="nguyen-final-brand-runtime">
     return result;
   }
 
-  function hardNavy(el, clearImage) {
+  function hardNavy(el, clearImage = true) {
     if (!(el instanceof HTMLElement)) return;
 
-    if (!el.classList.contains('nguyen-hard-navy')) {
-      el.classList.add('nguyen-hard-navy');
-    }
-
-    if (el.style.getPropertyValue('background-color').toLowerCase() !== NAVY) {
-      el.style.setProperty('background-color', NAVY, 'important');
-    }
-
-    if (el.style.getPropertyValue('background').toLowerCase() !== NAVY) {
-      el.style.setProperty('background', NAVY, 'important');
-    }
-
-    if (clearImage && el.style.getPropertyValue('background-image') !== 'none') {
-      el.style.setProperty('background-image', 'none', 'important');
-    }
-
+    el.classList.add('nguyen-hard-navy');
+    el.style.setProperty('background', NAVY, 'important');
+    el.style.setProperty('background-color', NAVY, 'important');
+    if (clearImage) el.style.setProperty('background-image', 'none', 'important');
     el.style.setProperty('border-color', LINE, 'important');
   }
 
-  function hasPaintedBackground(el) {
+  function hasVisualSurface(el) {
     if (!(el instanceof HTMLElement)) return false;
     const style = getComputedStyle(el);
     const bg = style.backgroundColor;
-    return bg !== 'transparent' && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'rgb(0, 0, 0, 0)';
+    const image = style.backgroundImage;
+    const paintedColor = bg && bg !== 'transparent' && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'rgb(0, 0, 0, 0)';
+    const paintedImage = image && image !== 'none';
+    return paintedColor || paintedImage;
   }
 
-  function paintServiceTags() {
-    const groupRoots = new Set();
+  function paintSurfaceTree(root) {
+    if (!(root instanceof HTMLElement)) return;
+    hardNavy(root, true);
 
-    SERVICE_TAGS.forEach((label) => {
-      exactMatches(label).forEach((anchor) => {
-        const chain = ancestors(anchor, 8);
+    root.querySelectorAll('*').forEach((node) => {
+      if (!(node instanceof HTMLElement)) return;
+      const rect = node.getBoundingClientRect();
+      if (rect.width < 20 || rect.height < 14) return;
+      if (hasVisualSurface(node)) hardNavy(node, true);
+    });
+  }
 
+  function paintServiceRows() {
+    const roots = new Set();
+    const viewportWidth = Math.max(window.innerWidth, document.documentElement.clientWidth || 0);
+
+    SERVICE_HEADINGS.forEach((heading) => {
+      exactMatches(heading).forEach((anchor) => {
+        const chain = ancestors(anchor, 16);
+
+        // Framer nests each service row several levels deep. Paint every wide
+        // row/section ancestor, not just the heading or chip wrapper.
         chain.forEach((node) => {
           const rect = node.getBoundingClientRect();
-          if (rect.width >= 70 && rect.height >= 20 && rect.height <= 95) {
-            hardNavy(node, true);
+          if (
+            rect.width >= Math.max(300, viewportWidth * 0.78) &&
+            rect.height >= 150 &&
+            rect.height <= 2800
+          ) {
+            roots.add(node);
           }
         });
-
-        for (const node of chain) {
-          const rect = node.getBoundingClientRect();
-          if (rect.width >= Math.min(250, window.innerWidth * 0.62) && rect.height >= 90 && rect.height <= 390) {
-            groupRoots.add(node);
-            break;
-          }
-        }
       });
     });
 
-    groupRoots.forEach((root) => {
-      hardNavy(root, true);
-      root.querySelectorAll('*').forEach((node) => {
-        if (!(node instanceof HTMLElement)) return;
-        const rect = node.getBoundingClientRect();
-        if (rect.width >= 40 && rect.height >= 18 && hasPaintedBackground(node)) {
-          hardNavy(node, true);
-        }
+    roots.forEach(paintSurfaceTree);
+
+    // Also force the individual pill/tag wrappers, in case a Framer variant
+    // gives them their own opaque background after hydration or interaction.
+    SERVICE_TAGS.forEach((label) => {
+      exactMatches(label).forEach((anchor) => {
+        ancestors(anchor, 7).forEach((node) => {
+          const rect = node.getBoundingClientRect();
+          if (rect.width >= 55 && rect.height >= 18 && rect.height <= 110 && hasVisualSurface(node)) {
+            hardNavy(node, true);
+          }
+        });
       });
     });
   }
 
   function paintProjectPanels() {
-    const detailRoots = new Set();
+    const roots = new Set();
 
     PROJECT_TEXT.forEach((text) => {
       exactMatches(text).forEach((anchor) => {
-        const chain = ancestors(anchor, 11);
-
-        for (const node of chain) {
+        ancestors(anchor, 11).forEach((node) => {
           const rect = node.getBoundingClientRect();
-          if (rect.width >= Math.min(250, window.innerWidth * 0.66) && rect.height >= 180 && rect.height <= 780) {
-            detailRoots.add(node);
-            break;
+          if (
+            rect.width >= Math.min(250, window.innerWidth * 0.66) &&
+            rect.height >= 180 &&
+            rect.height <= 780
+          ) {
+            roots.add(node);
           }
-        }
+        });
       });
     });
 
-    detailRoots.forEach((root) => {
-      hardNavy(root, true);
-      root.querySelectorAll('*').forEach((node) => {
-        if (!(node instanceof HTMLElement)) return;
-        const rect = node.getBoundingClientRect();
-        if (rect.width >= 34 && rect.height >= 18 && hasPaintedBackground(node)) {
-          hardNavy(node, true);
-        }
-      });
-    });
+    roots.forEach(paintSurfaceTree);
   }
 
   function findFooterRoot() {
@@ -178,35 +195,19 @@ const FINAL_BRAND_RUNTIME = String.raw`<script id="nguyen-final-brand-runtime">
     const semanticFooter = anchor.closest('footer');
     if (semanticFooter instanceof HTMLElement) return semanticFooter;
 
-    const chain = ancestors(anchor, 16);
-    return chain.find((node) => {
+    return ancestors(anchor, 18).find((node) => {
       const rect = node.getBoundingClientRect();
-      return rect.width >= Math.min(300, window.innerWidth * 0.78) && rect.height >= 500;
+      return rect.width >= Math.min(300, window.innerWidth * 0.78) && rect.height >= 450;
     }) || null;
   }
 
   function paintFooter() {
     const footer = findFooterRoot();
-    if (!footer) return;
-
-    hardNavy(footer, true);
-    footer.querySelectorAll('*').forEach((node) => {
-      if (!(node instanceof HTMLElement)) return;
-      const rect = node.getBoundingClientRect();
-      const style = getComputedStyle(node);
-      const hasBackgroundImage = style.backgroundImage && style.backgroundImage !== 'none';
-      if (
-        hasBackgroundImage ||
-        (rect.width >= 30 && rect.height >= 18 && hasPaintedBackground(node)) ||
-        (rect.width >= Math.min(260, window.innerWidth * 0.68) && rect.height >= 110)
-      ) {
-        hardNavy(node, true);
-      }
-    });
+    if (footer) paintSurfaceTree(footer);
   }
 
   function paintKnownGraySurfaces() {
-    paintServiceTags();
+    paintServiceRows();
     paintProjectPanels();
     paintFooter();
   }
@@ -237,11 +238,11 @@ const FINAL_BRAND_RUNTIME = String.raw`<script id="nguyen-final-brand-runtime">
   window.addEventListener('resize', schedule, { passive: true });
   window.addEventListener('orientationchange', schedule, { passive: true });
 
-  [50, 120, 250, 500, 900, 1500, 2500, 4000, 7000, 11000, 16000, 24000].forEach((delay) => {
+  [50, 120, 250, 500, 900, 1500, 2500, 4000, 7000, 11000, 16000].forEach((delay) => {
     window.setTimeout(schedule, delay);
   });
 
-  window.setInterval(schedule, 2500);
+  window.setInterval(schedule, 2200);
 })();
 </script>`
 
