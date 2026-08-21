@@ -506,16 +506,19 @@ const CLIENT_PATCH = `
 
   function patchProjectCards() {
     const baseCards = projectCards.slice(0, 3).map((config) => findProjectCard(config.oldTitle) || findProjectCard(config.title));
-    projectCards.slice(0, 3).forEach((config, index) => patchProjectCard(baseCards[index], config));
-
     const parent = baseCards[0] && baseCards[0].parentElement;
     if (!parent) return;
+
+    // Keep untouched copies of Framer's three source cards. Extra cards must be
+    // cloned from these originals before the first three cards are customized;
+    // otherwise cards 4–8 inherit already-replaced titles/details.
+    const pristineCards = baseCards.map((card) => card ? card.cloneNode(true) : null);
 
     projectCards.slice(3).forEach((config, index) => {
       const marker = 'project-' + (index + 4);
       let clone = parent.querySelector('[data-nguyen-project-clone="' + marker + '"]');
       if (!clone) {
-        const source = baseCards[index % baseCards.length];
+        const source = pristineCards[index % pristineCards.length];
         if (!source) return;
         clone = source.cloneNode(true);
         clone.dataset.nguyenProjectClone = marker;
@@ -523,6 +526,8 @@ const CLIENT_PATCH = `
       }
       patchProjectCard(clone, config);
     });
+
+    projectCards.slice(0, 3).forEach((config, index) => patchProjectCard(baseCards[index], config));
   }
 
   function patchText() {
