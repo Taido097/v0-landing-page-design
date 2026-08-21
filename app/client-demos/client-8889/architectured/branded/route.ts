@@ -116,6 +116,49 @@ const FINAL_BRAND_RUNTIME = String.raw`<script id="nguyen-final-brand-runtime">
     return paintedColor || paintedImage;
   }
 
+  function parseRgb(value) {
+    if (!value || value === 'transparent') return null;
+    const match = value.match(/rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)(?:\s*[,/]\s*([\d.]+))?\s*\)/i);
+    if (!match) return null;
+    return {
+      r: Number(match[1]),
+      g: Number(match[2]),
+      b: Number(match[3]),
+      a: match[4] == null ? 1 : Number(match[4])
+    };
+  }
+
+  function isNeutralGraySurface(el) {
+    if (!(el instanceof HTMLElement)) return false;
+    if (el.classList.contains('nguyen-hard-navy')) return false;
+
+    const tag = el.tagName.toLowerCase();
+    if (['html', 'body', 'img', 'picture', 'video', 'canvas', 'svg', 'path', 'iframe'].includes(tag)) return false;
+
+    const rect = el.getBoundingClientRect();
+    if (rect.width < 90 || rect.height < 38 || rect.width * rect.height < 7000) return false;
+
+    const style = getComputedStyle(el);
+    const rgb = parseRgb(style.backgroundColor);
+    if (!rgb || rgb.a < 0.45) return false;
+
+    const max = Math.max(rgb.r, rgb.g, rgb.b);
+    const min = Math.min(rgb.r, rgb.g, rgb.b);
+    const chroma = max - min;
+    const brightness = (rgb.r + rgb.g + rgb.b) / 3;
+
+    // Catch the actual Framer gray/charcoal card layer even when its text is
+    // nested somewhere else. Pure white and colored surfaces are left alone.
+    return chroma <= 22 && brightness >= 14 && brightness <= 251;
+  }
+
+  function paintDetectedGraySurfaces() {
+    document.querySelectorAll('main,section,article,aside,div,li').forEach((node) => {
+      if (!(node instanceof HTMLElement)) return;
+      if (isNeutralGraySurface(node)) hardNavy(node, true);
+    });
+  }
+
   function paintSurfaceTree(root) {
     if (!(root instanceof HTMLElement)) return;
     hardNavy(root, true);
@@ -207,6 +250,7 @@ const FINAL_BRAND_RUNTIME = String.raw`<script id="nguyen-final-brand-runtime">
   }
 
   function paintKnownGraySurfaces() {
+    paintDetectedGraySurfaces();
     paintServiceRows();
     paintProjectPanels();
     paintFooter();
