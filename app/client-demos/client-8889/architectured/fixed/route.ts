@@ -12,18 +12,26 @@ const CONCEPT04_FIX = `
     -webkit-font-smoothing: antialiased;
   }
 
+  [data-nguyen-project-anim-fixed="true"] .framer-18gaxbb {
+    overflow: hidden !important;
+  }
+
+  [data-nguyen-project-anim-fixed="true"] .framer-dxdd0d {
+    transform-origin: 50% 50%;
+    will-change: height, transform;
+  }
+
   [data-nguyen-project-anim-fixed="true"] img {
-    transition: transform .7s cubic-bezier(.22,.61,.36,1), filter .7s cubic-bezier(.22,.61,.36,1) !important;
-    will-change: transform;
+    transition: none !important;
   }
 
   [data-nguyen-project-anim-fixed="true"]:hover img {
-    transform: scale(1.035) !important;
+    transform: none !important;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    [data-nguyen-project-anim-fixed="true"] img {
-      transition: none !important;
+    [data-nguyen-project-anim-fixed="true"] .framer-dxdd0d {
+      transform: none !important;
     }
   }
 </style>
@@ -42,68 +50,163 @@ const CONCEPT04_FIX = `
     'Tenant Improvement (TI)'
   ];
 
+  // Values recovered from the original Framer Card - Projects component.
+  const DESKTOP_MIN_WIDTH = 810;
+  const IMAGE_ASPECT = 1.5034843205574913;
+  const HOVER_IMAGE_HEIGHT = 133;
+  const SPRING_STIFFNESS = 500;
+  const SPRING_DAMPING = 60;
+  const SPRING_MASS = 1;
+  const SPRING_DURATION_MS = 650;
+  const SCROLL_ZOOM_DURATION_MS = 4000;
+
   const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim();
   const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const observed = new WeakSet();
-  const animated = new WeakSet();
-
-  const observer = 'IntersectionObserver' in window ? new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting || animated.has(entry.target)) return;
-      animated.add(entry.target);
-      observer.unobserve(entry.target);
-
-      if (reducedMotion || !entry.target.animate) return;
-      const index = Number(entry.target.dataset.nguyenProjectIndex || 0);
-      const animation = entry.target.animate(
-        [
-          { opacity: 0.15, clipPath: 'inset(0 0 14% 0)' },
-          { opacity: 1, clipPath: 'inset(0 0 0% 0)' }
-        ],
-        {
-          duration: 760,
-          delay: Math.min(index, 3) * 85,
-          easing: 'cubic-bezier(.22,.61,.36,1)',
-          fill: 'both'
-        }
-      );
-      animation.onfinish = () => animation.cancel();
-    });
-  }, { threshold: 0.18, rootMargin: '0px 0px -7% 0px' }) : null;
+  const boundCards = new WeakSet();
+  const zoomedFrames = new WeakSet();
+  const heightAnimations = new WeakMap();
 
   function findCardByTitle(title) {
     const candidates = document.querySelectorAll('h1,h2,h3,h4,h5,h6,p,span,div');
     for (const node of candidates) {
       if (normalize(node.textContent) !== title) continue;
       const link = node.closest('a');
-      if (link && link.querySelector('img')) return link;
+      if (link && link.querySelector('.framer-dxdd0d, img')) return link;
 
       let card = node;
       for (let depth = 0; depth < 9 && card && card !== document.body; depth += 1) {
-        if (card.querySelector && card.querySelector('img')) return card;
+        if (card.querySelector && card.querySelector('.framer-dxdd0d, img')) return card;
         card = card.parentElement;
       }
     }
     return null;
   }
 
+  function springProgress(seconds) {
+    const k = SPRING_STIFFNESS;
+    const c = SPRING_DAMPING;
+    const m = SPRING_MASS;
+    const disc = c * c - 4 * m * k;
+
+    if (disc > 0) {
+      const root = Math.sqrt(disc);
+      const r1 = (-c + root) / (2 * m);
+      const r2 = (-c - root) / (2 * m);
+      const c1 = -r2 / (r1 - r2);
+      const c2 = r1 / (r1 - r2);
+      return 1 - (c1 * Math.exp(r1 * seconds) + c2 * Math.exp(r2 * seconds));
+    }
+
+    return 1 - Math.exp(-10 * seconds);
+  }
+
+  function animateFrameHeight(frame, targetHeight) {
+    const existing = heightAnimations.get(frame);
+    if (existing) existing.cancel();
+
+    const startHeight = parseFloat(getComputedStyle(frame).height) || frame.getBoundingClientRect().height;
+    if (!startHeight || Math.abs(startHeight - targetHeight) < 0.5 || reducedMotion || !frame.animate) {
+      frame.style.setProperty('height', targetHeight + 'px', 'important');
+      return;
+    }
+
+    const samples = 34;
+    const keyframes = [];
+    for (let i = 0; i <= samples; i += 1) {
+      const fraction = i / samples;
+      const seconds = (SPRING_DURATION_MS / 1000) * fraction;
+      const progress = Math.max(0, Math.min(1, springProgress(seconds)));
+      keyframes.push({ height: (startHeight + (targetHeight - startHeight) * progress) + 'px', offset: fraction });
+    }
+    keyframes[keyframes.length - 1].height = targetHeight + 'px';
+
+    const animation = frame.animate(keyframes, {
+      duration: SPRING_DURATION_MS,
+      easing: 'linear',
+      fill: 'forwards'
+    });
+    heightAnimations.set(frame, animation);
+
+    animation.onfinish = () => {
+      frame.style.setProperty('height', targetHeight + 'px', 'important');
+      heightAnimations.delete(frame);
+      animation.cancel();
+    };
+  }
+
+  function getExpandedImageHeight(frame) {
+    const width = frame.getBoundingClientRect().width;
+    return width > 0 ? width / IMAGE_ASPECT : parseFloat(frame.dataset.nguyenExpandedHeight || '595');
+  }
+
+  function enterCard(card, frame) {
+    if (window.innerWidth < DESKTOP_MIN_WIDTH) return;
+    const expanded = getExpandedImageHeight(frame);
+    if (expanded > HOVER_IMAGE_HEIGHT) frame.dataset.nguyenExpandedHeight = String(expanded);
+    card.dataset.nguyenProjectHover = 'true';
+    animateFrameHeight(frame, HOVER_IMAGE_HEIGHT);
+  }
+
+  function leaveCard(card, frame) {
+    if (window.innerWidth < DESKTOP_MIN_WIDTH) return;
+    card.dataset.nguyenProjectHover = 'false';
+    const stored = parseFloat(frame.dataset.nguyenExpandedHeight || '0');
+    const expanded = stored > HOVER_IMAGE_HEIGHT ? stored : getExpandedImageHeight(frame);
+    animateFrameHeight(frame, expanded);
+  }
+
+  const zoomObserver = 'IntersectionObserver' in window ? new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting || zoomedFrames.has(entry.target)) return;
+      zoomedFrames.add(entry.target);
+      zoomObserver.unobserve(entry.target);
+      if (reducedMotion || !entry.target.animate) return;
+
+      const animation = entry.target.animate(
+        [
+          { transform: 'scale(1.5)' },
+          { transform: 'scale(1)' }
+        ],
+        {
+          duration: SCROLL_ZOOM_DURATION_MS,
+          easing: 'cubic-bezier(.16,1,.3,1)',
+          fill: 'both'
+        }
+      );
+      animation.onfinish = () => {
+        entry.target.style.transform = 'scale(1)';
+        animation.cancel();
+      };
+    });
+  }, { threshold: 0.5 }) : null;
+
   function bindProjectAnimation() {
     PROJECT_TITLES.forEach((title, index) => {
       const card = findCardByTitle(title);
       if (!card) return;
+      const frame = card.querySelector('.framer-dxdd0d');
+      if (!frame) return;
+
       card.dataset.nguyenProjectAnimFixed = 'true';
       card.dataset.nguyenProjectIndex = String(index);
 
-      if (observed.has(card)) return;
-      observed.add(card);
-      if (observer) observer.observe(card);
-      else if (!reducedMotion && card.animate) {
-        const animation = card.animate(
-          [{ opacity: 0.2 }, { opacity: 1 }],
-          { duration: 600, easing: 'ease-out', fill: 'both' }
-        );
-        animation.onfinish = () => animation.cancel();
+      if (!frame.dataset.nguyenExpandedHeight && window.innerWidth >= DESKTOP_MIN_WIDTH) {
+        const expanded = getExpandedImageHeight(frame);
+        if (expanded > HOVER_IMAGE_HEIGHT) frame.dataset.nguyenExpandedHeight = String(expanded);
       }
+
+      if (!zoomedFrames.has(frame)) {
+        if (zoomObserver) zoomObserver.observe(frame);
+        else zoomedFrames.add(frame);
+      }
+
+      if (boundCards.has(card)) return;
+      boundCards.add(card);
+
+      card.addEventListener('pointerenter', () => enterCard(card, frame));
+      card.addEventListener('pointerleave', () => leaveCard(card, frame));
+      card.addEventListener('focusin', () => enterCard(card, frame));
+      card.addEventListener('focusout', () => leaveCard(card, frame));
     });
   }
 
@@ -152,6 +255,17 @@ const CONCEPT04_FIX = `
       window.location.assign(HOME_PATH);
     }, true);
   }
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth < DESKTOP_MIN_WIDTH) return;
+    document.querySelectorAll('[data-nguyen-project-anim-fixed="true"]').forEach((card) => {
+      const frame = card.querySelector('.framer-dxdd0d');
+      if (!frame || card.dataset.nguyenProjectHover === 'true') return;
+      frame.style.removeProperty('height');
+      const expanded = getExpandedImageHeight(frame);
+      if (expanded > HOVER_IMAGE_HEIGHT) frame.dataset.nguyenExpandedHeight = String(expanded);
+    });
+  });
 
   scan();
   document.addEventListener('DOMContentLoaded', scan, { once: true });
