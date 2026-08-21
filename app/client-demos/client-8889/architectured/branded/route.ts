@@ -1,3 +1,4 @@
+// Final Concept 04 handbook mount: targets the exact Framer Testimonial 1 section.
 import { GET as getHandbookDemo } from "./route-handbook-live"
 
 export const dynamic = "force-dynamic"
