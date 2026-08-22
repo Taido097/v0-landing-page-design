@@ -1,33 +1,28 @@
-import { HBX01 } from "../exact/hbx01"
-import { HBX02 } from "../exact/hbx02"
-import { HBX03 } from "../exact/hbx03"
-import { HBX04 } from "../exact/hbx04"
-import { HBX05 } from "../exact/hbx05"
-import { HBX06 } from "../exact/hbx06"
-import { HBX07 } from "../exact/hbx07"
-import { HBX08 } from "../exact/hbx08"
-import { HBX09 } from "../exact/hbx09"
-import { HBX10 } from "../exact/hbx10"
-import { HBX11a } from "../exact/hbx11a"
-import { HBX11b } from "../exact/hbx11b"
-import { HBX12a } from "../exact/hbx12a"
-import { HBX12b } from "../exact/hbx12b"
-import { HBX13a } from "../exact/hbx13a"
-import { HBX13b } from "../exact/hbx13b"
-import { HBX14a } from "../exact/hbx14a"
-import { HBX14b } from "../exact/hbx14b"
-import { HBX15a } from "../exact/hbx15a"
-import { HBX15b } from "../exact/hbx15b"
-import { HBX16 } from "../exact/hbx16"
+import { HBZ01 } from "../exact2/hbz01"
+import { HBZ02 } from "../exact2/hbz02"
+import { HBZ03 } from "../exact2/hbz03"
+import { HBZ04 } from "../exact2/hbz04"
+import { HBZ05 } from "../exact2/hbz05"
+import { HBZ06 } from "../exact2/hbz06"
+import { HBZ07 } from "../exact2/hbz07"
+import { HBZ08 } from "../exact2/hbz08"
+import { HBZ09 } from "../exact2/hbz09"
+import { HBZ10 } from "../exact2/hbz10"
+import { HBZ11 } from "../exact2/hbz11"
+import { HBZ12 } from "../exact2/hbz12"
+import { HBZ13 } from "../exact2/hbz13"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
 export const runtime = "nodejs"
 
-const EXPECTED_BYTES = 173522
+const EXPECTED_BYTES = 96030
 
 export async function GET() {
-  const base64 = `${HBX01}${HBX02}${HBX03}${HBX04}${HBX05}${HBX06}${HBX07}${HBX08}${HBX09}${HBX10}${HBX11a}${HBX11b}${HBX12a}${HBX12b}${HBX13a}${HBX13b}${HBX14a}${HBX14b}${HBX15a}${HBX15b}${HBX16}`
+  const base64 =
+    HBZ01 + HBZ02 + HBZ03 + HBZ04 + HBZ05 + HBZ06 + HBZ07 +
+    HBZ08 + HBZ09 + HBZ10 + HBZ11 + HBZ12 + HBZ13
+
   const bytes = Buffer.from(base64, "base64")
   const riff = bytes.subarray(0, 4).toString("ascii")
   const webp = bytes.subarray(8, 12).toString("ascii")
