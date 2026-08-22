@@ -1,22 +1,9 @@
 import { NextResponse } from "next/server"
-import { HBX01 } from "./exact/hbx01"
-import { HBX02 } from "./exact/hbx02"
-import { HBX03 } from "./exact/hbx03"
-import { HBX04 } from "./exact/hbx04"
-import { HBX05 } from "./exact/hbx05"
-import { HBX06 } from "./exact/hbx06"
-import { HBX07 } from "./exact/hbx07"
-import { HBX08 } from "./exact/hbx08"
-import { HBX09 } from "./exact/hbx09"
-import { HBX10 } from "./exact/hbx10"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
 
-const SPRITE = `data:image/webp;base64,${HBX01}${HBX02}${HBX03}${HBX04}${HBX05}${HBX06}${HBX07}${HBX08}${HBX09}${HBX10}`
-
 export async function GET() {
-  const sprite = JSON.stringify(SPRITE)
   const html = `<!doctype html>
 <html lang="en">
 <head>
@@ -69,13 +56,13 @@ h1{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:clamp(4
 </section>
 <script>
 (()=>{
-const sprite=${sprite};
+const sprite='/client-demos/client-8889/architectured/handbook/sprite?v=462b82b';
 const positions=['0%','16.6667%','33.3333%','50%','66.6667%','83.3333%','100%'];
 const labels=['1 — Cover','2 — About Us','3 — Our Services','4 — Project Types','5 — Our Process','6 — Featured Projects','7 — Why Choose Us'];
 const spreads=[[null,0],[1,2],[3,4],[5,6]];
 const spread=document.getElementById('spread'),book=document.getElementById('book'),prevBtn=document.getElementById('prev'),nextBtn=document.getElementById('next'),turnNext=document.getElementById('turnNext'),turnPrev=document.getElementById('turnPrev'),nextFront=document.getElementById('nextFront'),nextBack=document.getElementById('nextBack'),prevFront=document.getElementById('prevFront'),prevBack=document.getElementById('prevBack');
 let index=0,busy=false,startX=null,suppressUntil=0;
-function imageMarkup(i){if(i===null)return '<div class="blank">NGUYEN ARCHITECTURE<br>&amp; ENGINEERING</div>';return '<div class="page-image" role="img" aria-label="'+labels[i]+'" style="background-image:url('+sprite+');background-position:center '+positions[i]+'"></div>'}
+function imageMarkup(i){if(i===null)return '<div class="blank">NGUYEN ARCHITECTURE<br>&amp; ENGINEERING</div>';return '<div class="page-image" role="img" aria-label="'+labels[i]+'" style="background-image:url(\\''+sprite+'\\');background-position:center '+positions[i]+'"></div>'}
 function pageMarkup(i,side){return '<div class="page '+side+'">'+imageMarkup(i)+'</div>'}
 function render(){const pair=spreads[index];spread.innerHTML=pageMarkup(pair[0],'left')+pageMarkup(pair[1],'right');prevBtn.disabled=index===0;nextBtn.disabled=index===spreads.length-1}
 function goNext(target=index+1){if(busy||index>=spreads.length-1)return;busy=true;nextFront.innerHTML=imageMarkup(spreads[index][1]);nextBack.innerHTML=imageMarkup(spreads[target][0]);turnNext.classList.remove('anim-next');void turnNext.offsetWidth;turnNext.classList.add('anim-next');setTimeout(()=>{index=target;render()},360);setTimeout(()=>{turnNext.classList.remove('anim-next');busy=false},740)}
