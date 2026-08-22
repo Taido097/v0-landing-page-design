@@ -56,7 +56,7 @@ h1{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:clamp(4
 </section>
 <script>
 (()=>{
-const sprite='/client-demos/client-8889/architectured/handbook/sprite?v=complete-173522';
+const sprite='/client-demos/client-8889/architectured/handbook/sprite?v=exact240-96030';
 const positions=['0%','16.6667%','33.3333%','50%','66.6667%','83.3333%','100%'];
 const labels=['1 — Cover','2 — About Us','3 — Our Services','4 — Project Types','5 — Our Process','6 — Featured Projects','7 — Why Choose Us'];
 const spreads=[[null,0],[1,2],[3,4],[5,6]];
