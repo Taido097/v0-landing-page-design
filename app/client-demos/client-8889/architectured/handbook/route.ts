@@ -1,9 +1,22 @@
 import { NextResponse } from "next/server"
+import { HBX01 } from "./exact/hbx01"
+import { HBX02 } from "./exact/hbx02"
+import { HBX03 } from "./exact/hbx03"
+import { HBX04 } from "./exact/hbx04"
+import { HBX05 } from "./exact/hbx05"
+import { HBX06 } from "./exact/hbx06"
+import { HBX07 } from "./exact/hbx07"
+import { HBX08 } from "./exact/hbx08"
+import { HBX09 } from "./exact/hbx09"
+import { HBX10 } from "./exact/hbx10"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
 
+const SPRITE = `data:image/webp;base64,${HBX01}${HBX02}${HBX03}${HBX04}${HBX05}${HBX06}${HBX07}${HBX08}${HBX09}${HBX10}`
+
 export async function GET() {
+  const sprite = JSON.stringify(SPRITE)
   const html = `<!doctype html>
 <html lang="en">
 <head>
@@ -23,13 +36,12 @@ h1{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:clamp(4
 .nav:hover:not(:disabled){background:#3b3732;transform:scale(1.04)}
 .nav:disabled{opacity:.2;cursor:default}
 .book-wrap{perspective:2400px;min-width:0;padding:6px 0}
-.book{position:relative;width:min(1180px,100%);aspect-ratio:1.337/1;margin:0 auto;transform:rotateX(1deg);filter:drop-shadow(0 30px 40px rgba(0,0,0,.55));user-select:none;touch-action:pan-y;outline:none;cursor:pointer;transform-style:preserve-3d}
+.book{position:relative;width:min(1180px,100%);aspect-ratio:4/3;margin:0 auto;transform:rotateX(1deg);filter:drop-shadow(0 30px 40px rgba(0,0,0,.55));user-select:none;touch-action:pan-y;outline:none;cursor:pointer;transform-style:preserve-3d}
 .board{position:absolute;inset:-10px;border-radius:6px;background:#2b2925;box-shadow:0 0 0 1px rgba(255,255,255,.07),0 22px 60px rgba(0,0,0,.35)}
 .spread{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;z-index:2}
 .page{position:relative;overflow:hidden;background:#fff;border:1px solid rgba(0,0,0,.14)}
-.page.left{border-radius:3px 0 0 3px}
-.page.right{border-radius:0 3px 3px 0}
-.page-image{position:absolute;inset:0;background-image:url('/client-8889/handbook/nguyen-commercial-handbook.webp?v=b1954a2');background-repeat:no-repeat;background-size:100% 700%;background-color:#fff}
+.page.left{border-radius:3px 0 0 3px}.page.right{border-radius:0 3px 3px 0}
+.page-image{position:absolute;inset:0;background-repeat:no-repeat;background-size:100% 700%;background-color:#fff}
 .blank{position:absolute;inset:0;display:grid;place-items:center;text-align:center;background:linear-gradient(90deg,#eeeae2 0%,#faf8f3 91%,#d7d0c6 100%);font-family:Georgia,"Times New Roman",serif;color:#b9b1a5;font-size:12px;letter-spacing:.13em;text-transform:uppercase}
 .gutter{position:absolute;left:50%;top:0;bottom:0;width:26px;transform:translateX(-50%);z-index:8;pointer-events:none;background:linear-gradient(90deg,rgba(0,0,0,.17),rgba(255,255,255,.32),rgba(0,0,0,.13));opacity:.55}
 .turn{display:none;position:absolute;top:0;bottom:0;width:50%;z-index:20;transform-style:preserve-3d;pointer-events:none}
@@ -39,7 +51,7 @@ h1{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:clamp(4
 .turn.anim-next{display:block;animation:flipNext .72s cubic-bezier(.28,.17,.18,1) forwards}.turn.anim-prev{display:block;animation:flipPrev .72s cubic-bezier(.28,.17,.18,1) forwards}
 @keyframes flipNext{from{transform:rotateY(0)}to{transform:rotateY(-180deg)}}
 @keyframes flipPrev{from{transform:rotateY(0)}to{transform:rotateY(180deg)}}
-@media(max-width:760px){body{overflow:auto}.section{height:auto;min-height:720px;padding:30px 10px 34px}.stage{grid-template-columns:1fr;position:relative;gap:12px}.nav{position:absolute;top:48%;z-index:40;width:44px;height:44px;font-size:23px;background:rgba(42,39,35,.92)}#prev{left:3px}#next{right:3px}.book{width:96%;aspect-ratio:1.337/1}.intro{margin-bottom:18px}h1{font-size:clamp(34px,10vw,48px)}}
+@media(max-width:760px){body{overflow:auto}.section{height:auto;min-height:720px;padding:30px 10px 34px}.stage{grid-template-columns:1fr;position:relative;gap:12px}.nav{position:absolute;top:48%;z-index:40;width:44px;height:44px;font-size:23px;background:rgba(42,39,35,.92)}#prev{left:3px}#next{right:3px}.book{width:96%;aspect-ratio:4/3}.intro{margin-bottom:18px}h1{font-size:clamp(34px,10vw,48px)}}
 @media(prefers-reduced-motion:reduce){.turn.anim-next,.turn.anim-prev{animation-duration:.01ms}}
 </style>
 </head>
@@ -51,26 +63,19 @@ h1{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:clamp(4
   </div>
   <div class="stage">
     <button class="nav" id="prev" aria-label="Previous pages">‹</button>
-    <div class="book-wrap">
-      <div class="book" id="book" tabindex="0" aria-label="Interactive NGUYEN project handbook">
-        <div class="board"></div>
-        <div class="spread" id="spread"></div>
-        <div class="gutter"></div>
-        <div class="turn next" id="turnNext"><div class="face" id="nextFront"></div><div class="face back" id="nextBack"></div></div>
-        <div class="turn prev" id="turnPrev"><div class="face" id="prevFront"></div><div class="face back" id="prevBack"></div></div>
-      </div>
-    </div>
+    <div class="book-wrap"><div class="book" id="book" tabindex="0" aria-label="Interactive NGUYEN project handbook"><div class="board"></div><div class="spread" id="spread"></div><div class="gutter"></div><div class="turn next" id="turnNext"><div class="face" id="nextFront"></div><div class="face back" id="nextBack"></div></div><div class="turn prev" id="turnPrev"><div class="face" id="prevFront"></div><div class="face back" id="prevBack"></div></div></div></div>
     <button class="nav" id="next" aria-label="Next pages">›</button>
   </div>
 </section>
 <script>
 (()=>{
+const sprite=${sprite};
 const positions=['0%','16.6667%','33.3333%','50%','66.6667%','83.3333%','100%'];
 const labels=['1 — Cover','2 — About Us','3 — Our Services','4 — Project Types','5 — Our Process','6 — Featured Projects','7 — Why Choose Us'];
 const spreads=[[null,0],[1,2],[3,4],[5,6]];
 const spread=document.getElementById('spread'),book=document.getElementById('book'),prevBtn=document.getElementById('prev'),nextBtn=document.getElementById('next'),turnNext=document.getElementById('turnNext'),turnPrev=document.getElementById('turnPrev'),nextFront=document.getElementById('nextFront'),nextBack=document.getElementById('nextBack'),prevFront=document.getElementById('prevFront'),prevBack=document.getElementById('prevBack');
 let index=0,busy=false,startX=null,suppressUntil=0;
-function imageMarkup(i){if(i===null)return '<div class="blank">NGUYEN ARCHITECTURE<br>&amp; ENGINEERING</div>';return '<div class="page-image" role="img" aria-label="'+labels[i]+'" style="background-position:center '+positions[i]+'"></div>'}
+function imageMarkup(i){if(i===null)return '<div class="blank">NGUYEN ARCHITECTURE<br>&amp; ENGINEERING</div>';return '<div class="page-image" role="img" aria-label="'+labels[i]+'" style="background-image:url('+sprite+');background-position:center '+positions[i]+'"></div>'}
 function pageMarkup(i,side){return '<div class="page '+side+'">'+imageMarkup(i)+'</div>'}
 function render(){const pair=spreads[index];spread.innerHTML=pageMarkup(pair[0],'left')+pageMarkup(pair[1],'right');prevBtn.disabled=index===0;nextBtn.disabled=index===spreads.length-1}
 function goNext(target=index+1){if(busy||index>=spreads.length-1)return;busy=true;nextFront.innerHTML=imageMarkup(spreads[index][1]);nextBack.innerHTML=imageMarkup(spreads[target][0]);turnNext.classList.remove('anim-next');void turnNext.offsetWidth;turnNext.classList.add('anim-next');setTimeout(()=>{index=target;render()},360);setTimeout(()=>{turnNext.classList.remove('anim-next');busy=false},740)}
@@ -81,10 +86,5 @@ prevBtn.addEventListener('click',e=>{e.stopPropagation();goPrev()});nextBtn.addE
 </body>
 </html>`
 
-  return new NextResponse(html, {
-    headers: {
-      "Content-Type": "text/html; charset=utf-8",
-      "Cache-Control": "no-store, max-age=0, must-revalidate",
-    },
-  })
+  return new NextResponse(html, { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store, max-age=0, must-revalidate" } })
 }
