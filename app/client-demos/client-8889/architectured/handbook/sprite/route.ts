@@ -1,16 +1,20 @@
-import { HB240_1 } from "../../branded/handbook-image-1"
-import { HB240_2 } from "../../branded/handbook-image-2"
-import { HB240_3 } from "../../branded/handbook-image-3"
-import { HB240_4 } from "../../branded/handbook-image-4"
-import { HB240_5 } from "../../branded/handbook-image-5"
+import { HBX01 } from "../exact/hbx01"
+import { HBX02 } from "../exact/hbx02"
+import { HBX03 } from "../exact/hbx03"
+import { HBX04 } from "../exact/hbx04"
+import { HBX05 } from "../exact/hbx05"
+import { HBX06 } from "../exact/hbx06"
+import { HBX07 } from "../exact/hbx07"
+import { HBX08 } from "../exact/hbx08"
+import { HBX09 } from "../exact/hbx09"
+import { HBX10 } from "../exact/hbx10"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
 export const runtime = "nodejs"
 
 export async function GET() {
-  const dataUrl = HB240_1 + HB240_2 + HB240_3 + HB240_4 + HB240_5
-  const base64 = dataUrl.replace(/^data:image\/webp;base64,/, "")
+  const base64 = `${HBX01}${HBX02}${HBX03}${HBX04}${HBX05}${HBX06}${HBX07}${HBX08}${HBX09}${HBX10}`
   const bytes = Buffer.from(base64, "base64")
   const riff = bytes.subarray(0, 4).toString("ascii")
   const webp = bytes.subarray(8, 12).toString("ascii")
@@ -32,7 +36,7 @@ export async function GET() {
     headers: {
       "Content-Type": "image/webp",
       "Content-Length": String(bytes.length),
-      "Cache-Control": "public, max-age=0, must-revalidate",
+      "Cache-Control": "public, max-age=31536000, immutable",
       "X-Handbook-Bytes": String(bytes.length),
       "X-Handbook-Signature": "RIFF/WEBP",
     },
