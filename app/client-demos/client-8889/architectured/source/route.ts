@@ -20,6 +20,11 @@ const CLIENT_PATCH = String.raw`
     },
     services: {
       'Explore our services and see how we bring creativity and expertise to every project': 'One coordinated team for planning, architecture, structural, MEP, code, energy compliance and permit services.',
+      'Architectural': 'Residential',
+      'Interior Design': 'Commercial',
+      'Renovation & Remodeling': 'ADU',
+      'Permit Drawing Documentation': 'Engineering',
+      'Existing-Condition Survey & Business Layout': 'Land Development',
       'Architectural Design': 'Site & Planning + Architectural Design',
       'Site Planning': 'Site Survey & Existing Conditions',
       'Layout Design': 'Zoning & Code Review',
