@@ -14,6 +14,12 @@ export async function stabilizeFramerPreview(response: Response) {
       '',
     );
 
+  // Keep these approved Concept 1 labels visually consistent in all caps.
+  html = html
+    .replace(/>(\s*)services(\s*)</gi, '>$1SERVICES$2<')
+    .replace(/NGUYEN Architecture &amp; Engineering/g, 'NGUYEN ARCHITECTURE &amp; ENGINEERING')
+    .replace(/NGUYEN Architecture & Engineering/g, 'NGUYEN ARCHITECTURE & ENGINEERING');
+
   const headers = new Headers(response.headers);
   headers.delete('content-length');
 
