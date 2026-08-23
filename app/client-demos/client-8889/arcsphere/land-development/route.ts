@@ -1,7 +1,8 @@
+import { stabilizeFramerPreview } from '../framer-preview';
 import { renderNguyenPage } from '../site';
 
 export const revalidate = 3600;
 
 export async function GET() {
-  return renderNguyenPage('land-development');
+  return stabilizeFramerPreview(await renderNguyenPage('land-development'));
 }
