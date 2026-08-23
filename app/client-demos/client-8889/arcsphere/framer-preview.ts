@@ -20,6 +20,19 @@ export async function stabilizeFramerPreview(response: Response) {
     .replace(/NGUYEN Architecture &amp; Engineering/g, 'NGUYEN ARCHITECTURE &amp; ENGINEERING')
     .replace(/NGUYEN Architecture & Engineering/g, 'NGUYEN ARCHITECTURE & ENGINEERING');
 
+  // Framer can restore its original text casing during hydration. Force the
+  // two requested navigation/brand links to remain uppercase visually.
+  const uppercaseStyle = `<style id="nguyen-uppercase-labels">
+    a[href="https://arcsphere-studio.framer.website/#services"],
+    a[href="#services"],
+    a[href$="#services"],
+    a[href="https://arcsphere-studio.framer.website/"],
+    a[href="/"] {
+      text-transform: uppercase !important;
+    }
+  </style>`;
+  html = html.replace(/<\/head>/i, `${uppercaseStyle}</head>`);
+
   const headers = new Headers(response.headers);
   headers.delete('content-length');
 
