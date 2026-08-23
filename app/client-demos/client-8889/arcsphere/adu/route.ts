@@ -1,7 +1,7 @@
-import { renderNguyenPage } from '../site';
+import { renderNguyenLaunchPage } from '../launch';
 
 export const revalidate = 3600;
 
 export async function GET() {
-  return renderNguyenPage('adu');
+  return renderNguyenLaunchPage('adu');
 }
