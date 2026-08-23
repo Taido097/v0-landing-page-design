@@ -431,27 +431,24 @@ const CLIENT_PATCH = String.raw`
     });
   };
 
-  const observer = new MutationObserver(queuePatch);
-  observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+  function startPatching() {
+    if (window.__nguyenPatchConcept04Started) return;
+    window.__nguyenPatchConcept04Started = true;
 
-  patchAll();
-  document.addEventListener('DOMContentLoaded', () => {
     patchAll();
-    requestAnimationFrame(() => {
-      patchAll();
-      document.documentElement.classList.remove('nguyen-template-boot');
-      document.documentElement.classList.add('nguyen-template-ready');
-    });
-  }, { once: true });
-
-  let checks = 0;
-  const timer = setInterval(() => {
-    patchAll();
-    checks += 1;
-    if (checks >= 40) clearInterval(timer);
-  }, 125);
+    document.documentElement.classList.remove('nguyen-template-boot');
+    document.documentElement.classList.add('nguyen-template-ready');
+  }
 
   window.__nguyenPatchConcept04 = patchAll;
+  window.addEventListener('load', () => {
+    // Framer hydrates its server-rendered tree from module scripts after parsing.
+    // Wait until the load event and one extra frame before mutating text, otherwise
+    // our replacements can trigger React hydration mismatch warnings.
+    // Framer can hydrate deferred sections after the initial load event.
+    // Give those sections time to finish before changing any React-owned text nodes.
+    requestAnimationFrame(() => setTimeout(startPatching, 10000));
+  }, { once: true });
 })();
 `;
 
