@@ -6,6 +6,17 @@ const PERFORMANCE_HEAD = `
 <link rel="preconnect" href="https://framerusercontent.com" crossorigin>
 <link rel="dns-prefetch" href="https://framerusercontent.com">
 <style id="nguyen-performance-tuning">
+  html { scroll-behavior: auto !important; }
+  body { overflow-x: clip; }
+
+  /* Framer's SSR markup sometimes ships with motion elements hidden until its
+     runtime hydrates them. We intentionally do not hydrate Framer on the
+     client, so make the static layout visible immediately. */
+  [data-framer-appear-id] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
   .nguyen-service-card,
   .nguyen-process > div,
   .nguyen-contact-card iframe,
@@ -15,9 +26,44 @@ const PERFORMANCE_HEAD = `
     content-visibility: auto;
     contain-intrinsic-size: auto 320px;
   }
-  img { image-rendering: auto; }
+
+  img {
+    image-rendering: auto;
+  }
+
+  /* Lightweight compositor-only motion for the content we own. No scroll
+     listeners and no per-frame JavaScript. */
+  @supports (animation-timeline: view()) {
+    .nguyen-feature,
+    .nguyen-service-card,
+    .nguyen-process > div,
+    .nguyen-values > div,
+    .nguyen-contact-strip > div,
+    .nguyen-callout,
+    .nguyen-bottom-cta {
+      animation-name: nguyen-native-reveal;
+      animation-duration: 1ms;
+      animation-fill-mode: both;
+      animation-timing-function: linear;
+      animation-timeline: view();
+      animation-range: entry 0% cover 24%;
+    }
+  }
+
+  @keyframes nguyen-native-reveal {
+    from { opacity: .2; transform: translate3d(0, 24px, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: .01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .01ms !important;
+    }
+  }
+
   @media (max-width: 850px) {
-    body { overflow-x: clip; }
     .nguyen-official-detail { contain: layout style; }
   }
 </style>`;
@@ -115,14 +161,21 @@ function optimizeImages(html: string) {
   });
 }
 
-function stripPollingScripts(html: string) {
+function removeFramerRuntime(html: string) {
   return html
-    .replace(/<script id="nguyen-official-content-patch">[\s\S]*?<\/script>/i, '')
-    .replace(/<script id="nguyen-official-nav-patch">[\s\S]*?<\/script>/i, '');
+    // The visual page is already server-rendered. Removing client scripts is
+    // what eliminates Framer hydration, motion loops, observers and scroll work.
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<link\b(?=[^>]*\brel=["']modulepreload["'])[^>]*>/gi, '')
+    .replace(/<link\b(?=[^>]*\bas=["']script["'])[^>]*>/gi, '');
 }
 
-function lightweightClientPatch(page: NguyenPage) {
-  const pairs = [...commonPairs, ...pagePairs[page]];
+function addPerformanceHints(html: string) {
+  if (html.includes('id="nguyen-performance-tuning"')) return html;
+  return html.replace(/<\/head>/i, `${PERFORMANCE_HEAD}</head>`);
+}
+
+function lightweightClient(page: NguyenPage) {
   const activeHref = page === 'home' ? BASE_PATH : `${BASE_PATH}/${page}`;
   const nav = [
     ['Home', BASE_PATH],
@@ -133,14 +186,12 @@ function lightweightClientPatch(page: NguyenPage) {
   ];
 
   return `
-<script id="nguyen-lightweight-patch">
+<script id="nguyen-native-client">
 (() => {
-  const pairs = ${JSON.stringify(pairs)};
-  const exact = new Map(pairs.map(([a,b]) => [a.replace(/\\s+/g, ' ').trim(), b]));
+  const BASE = ${JSON.stringify(BASE_PATH)};
   const nav = ${JSON.stringify(nav)};
   const active = ${JSON.stringify(activeHref)};
-  const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim();
-  const normalizeLower = (value) => normalize(value).toLowerCase();
+  const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim().toLowerCase();
   const sourceLabels = new Map([
     ['home', nav[0]],
     ['about', nav[1]],
@@ -149,40 +200,28 @@ function lightweightClientPatch(page: NguyenPage) {
     ['contact', nav[4]],
   ]);
 
-  function patchTextOnce() {
-    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-    let node;
-    while ((node = walker.nextNode())) {
-      const next = exact.get(normalize(node.nodeValue));
-      if (next && node.nodeValue !== next) node.nodeValue = next;
-    }
-  }
-
-  function patchLinksOnce() {
+  function patchNavigation() {
     document.querySelectorAll('a').forEach((a) => {
-      const text = normalizeLower(a.textContent);
+      const text = normalize(a.textContent);
       const match = sourceLabels.get(text);
       if (match) {
         a.textContent = match[0];
         a.setAttribute('href', match[1]);
       }
       if (/start a project|book consultation|get in touch|contact us|request consultation/.test(text)) {
-        a.setAttribute('href', ${JSON.stringify(BASE_PATH)} + '/contact');
+        a.setAttribute('href', BASE + '/contact');
       }
-      if (/view projects|view project types/.test(text)) a.setAttribute('href', ${JSON.stringify(BASE_PATH)});
+      if (/view projects|view project types/.test(text)) a.setAttribute('href', BASE);
     });
 
     document.querySelectorAll('a[href^="mailto:"]').forEach((a) => {
       a.setAttribute('href', 'mailto:info@nguyenarchitecture.com');
-      if (/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(normalize(a.textContent))) {
-        a.textContent = 'info@nguyenarchitecture.com';
-      }
     });
 
-    const anchors = [...document.querySelectorAll('a')];
-    const exactNav = nav.every(([label]) => anchors.some((a) => normalizeLower(a.textContent) === label.toLowerCase()));
     const floating = document.getElementById('nguyen-fallback-nav');
     if (floating) {
+      const anchors = [...document.querySelectorAll('a')];
+      const exactNav = nav.every(([label]) => anchors.some((a) => normalize(a.textContent) === label.toLowerCase()));
       floating.hidden = exactNav;
       floating.querySelectorAll('a').forEach((a) => {
         a.style.textDecoration = a.getAttribute('href') === active ? 'underline' : 'none';
@@ -190,26 +229,39 @@ function lightweightClientPatch(page: NguyenPage) {
     }
   }
 
-  function run() {
-    patchTextOnce();
-    patchLinksOnce();
+  function bindContactForm() {
+    const form = document.getElementById('nguyen-contact-form');
+    if (!form || form.dataset.bound === 'true') return;
+    form.dataset.bound = 'true';
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const data = new FormData(form);
+      const subject = 'Project Consultation Request - ' + (data.get('service') || 'Website');
+      const body = [
+        'Name: ' + (data.get('name') || ''),
+        'Email: ' + (data.get('email') || ''),
+        'Phone: ' + (data.get('phone') || ''),
+        'Service: ' + (data.get('service') || ''),
+        '',
+        'Project details:',
+        String(data.get('message') || '')
+      ].join('\\n');
+      window.location.href = 'mailto:info@nguyenarchitecture.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    });
+  }
+
+  function init() {
+    patchNavigation();
+    bindContactForm();
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => requestAnimationFrame(run), { once: true });
+    document.addEventListener('DOMContentLoaded', init, { once: true });
   } else {
-    requestAnimationFrame(run);
+    init();
   }
-
-  // One final post-hydration pass only. No polling or scroll-time DOM scans.
-  setTimeout(() => requestAnimationFrame(run), 350);
 })();
 </script>`;
-}
-
-function addPerformanceHints(html: string) {
-  if (html.includes('id="nguyen-performance-tuning"')) return html;
-  return html.replace(/<\/head>/i, `${PERFORMANCE_HEAD}</head>`);
 }
 
 export async function renderNguyenLaunchPage(page: NguyenPage) {
@@ -217,10 +269,10 @@ export async function renderNguyenLaunchPage(page: NguyenPage) {
   let html = await original.text();
 
   html = applyServerContent(html, page);
-  html = stripPollingScripts(html);
+  html = removeFramerRuntime(html);
   html = addPerformanceHints(html);
   html = optimizeImages(html);
-  html = html.replace(/<\/body>/i, `${lightweightClientPatch(page)}</body>`);
+  html = html.replace(/<\/body>/i, `${lightweightClient(page)}</body>`);
 
   const headers = new Headers(original.headers);
   headers.set('Content-Type', 'text/html; charset=utf-8');
