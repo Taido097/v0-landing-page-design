@@ -5,6 +5,27 @@ export const revalidate = 0;
 
 const CLIENT_PATCH = String.raw`
 (() => {
+  // Framer occasionally resolves numeric hash targets with querySelector('#1'),
+  // which throws because an unescaped numeric id is not a valid CSS selector.
+  // Normalize only that narrow case and leave all other selector behavior intact.
+  function installSafeNumericSelectorHandling() {
+    const prototypes = [Document.prototype, Element.prototype, DocumentFragment.prototype];
+    prototypes.forEach((prototype) => {
+      const original = prototype.querySelector;
+      if (!original || original.__nguyenSafeNumericSelector) return;
+      const wrapped = function (selector) {
+        if (typeof selector === 'string' && /^#\\d+$/.test(selector)) {
+          return this.getElementById?.(selector.slice(1)) || null;
+        }
+        return original.call(this, selector);
+      };
+      wrapped.__nguyenSafeNumericSelector = true;
+      prototype.querySelector = wrapped;
+    });
+  }
+
+  installSafeNumericSelectorHandling();
+
   const TARGETS = {
     hero: {
       'Years of creating spaces': 'Years of experience',
@@ -460,6 +481,13 @@ html.nguyen-template-ready body{opacity:1!important;visibility:visible!important
 
 function replaceMeta(html: string) {
   let output = html;
+  // Framer's exported page contains numeric ids and quoted numeric hash targets.
+  // Rename both sides before its runtime executes: `querySelector('#1')` is
+  // invalid CSS, while the prefixed equivalent is valid and preserves targeting.
+  output = output.replace(/\bid=(['\"])((?:\d+))\1/gi, 'id=$1framer-$2$1');
+  output = output.replace(/(['\"])#(\d+)\1/g, '$1#framer-$2$1');
+  // Also cover hash literals embedded in Framer's serialized runtime data.
+  output = output.replace(/#([1-4])(?=["')])/g, '#framer-$1');
   output = output.replace(/<title>[\s\S]*?<\/title>/i, '<title>NGUYEN Architecture &amp; Engineering — Concept 04</title>');
   output = output.replace(/<meta name="description" content="[^"]*">/i, '<meta name="description" content="Full-service architecture, engineering, Title 24, code compliance and permit solutions for commercial, residential and ADU projects across California.">');
   output = output.replace(/<meta property="og:title" content="[^"]*">/i, '<meta property="og:title" content="NGUYEN Architecture &amp; Engineering — Concept 04">');
