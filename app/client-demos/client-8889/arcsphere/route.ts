@@ -137,12 +137,31 @@ const CLIENT_PATCH = `
 
   patchText();
   document.addEventListener('DOMContentLoaded', patchText, { once: true });
-  let runs = 0;
-  const timer = setInterval(() => {
-    patchText();
-    runs += 1;
-    if (runs >= 24) clearInterval(timer);
-  }, 250);
+  window.addEventListener('load', patchText, { once: true });
+
+  let debounceTimer = null;
+  const scheduleRepatch = () => {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(patchText, 80);
+  };
+
+  const observer = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      if (
+        (mutation.type === 'childList' && mutation.addedNodes.length) ||
+        mutation.type === 'characterData'
+      ) {
+        scheduleRepatch();
+        break;
+      }
+    }
+  });
+  observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+
+  setTimeout(() => {
+    observer.disconnect();
+    if (debounceTimer) clearTimeout(debounceTimer);
+  }, 6000);
 })();
 </script>`;
 
