@@ -11,7 +11,6 @@ function removeFramerTelemetry(html: string) {
 }
 
 function removeRepeatedDomPolling(html: string) {
-  // Full-page polling was competing with Framer's scroll/motion runtime.
   return html
     .replace(
       "  let runs = 0;\n  const timer = setInterval(() => {\n    rewriteLinks();\n    runs += 1;\n    if (runs > 16) clearInterval(timer);\n  }, 300);",
@@ -24,12 +23,6 @@ function removeRepeatedDomPolling(html: string) {
 }
 
 function deferInjectedPatchesUntilAfterHydration(html: string) {
-  // The NGUYEN content/nav scripts are injected at the end of the body. Classic
-  // scripts execute during parsing, before Framer's deferred module hydration.
-  // Mutating Framer-owned text that early can trigger a large hydration rebuild
-  // right as its scroll animations are starting. Wrap only our two patch scripts
-  // so they run once after load, during browser idle time. Framer itself is left
-  // completely untouched.
   return html.replace(
     /<script id="(nguyen-official-(?:content|nav)-patch)">([\s\S]*?)<\/script>/gi,
     (_match, id: string, body: string) => `
@@ -59,7 +52,6 @@ function optimizeImageDecoding(html: string) {
       optimized = optimized.replace(/<img\b/i, '<img decoding="async"');
     }
 
-    // Preserve the exact initial hero behavior. Only lower-page images are lazy.
     if (currentIndex >= 6 && !/\bloading\s*=/i.test(optimized)) {
       optimized = optimized.replace(/<img\b/i, '<img loading="lazy"');
     }
@@ -83,6 +75,18 @@ function preserveApprovedUppercaseLabels(html: string) {
   return html.replace(/<\/head>/i, `${uppercaseStyle}</head>`);
 }
 
+function topDeclarations(html: string, property: string) {
+  const expression = new RegExp(`${property}\\s*:[^;}]+`, 'gi');
+  const frequency = new Map<string, number>();
+  for (const match of html.match(expression) || []) {
+    const normalized = match.replace(/\\s+/g, ' ').trim().toLowerCase();
+    frequency.set(normalized, (frequency.get(normalized) || 0) + 1);
+  }
+  return [...frequency.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 12);
+}
+
 function profileRenderComplexity(html: string) {
   const count = (pattern: RegExp) => (html.match(pattern) || []).length;
   console.log('[concept1-profile]', JSON.stringify({
@@ -94,11 +98,15 @@ function profileRenderComplexity(html: string) {
     transforms: count(/transform\s*:/gi),
     willChange: count(/will-change\s*:/gi),
     filters: count(/filter\s*:/gi),
+    blurFunctions: count(/blur\s*\(/gi),
+    brightnessFunctions: count(/brightness\s*\(/gi),
     backdropFilters: count(/backdrop-filter\s*:/gi),
     fixedPositions: count(/position\s*:\s*fixed/gi),
     stickyPositions: count(/position\s*:\s*sticky/gi),
     animations: count(/animation\s*:/gi),
     transitions: count(/transition\s*:/gi),
+    topFilters: topDeclarations(html, 'filter'),
+    topWillChange: topDeclarations(html, 'will-change'),
   }));
 }
 
