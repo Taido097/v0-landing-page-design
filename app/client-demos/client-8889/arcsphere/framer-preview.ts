@@ -83,9 +83,29 @@ function preserveApprovedUppercaseLabels(html: string) {
   return html.replace(/<\/head>/i, `${uppercaseStyle}</head>`);
 }
 
+function profileRenderComplexity(html: string) {
+  const count = (pattern: RegExp) => (html.match(pattern) || []).length;
+  console.log('[concept1-profile]', JSON.stringify({
+    bytes: Buffer.byteLength(html, 'utf8'),
+    images: count(/<img\b/gi),
+    spans: count(/<span\b/gi),
+    scripts: count(/<script\b/gi),
+    framerAppearNodes: count(/data-framer-appear-id/gi),
+    transforms: count(/transform\s*:/gi),
+    willChange: count(/will-change\s*:/gi),
+    filters: count(/filter\s*:/gi),
+    backdropFilters: count(/backdrop-filter\s*:/gi),
+    fixedPositions: count(/position\s*:\s*fixed/gi),
+    stickyPositions: count(/position\s*:\s*sticky/gi),
+    animations: count(/animation\s*:/gi),
+    transitions: count(/transition\s*:/gi),
+  }));
+}
+
 export async function stabilizeFramerPreview(response: Response) {
   let html = await response.text();
 
+  profileRenderComplexity(html);
   html = removeFramerTelemetry(html);
   html = removeRepeatedDomPolling(html);
   html = deferInjectedPatchesUntilAfterHydration(html);
