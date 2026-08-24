@@ -88,6 +88,11 @@ export function AnimatedDemoPreview({ name, href, isCenter, onComplete }: Animat
       return maxScroll * 0.5;
     };
 
+    // Keep the scroll path responsive to late layout changes without forcing
+    // a scrollHeight/layout read on every animation frame.
+    let targetScroll = getHalfPageTarget();
+    let targetReadAt = startedAt;
+
     const finish = () => {
       if (completedRef.current) return;
       completedRef.current = true;
@@ -100,7 +105,11 @@ export function AnimatedDemoPreview({ name, href, isCenter, onComplete }: Animat
 
       const elapsed = now - startedAt;
       const scrollingFor = elapsed - holdAtTop;
-      const targetScroll = getHalfPageTarget();
+
+      if (now - targetReadAt >= 500) {
+        targetScroll = getHalfPageTarget();
+        targetReadAt = now;
+      }
 
       if (elapsed <= holdAtTop) {
         win.scrollTo(0, 0);
