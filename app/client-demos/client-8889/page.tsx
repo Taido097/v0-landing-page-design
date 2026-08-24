@@ -78,6 +78,7 @@ export default function NguyenClientDemosPage() {
                       tabIndex={-1}
                       aria-hidden="true"
                       loading="lazy"
+                      sandbox=""
                       className="pointer-events-none absolute left-0 top-0 border-0 bg-white"
                       style={{
                         width: '200%',
