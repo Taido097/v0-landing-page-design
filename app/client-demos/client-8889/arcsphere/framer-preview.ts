@@ -11,11 +11,7 @@ function removeFramerTelemetry(html: string) {
 }
 
 function removeRepeatedDomPolling(html: string) {
-  // Concept 1 already runs each patch immediately and once again on DOMContentLoaded.
-  // The old implementation then rescanned the entire document every 250–300 ms
-  // for several seconds. Those full-DOM scans compete with Framer's animation
-  // runtime on the main thread while the user is scrolling. Replace the polling
-  // loops with one final post-load pass so hydration changes are still captured.
+  // Full-page polling was competing with Framer's scroll/motion runtime.
   return html
     .replace(
       "  let runs = 0;\n  const timer = setInterval(() => {\n    rewriteLinks();\n    runs += 1;\n    if (runs > 16) clearInterval(timer);\n  }, 300);",
@@ -27,6 +23,31 @@ function removeRepeatedDomPolling(html: string) {
     );
 }
 
+function deferInjectedPatchesUntilAfterHydration(html: string) {
+  // The NGUYEN content/nav scripts are injected at the end of the body. Classic
+  // scripts execute during parsing, before Framer's deferred module hydration.
+  // Mutating Framer-owned text that early can trigger a large hydration rebuild
+  // right as its scroll animations are starting. Wrap only our two patch scripts
+  // so they run once after load, during browser idle time. Framer itself is left
+  // completely untouched.
+  return html.replace(
+    /<script id="(nguyen-official-(?:content|nav)-patch)">([\s\S]*?)<\/script>/gi,
+    (_match, id: string, body: string) => `
+<script id="${id}">
+window.addEventListener('load', () => {
+  const runPatch = () => {
+${body}
+  };
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(runPatch);
+  } else {
+    window.setTimeout(runPatch, 120);
+  }
+}, { once: true });
+</script>`,
+  );
+}
+
 function optimizeImageDecoding(html: string) {
   let imageIndex = 0;
 
@@ -34,14 +55,11 @@ function optimizeImageDecoding(html: string) {
     const currentIndex = imageIndex++;
     let optimized = tag;
 
-    // Async decoding avoids large image decodes blocking scroll frames while
-    // preserving the same source, sizing, crop, and responsive image behavior.
     if (!/\bdecoding\s*=/i.test(optimized)) {
       optimized = optimized.replace(/<img\b/i, '<img decoding="async"');
     }
 
-    // Keep the initial responsive/hero image set eager. Lower-page images can be
-    // deferred until they approach the viewport, reducing initial decode pressure.
+    // Preserve the exact initial hero behavior. Only lower-page images are lazy.
     if (currentIndex >= 6 && !/\bloading\s*=/i.test(optimized)) {
       optimized = optimized.replace(/<img\b/i, '<img loading="lazy"');
     }
@@ -51,14 +69,11 @@ function optimizeImageDecoding(html: string) {
 }
 
 function preserveApprovedUppercaseLabels(html: string) {
-  // Keep these approved Concept 1 labels visually consistent in all caps.
   html = html
     .replace(/>(\s*)services(\s*)</gi, '>$1SERVICES$2<')
     .replace(/NGUYEN Architecture &amp; Engineering/g, 'NGUYEN ARCHITECTURE &amp; ENGINEERING')
     .replace(/NGUYEN Architecture & Engineering/g, 'NGUYEN ARCHITECTURE & ENGINEERING');
 
-  // Framer can hydrate its original casing after the server response. CSS text
-  // transformation preserves the requested display without another DOM polling loop.
   const uppercaseStyle = `<style id="nguyen-approved-uppercase">
     a[href*="#services"] { text-transform: uppercase !important; }
     a[href="https://arcsphere-studio.framer.website/"],
@@ -73,6 +88,7 @@ export async function stabilizeFramerPreview(response: Response) {
 
   html = removeFramerTelemetry(html);
   html = removeRepeatedDomPolling(html);
+  html = deferInjectedPatchesUntilAfterHydration(html);
   html = optimizeImageDecoding(html);
   html = preserveApprovedUppercaseLabels(html);
 
