@@ -62,22 +62,30 @@ export default function NguyenClientDemosPage() {
 
           <div className="mt-12 grid gap-x-5 gap-y-10 sm:mt-16 md:grid-cols-2 xl:grid-cols-3">
             {demos.map((demo) => (
-              <article key={demo.href} className="group min-w-0">
+              <article
+                key={demo.href}
+                className="group min-w-0"
+                style={{ contentVisibility: 'auto', containIntrinsicSize: '420px' }}
+              >
                 <a href={demo.href} className="block cursor-pointer" aria-label={`Open ${demo.name}`}>
-                  <div className="relative aspect-[4/3] overflow-hidden border border-black/10 bg-[#dedbd4]">
+                  <div
+                    className="relative aspect-[4/3] overflow-hidden border border-black/10 bg-[#dedbd4]"
+                    style={{ contain: 'layout paint', isolation: 'isolate' }}
+                  >
                     <iframe
                       src={demo.href}
                       title={`${demo.name} website demo preview`}
                       tabIndex={-1}
                       aria-hidden="true"
-                      loading="eager"
+                      loading="lazy"
                       className="pointer-events-none absolute left-0 top-0 border-0 bg-white"
                       style={{
                         width: '200%',
                         height: '200%',
                         maxWidth: 'none',
-                        transform: 'scale(.5)',
+                        transform: 'translateZ(0) scale(.5)',
                         transformOrigin: 'top left',
+                        backfaceVisibility: 'hidden',
                       }}
                     />
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-between border-t border-white/15 bg-black/75 px-4 py-2.5 text-[10px] uppercase tracking-[.13em] text-white/70 backdrop-blur-md">
