@@ -63,6 +63,12 @@ export function HeroSection() {
   const [isMobile, setIsMobile] = useState(false);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const suppressClickRef = useRef(false);
+  const pointerFrameRef = useRef<number>(0);
+  const pointerSampleRef = useRef<{
+    element: HTMLElement;
+    clientX: number;
+    clientY: number;
+  } | null>(null);
 
   useEffect(() => {
     const media = window.matchMedia('(max-width: 767px)');
@@ -70,6 +76,10 @@ export function HeroSection() {
     sync();
     media.addEventListener?.('change', sync);
     return () => media.removeEventListener?.('change', sync);
+  }, []);
+
+  useEffect(() => {
+    return () => cancelAnimationFrame(pointerFrameRef.current);
   }, []);
 
   const advanceDemo = useCallback(() => {
@@ -86,16 +96,31 @@ export function HeroSection() {
 
   const handlePointerMove = (event: MouseEvent<HTMLElement>) => {
     if (isMobile) return;
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width - 0.5;
-    const y = (event.clientY - rect.top) / rect.height - 0.5;
 
-    event.currentTarget.style.setProperty('--center-x', `${x * 8}px`);
-    event.currentTarget.style.setProperty('--center-y', `${y * 6}px`);
-    event.currentTarget.style.setProperty('--left-x', `${x * -12}px`);
-    event.currentTarget.style.setProperty('--left-y', `${y * -7}px`);
-    event.currentTarget.style.setProperty('--right-x', `${x * 12}px`);
-    event.currentTarget.style.setProperty('--right-y', `${y * 7}px`);
+    pointerSampleRef.current = {
+      element: event.currentTarget,
+      clientX: event.clientX,
+      clientY: event.clientY,
+    };
+
+    if (pointerFrameRef.current) return;
+
+    pointerFrameRef.current = requestAnimationFrame(() => {
+      pointerFrameRef.current = 0;
+      const sample = pointerSampleRef.current;
+      if (!sample) return;
+
+      const rect = sample.element.getBoundingClientRect();
+      const x = (sample.clientX - rect.left) / rect.width - 0.5;
+      const y = (sample.clientY - rect.top) / rect.height - 0.5;
+
+      sample.element.style.setProperty('--center-x', `${x * 8}px`);
+      sample.element.style.setProperty('--center-y', `${y * 6}px`);
+      sample.element.style.setProperty('--left-x', `${x * -12}px`);
+      sample.element.style.setProperty('--left-y', `${y * -7}px`);
+      sample.element.style.setProperty('--right-x', `${x * 12}px`);
+      sample.element.style.setProperty('--right-y', `${y * 7}px`);
+    });
   };
 
   const handleTouchStart = (event: TouchEvent<HTMLDivElement>) => {
@@ -213,13 +238,13 @@ export function HeroSection() {
 
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Button asChild size="lg" className="group rounded-none bg-white px-8 py-6 text-xs font-semibold tracking-[0.09em] text-black hover:bg-white/88">
-              <Link href="/contact" className="flex items-center gap-3">
+              <Link href="/contact" prefetch={false} className="flex items-center gap-3">
                 Start Your Project
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="group rounded-none border-white/55 bg-black/20 px-8 py-6 text-xs font-semibold tracking-[0.09em] text-white backdrop-blur-md hover:bg-white hover:text-black">
-              <Link href="/demos" className="flex items-center gap-3">
+              <Link href="/demos" prefetch={false} className="flex items-center gap-3">
                 Explore the Work
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
@@ -252,6 +277,7 @@ export function HeroSection() {
             <div className="showcase-center-card">
               <Link
                 href={activeProject.href}
+                prefetch={false}
                 className="group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
                 aria-label={`Open ${activeProject.name} demo`}
               >
