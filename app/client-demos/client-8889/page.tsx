@@ -64,10 +64,7 @@ export default function NguyenClientDemosPage() {
             {demos.map((demo) => (
               <article key={demo.href} className="group min-w-0">
                 <a href={demo.href} className="block cursor-pointer" aria-label={`Open ${demo.name}`}>
-                  <div
-                    className="relative aspect-[4/3] overflow-hidden border border-black/10 bg-[#dedbd4]"
-                    style={{ contain: 'layout paint' }}
-                  >
+                  <div className="relative aspect-[4/3] overflow-hidden border border-black/10 bg-[#dedbd4]">
                     <iframe
                       src={demo.href}
                       title={`${demo.name} website demo preview`}
