@@ -46,6 +46,16 @@ function scheduleNguyenHelperWork(html: string) {
     );
 }
 
+function optimizeImageDecoding(html: string) {
+  // Preserve every source, srcset, size, loading mode, crop and visual style.
+  // Only ask the browser to decode images asynchronously so image decode work
+  // is less likely to block scroll/animation frames on the main thread.
+  return html.replace(/<img\b[^>]*>/gi, (tag) => {
+    if (/\bdecoding\s*=/i.test(tag)) return tag;
+    return tag.replace(/<img\b/i, '<img decoding="async"');
+  });
+}
+
 export async function renderExactNguyenPage(page: NguyenPage) {
   const response = await renderNguyenPage(page);
   let html = await response.text();
@@ -56,6 +66,7 @@ export async function renderExactNguyenPage(page: NguyenPage) {
   html = removeNonVisualTelemetry(html);
   html = removeNguyenPollingLoops(html);
   html = scheduleNguyenHelperWork(html);
+  html = optimizeImageDecoding(html);
   html = html.replaceAll(CURRENT_BASE, EXACT_BASE);
 
   const headers = new Headers(response.headers);
