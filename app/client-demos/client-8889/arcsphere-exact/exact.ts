@@ -17,8 +17,8 @@ function removeNonVisualTelemetry(html: string) {
 
 function removeNguyenPollingLoops(html: string) {
   // These loops belong to our content/navigation adaptation layer, not Framer.
-  // Keep the initial + DOMContentLoaded passes so the visible result stays the
-  // same, but stop repeatedly walking the full document while Framer animates.
+  // Keep a single patch pass so the visible result stays identical, but stop
+  // repeatedly walking the full document while Framer animates.
   return html
     .replace(
       "  let runs = 0;\n  const timer = setInterval(() => {\n    rewriteLinks();\n    runs += 1;\n    if (runs > 16) clearInterval(timer);\n  }, 300);",
@@ -27,6 +27,22 @@ function removeNguyenPollingLoops(html: string) {
     .replace(
       "  let runs = 0;\n  const timer = setInterval(() => { patch(); runs += 1; if (runs > 18) clearInterval(timer); }, 250);",
       '',
+    );
+}
+
+function scheduleNguyenHelperWork(html: string) {
+  // The adaptation scripts were doing one synchronous full-DOM pass and then a
+  // second pass on DOMContentLoaded. Schedule exactly one pass on the browser's
+  // next animation frame instead. This changes no Framer animation definition,
+  // timing, easing, keyframe, transform, filter, motion path, or interaction.
+  return html
+    .replace(
+      "  rewriteLinks();\n  document.addEventListener('DOMContentLoaded', rewriteLinks, { once: true });",
+      "  const scheduleRewrite = () => requestAnimationFrame(rewriteLinks);\n  if (document.readyState === 'loading') {\n    document.addEventListener('DOMContentLoaded', scheduleRewrite, { once: true });\n  } else {\n    scheduleRewrite();\n  }",
+    )
+    .replace(
+      "  patch();\n  document.addEventListener('DOMContentLoaded', patch, { once: true });",
+      "  const schedulePatch = () => requestAnimationFrame(patch);\n  if (document.readyState === 'loading') {\n    document.addEventListener('DOMContentLoaded', schedulePatch, { once: true });\n  } else {\n    schedulePatch();\n  }",
     );
 }
 
@@ -39,6 +55,7 @@ export async function renderExactNguyenPage(page: NguyenPage) {
   // this exact-animation copy.
   html = removeNonVisualTelemetry(html);
   html = removeNguyenPollingLoops(html);
+  html = scheduleNguyenHelperWork(html);
   html = html.replaceAll(CURRENT_BASE, EXACT_BASE);
 
   const headers = new Headers(response.headers);
