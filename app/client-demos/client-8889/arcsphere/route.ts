@@ -147,11 +147,36 @@ const CLIENT_PATCH = `
     debounceTimer = setTimeout(patchText, 80);
   };
 
+  function nodeNeedsPatch(node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      return exact.has(normalize(node.nodeValue));
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE) return false;
+
+    if (node.matches('a[href^="mailto:"], a[href^="tel:"]')) return true;
+    if (node.querySelector('a[href^="mailto:"], a[href^="tel:"]')) return true;
+
+    const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
+    let textNode;
+    while ((textNode = walker.nextNode())) {
+      if (exact.has(normalize(textNode.nodeValue))) return true;
+    }
+    return false;
+  }
+
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
       if (
-        (mutation.type === 'childList' && mutation.addedNodes.length) ||
-        mutation.type === 'characterData'
+        mutation.type === 'characterData' &&
+        exact.has(normalize(mutation.target.nodeValue))
+      ) {
+        scheduleRepatch();
+        break;
+      }
+
+      if (
+        mutation.type === 'childList' &&
+        Array.from(mutation.addedNodes).some(nodeNeedsPatch)
       ) {
         scheduleRepatch();
         break;
