@@ -60,6 +60,21 @@ function optimizeImageDecoding(html: string) {
   });
 }
 
+function removeExpensiveSplitTextBlur(html: string) {
+  // ArcSphere uses per-character/per-word blur on more than a thousand RichText
+  // spans. Those filters are repainted/composited throughout scroll-linked text
+  // reveals and are the dominant scroll cost. Preserve the transform/opacity
+  // motion while disabling only the blur effect on RichText descendants.
+  const performanceStyle = `<style id="nguyen-concept1-scroll-performance">
+    [data-framer-component-type="RichTextContainer"] span[style*="filter"] {
+      filter: none !important;
+      --framer-will-change-filter-override: auto !important;
+    }
+  </style>`;
+
+  return html.replace(/<\/head>/i, `${performanceStyle}</head>`);
+}
+
 function preserveApprovedUppercaseLabels(html: string) {
   html = html
     .replace(/>(\s*)services(\s*)</gi, '>$1SERVICES$2<')
@@ -75,49 +90,14 @@ function preserveApprovedUppercaseLabels(html: string) {
   return html.replace(/<\/head>/i, `${uppercaseStyle}</head>`);
 }
 
-function topDeclarations(html: string, property: string) {
-  const expression = new RegExp(`${property}\\s*:[^;}]+`, 'gi');
-  const frequency = new Map<string, number>();
-  for (const match of html.match(expression) || []) {
-    const normalized = match.replace(/\\s+/g, ' ').trim().toLowerCase();
-    frequency.set(normalized, (frequency.get(normalized) || 0) + 1);
-  }
-  return [...frequency.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 12);
-}
-
-function profileRenderComplexity(html: string) {
-  const count = (pattern: RegExp) => (html.match(pattern) || []).length;
-  console.log('[concept1-profile]', JSON.stringify({
-    bytes: Buffer.byteLength(html, 'utf8'),
-    images: count(/<img\b/gi),
-    spans: count(/<span\b/gi),
-    scripts: count(/<script\b/gi),
-    framerAppearNodes: count(/data-framer-appear-id/gi),
-    transforms: count(/transform\s*:/gi),
-    willChange: count(/will-change\s*:/gi),
-    filters: count(/filter\s*:/gi),
-    blurFunctions: count(/blur\s*\(/gi),
-    brightnessFunctions: count(/brightness\s*\(/gi),
-    backdropFilters: count(/backdrop-filter\s*:/gi),
-    fixedPositions: count(/position\s*:\s*fixed/gi),
-    stickyPositions: count(/position\s*:\s*sticky/gi),
-    animations: count(/animation\s*:/gi),
-    transitions: count(/transition\s*:/gi),
-    topFilters: topDeclarations(html, 'filter'),
-    topWillChange: topDeclarations(html, 'will-change'),
-  }));
-}
-
 export async function stabilizeFramerPreview(response: Response) {
   let html = await response.text();
 
-  profileRenderComplexity(html);
   html = removeFramerTelemetry(html);
   html = removeRepeatedDomPolling(html);
   html = deferInjectedPatchesUntilAfterHydration(html);
   html = optimizeImageDecoding(html);
+  html = removeExpensiveSplitTextBlur(html);
   html = preserveApprovedUppercaseLabels(html);
 
   const headers = new Headers(response.headers);
