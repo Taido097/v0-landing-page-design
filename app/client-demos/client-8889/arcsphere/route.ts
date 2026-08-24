@@ -1,8 +1,283 @@
-import { stabilizeFramerPreview } from './framer-preview';
-import { renderNguyenPage } from './site';
+const SOURCE_URL = 'https://arcsphere-studio.framer.website/';
 
 export const revalidate = 3600;
 
+const CLEANUP = `
+<style id="designedbytd-client-demo-cleanup">
+  #__framer-badge-container,
+  [id^="__framer-editorbar"],
+  [class*="framer-editorbar"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+</style>`;
+
+const REPLACEMENTS: Array<[RegExp, string]> = [
+  [/ArcSphere Studio/gi, 'NGUYEN Architecture & Engineering'],
+  [/ArcSphere/gi, 'NGUYEN'],
+  [/Interior & Architecture/gi, 'Architecture · Engineering · Permit'],
+  [/Interior and Architecture/gi, 'Architecture · Engineering · Permit'],
+  [/Where Architecture Meets Experience/gi, 'Commercial Architecture — Engineering & Permit'],
+  [/Where Architecture/gi, 'Commercial Architecture'],
+  [/Meets Experience/gi, 'Engineering & Permit'],
+  [/Based in Dubai, we design residential and commercial spaces that elevate how people live, work, and interact with their environment\.?/gi, 'Based in Orange County, we provide commercial architecture, engineering and permit support from existing-condition survey and business layout through plan check and approval.'],
+  [/VIEW PROJECTS/gi, 'VIEW PROJECT TYPES'],
+  [/BOOK CONSULTATION/gi, 'START A PROJECT'],
+  [/DESIGN PROCESS/gi, 'PROJECT PROCESS'],
+  [/Residential Interior/gi, 'Architectural Design & Tenant Improvement (TI)'],
+  [/Commercial Interior/gi, 'Commercial Architecture'],
+  [/Space Planning/gi, 'Existing-Condition Survey & Business Layout'],
+  [/Design Consultation/gi, 'Zoning, Occupancy & Local Requirements'],
+  [/Project Management/gi, 'Building Permit, Plan Check & Corrections'],
+  [/Architecture Design/gi, 'Architectural, Structural & MEP'],
+  [/Interior Styling/gi, 'Electrical, Plumbing & HVAC Coordination'],
+  [/Furniture Selection/gi, 'Title 24 & Code Compliance'],
+  [/Lighting Design/gi, 'Electrical, Plumbing & HVAC Coordination'],
+  [/3D Visualization/gi, 'Permit Drawing Documentation'],
+  [/Material Selection/gi, 'Consultant & City Coordination'],
+  [/Renovation/gi, 'Commercial Remodel & Renovation'],
+  [/Office Design/gi, 'Office & Tenant Improvements'],
+  [/Retail Design/gi, 'Retail Stores'],
+  [/Hospitality Design/gi, 'Restaurants, Cafés & Boba Shops'],
+  [/Concept Development/gi, 'Existing-Condition Survey & Project Planning'],
+  [/Design Development/gi, 'Architecture & Engineering'],
+  [/Documentation/gi, 'Permit Documentation'],
+  [/Implementation/gi, 'Plan Check & Corrections'],
+  [/We begin by understanding your goals, requirements, and design vision\.?/gi, 'We begin with existing conditions, business needs, zoning, occupancy and local requirements.'],
+  [/We refine the concept into a cohesive and functional design direction\.?/gi, 'We develop coordinated Architectural, Structural and MEP documentation for the commercial project.'],
+  [/We prepare detailed drawings and specifications for execution\.?/gi, 'We prepare permit-ready drawings with Title 24 and applicable code compliance.'],
+  [/We oversee the final execution to ensure the design is realized as intended\.?/gi, 'We support building permit, plan check, corrections, consultants and city coordination through approval.'],
+  [/Functional and visually compelling spaces for offices, retail stores, hospitality, and businesses\.?/gi, 'Commercial architecture and engineering for restaurants, cafés, boba shops, salons, retail stores, offices and tenant improvements.'],
+  [/Our Projects/gi, 'Commercial Project Types'],
+  [/About Us/gi, 'About NGUYEN'],
+  [/About us/gi, 'About NGUYEN'],
+  [/Get in touch/gi, 'Start a Project'],
+  [/Contact Us/gi, 'Contact'],
+  [/Contact us/gi, 'Contact'],
+  [/Dubai/gi, 'Huntington Beach, CA'],
+  [/United Arab Emirates/gi, 'Orange County, CA'],
+];
+
+const CLIENT_PATCH = `
+<script id="nguyen-arcsphere-content-patch">
+(() => {
+  const pairs = [
+    ['ArcSphere Studio', 'NGUYEN Architecture & Engineering'],
+    ['ArcSphere', 'NGUYEN'],
+    ['Interior & Architecture', 'Architecture · Engineering · Permit'],
+    ['Interior and Architecture', 'Architecture · Engineering · Permit'],
+    ['Where Architecture Meets Experience', 'Commercial Architecture — Engineering & Permit'],
+    ['Where Architecture', 'Commercial Architecture'],
+    ['Meets Experience', 'Engineering & Permit'],
+    ['Based in Dubai, we design residential and commercial spaces that elevate how people live, work, and interact with their environment', 'Based in Orange County, we provide commercial architecture, engineering and permit support from existing-condition survey and business layout through plan check and approval.'],
+    ['VIEW PROJECTS', 'VIEW PROJECT TYPES'],
+    ['BOOK CONSULTATION', 'START A PROJECT'],
+    ['DESIGN PROCESS', 'PROJECT PROCESS'],
+    ['Residential Interior', 'Architectural Design & Tenant Improvement (TI)'],
+    ['Commercial Interior', 'Commercial Architecture'],
+    ['Space Planning', 'Existing-Condition Survey & Business Layout'],
+    ['Design Consultation', 'Zoning, Occupancy & Local Requirements'],
+    ['Project Management', 'Building Permit, Plan Check & Corrections'],
+    ['Architecture Design', 'Architectural, Structural & MEP'],
+    ['Interior Styling', 'Electrical, Plumbing & HVAC Coordination'],
+    ['Furniture Selection', 'Title 24 & Code Compliance'],
+    ['Lighting Design', 'Electrical, Plumbing & HVAC Coordination'],
+    ['3D Visualization', 'Permit Drawing Documentation'],
+    ['Material Selection', 'Consultant & City Coordination'],
+    ['Renovation', 'Commercial Remodel & Renovation'],
+    ['Office Design', 'Office & Tenant Improvements'],
+    ['Retail Design', 'Retail Stores'],
+    ['Hospitality Design', 'Restaurants, Cafés & Boba Shops'],
+    ['Concept Development', 'Existing-Condition Survey & Project Planning'],
+    ['Design Development', 'Architecture & Engineering'],
+    ['Documentation', 'Permit Documentation'],
+    ['Implementation', 'Plan Check & Corrections'],
+    ['We begin by understanding your goals, requirements, and design vision.', 'We begin with existing conditions, business needs, zoning, occupancy and local requirements.'],
+    ['We refine the concept into a cohesive and functional design direction.', 'We develop coordinated Architectural, Structural and MEP documentation for the commercial project.'],
+    ['We prepare detailed drawings and specifications for execution.', 'We prepare permit-ready drawings with Title 24 and applicable code compliance.'],
+    ['We oversee the final execution to ensure the design is realized as intended.', 'We support building permit, plan check, corrections, consultants and city coordination through approval.'],
+    ['Functional and visually compelling spaces for offices, retail stores, hospitality, and businesses.', 'Commercial architecture and engineering for restaurants, cafés, boba shops, salons, retail stores, offices and tenant improvements.'],
+    ['Our Projects', 'Commercial Project Types'],
+    ['About Us', 'About NGUYEN'],
+    ['About us', 'About NGUYEN'],
+    ['Get in touch', 'Start a Project'],
+    ['Contact Us', 'Contact'],
+    ['Contact us', 'Contact'],
+    ['Dubai', 'Huntington Beach, CA'],
+    ['United Arab Emirates', 'Orange County, CA']
+  ];
+
+  const exact = new Map(pairs.map(([a, b]) => [a.replace(/\\s+/g, ' ').trim(), b]));
+  const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim();
+
+  function patchTextNode(node) {
+    const key = normalize(node.nodeValue);
+    const next = exact.get(key);
+    if (next && node.nodeValue !== next) node.nodeValue = next;
+  }
+
+  function patchLinks(root) {
+    const scope = root && root.querySelectorAll ? root : document;
+
+    scope.querySelectorAll('a[href^="mailto:"]').forEach((a) => {
+      a.setAttribute('href', 'mailto:info@nguyenarchitecture.com');
+      if (/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(normalize(a.textContent))) {
+        a.textContent = 'info@nguyenarchitecture.com';
+      }
+    });
+
+    const phones = ['(209) 233-8888', '(714) 707-8889'];
+    scope.querySelectorAll('a[href^="tel:"]').forEach((a, index) => {
+      const phone = phones[Math.min(index, phones.length - 1)];
+      a.setAttribute('href', 'tel:' + phone.replace(/[^+\\d]/g, ''));
+      if (/^[+()\\d .-]{7,}$/.test(normalize(a.textContent))) a.textContent = phone;
+    });
+  }
+
+  function patchSubtree(root) {
+    if (!root) return;
+
+    if (root.nodeType === Node.TEXT_NODE) {
+      patchTextNode(root);
+      return;
+    }
+
+    if (root.nodeType !== Node.ELEMENT_NODE && root.nodeType !== Node.DOCUMENT_NODE) return;
+
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) patchTextNode(node);
+    patchLinks(root);
+  }
+
+  // Most content is already replaced server-side. This single frame is only
+  // a hydration fallback if Framer restores any source text.
+  requestAnimationFrame(() => patchSubtree(document.body));
+
+  const pending = new Set();
+  let frame = 0;
+
+  function flushPending() {
+    frame = 0;
+    const nodes = Array.from(pending);
+    pending.clear();
+    for (const node of nodes) patchSubtree(node);
+  }
+
+  function schedule(node) {
+    if (node) pending.add(node);
+    if (!frame) frame = requestAnimationFrame(flushPending);
+  }
+
+  // Observe only the nodes Framer actually changes. Do not repeatedly walk
+  // the full document while its animation engine is running.
+  const observer = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      if (mutation.type === 'characterData') {
+        schedule(mutation.target);
+        continue;
+      }
+      for (const node of mutation.addedNodes) schedule(node);
+    }
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+    characterData: true
+  });
+
+  window.addEventListener('load', () => {
+    schedule(document.body);
+    setTimeout(() => {
+      observer.disconnect();
+      if (frame) cancelAnimationFrame(frame);
+      pending.clear();
+    }, 2500);
+  }, { once: true, passive: true });
+})();
+</script>`;
+
+async function getSource() {
+  let lastError: unknown = null;
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      const response = await fetch(SOURCE_URL, {
+        next: { revalidate: 3600 },
+        headers: {
+          'User-Agent': 'Mozilla/5.0',
+          Accept: 'text/html,application/xhtml+xml',
+        },
+      });
+      if (response.ok) return response.text();
+      lastError = new Error(`Upstream returned ${response.status}`);
+    } catch (error) {
+      lastError = error;
+    }
+
+    if (attempt < 2) await new Promise((resolve) => setTimeout(resolve, 200 * (attempt + 1)));
+  }
+
+  throw lastError instanceof Error ? lastError : new Error('Unable to load source');
+}
+
 export async function GET() {
-  return stabilizeFramerPreview(await renderNguyenPage('home'));
+  try {
+    let html = await getSource();
+
+    html = html.replace(
+      /<head([^>]*)>/i,
+      `<head$1><base href="${SOURCE_URL}"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="description" content="NGUYEN Architecture & Engineering — commercial architecture, engineering, tenant improvement and building permit support in Orange County.">${CLEANUP}`,
+    );
+
+    html = html.replace(
+      /<title>[^<]*<\/title>/i,
+      '<title>NGUYEN Architecture & Engineering — Website Demo</title>',
+    );
+
+    for (const [pattern, replacement] of REPLACEMENTS) {
+      html = html.replace(pattern, replacement);
+    }
+
+    // Remove non-visual Framer analytics work in protected previews.
+    html = html
+      .replace(
+        /<script\b(?=[^>]*\bsrc=["']https:\/\/events\.framer\.com\/script(?:\?[^"']*)?["'])[^>]*>\s*<\/script>/gi,
+        '',
+      )
+      .replace(
+        /<link\b(?=[^>]*\bhref=["']https:\/\/events\.framer\.com\/[^"']*["'])[^>]*>/gi,
+        '',
+      );
+
+    // Preserve image sources, dimensions, crop, and load order while allowing
+    // decoding to happen off the main rendering path when possible.
+    html = html.replace(/<img\b(?![^>]*\bdecoding=)/gi, '<img decoding="async"');
+
+    html = html.replace(/info@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/gi, 'info@nguyenarchitecture.com');
+    html = html.replace(/<\/body>/i, `${CLIENT_PATCH}</body>`);
+
+    return new Response(html, {
+      headers: {
+        'Content-Type': 'text/html; charset=utf-8',
+        'Cache-Control': 'public, max-age=60, s-maxage=3600, stale-while-revalidate=86400',
+        'X-Robots-Tag': 'noindex, nofollow, noarchive',
+      },
+    });
+  } catch {
+    return new Response(
+      '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta http-equiv="refresh" content="2"><title>Loading NGUYEN Concept 01</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f0ebe6;color:#181818;font-family:Arial,sans-serif}main{text-align:center;padding:24px}p{opacity:.6}</style></head><body><main><h1>NGUYEN Architecture & Engineering</h1><p>Loading Concept 01…</p></main></body></html>',
+      {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/html; charset=utf-8',
+          'Cache-Control': 'no-store',
+          'X-Robots-Tag': 'noindex, nofollow,noarchive',
+        },
+      },
+    );
+  }
 }
