@@ -135,7 +135,7 @@ const CLIENT_PATCH = `
     [compact('DUBAI, 2025'), 'LOS ANGELES, 2025']
   ]);
   const customHomeCardKeys = Array.from(customHomeCardReplacements.keys());
-  const thirdCardImage = window.location.origin + '/nguyen-commercial-building.svg';
+  const thirdCardImage = window.location.origin + '/nguyen-commercial-building.svg?v=office-exact-20260825';
   const thirdCardLabels = [compact('MINIMALIST APPARTMENT INTERIOR'), compact('MINIMALIST APARTMENT INTERIOR')];
   const phones = ['(209) 233-8888', '(714) 707-8889'];
 
@@ -207,8 +207,38 @@ const CLIENT_PATCH = `
       if (img.getAttribute('src') !== thirdCardImage) img.setAttribute('src', thirdCardImage);
       img.removeAttribute('srcset');
       img.removeAttribute('sizes');
+      img.style.setProperty('filter', 'none', 'important');
+      img.style.setProperty('opacity', '1', 'important');
+      img.style.setProperty('visibility', 'visible', 'important');
       const picture = img.closest('picture');
       if (picture) picture.querySelectorAll('source').forEach((source) => { source.setAttribute('srcset', thirdCardImage); source.removeAttribute('sizes'); });
+      const mediaParent = img.parentElement;
+      if (mediaParent) {
+        let replacement = mediaParent.querySelector(':scope > img[data-nguyen-third-card-image="true"]');
+        if (!replacement) {
+          replacement = img.cloneNode(false);
+          replacement.setAttribute('data-nguyen-third-card-image', 'true');
+          replacement.removeAttribute('srcset');
+          replacement.removeAttribute('sizes');
+          replacement.setAttribute('src', thirdCardImage);
+          const computed = window.getComputedStyle(img);
+          replacement.style.setProperty('position', 'absolute', 'important');
+          replacement.style.setProperty('inset', '0', 'important');
+          replacement.style.setProperty('width', '100%', 'important');
+          replacement.style.setProperty('height', '100%', 'important');
+          replacement.style.setProperty('object-fit', computed.objectFit || 'cover', 'important');
+          replacement.style.setProperty('object-position', computed.objectPosition || 'center', 'important');
+          replacement.style.setProperty('filter', 'none', 'important');
+          replacement.style.setProperty('opacity', '1', 'important');
+          replacement.style.setProperty('visibility', 'visible', 'important');
+          replacement.style.setProperty('z-index', '2', 'important');
+          replacement.style.setProperty('pointer-events', 'none', 'important');
+          if (window.getComputedStyle(mediaParent).position === 'static') mediaParent.style.setProperty('position', 'relative', 'important');
+          mediaParent.appendChild(replacement);
+        } else if (replacement.getAttribute('src') !== thirdCardImage) {
+          replacement.setAttribute('src', thirdCardImage);
+        }
+      }
       return true;
     }
     return false;
