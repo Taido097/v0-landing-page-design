@@ -14,6 +14,40 @@ type AnimatedDemoPreviewProps = {
   onComplete?: () => void;
 };
 
+const PAUSE_STYLE_ID = 'designedbytd-preview-pause';
+
+function setEmbeddedPreviewPaused(frame: HTMLIFrameElement, paused: boolean) {
+  try {
+    const doc = frame.contentDocument;
+    if (!doc) return;
+
+    const existing = doc.getElementById(PAUSE_STYLE_ID);
+
+    if (paused) {
+      if (!existing) {
+        const style = doc.createElement('style');
+        style.id = PAUSE_STYLE_ID;
+        style.textContent = `
+          *, *::before, *::after {
+            animation-play-state: paused !important;
+          }
+        `;
+        doc.head?.appendChild(style);
+      }
+
+      doc.querySelectorAll('video').forEach((video) => video.pause());
+      return;
+    }
+
+    existing?.remove();
+    doc.querySelectorAll('video').forEach((video) => {
+      void video.play().catch(() => undefined);
+    });
+  } catch {
+    // Preview pages are same-origin, but fail safely if a browser restricts access.
+  }
+}
+
 export function AnimatedDemoPreview({ name, href, isCenter, onComplete }: AnimatedDemoPreviewProps) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
@@ -60,8 +94,9 @@ export function AnimatedDemoPreview({ name, href, isCenter, onComplete }: Animat
 
     doc.documentElement.style.scrollBehavior = 'auto';
     if (doc.body) doc.body.style.scrollBehavior = 'auto';
+    setEmbeddedPreviewPaused(frame, !running);
 
-    // Side cards remain live website previews but stay paused at the top.
+    // Side cards stay paused at the top and do not run their embedded app JS.
     if (!running) {
       win.scrollTo(0, 0);
       return;
@@ -136,7 +171,10 @@ export function AnimatedDemoPreview({ name, href, isCenter, onComplete }: Animat
     if (!running) {
       completedRef.current = false;
       stopPreview();
-      if (frame?.contentDocument?.readyState === 'complete') resetToTop();
+      if (frame?.contentDocument?.readyState === 'complete') {
+        resetToTop();
+        setEmbeddedPreviewPaused(frame, true);
+      }
       return;
     }
 
@@ -166,6 +204,7 @@ export function AnimatedDemoPreview({ name, href, isCenter, onComplete }: Animat
           tabIndex={-1}
           aria-hidden="true"
           loading="lazy"
+          sandbox={isCenter ? undefined : 'allow-same-origin'}
           className="pointer-events-none absolute left-0 top-0 border-0 bg-black"
           style={{
             width: '200%',
