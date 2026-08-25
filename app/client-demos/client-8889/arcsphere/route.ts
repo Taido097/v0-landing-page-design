@@ -189,6 +189,24 @@ const CLIENT_PATCH = `
     element.querySelectorAll('p').forEach(patchSplitParagraph);
   }
 
+  function keepResidentialLabelOnOneLine(root) {
+    if (!root || root.nodeType !== Node.ELEMENT_NODE) return;
+    const element = root;
+    const candidates = [element, ...element.querySelectorAll('*')];
+
+    candidates.forEach((candidate) => {
+      const text = compact(candidate.textContent);
+      if (text !== 'residential' && text !== 'residentialdesign') return;
+
+      const hasSameTextChild = Array.from(candidate.children).some((child) => compact(child.textContent) === text);
+      if (hasSameTextChild) return;
+
+      candidate.style.setProperty('white-space', 'nowrap', 'important');
+      candidate.style.setProperty('word-break', 'keep-all', 'important');
+      candidate.style.setProperty('overflow-wrap', 'normal', 'important');
+    });
+  }
+
   function patchContactAnchor(anchor) {
     if (anchor.matches('a[href^="mailto:"]')) {
       anchor.setAttribute('href', 'mailto:info@nguyenarchitecture.com');
@@ -214,6 +232,8 @@ const CLIENT_PATCH = `
       patchTextNode(root);
       const paragraph = root.parentElement?.closest('p');
       if (paragraph) patchSplitParagraph(paragraph);
+      const residentialWrapper = root.parentElement;
+      if (residentialWrapper) keepResidentialLabelOnOneLine(residentialWrapper);
       return;
     }
 
@@ -221,6 +241,7 @@ const CLIENT_PATCH = `
     const element = root;
 
     patchSplitParagraphs(element);
+    keepResidentialLabelOnOneLine(element);
 
     if (element.matches('a[href^="mailto:"], a[href^="tel:"]')) {
       patchContactAnchor(element);
@@ -241,6 +262,8 @@ const CLIENT_PATCH = `
         patchTextNode(mutation.target);
         const paragraph = mutation.target.parentElement?.closest('p');
         if (paragraph) patchSplitParagraph(paragraph);
+        const residentialWrapper = mutation.target.parentElement;
+        if (residentialWrapper) keepResidentialLabelOnOneLine(residentialWrapper);
         continue;
       }
 
