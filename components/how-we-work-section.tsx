@@ -153,6 +153,9 @@ export function HowWeWorkSection() {
     let maxTravel = 1;
     let stageHeight = 0;
     let gap = 24;
+    let renderedActiveIndex = -1;
+    let renderedIncomingIndex = -1;
+    let lastIncomingTransform = '';
 
     const measureStack = () => {
       const stack = stackRef.current;
@@ -166,6 +169,28 @@ export function HowWeWorkSection() {
       gap = window.innerWidth <= 900 ? 20 : 24;
     };
 
+    const syncRenderedScenes = (activeIndex: number, incomingIndex: number) => {
+      if (activeIndex === renderedActiveIndex && incomingIndex === renderedIncomingIndex) return;
+
+      sceneRefs.current.forEach((scene, index) => {
+        if (!scene) return;
+
+        const shouldRender = index === activeIndex || index === incomingIndex;
+        const nextVisibility = shouldRender ? 'visible' : 'hidden';
+        const nextWillChange = index === incomingIndex && incomingIndex !== activeIndex ? 'transform' : 'auto';
+
+        if (scene.style.visibility !== nextVisibility) scene.style.visibility = nextVisibility;
+        if (scene.style.willChange !== nextWillChange) scene.style.willChange = nextWillChange;
+      });
+
+      const activeScene = sceneRefs.current[activeIndex];
+      if (activeScene) activeScene.style.transform = 'translate3d(0,0,0)';
+
+      renderedActiveIndex = activeIndex;
+      renderedIncomingIndex = incomingIndex;
+      lastIncomingTransform = '';
+    };
+
     const updateStack = () => {
       frame = 0;
       if (!stackRef.current || !stageRef.current) return;
@@ -175,23 +200,20 @@ export function HowWeWorkSection() {
       const activeIndex = Math.min(demos.length - 1, Math.max(0, Math.floor(position)));
       const incomingIndex = Math.min(demos.length - 1, activeIndex + 1);
 
-      sceneRefs.current.forEach((scene, index) => {
-        if (!scene) return;
+      syncRenderedScenes(activeIndex, incomingIndex);
+      if (incomingIndex === activeIndex) return;
 
-        const shouldRender = index === activeIndex || index === incomingIndex;
-        scene.style.visibility = shouldRender ? 'visible' : 'hidden';
-        scene.style.willChange = index === incomingIndex && incomingIndex !== activeIndex ? 'transform' : 'auto';
+      const incomingScene = sceneRefs.current[incomingIndex];
+      if (!incomingScene) return;
 
-        if (!shouldRender) return;
+      const localProgress = Math.min(1, Math.max(0, position - (incomingIndex - 1)));
+      const translateY = (1 - localProgress) * (stageHeight + gap);
+      const nextTransform = `translate3d(0,${translateY}px,0)`;
 
-        if (index === 0) {
-          scene.style.transform = 'translate3d(0,0,0)';
-          return;
-        }
-        const localProgress = Math.min(1, Math.max(0, position - (index - 1)));
-        const translateY = (1 - localProgress) * (stageHeight + gap);
-        scene.style.transform = `translate3d(0,${translateY}px,0)`;
-      });
+      if (nextTransform !== lastIncomingTransform) {
+        incomingScene.style.transform = nextTransform;
+        lastIncomingTransform = nextTransform;
+      }
     };
 
     const requestUpdate = () => {
@@ -200,6 +222,9 @@ export function HowWeWorkSection() {
 
     const remeasure = () => {
       measureStack();
+      renderedActiveIndex = -1;
+      renderedIncomingIndex = -1;
+      lastIncomingTransform = '';
       requestUpdate();
     };
 
