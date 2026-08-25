@@ -132,13 +132,55 @@ const CLIENT_PATCH = `
     ['Dubai', 'Huntington Beach, CA'],
     ['United Arab Emirates', 'Orange County, CA']
   ];
-  const exact = new Map(pairs.map(([a,b]) => [a.replace(/\\s+/g, ' ').trim(), b]));
   const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim();
+  const compact = (value) => normalize(value).replace(/\\s+/g, '').toLowerCase();
+  const exact = new Map(pairs.map(([a,b]) => [normalize(a), b]));
+  const splitTextReplacements = new Map([
+    [
+      compact('We offer a complete range of architecture and interior design services tailored to create spaces.'),
+      'We offer complete architecture, engineering, and permitting services for residential and commercial projects.'
+    ]
+  ]);
   const phones = ['(209) 233-8888', '(714) 707-8889'];
 
   function patchTextNode(node) {
     const next = exact.get(normalize(node.nodeValue));
     if (next && node.nodeValue !== next) node.nodeValue = next;
+  }
+
+  function patchSplitParagraph(paragraph) {
+    const replacement = splitTextReplacements.get(compact(paragraph.textContent));
+    if (!replacement) return false;
+
+    const walker = document.createTreeWalker(paragraph, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    let node;
+    while ((node = walker.nextNode())) nodes.push(node);
+    if (!nodes.length) return false;
+
+    const lengths = nodes.map((textNode) => Array.from(textNode.nodeValue || '').length);
+    const total = lengths.reduce((sum, length) => sum + length, 0);
+    if (!total) {
+      nodes[0].nodeValue = replacement;
+      return true;
+    }
+
+    const chars = Array.from(replacement);
+    let consumed = 0;
+    nodes.forEach((textNode, index) => {
+      const start = Math.round((consumed / total) * chars.length);
+      consumed += lengths[index];
+      const end = Math.round((consumed / total) * chars.length);
+      textNode.nodeValue = chars.slice(start, end).join('');
+    });
+    return true;
+  }
+
+  function patchSplitParagraphs(root) {
+    if (!root || root.nodeType !== Node.ELEMENT_NODE) return;
+    const element = root;
+    if (element.matches('p')) patchSplitParagraph(element);
+    element.querySelectorAll('p').forEach(patchSplitParagraph);
   }
 
   function patchContactAnchor(anchor) {
@@ -164,11 +206,15 @@ const CLIENT_PATCH = `
 
     if (root.nodeType === Node.TEXT_NODE) {
       patchTextNode(root);
+      const paragraph = root.parentElement?.closest('p');
+      if (paragraph) patchSplitParagraph(paragraph);
       return;
     }
 
     if (root.nodeType !== Node.ELEMENT_NODE) return;
     const element = root;
+
+    patchSplitParagraphs(element);
 
     if (element.matches('a[href^="mailto:"], a[href^="tel:"]')) {
       patchContactAnchor(element);
@@ -187,6 +233,8 @@ const CLIENT_PATCH = `
     for (const mutation of mutations) {
       if (mutation.type === 'characterData') {
         patchTextNode(mutation.target);
+        const paragraph = mutation.target.parentElement?.closest('p');
+        if (paragraph) patchSplitParagraph(paragraph);
         continue;
       }
 
