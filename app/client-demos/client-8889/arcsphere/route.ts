@@ -23,7 +23,7 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/Where Architecture/gi, 'Commercial Architecture'],
   [/Meets Experience/gi, 'Engineering & Permit'],
   [/Based in Dubai, we design residential and commercial spaces that elevate how people live, work, and interact with their environment\.?/gi, 'Based in Orange County, we provide commercial architecture, engineering and permit support from existing-condition survey and business layout through plan check and approval.'],
-  [/We offer a complete range of architecture and interior design services tailored to create spaces\.?/gi, 'We offer complete architecture, engineering, and permitting services for residential and commercial projects.'],
+  [/We offer a complete range of architecture and interior design services tailored to create spaces\.?/gi, 'ARCHITECTURE, ENGINEERING & PERMITTING FOR RESIDENTIAL AND COMMERCIAL PROJECTS.'],
   [/VIEW PROJECTS/gi, 'VIEW PROJECT TYPES'],
   [/BOOK CONSULTATION/gi, 'START A PROJECT'],
   [/DESIGN PROCESS/gi, 'PROJECT PROCESS'],
@@ -95,7 +95,7 @@ const CLIENT_PATCH = `
     ['Where Architecture', 'Commercial Architecture'],
     ['Meets Experience', 'Engineering & Permit'],
     ['Based in Dubai, we design residential and commercial spaces that elevate how people live, work, and interact with their environment', 'Based in Orange County, we provide commercial architecture, engineering and permit support from existing-condition survey and business layout through plan check and approval.'],
-    ['We offer a complete range of architecture and interior design services tailored to create spaces.', 'We offer complete architecture, engineering, and permitting services for residential and commercial projects.'],
+    ['We offer a complete range of architecture and interior design services tailored to create spaces.', 'ARCHITECTURE, ENGINEERING & PERMITTING FOR RESIDENTIAL AND COMMERCIAL PROJECTS.'],
     ['VIEW PROJECTS', 'VIEW PROJECT TYPES'],
     ['BOOK CONSULTATION', 'START A PROJECT'],
     ['DESIGN PROCESS', 'PROJECT PROCESS'],
@@ -138,7 +138,7 @@ const CLIENT_PATCH = `
   const splitTextReplacements = new Map([
     [
       compact('We offer a complete range of architecture and interior design services tailored to create spaces.'),
-      'We offer complete architecture, engineering, and permitting services for residential and commercial projects.'
+      'ARCHITECTURE, ENGINEERING & PERMITTING FOR RESIDENTIAL AND COMMERCIAL PROJECTS.'
     ]
   ]);
   const phones = ['(209) 233-8888', '(714) 707-8889'];
