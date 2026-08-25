@@ -62,6 +62,7 @@ export function Header() {
 
           <Link
             href="/"
+            prefetch={false}
             className="justify-self-center whitespace-nowrap text-[11px] font-bold tracking-[-0.04em] text-black sm:text-sm"
           >
             DesignedbyTD
@@ -69,6 +70,7 @@ export function Header() {
 
           <Link
             href="/contact"
+            prefetch={false}
             className="group grid h-[44px] grid-cols-[auto_36px] justify-self-end border-[3px] border-black bg-black text-white sm:h-[60px] sm:grid-cols-[auto_50px] sm:border-[4px] lg:h-[68px] lg:grid-cols-[auto_58px] lg:border-[5px]"
             aria-label="Start a project"
           >
@@ -85,7 +87,7 @@ export function Header() {
         </nav>
       ) : (
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
-          <Link href="/" className="text-lg font-bold tracking-tight text-white">
+          <Link href="/" prefetch={false} className="text-lg font-bold tracking-tight text-white">
             DesignedbyTD Studio
           </Link>
 
@@ -94,6 +96,7 @@ export function Header() {
               <Link
                 key={link.href}
                 href={link.href}
+                prefetch={false}
                 className="text-sm font-medium text-white/75 transition-colors duration-200 hover:text-white"
               >
                 {link.label}
@@ -103,6 +106,7 @@ export function Header() {
 
           <Link
             href="/contact"
+            prefetch={false}
             className="hidden rounded-md border border-white bg-white px-6 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-white/90 md:inline-flex"
           >
             Start Free
@@ -128,6 +132,7 @@ export function Header() {
                 <Link
                   key={link.href}
                   href={link.href}
+                  prefetch={false}
                   onClick={() => setIsMenuOpen(false)}
                   className="group flex min-h-12 items-center justify-between border-b border-black/10 px-2 py-4 text-sm font-medium transition-colors hover:bg-black hover:px-4 hover:text-white md:border-b-0"
                 >
