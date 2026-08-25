@@ -135,6 +135,8 @@ const CLIENT_PATCH = `
     [compact('DUBAI, 2025'), 'LOS ANGELES, 2025']
   ]);
   const customHomeCardKeys = Array.from(customHomeCardReplacements.keys());
+  const thirdCardImage = '/nguyen-commercial-building.svg';
+  const thirdCardLabels = [compact('MINIMALIST APPARTMENT INTERIOR'), compact('MINIMALIST APARTMENT INTERIOR')];
   const phones = ['(209) 233-8888', '(714) 707-8889'];
 
   function patchTextNode(node) { const next = exact.get(normalize(node.nodeValue)); if (next && node.nodeValue !== next) node.nodeValue = next; }
@@ -189,6 +191,28 @@ const CLIENT_PATCH = `
   }
   function patchOfficeCard(root) { return patchMappedCard(root, officeCardReplacements, officeCardKeys); }
   function patchCustomHomeCard(root) { return patchMappedCard(root, customHomeCardReplacements, customHomeCardKeys); }
+  function patchThirdProjectImage(root) {
+    if (!root || root.nodeType !== Node.ELEMENT_NODE) return false;
+    const element = root;
+    const candidates = [element, ...element.querySelectorAll('*')];
+    let label = null;
+    for (const candidate of candidates) {
+      if (thirdCardLabels.includes(compact(candidate.textContent))) { label = candidate; break; }
+    }
+    if (!label) return false;
+    let card = label;
+    for (let depth = 0; card && depth < 10; depth += 1, card = card.parentElement) {
+      const img = card.querySelector?.('img');
+      if (!img) continue;
+      if (img.getAttribute('src') !== thirdCardImage) img.setAttribute('src', thirdCardImage);
+      img.removeAttribute('srcset');
+      img.removeAttribute('sizes');
+      const picture = img.closest('picture');
+      if (picture) picture.querySelectorAll('source').forEach((source) => { source.setAttribute('srcset', thirdCardImage); source.removeAttribute('sizes'); });
+      return true;
+    }
+    return false;
+  }
   function keepResidentialLabelOnOneLine(root) {
     if (!root || root.nodeType !== Node.ELEMENT_NODE) return; const element = root; const candidates = [element, ...element.querySelectorAll('*')];
     candidates.forEach((candidate) => { const text = compact(candidate.textContent); if (text !== 'residential' && text !== 'residentialdesign') return; const hasSameTextChild = Array.from(candidate.children).some((child) => compact(child.textContent) === text); if (hasSameTextChild) return; candidate.style.setProperty('white-space', 'nowrap', 'important'); candidate.style.setProperty('word-break', 'keep-all', 'important'); candidate.style.setProperty('overflow-wrap', 'normal', 'important'); });
@@ -199,14 +223,15 @@ const CLIENT_PATCH = `
   }
   function patchRoot(root) {
     if (!root) return;
-    if (root.nodeType === Node.TEXT_NODE) { patchTextNode(root); const paragraph = root.parentElement?.closest('p'); if (paragraph) patchSplitParagraph(paragraph); const parent = root.parentElement; if (parent) { patchCounters(parent); patchOfficeCard(parent); patchCustomHomeCard(parent); keepResidentialLabelOnOneLine(parent); } return; }
-    if (root.nodeType !== Node.ELEMENT_NODE) return; const element = root; patchSplitParagraphs(element); patchCounters(element); patchOfficeCard(element); patchCustomHomeCard(element); keepResidentialLabelOnOneLine(element);
+    if (root.nodeType === Node.TEXT_NODE) { patchTextNode(root); const paragraph = root.parentElement?.closest('p'); if (paragraph) patchSplitParagraph(paragraph); const parent = root.parentElement; if (parent) { patchCounters(parent); patchOfficeCard(parent); patchCustomHomeCard(parent); patchThirdProjectImage(parent); keepResidentialLabelOnOneLine(parent); } return; }
+    if (root.nodeType !== Node.ELEMENT_NODE) return; const element = root; patchSplitParagraphs(element); patchCounters(element); patchOfficeCard(element); patchCustomHomeCard(element); patchThirdProjectImage(element); keepResidentialLabelOnOneLine(element);
     if (element.matches('a[href^="mailto:"], a[href^="tel:"]')) patchContactAnchor(element);
     element.querySelectorAll('a[href^="mailto:"], a[href^="tel:"]').forEach(patchContactAnchor);
     const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT); let node; while ((node = walker.nextNode())) patchTextNode(node);
   }
   patchRoot(document.body);
-  const observer = new MutationObserver((mutations) => { for (const mutation of mutations) { if (mutation.type === 'characterData') { patchTextNode(mutation.target); const paragraph = mutation.target.parentElement?.closest('p'); if (paragraph) patchSplitParagraph(paragraph); const parent = mutation.target.parentElement; if (parent) { patchCounters(parent); patchOfficeCard(parent); patchCustomHomeCard(parent); keepResidentialLabelOnOneLine(parent); } continue; } if (mutation.type === 'childList') mutation.addedNodes.forEach(patchRoot); } });
+  window.addEventListener('load', () => patchThirdProjectImage(document.body), { once: true });
+  const observer = new MutationObserver((mutations) => { for (const mutation of mutations) { if (mutation.type === 'characterData') { patchTextNode(mutation.target); const paragraph = mutation.target.parentElement?.closest('p'); if (paragraph) patchSplitParagraph(paragraph); const parent = mutation.target.parentElement; if (parent) { patchCounters(parent); patchOfficeCard(parent); patchCustomHomeCard(parent); patchThirdProjectImage(parent); keepResidentialLabelOnOneLine(parent); } continue; } if (mutation.type === 'childList') mutation.addedNodes.forEach(patchRoot); } });
   observer.observe(document.body, { childList: true, subtree: true, characterData: true }); setTimeout(() => observer.disconnect(), 6000);
 })();
 </script>`;
