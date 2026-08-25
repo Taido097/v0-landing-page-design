@@ -15,7 +15,7 @@ const CLEANUP = `
 </style>`;
 
 const REPLACEMENTS: Array<[RegExp, string]> = [
-  [/ArcSphere Studio/gi, 'NGUYEN Architecture & Engineering'],
+  [/ArcSphere Studio/gi, 'NGUYEN ARCHITECTURE & ENGINEERING'],
   [/ArcSphere/gi, 'NGUYEN'],
   [/Interior & Architecture/gi, 'Architecture · Engineering · Permit'],
   [/Interior and Architecture/gi, 'Architecture · Engineering · Permit'],
@@ -77,7 +77,7 @@ const CLIENT_PATCH = `
 <script id="nguyen-arcsphere-content-patch">
 (() => {
   const pairs = [
-    ['ArcSphere Studio', 'NGUYEN Architecture & Engineering'],
+    ['ArcSphere Studio', 'NGUYEN ARCHITECTURE & ENGINEERING'],
     ['ArcSphere', 'NGUYEN'],
     ['Interior & Architecture', 'Architecture · Engineering · Permit'],
     ['Interior and Architecture', 'Architecture · Engineering · Permit'],
@@ -222,12 +222,12 @@ export async function GET() {
 
     html = html.replace(
       /<head([^>]*)>/i,
-      `<head$1><base href="${SOURCE_URL}"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="description" content="NGUYEN Architecture & Engineering — commercial architecture, engineering, tenant improvement and building permit support in Orange County.">${CLEANUP}`,
+      `<head$1><base href="${SOURCE_URL}"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="description" content="NGUYEN ARCHITECTURE & ENGINEERING — commercial architecture, engineering, tenant improvement and building permit support in Orange County.">${CLEANUP}`,
     );
 
     html = html.replace(
       /<title>[^<]*<\/title>/i,
-      '<title>NGUYEN Architecture & Engineering — Website Demo</title>',
+      '<title>NGUYEN ARCHITECTURE & ENGINEERING — Website Demo</title>',
     );
 
     for (const [pattern, replacement] of REPLACEMENTS) {
@@ -246,7 +246,7 @@ export async function GET() {
     });
   } catch {
     return new Response(
-      '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta http-equiv="refresh" content="2"><title>Loading NGUYEN Concept 01</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f0ebe6;color:#181818;font-family:Arial,sans-serif}main{text-align:center;padding:24px}p{opacity:.6}</style></head><body><main><h1>NGUYEN Architecture & Engineering</h1><p>Loading Concept 01…</p></main></body></html>',
+      '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta http-equiv="refresh" content="2"><title>Loading NGUYEN Concept 01</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f0ebe6;color:#181818;font-family:Arial,sans-serif}main{text-align:center;padding:24px}p{opacity:.6}</style></head><body><main><h1>NGUYEN ARCHITECTURE & ENGINEERING</h1><p>Loading Concept 01…</p></main></body></html>',
       {
         status: 200,
         headers: {
