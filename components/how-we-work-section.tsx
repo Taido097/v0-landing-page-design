@@ -60,12 +60,11 @@ function DemoCard({ demo, index }: { demo: ShowcaseDemo; index: number }) {
   return (
     <>
       <div className="demo-showcase-preview">
-        <iframe
-          src={demo.href}
-          title={`${demo.name} live demo preview`}
+        <img
+          src={demo.mobileImage}
+          alt={`${demo.name} website preview`}
+          decoding="async"
           loading="lazy"
-          tabIndex={-1}
-          sandbox="allow-same-origin"
         />
         <Link
           href={demo.href}
@@ -89,40 +88,16 @@ function DemoCard({ demo, index }: { demo: ShowcaseDemo; index: number }) {
 function MobileDemoScene({
   demo,
   index,
-  activeIndex,
-  setActiveIndex,
 }: {
   demo: ShowcaseDemo;
   index: number;
-  activeIndex: number;
-  setActiveIndex: (index: number) => void;
 }) {
-  const sceneRef = useRef<HTMLElement | null>(null);
   const fit = demo.mobileFit ?? 'cover';
-  const isActive = activeIndex === index;
-
-  useEffect(() => {
-    const node = sceneRef.current;
-    if (!node) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setActiveIndex(index);
-      },
-      {
-        rootMargin: '-34% 0px -34% 0px',
-        threshold: 0.01,
-      },
-    );
-
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [index, setActiveIndex]);
 
   const slug = demo.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
   return (
-    <article ref={sceneRef} className={`mobile-demo-scene mobile-demo-scene-${slug}`}>
+    <article className={`mobile-demo-scene mobile-demo-scene-${slug}`}>
       <div className="mobile-demo-background" aria-hidden="true">
         <img src={demo.mobileImage} alt="" decoding="async" loading="lazy" />
       </div>
@@ -130,18 +105,6 @@ function MobileDemoScene({
       <div className="mobile-demo-card">
         <div className={`mobile-demo-preview mobile-demo-preview-${fit}`}>
           <img src={demo.mobileImage} alt={`${demo.name} website preview`} decoding="async" loading="lazy" />
-          {isActive && (
-            <iframe
-              key={`${demo.href}-mobile-live`}
-              className="mobile-demo-live"
-              src={demo.href}
-              title={`${demo.name} animated mobile preview`}
-              tabIndex={-1}
-              aria-hidden="true"
-              scrolling="no"
-              sandbox="allow-same-origin"
-            />
-          )}
           <Link
             href={demo.href}
             aria-label={`Open ${demo.name} demo`}
@@ -167,7 +130,6 @@ function MobileDemoScene({
 export function HowWeWorkSection() {
   const [isVisible, setIsVisible] = useState(false);
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
-  const [activeMobileIndex, setActiveMobileIndex] = useState(0);
   const stackRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const sceneRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -256,7 +218,7 @@ export function HowWeWorkSection() {
         .demo-showcase-bg{position:absolute;inset:-10%;z-index:0;overflow:hidden;background:#111;filter:blur(24px) saturate(1.12) brightness(.82) contrast(1.03);transform:scale(1.16) translateZ(0);transform-origin:center;pointer-events:none}
         .demo-showcase-bg::after{content:'';position:absolute;inset:0;z-index:2;background:rgba(0,0,0,.06);pointer-events:none}
         .demo-showcase-bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-        .demo-showcase-preview iframe{position:absolute;left:0;top:0;width:200%;height:200%;max-width:none!important;border:0;background:#fff;pointer-events:none;transform:scale(.5);transform-origin:top left}
+        .demo-showcase-preview img{display:block;width:100%;height:100%;object-fit:cover;object-position:top center}
         .demo-showcase-card{position:absolute;left:50%;top:50%;z-index:5;width:min(72%,1060px);min-width:760px;overflow:hidden;background:#fff;box-shadow:0 34px 90px rgba(0,0,0,.24);transform:translate3d(-50%,-50%,0)}
         .demo-showcase-preview{position:relative;height:clamp(540px,64vh,700px);overflow:hidden;background:#fff}
         .demo-showcase-info{display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:126px;padding:25px 32px 27px;background:#fff}
@@ -293,7 +255,6 @@ export function HowWeWorkSection() {
           .mobile-demo-preview>img{width:100%;height:100%;object-position:top center;display:block}
           .mobile-demo-preview-cover>img{object-fit:cover}
           .mobile-demo-preview-contain>img{object-fit:contain;background:#fff}
-          .mobile-demo-live{position:absolute;left:0;top:0;z-index:10;width:200%;height:200%;max-width:none!important;border:0;background:#fff;pointer-events:none;transform:scale(.5);transform-origin:top left}
           .mobile-demo-scene-salonix .mobile-demo-preview{height:300px}
           .mobile-demo-scene-akjo .mobile-demo-preview{height:310px;background:#fff}
           .mobile-demo-scene .demo-showcase-info{min-height:88px;padding:15px 16px}
@@ -342,8 +303,6 @@ export function HowWeWorkSection() {
                   key={demo.href}
                   demo={demo}
                   index={index}
-                  activeIndex={activeMobileIndex}
-                  setActiveIndex={setActiveMobileIndex}
                 />
               ))}
             </div>
