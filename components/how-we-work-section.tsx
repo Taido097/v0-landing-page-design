@@ -172,9 +172,18 @@ export function HowWeWorkSection() {
 
       const travelled = Math.min(maxTravel, Math.max(0, window.scrollY + stickyTop - stackStart));
       const position = (travelled / maxTravel) * (demos.length - 1);
+      const activeIndex = Math.min(demos.length - 1, Math.max(0, Math.floor(position)));
+      const incomingIndex = Math.min(demos.length - 1, activeIndex + 1);
 
       sceneRefs.current.forEach((scene, index) => {
         if (!scene) return;
+
+        const shouldRender = index === activeIndex || index === incomingIndex;
+        scene.style.visibility = shouldRender ? 'visible' : 'hidden';
+        scene.style.willChange = index === incomingIndex && incomingIndex !== activeIndex ? 'transform' : 'auto';
+
+        if (!shouldRender) return;
+
         if (index === 0) {
           scene.style.transform = 'translate3d(0,0,0)';
           return;
@@ -212,7 +221,7 @@ export function HowWeWorkSection() {
       <style>{`
         .demo-showcase-scroll{position:relative;height:2920px}
         .demo-showcase-stage{position:sticky;top:56px;height:calc(100vh - 56px);min-height:780px;max-height:1080px;overflow:hidden;isolation:isolate;background:#fafafa}
-        .demo-showcase-scene{position:absolute;inset:0;overflow:visible;background:transparent;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform-style:preserve-3d}
+        .demo-showcase-scene{position:absolute;inset:0;overflow:visible;background:transparent;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform-style:preserve-3d}
         .demo-showcase-scene-content{position:absolute;inset:0;overflow:hidden;contain:paint;background:#111}
         .demo-showcase-scene:not(:first-child)::before{content:'';position:absolute;left:0;right:0;top:-24px;z-index:100;height:24px;background:#fafafa;pointer-events:none}
         .demo-showcase-bg{position:absolute;inset:-10%;z-index:0;overflow:hidden;background:#111;filter:blur(24px) saturate(1.12) brightness(.82) contrast(1.03);transform:scale(1.16) translateZ(0);transform-origin:center;pointer-events:none}
@@ -282,7 +291,17 @@ export function HowWeWorkSection() {
             <div ref={stackRef} className="demo-showcase-scroll">
               <div ref={stageRef} className="demo-showcase-stage">
                 {demos.map((demo, index) => (
-                  <div key={demo.href} ref={(node) => { sceneRefs.current[index] = node; }} className="demo-showcase-scene" style={{ zIndex: 10 + index, transform: index === 0 ? 'translate3d(0,0,0)' : 'translate3d(0,calc(100% + 24px),0)' }}>
+                  <div
+                    key={demo.href}
+                    ref={(node) => { sceneRefs.current[index] = node; }}
+                    className="demo-showcase-scene"
+                    style={{
+                      zIndex: 10 + index,
+                      transform: index === 0 ? 'translate3d(0,0,0)' : 'translate3d(0,calc(100% + 24px),0)',
+                      visibility: index <= 1 ? 'visible' : 'hidden',
+                      willChange: index === 1 ? 'transform' : 'auto',
+                    }}
+                  >
                     <div className="demo-showcase-scene-content">
                       <div className="demo-showcase-bg" aria-hidden="true">
                         <img src={demo.mobileImage} alt="" decoding="async" loading="lazy" />
