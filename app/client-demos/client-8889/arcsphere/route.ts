@@ -167,7 +167,11 @@ const CLIENT_PATCH = `
       return true;
     }
 
-    const chars = Array.from(replacement);
+    // Framer splits this line across animated spans. A normal ASCII space can
+    // collapse to zero width inside those spans. NBSP gives the space visible
+    // width and ZWSP immediately after it preserves a normal wrap opportunity.
+    const visibleReplacement = replacement.replace(/ /g, String.fromCharCode(160) + String.fromCharCode(8203));
+    const chars = Array.from(visibleReplacement);
     let consumed = 0;
     nodes.forEach((textNode, index) => {
       const start = Math.round((consumed / total) * chars.length);
