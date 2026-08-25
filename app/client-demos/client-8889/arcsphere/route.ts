@@ -73,6 +73,16 @@ function removeNonVisualTelemetry(html: string) {
     );
 }
 
+function optimizeImageDecoding(html: string) {
+  // Preserve every source, srcset, size, loading mode, crop and visual style.
+  // Only ask the browser to decode images asynchronously so image decode work
+  // is less likely to block scroll/animation frames on the main thread.
+  return html.replace(/<img\b[^>]*>/gi, (tag) => {
+    if (/\bdecoding\s*=/i.test(tag)) return tag;
+    return tag.replace(/<img\b/i, '<img decoding="async"');
+  });
+}
+
 const CLIENT_PATCH = `
 <script id="nguyen-arcsphere-content-patch">
 (() => {
@@ -219,6 +229,7 @@ export async function GET() {
   try {
     let html = await getSource();
     html = removeNonVisualTelemetry(html);
+    html = optimizeImageDecoding(html);
 
     html = html.replace(
       /<head([^>]*)>/i,
