@@ -152,6 +152,8 @@ const CLIENT_PATCH = `
     const replacement = splitTextReplacements.get(compact(paragraph.textContent));
     if (!replacement) return false;
 
+    paragraph.style.setProperty('white-space', 'pre-wrap', 'important');
+
     const walker = document.createTreeWalker(paragraph, NodeFilter.SHOW_TEXT);
     const nodes = [];
     let node;
