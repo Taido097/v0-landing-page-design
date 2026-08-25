@@ -25,6 +25,8 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/Based in Dubai, we design residential and commercial spaces that elevate how people live, work, and interact with their environment\.?/gi, 'Based in Orange County, we provide commercial architecture, engineering and permit support from existing-condition survey and business layout through plan check and approval.'],
   [/We offer a complete range of architecture and interior design services tailored to create spaces\.?/gi, 'ARCHITECTURE, ENGINEERING & PERMITTING FOR RESIDENTIAL AND COMMERCIAL PROJECTS.'],
   [/A selection of our recent architecture and interior design work\.?/gi, 'A SELECTION OF OUR RECENT RESIDENTIAL, COMMERCIAL & DEVELOPMENT PROJECTS.'],
+  [/12\+ YEARS EXPERIENCE/gi, '15+ YEARS EXPERIENCE'],
+  [/250\+ PROJECTS WORLDWIDE/gi, '500+ SUCCESSFUL PROJECTS'],
   [/VIEW PROJECTS/gi, 'VIEW PROJECT TYPES'],
   [/BOOK CONSULTATION/gi, 'START A PROJECT'],
   [/DESIGN PROCESS/gi, 'PROJECT PROCESS'],
@@ -95,6 +97,8 @@ const CLIENT_PATCH = `
     ['Based in Dubai, we design residential and commercial spaces that elevate how people live, work, and interact with their environment', 'Based in Orange County, we provide commercial architecture, engineering and permit support from existing-condition survey and business layout through plan check and approval.'],
     ['We offer a complete range of architecture and interior design services tailored to create spaces.', 'ARCHITECTURE, ENGINEERING & PERMITTING FOR RESIDENTIAL AND COMMERCIAL PROJECTS.'],
     ['A selection of our recent architecture and interior design work.', 'A SELECTION OF OUR RECENT RESIDENTIAL, COMMERCIAL & DEVELOPMENT PROJECTS.'],
+    ['12+ YEARS EXPERIENCE', '15+ YEARS EXPERIENCE'],
+    ['250+ PROJECTS WORLDWIDE', '500+ SUCCESSFUL PROJECTS'],
     ['VIEW PROJECTS', 'VIEW PROJECT TYPES'],
     ['BOOK CONSULTATION', 'START A PROJECT'],
     ['DESIGN PROCESS', 'PROJECT PROCESS'],
@@ -155,10 +159,6 @@ const CLIENT_PATCH = `
     const replacement = splitTextReplacements.get(compact(paragraph.textContent));
     if (!replacement) return false;
 
-    // This Framer paragraph is split into several inline animation spans.
-    // Keeping the replacement distributed across those spans creates browser
-    // wrap opportunities inside words (for example RESIDENT / IAL). Flatten
-    // this one sentence to a single text node so wrapping only occurs at spaces.
     paragraph.style.setProperty('white-space', 'normal', 'important');
     paragraph.style.setProperty('word-break', 'normal', 'important');
     paragraph.style.setProperty('overflow-wrap', 'normal', 'important');
