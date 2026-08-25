@@ -27,9 +27,6 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/A selection of our recent architecture and interior design work\.?/gi, 'A SELECTION OF OUR RECENT RESIDENTIAL, COMMERCIAL & DEVELOPMENT PROJECTS.'],
   [/12\+ YEARS EXPERIENCE/gi, '15+ YEARS EXPERIENCE'],
   [/250\+ PROJECTS WORLDWIDE/gi, '500+ SUCCESSFUL PROJECTS'],
-  [/CORPORATE OFFICE SPACE/gi, 'OFFICE BUILD-OUT'],
-  [/COMMERCIAL ARCHITECTURE/gi, 'IRVINE'],
-  [/NEW YORK, 2026/gi, '2026'],
   [/VIEW PROJECTS/gi, 'VIEW PROJECT TYPES'],
   [/BOOK CONSULTATION/gi, 'START A PROJECT'],
   [/DESIGN PROCESS/gi, 'PROJECT PROCESS'],
@@ -91,7 +88,6 @@ const CLIENT_PATCH = `
     ['We offer a complete range of architecture and interior design services tailored to create spaces.', 'ARCHITECTURE, ENGINEERING & PERMITTING FOR RESIDENTIAL AND COMMERCIAL PROJECTS.'],
     ['A selection of our recent architecture and interior design work.', 'A SELECTION OF OUR RECENT RESIDENTIAL, COMMERCIAL & DEVELOPMENT PROJECTS.'],
     ['12+ YEARS EXPERIENCE', '15+ YEARS EXPERIENCE'], ['250+ PROJECTS WORLDWIDE', '500+ SUCCESSFUL PROJECTS'],
-    ['CORPORATE OFFICE SPACE', 'OFFICE BUILD-OUT'], ['COMMERCIAL ARCHITECTURE', 'IRVINE'], ['NEW YORK, 2026', '2026'],
     ['VIEW PROJECTS', 'VIEW PROJECT TYPES'], ['BOOK CONSULTATION', 'START A PROJECT'], ['DESIGN PROCESS', 'PROJECT PROCESS'],
     ['Residential Interior', 'Architectural Design & Tenant Improvement (TI)'], ['Commercial Interior', 'Commercial Architecture'],
     ['Space Planning', 'Existing-Condition Survey & Business Layout'], ['Design Consultation', 'Zoning, Occupancy & Local Requirements'],
@@ -118,6 +114,12 @@ const CLIENT_PATCH = `
     [compact('We offer a complete range of architecture and interior design services tailored to create spaces.'), 'ARCHITECTURE, ENGINEERING & PERMITTING FOR RESIDENTIAL AND COMMERCIAL PROJECTS.'],
     [compact('A selection of our recent architecture and interior design work.'), 'A SELECTION OF OUR RECENT RESIDENTIAL, COMMERCIAL & DEVELOPMENT PROJECTS.']
   ]);
+  const officeCardReplacements = new Map([
+    [compact('CORPORATE OFFICE SPACE'), 'OFFICE BUILD-OUT'],
+    [compact('COMMERCIAL ARCHITECTURE'), 'IRVINE'],
+    [compact('NEW YORK, 2026'), '2026']
+  ]);
+  const officeCardKeys = Array.from(officeCardReplacements.keys());
   const phones = ['(209) 233-8888', '(714) 707-8889'];
 
   function patchTextNode(node) { const next = exact.get(normalize(node.nodeValue)); if (next && node.nodeValue !== next) node.nodeValue = next; }
@@ -126,6 +128,41 @@ const CLIENT_PATCH = `
     paragraph.style.setProperty('white-space', 'normal', 'important'); paragraph.style.setProperty('word-break', 'normal', 'important'); paragraph.style.setProperty('overflow-wrap', 'normal', 'important'); paragraph.textContent = replacement; return true;
   }
   function patchSplitParagraphs(root) { if (!root || root.nodeType !== Node.ELEMENT_NODE) return; const element = root; if (element.matches('p')) patchSplitParagraph(element); element.querySelectorAll('p').forEach(patchSplitParagraph); }
+  function patchOfficeCard(root) {
+    if (!root || root.nodeType !== Node.ELEMENT_NODE) return false;
+    const element = root;
+    const candidates = [element, ...element.querySelectorAll('*')];
+    let card = null;
+
+    for (let i = candidates.length - 1; i >= 0; i -= 1) {
+      const candidate = candidates[i];
+      const text = compact(candidate.textContent);
+      if (!officeCardKeys.every((key) => text.includes(key))) continue;
+      card = candidate;
+      break;
+    }
+
+    if (!card) {
+      let cursor = element;
+      for (let depth = 0; cursor && depth < 10; depth += 1, cursor = cursor.parentElement) {
+        const text = compact(cursor.textContent);
+        if (officeCardKeys.every((key) => text.includes(key))) { card = cursor; break; }
+      }
+    }
+
+    if (!card) return false;
+
+    const cardCandidates = [card, ...card.querySelectorAll('*')];
+    cardCandidates.forEach((candidate) => {
+      const key = compact(candidate.textContent);
+      const replacement = officeCardReplacements.get(key);
+      if (!replacement) return;
+      const hasSameTextChild = Array.from(candidate.children).some((child) => compact(child.textContent) === key);
+      if (hasSameTextChild) return;
+      candidate.textContent = replacement;
+    });
+    return true;
+  }
   function keepResidentialLabelOnOneLine(root) {
     if (!root || root.nodeType !== Node.ELEMENT_NODE) return; const element = root; const candidates = [element, ...element.querySelectorAll('*')];
     candidates.forEach((candidate) => { const text = compact(candidate.textContent); if (text !== 'residential' && text !== 'residentialdesign') return; const hasSameTextChild = Array.from(candidate.children).some((child) => compact(child.textContent) === text); if (hasSameTextChild) return; candidate.style.setProperty('white-space', 'nowrap', 'important'); candidate.style.setProperty('word-break', 'keep-all', 'important'); candidate.style.setProperty('overflow-wrap', 'normal', 'important'); });
@@ -136,14 +173,14 @@ const CLIENT_PATCH = `
   }
   function patchRoot(root) {
     if (!root) return;
-    if (root.nodeType === Node.TEXT_NODE) { patchTextNode(root); const paragraph = root.parentElement?.closest('p'); if (paragraph) patchSplitParagraph(paragraph); const residentialWrapper = root.parentElement; if (residentialWrapper) keepResidentialLabelOnOneLine(residentialWrapper); return; }
-    if (root.nodeType !== Node.ELEMENT_NODE) return; const element = root; patchSplitParagraphs(element); keepResidentialLabelOnOneLine(element);
+    if (root.nodeType === Node.TEXT_NODE) { patchTextNode(root); const paragraph = root.parentElement?.closest('p'); if (paragraph) patchSplitParagraph(paragraph); const parent = root.parentElement; if (parent) { patchOfficeCard(parent); keepResidentialLabelOnOneLine(parent); } return; }
+    if (root.nodeType !== Node.ELEMENT_NODE) return; const element = root; patchSplitParagraphs(element); patchOfficeCard(element); keepResidentialLabelOnOneLine(element);
     if (element.matches('a[href^="mailto:"], a[href^="tel:"]')) patchContactAnchor(element);
     element.querySelectorAll('a[href^="mailto:"], a[href^="tel:"]').forEach(patchContactAnchor);
     const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT); let node; while ((node = walker.nextNode())) patchTextNode(node);
   }
   patchRoot(document.body);
-  const observer = new MutationObserver((mutations) => { for (const mutation of mutations) { if (mutation.type === 'characterData') { patchTextNode(mutation.target); const paragraph = mutation.target.parentElement?.closest('p'); if (paragraph) patchSplitParagraph(paragraph); const residentialWrapper = mutation.target.parentElement; if (residentialWrapper) keepResidentialLabelOnOneLine(residentialWrapper); continue; } if (mutation.type === 'childList') mutation.addedNodes.forEach(patchRoot); } });
+  const observer = new MutationObserver((mutations) => { for (const mutation of mutations) { if (mutation.type === 'characterData') { patchTextNode(mutation.target); const paragraph = mutation.target.parentElement?.closest('p'); if (paragraph) patchSplitParagraph(paragraph); const parent = mutation.target.parentElement; if (parent) { patchOfficeCard(parent); keepResidentialLabelOnOneLine(parent); } continue; } if (mutation.type === 'childList') mutation.addedNodes.forEach(patchRoot); } });
   observer.observe(document.body, { childList: true, subtree: true, characterData: true }); setTimeout(() => observer.disconnect(), 6000);
 })();
 </script>`;
