@@ -65,6 +65,7 @@ function DemoCard({ demo, index }: { demo: ShowcaseDemo; index: number }) {
           title={`${demo.name} live demo preview`}
           loading="lazy"
           tabIndex={-1}
+          sandbox="allow-same-origin"
         />
         <Link
           href={demo.href}
@@ -138,6 +139,7 @@ function MobileDemoScene({
               tabIndex={-1}
               aria-hidden="true"
               scrolling="no"
+              sandbox="allow-same-origin"
             />
           )}
           <Link
@@ -184,18 +186,30 @@ export function HowWeWorkSection() {
     if (isMobile !== false) return;
 
     let frame = 0;
-    const updateStack = () => {
-      frame = 0;
+    let stickyTop = 0;
+    let stackStart = 0;
+    let maxTravel = 1;
+    let stageHeight = 0;
+    let gap = 24;
+
+    const measureStack = () => {
       const stack = stackRef.current;
       const stage = stageRef.current;
       if (!stack || !stage) return;
 
-      const stickyTop = Number.parseFloat(window.getComputedStyle(stage).top) || 0;
-      const stackRect = stack.getBoundingClientRect();
-      const maxTravel = Math.max(1, stack.offsetHeight - stage.offsetHeight);
-      const travelled = Math.min(maxTravel, Math.max(0, stickyTop - stackRect.top));
+      stickyTop = Number.parseFloat(window.getComputedStyle(stage).top) || 0;
+      stackStart = stack.getBoundingClientRect().top + window.scrollY;
+      stageHeight = stage.offsetHeight;
+      maxTravel = Math.max(1, stack.offsetHeight - stageHeight);
+      gap = window.innerWidth <= 900 ? 20 : 24;
+    };
+
+    const updateStack = () => {
+      frame = 0;
+      if (!stackRef.current || !stageRef.current) return;
+
+      const travelled = Math.min(maxTravel, Math.max(0, window.scrollY + stickyTop - stackStart));
       const position = (travelled / maxTravel) * (demos.length - 1);
-      const gap = window.innerWidth <= 900 ? 20 : 24;
 
       sceneRefs.current.forEach((scene, index) => {
         if (!scene) return;
@@ -204,7 +218,7 @@ export function HowWeWorkSection() {
           return;
         }
         const localProgress = Math.min(1, Math.max(0, position - (index - 1)));
-        const translateY = (1 - localProgress) * (stage.offsetHeight + gap);
+        const translateY = (1 - localProgress) * (stageHeight + gap);
         scene.style.transform = `translate3d(0,${translateY}px,0)`;
       });
     };
@@ -213,12 +227,20 @@ export function HowWeWorkSection() {
       if (!frame) frame = window.requestAnimationFrame(updateStack);
     };
 
+    const remeasure = () => {
+      measureStack();
+      requestUpdate();
+    };
+
+    measureStack();
     updateStack();
     window.addEventListener('scroll', requestUpdate, { passive: true });
-    window.addEventListener('resize', requestUpdate, { passive: true });
+    window.addEventListener('resize', remeasure, { passive: true });
+    window.addEventListener('load', remeasure, { once: true });
     return () => {
       window.removeEventListener('scroll', requestUpdate);
-      window.removeEventListener('resize', requestUpdate);
+      window.removeEventListener('resize', remeasure);
+      window.removeEventListener('load', remeasure);
       if (frame) window.cancelAnimationFrame(frame);
     };
   }, [isMobile]);
@@ -233,7 +255,8 @@ export function HowWeWorkSection() {
         .demo-showcase-scene:not(:first-child)::before{content:'';position:absolute;left:0;right:0;top:-24px;z-index:100;height:24px;background:#fafafa;pointer-events:none}
         .demo-showcase-bg{position:absolute;inset:-10%;z-index:0;overflow:hidden;background:#111;filter:blur(24px) saturate(1.12) brightness(.82) contrast(1.03);transform:scale(1.16) translateZ(0);transform-origin:center;pointer-events:none}
         .demo-showcase-bg::after{content:'';position:absolute;inset:0;z-index:2;background:rgba(0,0,0,.06);pointer-events:none}
-        .demo-showcase-bg iframe,.demo-showcase-preview iframe{position:absolute;left:0;top:0;width:200%;height:200%;max-width:none!important;border:0;background:#fff;pointer-events:none;transform:scale(.5);transform-origin:top left}
+        .demo-showcase-bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+        .demo-showcase-preview iframe{position:absolute;left:0;top:0;width:200%;height:200%;max-width:none!important;border:0;background:#fff;pointer-events:none;transform:scale(.5);transform-origin:top left}
         .demo-showcase-card{position:absolute;left:50%;top:50%;z-index:5;width:min(72%,1060px);min-width:760px;overflow:hidden;background:#fff;box-shadow:0 34px 90px rgba(0,0,0,.24);transform:translate3d(-50%,-50%,0)}
         .demo-showcase-preview{position:relative;height:clamp(540px,64vh,700px);overflow:hidden;background:#fff}
         .demo-showcase-info{display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:126px;padding:25px 32px 27px;background:#fff}
@@ -300,7 +323,9 @@ export function HowWeWorkSection() {
                 {demos.map((demo, index) => (
                   <div key={demo.href} ref={(node) => { sceneRefs.current[index] = node; }} className="demo-showcase-scene" style={{ zIndex: 10 + index, transform: index === 0 ? 'translate3d(0,0,0)' : 'translate3d(0,calc(100% + 24px),0)' }}>
                     <div className="demo-showcase-scene-content">
-                      <div className="demo-showcase-bg" aria-hidden="true"><iframe src={demo.href} title="" loading="lazy" tabIndex={-1} /></div>
+                      <div className="demo-showcase-bg" aria-hidden="true">
+                        <img src={demo.mobileImage} alt="" decoding="async" loading="lazy" />
+                      </div>
                       <div className="demo-showcase-card"><DemoCard demo={demo} index={index} /></div>
                       <span className="demo-showcase-category">{demo.category}</span>
                     </div>
