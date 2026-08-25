@@ -61,6 +61,18 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/United Arab Emirates/gi, 'Orange County, CA'],
 ];
 
+function removeNonVisualTelemetry(html: string) {
+  return html
+    .replace(
+      /<script\b(?=[^>]*\bsrc=["']https:\/\/events\.framer\.com\/script(?:\?[^"']*)?["'])[^>]*>\s*<\/script>/gi,
+      '',
+    )
+    .replace(
+      /<link\b(?=[^>]*\bhref=["']https:\/\/events\.framer\.com\/[^"']*["'])[^>]*>/gi,
+      '',
+    );
+}
+
 const CLIENT_PATCH = `
 <script id="nguyen-arcsphere-content-patch">
 (() => {
@@ -112,83 +124,70 @@ const CLIENT_PATCH = `
   ];
   const exact = new Map(pairs.map(([a,b]) => [a.replace(/\\s+/g, ' ').trim(), b]));
   const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim();
+  const phones = ['(209) 233-8888', '(714) 707-8889'];
 
-  function patchText() {
-    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-    let node;
-    while ((node = walker.nextNode())) {
-      const key = normalize(node.nodeValue);
-      const next = exact.get(key);
-      if (next && node.nodeValue !== next) node.nodeValue = next;
-    }
+  function patchTextNode(node) {
+    const next = exact.get(normalize(node.nodeValue));
+    if (next && node.nodeValue !== next) node.nodeValue = next;
+  }
 
-    document.querySelectorAll('a[href^="mailto:"]').forEach((a) => {
-      a.setAttribute('href', 'mailto:info@nguyenarchitecture.com');
-      if (/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(normalize(a.textContent))) {
-        a.textContent = 'info@nguyenarchitecture.com';
+  function patchContactAnchor(anchor) {
+    if (anchor.matches('a[href^="mailto:"]')) {
+      anchor.setAttribute('href', 'mailto:info@nguyenarchitecture.com');
+      if (/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(normalize(anchor.textContent))) {
+        anchor.textContent = 'info@nguyenarchitecture.com';
       }
-    });
+      return;
+    }
 
-    const phones = ['(209) 233-8888', '(714) 707-8889'];
-    document.querySelectorAll('a[href^="tel:"]').forEach((a, index) => {
+    if (anchor.matches('a[href^="tel:"]')) {
+      const allPhones = Array.from(document.querySelectorAll('a[href^="tel:"]'));
+      const index = Math.max(0, allPhones.indexOf(anchor));
       const phone = phones[Math.min(index, phones.length - 1)];
-      a.setAttribute('href', 'tel:' + phone.replace(/[^+\\d]/g, ''));
-      if (/^[+()\\d .-]{7,}$/.test(normalize(a.textContent))) a.textContent = phone;
-    });
+      anchor.setAttribute('href', 'tel:' + phone.replace(/[^+\\d]/g, ''));
+      if (/^[+()\\d .-]{7,}$/.test(normalize(anchor.textContent))) anchor.textContent = phone;
+    }
   }
 
-  patchText();
-  document.addEventListener('DOMContentLoaded', patchText, { once: true });
-  window.addEventListener('load', patchText, { once: true });
+  function patchRoot(root) {
+    if (!root) return;
 
-  let debounceTimer = null;
-  const scheduleRepatch = () => {
-    if (debounceTimer) clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(patchText, 80);
-  };
-
-  function nodeNeedsPatch(node) {
-    if (node.nodeType === Node.TEXT_NODE) {
-      return exact.has(normalize(node.nodeValue));
+    if (root.nodeType === Node.TEXT_NODE) {
+      patchTextNode(root);
+      return;
     }
-    if (node.nodeType !== Node.ELEMENT_NODE) return false;
 
-    if (node.matches('a[href^="mailto:"], a[href^="tel:"]')) return true;
-    if (node.querySelector('a[href^="mailto:"], a[href^="tel:"]')) return true;
+    if (root.nodeType !== Node.ELEMENT_NODE) return;
+    const element = root;
 
-    const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
-    let textNode;
-    while ((textNode = walker.nextNode())) {
-      if (exact.has(normalize(textNode.nodeValue))) return true;
+    if (element.matches('a[href^="mailto:"], a[href^="tel:"]')) {
+      patchContactAnchor(element);
     }
-    return false;
+
+    element.querySelectorAll('a[href^="mailto:"], a[href^="tel:"]').forEach(patchContactAnchor);
+
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) patchTextNode(node);
   }
+
+  patchRoot(document.body);
 
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
-      if (
-        mutation.type === 'characterData' &&
-        exact.has(normalize(mutation.target.nodeValue))
-      ) {
-        scheduleRepatch();
-        break;
+      if (mutation.type === 'characterData') {
+        patchTextNode(mutation.target);
+        continue;
       }
 
-      if (
-        mutation.type === 'childList' &&
-        Array.from(mutation.addedNodes).some(nodeNeedsPatch)
-      ) {
-        scheduleRepatch();
-        break;
+      if (mutation.type === 'childList') {
+        mutation.addedNodes.forEach(patchRoot);
       }
     }
   });
   observer.observe(document.body, { childList: true, subtree: true, characterData: true });
 
-  setTimeout(() => {
-    observer.disconnect();
-    if (debounceTimer) clearTimeout(debounceTimer);
-  }, 6000);
+  setTimeout(() => observer.disconnect(), 6000);
 })();
 </script>`;
 
@@ -219,6 +218,7 @@ async function getSource() {
 export async function GET() {
   try {
     let html = await getSource();
+    html = removeNonVisualTelemetry(html);
 
     html = html.replace(
       /<head([^>]*)>/i,
