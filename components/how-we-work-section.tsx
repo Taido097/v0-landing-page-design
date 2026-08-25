@@ -177,9 +177,11 @@ export function HowWeWorkSection() {
 
         const shouldRender = index === activeIndex || index === incomingIndex;
         const nextVisibility = shouldRender ? 'visible' : 'hidden';
+        const nextContentVisibility = shouldRender ? 'visible' : 'hidden';
         const nextWillChange = index === incomingIndex && incomingIndex !== activeIndex ? 'transform' : 'auto';
 
         if (scene.style.visibility !== nextVisibility) scene.style.visibility = nextVisibility;
+        if (scene.style.contentVisibility !== nextContentVisibility) scene.style.contentVisibility = nextContentVisibility;
         if (scene.style.willChange !== nextWillChange) scene.style.willChange = nextWillChange;
       });
 
@@ -246,10 +248,10 @@ export function HowWeWorkSection() {
       <style>{`
         .demo-showcase-scroll{position:relative;height:2920px}
         .demo-showcase-stage{position:sticky;top:56px;height:calc(100vh - 56px);min-height:780px;max-height:1080px;overflow:hidden;isolation:isolate;background:#fafafa}
-        .demo-showcase-scene{position:absolute;inset:0;overflow:visible;background:transparent;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform-style:preserve-3d}
-        .demo-showcase-scene-content{position:absolute;inset:0;overflow:hidden;contain:paint;background:#111}
+        .demo-showcase-scene{position:absolute;inset:0;overflow:visible;background:transparent;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+        .demo-showcase-scene-content{position:absolute;inset:0;overflow:hidden;contain:paint;isolation:isolate;background:#111;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translateZ(0)}
         .demo-showcase-scene:not(:first-child)::before{content:'';position:absolute;left:0;right:0;top:-24px;z-index:100;height:24px;background:#fafafa;pointer-events:none}
-        .demo-showcase-bg{position:absolute;inset:-10%;z-index:0;overflow:hidden;background:#111;filter:blur(24px) saturate(1.12) brightness(.82) contrast(1.03);transform:scale(1.16) translateZ(0);transform-origin:center;pointer-events:none}
+        .demo-showcase-bg{position:absolute;inset:-10%;z-index:0;overflow:hidden;contain:paint;background:#111;filter:blur(24px) saturate(1.12) brightness(.82) contrast(1.03);transform:scale(1.16) translateZ(0);transform-origin:center;will-change:filter;backface-visibility:hidden;-webkit-backface-visibility:hidden;pointer-events:none}
         .demo-showcase-bg::after{content:'';position:absolute;inset:0;z-index:2;background:rgba(0,0,0,.06);pointer-events:none}
         .demo-showcase-bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
         .demo-showcase-preview img{display:block;width:100%;height:100%;object-fit:cover;object-position:top center}
@@ -324,6 +326,7 @@ export function HowWeWorkSection() {
                       zIndex: 10 + index,
                       transform: index === 0 ? 'translate3d(0,0,0)' : 'translate3d(0,calc(100% + 24px),0)',
                       visibility: index <= 1 ? 'visible' : 'hidden',
+                      contentVisibility: index <= 1 ? 'visible' : 'hidden',
                       willChange: index === 1 ? 'transform' : 'auto',
                     }}
                   >
