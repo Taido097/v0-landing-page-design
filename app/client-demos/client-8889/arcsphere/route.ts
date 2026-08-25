@@ -74,9 +74,6 @@ function removeNonVisualTelemetry(html: string) {
 }
 
 function optimizeImageDecoding(html: string) {
-  // Preserve every source, srcset, size, loading mode, crop and visual style.
-  // Only ask the browser to decode images asynchronously so image decode work
-  // is less likely to block scroll/animation frames on the main thread.
   return html.replace(/<img\b[^>]*>/gi, (tag) => {
     if (/\bdecoding\s*=/i.test(tag)) return tag;
     return tag.replace(/<img\b/i, '<img decoding="async"');
@@ -152,33 +149,14 @@ const CLIENT_PATCH = `
     const replacement = splitTextReplacements.get(compact(paragraph.textContent));
     if (!replacement) return false;
 
-    paragraph.style.setProperty('white-space', 'pre-wrap', 'important');
-
-    const walker = document.createTreeWalker(paragraph, NodeFilter.SHOW_TEXT);
-    const nodes = [];
-    let node;
-    while ((node = walker.nextNode())) nodes.push(node);
-    if (!nodes.length) return false;
-
-    const lengths = nodes.map((textNode) => Array.from(textNode.nodeValue || '').length);
-    const total = lengths.reduce((sum, length) => sum + length, 0);
-    if (!total) {
-      nodes[0].nodeValue = replacement;
-      return true;
-    }
-
-    // Framer splits this line across animated spans. A normal ASCII space can
-    // collapse to zero width inside those spans. NBSP gives the space visible
-    // width and ZWSP immediately after it preserves a normal wrap opportunity.
-    const visibleReplacement = replacement.replace(/ /g, String.fromCharCode(160) + String.fromCharCode(8203));
-    const chars = Array.from(visibleReplacement);
-    let consumed = 0;
-    nodes.forEach((textNode, index) => {
-      const start = Math.round((consumed / total) * chars.length);
-      consumed += lengths[index];
-      const end = Math.round((consumed / total) * chars.length);
-      textNode.nodeValue = chars.slice(start, end).join('');
-    });
+    // This Framer paragraph is split into several inline animation spans.
+    // Keeping the replacement distributed across those spans creates browser
+    // wrap opportunities inside words (for example RESIDENT / IAL). Flatten
+    // this one sentence to a single text node so wrapping only occurs at spaces.
+    paragraph.style.setProperty('white-space', 'normal', 'important');
+    paragraph.style.setProperty('word-break', 'normal', 'important');
+    paragraph.style.setProperty('overflow-wrap', 'normal', 'important');
+    paragraph.textContent = replacement;
     return true;
   }
 
