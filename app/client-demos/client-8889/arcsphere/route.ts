@@ -135,7 +135,7 @@ const CLIENT_PATCH = `
     [compact('DUBAI, 2025'), 'LOS ANGELES, 2025']
   ]);
   const customHomeCardKeys = Array.from(customHomeCardReplacements.keys());
-  const thirdCardImage = '/nguyen-commercial-building.svg';
+  const thirdCardImage = window.location.origin + '/nguyen-commercial-building.svg';
   const thirdCardLabels = [compact('MINIMALIST APPARTMENT INTERIOR'), compact('MINIMALIST APARTMENT INTERIOR')];
   const phones = ['(209) 233-8888', '(714) 707-8889'];
 
