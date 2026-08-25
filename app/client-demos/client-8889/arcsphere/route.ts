@@ -27,6 +27,9 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/A selection of our recent architecture and interior design work\.?/gi, 'A SELECTION OF OUR RECENT RESIDENTIAL, COMMERCIAL & DEVELOPMENT PROJECTS.'],
   [/12\+ YEARS EXPERIENCE/gi, '15+ YEARS EXPERIENCE'],
   [/250\+ PROJECTS WORLDWIDE/gi, '500+ SUCCESSFUL PROJECTS'],
+  [/CORPORATE OFFICE SPACE/gi, 'OFFICE BUILD-OUT'],
+  [/COMMERCIAL ARCHITECTURE/gi, 'LOCATION: IRVINE'],
+  [/NEW YORK, 2026/gi, '2026'],
   [/VIEW PROJECTS/gi, 'VIEW PROJECT TYPES'],
   [/BOOK CONSULTATION/gi, 'START A PROJECT'],
   [/DESIGN PROCESS/gi, 'PROJECT PROCESS'],
@@ -99,6 +102,9 @@ const CLIENT_PATCH = `
     ['A selection of our recent architecture and interior design work.', 'A SELECTION OF OUR RECENT RESIDENTIAL, COMMERCIAL & DEVELOPMENT PROJECTS.'],
     ['12+ YEARS EXPERIENCE', '15+ YEARS EXPERIENCE'],
     ['250+ PROJECTS WORLDWIDE', '500+ SUCCESSFUL PROJECTS'],
+    ['CORPORATE OFFICE SPACE', 'OFFICE BUILD-OUT'],
+    ['COMMERCIAL ARCHITECTURE', 'LOCATION: IRVINE'],
+    ['NEW YORK, 2026', '2026'],
     ['VIEW PROJECTS', 'VIEW PROJECT TYPES'],
     ['BOOK CONSULTATION', 'START A PROJECT'],
     ['DESIGN PROCESS', 'PROJECT PROCESS'],
@@ -307,26 +313,30 @@ export async function GET() {
     }
 
     html = html.replace(/info@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/gi, 'info@nguyenarchitecture.com');
-    html = html.replace(/<\/body>/i, `${CLIENT_PATCH}</body>`);
+    html = html.replace(/href=["']mailto:[^"']+["']/gi, 'href="mailto:info@nguyenarchitecture.com"');
+
+    const phoneReplacements = ['(209) 233-8888', '(714) 707-8889'];
+    let phoneIndex = 0;
+    html = html.replace(/<a([^>]*href=["']tel:[^"']+["'][^>]*)>([\s\S]*?)<\/a>/gi, (_match, attrs, body) => {
+      const phone = phoneReplacements[Math.min(phoneIndex, phoneReplacements.length - 1)];
+      phoneIndex += 1;
+      const nextAttrs = attrs.replace(/href=["']tel:[^"']+["']/i, `href="tel:${phone.replace(/[^+\d]/g, '')}"`);
+      const nextBody = body.replace(/>\s*[+()\d .-]{7,}\s*</g, `>${phone}<`);
+      return `<a${nextAttrs}>${nextBody}</a>`;
+    });
+
+    html = html.replace('</body>', `${CLIENT_PATCH}</body>`);
 
     return new Response(html, {
       headers: {
         'Content-Type': 'text/html; charset=utf-8',
-        'Cache-Control': 'public, max-age=60, s-maxage=3600, stale-while-revalidate=86400',
-        'X-Robots-Tag': 'noindex, nofollow, noarchive',
+        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
       },
     });
   } catch {
     return new Response(
-      '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta http-equiv="refresh" content="2"><title>Loading NGUYEN Concept 01</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f0ebe6;color:#181818;font-family:Arial,sans-serif}main{text-align:center;padding:24px}p{opacity:.6}</style></head><body><main><h1>NGUYEN ARCHITECTURE & ENGINEERING</h1><p>Loading Concept 01…</p></main></body></html>',
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'text/html; charset=utf-8',
-          'Cache-Control': 'no-store',
-          'X-Robots-Tag': 'noindex, nofollow,noarchive',
-        },
-      },
+      '<!doctype html><html><body style="font-family:Arial,sans-serif;padding:40px">Concept 1 is temporarily unavailable. Please refresh in a moment.</body></html>',
+      { status: 502, headers: { 'Content-Type': 'text/html; charset=utf-8' } },
     );
   }
 }
