@@ -125,8 +125,8 @@ const CLIENT_PATCH = `
   ]);
   const officeCardReplacements = new Map([
     [compact('CORPORATE OFFICE SPACE'), 'OFFICE BUILD-OUT'],
-    [compact('COMMERCIAL ARCHITECTURE'), 'IRVINE'],
-    [compact('NEW YORK, 2026'), '2026']
+    [compact('COMMERCIAL ARCHITECTURE'), 'COMMERCIAL ARCHITECTURE'],
+    [compact('NEW YORK, 2026'), 'IRVINE, 2026']
   ]);
   const officeCardKeys = Array.from(officeCardReplacements.keys());
   const customHomeCardReplacements = new Map([
