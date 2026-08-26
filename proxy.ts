@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from "next/server"
 
+const NGUYEN_CONCEPT01 = "/client-demos/client-8889/arcsphere"
+const NGUYEN_CONCEPT01_SAFE = "/client-demos/client-8889/arcsphere-fixed"
 const NGUYEN_CONCEPT04 = "/client-demos/client-8889/architectured"
 
 export function proxy(request: NextRequest) {
+  if (request.nextUrl.pathname === NGUYEN_CONCEPT01) {
+    const url = request.nextUrl.clone()
+    url.pathname = NGUYEN_CONCEPT01_SAFE
+    return NextResponse.rewrite(url)
+  }
+
   if (request.nextUrl.pathname === NGUYEN_CONCEPT04) {
     return NextResponse.next()
   }
@@ -11,5 +19,8 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/client-demos/client-8889/architectured"],
+  matcher: [
+    "/client-demos/client-8889/arcsphere",
+    "/client-demos/client-8889/architectured",
+  ],
 }
