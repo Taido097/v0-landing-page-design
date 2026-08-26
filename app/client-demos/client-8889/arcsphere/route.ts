@@ -142,6 +142,36 @@ const CLIENT_PATCH = `
   ]);
   const thirdCardImage = window.location.origin + '/nguyen-commercial-building.svg?v=office-exact-20260825';
   const thirdCardLabels = [compact('MINIMALIST APPARTMENT INTERIOR'), compact('MINIMALIST APARTMENT INTERIOR'), compact('COMMERCIAL BUILDING')];
+  const serviceSpecs = [
+    {
+      sourceDescription: 'Designing modern buildings that combine aesthetics, efficiency, and long-term value.',
+      sourceTitles: ['Architectural'],
+      title: 'RESIDENTIAL',
+      description: 'Custom homes, additions, remodels, and multifamily residential design with coordinated engineering and permitting.'
+    },
+    {
+      sourceDescription: 'Creating refined interiors through thoughtful materials, lighting, and spatial composition.',
+      sourceTitles: ['Interior Design'],
+      title: 'COMMERCIAL',
+      description: 'Architecture and engineering for offices, retail, restaurants, tenant improvements, and other commercial projects.'
+    },
+    {
+      sourceDescription: 'Transforming outdated spaces into modern and carefully designed environments',
+      sourceTitles: ['Renovation & Remodeling', 'Commercial Remodel & Renovation & Remodeling'],
+      title: 'ADU',
+      description: 'ADU design, engineering, Title 24, permit documentation, and city coordination from concept through approval.'
+    },
+    {
+      sourceDescription: 'High-quality visualizations that help clients clearly understand the design before construction begins.',
+      sourceTitles: ['3D Visualization', 'Permit Drawing Documentation'],
+      title: 'LAND DEVELOPMENT',
+      description: 'Site planning, entitlement support, grading and utility coordination, and development documentation for residential and commercial sites.'
+    }
+  ];
+  const extraServiceDescriptions = [
+    'Optimizing layouts to improve functionality, circulation, and spatial flow.',
+    'Professional guidance during construction to ensure the design vision is executed correctly.'
+  ];
   const phones = ['(209) 233-8888', '(714) 707-8889'];
 
   function patchTextNode(node) { const next = exact.get(normalize(node.nodeValue)); if (next && node.nodeValue !== next) node.nodeValue = next; }
@@ -257,6 +287,55 @@ const CLIENT_PATCH = `
     }
     return false;
   }
+  function findServiceCardByDescription(root, description) {
+    if (!root || root.nodeType !== Node.ELEMENT_NODE) return null;
+    const target = compact(description);
+    const element = root;
+    const candidates = [element, ...element.querySelectorAll('*')];
+    for (const candidate of candidates) {
+      if (compact(candidate.textContent) !== target) continue;
+      let card = candidate;
+      for (let depth = 0; card && depth < 8; depth += 1, card = card.parentElement) {
+        if (!card.querySelector?.('img')) continue;
+        const text = compact(card.textContent);
+        if (!text.includes(target)) continue;
+        return card;
+      }
+    }
+    return null;
+  }
+  function patchServiceCard(card, spec) {
+    const sourceTitleKeys = new Set(spec.sourceTitles.map(compact));
+    const sourceDescriptionKey = compact(spec.sourceDescription);
+    const candidates = [card, ...card.querySelectorAll('*')];
+    candidates.forEach((candidate) => {
+      const key = compact(candidate.textContent);
+      const hasSameTextChild = Array.from(candidate.children).some((child) => compact(child.textContent) === key);
+      if (hasSameTextChild) return;
+      if (sourceTitleKeys.has(key)) {
+        candidate.textContent = spec.title;
+        candidate.style.setProperty('white-space', 'normal', 'important');
+        return;
+      }
+      if (key === sourceDescriptionKey) {
+        candidate.textContent = spec.description;
+        candidate.style.setProperty('white-space', 'normal', 'important');
+        candidate.style.setProperty('word-break', 'normal', 'important');
+        candidate.style.setProperty('overflow-wrap', 'normal', 'important');
+      }
+    });
+  }
+  function patchServicesSection(root) {
+    if (!root || root.nodeType !== Node.ELEMENT_NODE) return;
+    serviceSpecs.forEach((spec) => {
+      const card = findServiceCardByDescription(root, spec.sourceDescription);
+      if (card) patchServiceCard(card, spec);
+    });
+    extraServiceDescriptions.forEach((description) => {
+      const card = findServiceCardByDescription(root, description);
+      if (card) card.style.setProperty('display', 'none', 'important');
+    });
+  }
   function keepResidentialLabelOnOneLine(root) {
     if (!root || root.nodeType !== Node.ELEMENT_NODE) return; const element = root; const candidates = [element, ...element.querySelectorAll('*')];
     candidates.forEach((candidate) => { const text = compact(candidate.textContent); if (text !== 'residential' && text !== 'residentialdesign') return; const hasSameTextChild = Array.from(candidate.children).some((child) => compact(child.textContent) === text); if (hasSameTextChild) return; candidate.style.setProperty('white-space', 'nowrap', 'important'); candidate.style.setProperty('word-break', 'keep-all', 'important'); candidate.style.setProperty('overflow-wrap', 'normal', 'important'); });
@@ -267,15 +346,15 @@ const CLIENT_PATCH = `
   }
   function patchRoot(root) {
     if (!root) return;
-    if (root.nodeType === Node.TEXT_NODE) { patchTextNode(root); const paragraph = root.parentElement?.closest('p'); if (paragraph) patchSplitParagraph(paragraph); const parent = root.parentElement; if (parent) { patchCounters(parent); patchOfficeCard(parent); patchCustomHomeCard(parent); patchThirdProjectImage(parent); keepResidentialLabelOnOneLine(parent); } return; }
-    if (root.nodeType !== Node.ELEMENT_NODE) return; const element = root; patchSplitParagraphs(element); patchCounters(element); patchOfficeCard(element); patchCustomHomeCard(element); patchThirdProjectImage(element); keepResidentialLabelOnOneLine(element);
+    if (root.nodeType === Node.TEXT_NODE) { patchTextNode(root); const paragraph = root.parentElement?.closest('p'); if (paragraph) patchSplitParagraph(paragraph); const parent = root.parentElement; if (parent) { patchCounters(parent); patchOfficeCard(parent); patchCustomHomeCard(parent); patchThirdProjectImage(parent); patchServicesSection(parent); keepResidentialLabelOnOneLine(parent); } return; }
+    if (root.nodeType !== Node.ELEMENT_NODE) return; const element = root; patchSplitParagraphs(element); patchCounters(element); patchOfficeCard(element); patchCustomHomeCard(element); patchThirdProjectImage(element); patchServicesSection(element); keepResidentialLabelOnOneLine(element);
     if (element.matches('a[href^="mailto:"], a[href^="tel:"]')) patchContactAnchor(element);
     element.querySelectorAll('a[href^="mailto:"], a[href^="tel:"]').forEach(patchContactAnchor);
     const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT); let node; while ((node = walker.nextNode())) patchTextNode(node);
   }
   patchRoot(document.body);
-  window.addEventListener('load', () => patchThirdProjectImage(document.body), { once: true });
-  const observer = new MutationObserver((mutations) => { for (const mutation of mutations) { if (mutation.type === 'characterData') { patchTextNode(mutation.target); const paragraph = mutation.target.parentElement?.closest('p'); if (paragraph) patchSplitParagraph(paragraph); const parent = mutation.target.parentElement; if (parent) { patchCounters(parent); patchOfficeCard(parent); patchCustomHomeCard(parent); patchThirdProjectImage(parent); keepResidentialLabelOnOneLine(parent); } continue; } if (mutation.type === 'childList') mutation.addedNodes.forEach(patchRoot); } });
+  window.addEventListener('load', () => { patchThirdProjectImage(document.body); patchServicesSection(document.body); }, { once: true });
+  const observer = new MutationObserver((mutations) => { for (const mutation of mutations) { if (mutation.type === 'characterData') { patchTextNode(mutation.target); const paragraph = mutation.target.parentElement?.closest('p'); if (paragraph) patchSplitParagraph(paragraph); const parent = mutation.target.parentElement; if (parent) { patchCounters(parent); patchOfficeCard(parent); patchCustomHomeCard(parent); patchThirdProjectImage(parent); patchServicesSection(parent); keepResidentialLabelOnOneLine(parent); } continue; } if (mutation.type === 'childList') mutation.addedNodes.forEach(patchRoot); } });
   observer.observe(document.body, { childList: true, subtree: true, characterData: true }); setTimeout(() => observer.disconnect(), 6000);
 })();
 </script>`;
