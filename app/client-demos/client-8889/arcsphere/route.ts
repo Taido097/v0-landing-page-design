@@ -135,8 +135,13 @@ const CLIENT_PATCH = `
     [compact('DUBAI, 2025'), 'LOS ANGELES, 2025']
   ]);
   const customHomeCardKeys = Array.from(customHomeCardReplacements.keys());
+  const thirdCardTextReplacements = new Map([
+    [compact('MINIMALIST APPARTMENT INTERIOR'), 'COMMERCIAL BUILDING'],
+    [compact('MINIMALIST APARTMENT INTERIOR'), 'COMMERCIAL BUILDING'],
+    [compact('RESIDENTIAL ARCHITECTURE'), 'COMMERCIAL ARCHITECTURE']
+  ]);
   const thirdCardImage = window.location.origin + '/nguyen-commercial-building.svg?v=office-exact-20260825';
-  const thirdCardLabels = [compact('MINIMALIST APPARTMENT INTERIOR'), compact('MINIMALIST APARTMENT INTERIOR')];
+  const thirdCardLabels = [compact('MINIMALIST APPARTMENT INTERIOR'), compact('MINIMALIST APARTMENT INTERIOR'), compact('COMMERCIAL BUILDING')];
   const phones = ['(209) 233-8888', '(714) 707-8889'];
 
   function patchTextNode(node) { const next = exact.get(normalize(node.nodeValue)); if (next && node.nodeValue !== next) node.nodeValue = next; }
@@ -204,6 +209,15 @@ const CLIENT_PATCH = `
     for (let depth = 0; card && depth < 10; depth += 1, card = card.parentElement) {
       const img = card.querySelector?.('img');
       if (!img) continue;
+      const cardCandidates = [card, ...card.querySelectorAll('*')];
+      cardCandidates.forEach((candidate) => {
+        const key = compact(candidate.textContent);
+        const replacementText = thirdCardTextReplacements.get(key);
+        if (!replacementText) return;
+        const hasSameTextChild = Array.from(candidate.children).some((child) => compact(child.textContent) === key);
+        if (hasSameTextChild) return;
+        candidate.textContent = replacementText;
+      });
       if (img.getAttribute('src') !== thirdCardImage) img.setAttribute('src', thirdCardImage);
       img.removeAttribute('srcset');
       img.removeAttribute('sizes');
