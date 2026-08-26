@@ -4,7 +4,7 @@ const PROCESS_PATCH = `
 <script id="nguyen-process-safe-patch">
 (() => {
   const steps = [
-    { number: '01', tag: 'CONSULTATION', title: 'CONSULTATION', description: 'We discuss your goals, project scope, budget, timeline, and requirements.' },
+    { number: '1', tag: 'CONSULTATION', title: 'CONSULTATION', description: 'We discuss your goals, project scope, budget, timeline, and requirements.' },
     { number: '02', tag: 'SITE ANALYSIS', title: 'SITE ANALYSIS & FEASIBILITY', description: 'We review the site, zoning, codes, constraints, existing conditions, and project feasibility.' },
     { number: '03', tag: 'CONCEPT', title: 'CONCEPT DESIGN', description: 'We develop the initial layout, massing, design direction, and key project concepts.' },
     { number: '04', tag: 'DESIGN', title: 'DESIGN & ENGINEERING', description: 'We coordinate architectural and engineering drawings into a complete permit-ready design.' },
