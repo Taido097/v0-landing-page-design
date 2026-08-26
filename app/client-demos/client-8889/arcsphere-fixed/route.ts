@@ -55,11 +55,30 @@ const PROCESS_PATCH = `
     return false;
   }
 
+  function replaceFlattened(card, sources, replacement) {
+    const keys = sources.map(compact);
+    const candidates = [card, ...card.querySelectorAll('*')]
+      .filter((node) => keys.some((key) => compact(node.textContent).includes(key)))
+      .sort((a, b) => a.querySelectorAll('*').length - b.querySelectorAll('*').length);
+    for (const node of candidates) {
+      const text = compact(node.textContent);
+      if (!keys.some((key) => text === key || text.includes(key))) continue;
+      if (text.length > Math.max(...keys.map((key) => key.length)) + 10) continue;
+      node.textContent = replacement;
+      node.style.setProperty('white-space', 'normal', 'important');
+      node.style.setProperty('word-break', 'normal', 'important');
+      node.style.setProperty('overflow-wrap', 'normal', 'important');
+      return true;
+    }
+    return false;
+  }
+
   function patchCard(card, source, step) {
     card.setAttribute('data-nguyen-process-step', step.number);
     replaceLeaf(card, [source.number, step.number], step.number);
     replaceLeaf(card, [...source.tags, step.tag], step.tag);
-    replaceLeaf(card, [...source.titles, step.title], step.title);
+    const titleSources = [...source.titles, step.title];
+    if (!replaceLeaf(card, titleSources, step.title)) replaceFlattened(card, titleSources, step.title);
     replaceLeaf(card, [...source.descriptions, step.description], step.description);
   }
 
