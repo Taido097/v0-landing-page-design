@@ -76,7 +76,10 @@ const DETAIL_IMAGE_PATCH = `
     applying = true;
     try {
       const images = visibleProjectImages();
-      if (images.length < 6) return;
+      // The detail page has five qualifying <img> elements: the hero plus four
+      // middle project images. The final large exterior is rendered separately,
+      // so waiting for a sixth <img> prevented the replacement from ever running.
+      if (images.length < 5) return;
       const crops = await loadSpriteCrops();
       const replacements = [house1, house2, crops[0], crops[1]];
       images.slice(1, 5).forEach((img, index) => setImage(img, replacements[index], index + 1));
