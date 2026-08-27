@@ -13,7 +13,8 @@ const DETAIL_IMAGE_PATCH = `
 
   function isCustomHomeDetail() {
     const body = compact(document.body && document.body.textContent);
-    return body.includes(compact('Project Details')) && body.includes(compact('CUSTOM HOME'));
+    const hasProjectTitle = body.includes(compact('CUSTOM HOME')) || body.includes(compact('SERENITY VILLA'));
+    return body.includes(compact('Project Details')) && hasProjectTitle;
   }
 
   function loadSpriteCrops() {
