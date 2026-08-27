@@ -50,8 +50,8 @@ const DETAIL_IMAGE_PATCH = `
 <script id="nguyen-custom-home-detail-image-patch">
 (() => {
   const compact = (value) => (value || '').replace(/\\s+/g, '').trim().toLowerCase();
-  const house1 = window.location.origin + '/client-8889/residential/house-1.webp';
-  const house2 = window.location.origin + '/client-8889/residential/house-2.webp';
+  const house1 = window.location.origin + '/client-8889/residential/house-1.webp?v=custom-home-overlay-20260827';
+  const house2 = window.location.origin + '/client-8889/residential/house-2.webp?v=custom-home-overlay-20260827';
   const spriteChunks = [0, 1, 2, 3].map((index) => window.location.origin + '/client-8889/residential/sprite-' + index + '.txt');
   let cropPromise = null;
   let applying = false;
@@ -91,20 +91,55 @@ const DETAIL_IMAGE_PATCH = `
 
   function setImage(img, src, slot) {
     if (!img || !src) return;
-    if (img.dataset.nguyenCustomHomeSlot === String(slot) && img.getAttribute('src') === src) return;
     img.dataset.nguyenCustomHomeSlot = String(slot);
     img.setAttribute('src', src);
     img.removeAttribute('srcset');
     img.removeAttribute('sizes');
+    img.style.setProperty('filter', 'none', 'important');
+    img.style.setProperty('opacity', '1', 'important');
+    img.style.setProperty('visibility', 'visible', 'important');
+
     const picture = img.closest('picture');
     if (picture) picture.querySelectorAll('source').forEach((source) => {
       source.setAttribute('srcset', src);
       source.removeAttribute('sizes');
     });
+
+    const mediaParent = img.parentElement;
+    if (!mediaParent) return;
+
+    const overlaySelector = ':scope > img[data-nguyen-custom-home-overlay="' + String(slot) + '"]';
+    let replacement = mediaParent.querySelector(overlaySelector);
+    if (!replacement) {
+      replacement = img.cloneNode(false);
+      replacement.setAttribute('data-nguyen-custom-home-overlay', String(slot));
+      replacement.removeAttribute('srcset');
+      replacement.removeAttribute('sizes');
+      replacement.setAttribute('src', src);
+      const computed = window.getComputedStyle(img);
+      replacement.style.setProperty('position', 'absolute', 'important');
+      replacement.style.setProperty('inset', '0', 'important');
+      replacement.style.setProperty('width', '100%', 'important');
+      replacement.style.setProperty('height', '100%', 'important');
+      replacement.style.setProperty('object-fit', computed.objectFit || 'cover', 'important');
+      replacement.style.setProperty('object-position', computed.objectPosition || 'center', 'important');
+      replacement.style.setProperty('filter', 'none', 'important');
+      replacement.style.setProperty('opacity', '1', 'important');
+      replacement.style.setProperty('visibility', 'visible', 'important');
+      replacement.style.setProperty('z-index', '2', 'important');
+      replacement.style.setProperty('pointer-events', 'none', 'important');
+      if (window.getComputedStyle(mediaParent).position === 'static') {
+        mediaParent.style.setProperty('position', 'relative', 'important');
+      }
+      mediaParent.appendChild(replacement);
+    } else if (replacement.getAttribute('src') !== src) {
+      replacement.setAttribute('src', src);
+    }
   }
 
   function visibleProjectImages() {
     return Array.from(document.images).filter((img) => {
+      if (img.hasAttribute('data-nguyen-custom-home-overlay')) return false;
       const rect = img.getBoundingClientRect();
       if (rect.width < 140 || rect.height < 100) return false;
       const style = window.getComputedStyle(img);
