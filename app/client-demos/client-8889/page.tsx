@@ -18,7 +18,7 @@ const demos = [
     number: '01',
     name: 'NGUYEN Concept 01',
     style: 'Commercial architecture · engineering · permit',
-    href: '/client-demos/client-8889/arcsphere',
+    href: '/client-demos/client-8889/arcsphere-socal',
   },
   {
     number: '02',
