@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 
 const NGUYEN_CONCEPT01 = "/client-demos/client-8889/arcsphere"
-const NGUYEN_CONCEPT01_SAFE = "/client-demos/client-8889/arcsphere-fixed"
+const NGUYEN_CONCEPT01_SAFE = "/client-demos/client-8889/arcsphere-imagefix"
 const NGUYEN_CONCEPT04 = "/client-demos/client-8889/architectured"
 
 export function proxy(request: NextRequest) {

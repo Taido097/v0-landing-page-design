@@ -1,4 +1,4 @@
-import { GET as getConcept } from "../arcsphere/route"
+import { GET as getConcept } from "../arcsphere-fixed/route"
 
 const DETAIL_IMAGE_PATCH = `
 <script id="nguyen-custom-home-detail-image-patch">
