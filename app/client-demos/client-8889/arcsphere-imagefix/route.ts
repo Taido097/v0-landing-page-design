@@ -117,18 +117,46 @@ const DETAIL_IMAGE_PATCH = `
     });
   }
 
+  function findLivingRoomImage() {
+    const images = visibleProjectImages();
+    if (images.length < 2) return null;
+
+    const heroRect = images[0].getBoundingClientRect();
+    const candidates = images.slice(1).filter((img) => {
+      const rect = img.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      return rect.top >= heroRect.bottom - 40 &&
+        centerX > window.innerWidth * 0.52 &&
+        rect.width >= Math.max(280, window.innerWidth * 0.28) &&
+        rect.height >= 220;
+    });
+
+    candidates.sort((a, b) => {
+      const ar = a.getBoundingClientRect();
+      const br = b.getBoundingClientRect();
+      if (Math.abs(ar.top - br.top) > 8) return ar.top - br.top;
+      return (br.width * br.height) - (ar.width * ar.height);
+    });
+
+    return candidates[0] || null;
+  }
+
+  function patchLivingRoomImage() {
+    if (!isCustomHomeDetail()) return;
+    const target = findLivingRoomImage();
+    if (target) setImage(target, house2, 'living-room');
+  }
+
   async function patchImages() {
     if (applying || !isCustomHomeDetail()) return;
     applying = true;
     try {
       const images = visibleProjectImages();
-      // The detail page has five qualifying <img> elements: the hero plus four
-      // middle project images. The final large exterior is rendered separately,
-      // so waiting for a sixth <img> prevented the replacement from ever running.
       if (images.length < 5) return;
       const crops = await loadSpriteCrops();
       const replacements = [house1, house2, crops[0], crops[1]];
       images.slice(1, 5).forEach((img, index) => setImage(img, replacements[index], index + 1));
+      patchLivingRoomImage();
     } catch (error) {
       console.warn('Custom Home image patch:', error);
     } finally {
@@ -136,14 +164,19 @@ const DETAIL_IMAGE_PATCH = `
     }
   }
 
-  function queuePatch() {
-    clearTimeout(queued);
-    queued = setTimeout(patchImages, 120);
+  function runPatch() {
+    patchImages();
+    patchLivingRoomImage();
   }
 
-  patchImages();
-  window.addEventListener('load', patchImages, { once: true });
-  [400, 1200, 2600, 4800].forEach((delay) => setTimeout(patchImages, delay));
+  function queuePatch() {
+    clearTimeout(queued);
+    queued = setTimeout(runPatch, 120);
+  }
+
+  runPatch();
+  window.addEventListener('load', runPatch, { once: true });
+  [400, 1200, 2600, 4800].forEach((delay) => setTimeout(runPatch, delay));
   const observer = new MutationObserver((mutations) => {
     if (mutations.some((mutation) => mutation.type === 'characterData' || mutation.addedNodes.length)) queuePatch();
   });
