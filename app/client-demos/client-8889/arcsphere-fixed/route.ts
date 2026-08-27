@@ -86,13 +86,18 @@ const PROCESS_PATCH = `
 
   function replaceLeafText(card, sourceValues, replacement) {
     const keys = new Set(sourceValues.map(compact));
+    const replacementKey = compact(replacement);
     const candidates = [card, ...card.querySelectorAll('*')];
     for (const candidate of candidates) {
       const key = compact(candidate.textContent);
       if (!keys.has(key)) continue;
       const hasSameTextChild = Array.from(candidate.children).some((child) => compact(child.textContent) === key);
       if (hasSameTextChild) continue;
-      candidate.textContent = replacement;
+
+      // Do not rewrite text that is already correct. Reassigning textContent creates
+      // another DOM mutation, which used to retrigger the observer indefinitely and
+      // could leave Concept 1 stuck loading.
+      if (key !== replacementKey) candidate.textContent = replacement;
       candidate.style.setProperty('white-space', 'normal', 'important');
       candidate.style.setProperty('word-break', 'normal', 'important');
       candidate.style.setProperty('overflow-wrap', 'normal', 'important');
