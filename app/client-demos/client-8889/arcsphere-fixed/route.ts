@@ -6,149 +6,105 @@ const PROCESS_PATCH = `
   const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim();
   const compact = (value) => normalize(value).replace(/\\s+/g, '').toLowerCase();
 
-  const steps = [
-    {
-      titles: ['DISCOVERY', 'CONSULTATION'],
-      descriptions: [
-        'We begin with existing conditions, business needs, zoning, occupancy and local requirements.',
-        'We Begin With Existing Conditions, Business Needs, Zoning, Occupancy And Local Requirements.',
-        'We discuss your goals, project scope, budget, timeline, and requirements.'
-      ],
-      title: 'CONSULTATION',
-      description: 'We discuss your goals, project scope, budget, timeline, and requirements.'
-    },
-    {
-      titles: ['EXISTING-CONDITION SURVEY & PROJECT PLANNING', 'SITE ANALYSIS & FEASIBILITY'],
-      descriptions: [
-        'Our team develops layouts, ideas, and creative design directions.',
-        'Our Team Develops Layouts, Ideas, And Creative Design Directions.',
-        'We review the site, zoning, codes, constraints, existing conditions, and project feasibility.'
-      ],
-      title: 'SITE ANALYSIS & FEASIBILITY',
-      description: 'We review the site, zoning, codes, constraints, existing conditions, and project feasibility.'
-    },
-    {
-      titles: ['ARCHITECTURE & ENGINEERING', 'CONCEPT DESIGN'],
-      descriptions: [
-        'Detailed drawings, materials, and spatial specifications are finalized.',
-        'Detailed Drawings, Materials, And Spatial Specifications Are Finalized.',
-        'We develop the initial layout, massing, design direction, and key project concepts.'
-      ],
-      title: 'CONCEPT DESIGN',
-      description: 'We develop the initial layout, massing, design direction, and key project concepts.'
-    },
-    {
-      titles: ['EXECUTION', 'PLAN CHECK & CORRECTIONS', 'DESIGN & ENGINEERING'],
-      descriptions: [
-        'We guide implementation to ensure the final result reflects the original design vision.',
-        'We Guide Implementation To Ensure The Final Result Reflects The Original Design Vision.',
-        'We support building permit, plan check, corrections, consultants and city coordination through approval.',
-        'We coordinate architectural and engineering drawings into a complete permit-ready design.'
-      ],
-      title: 'DESIGN & ENGINEERING',
-      description: 'We coordinate architectural and engineering drawings into a complete permit-ready design.'
-    }
+  const replacements = new Map([
+    [compact('DISCOVERY'), 'CONSULTATION'],
+    [compact('EXISTING-CONDITION SURVEY & PROJECT PLANNING'), 'SITE ANALYSIS & FEASIBILITY'],
+    [compact('ARCHITECTURE & ENGINEERING'), 'CONCEPT DESIGN'],
+    [compact('EXECUTION'), 'DESIGN & ENGINEERING'],
+    [compact('PLAN CHECK & CORRECTIONS'), 'DESIGN & ENGINEERING'],
+    [compact('We begin with existing conditions, business needs, zoning, occupancy and local requirements.'), 'We discuss your goals, project scope, budget, timeline, and requirements.'],
+    [compact('Our team develops layouts, ideas, and creative design directions.'), 'We review the site, zoning, codes, constraints, existing conditions, and project feasibility.'],
+    [compact('Detailed drawings, materials, and spatial specifications are finalized.'), 'We develop the initial layout, massing, design direction, and key project concepts.'],
+    [compact('We guide implementation to ensure the final result reflects the original design vision.'), 'We coordinate architectural and engineering drawings into a complete permit-ready design.']
+  ]);
+
+  const finalTitles = ['CONSULTATION', 'SITE ANALYSIS & FEASIBILITY', 'CONCEPT DESIGN', 'DESIGN & ENGINEERING'];
+  const finalDescriptions = [
+    'We discuss your goals, project scope, budget, timeline, and requirements.',
+    'We review the site, zoning, codes, constraints, existing conditions, and project feasibility.',
+    'We develop the initial layout, massing, design direction, and key project concepts.',
+    'We coordinate architectural and engineering drawings into a complete permit-ready design.'
   ];
 
-  const extraSteps = [
-    { title: 'PERMIT SUBMITTAL', description: 'We prepare and submit the permit package to the appropriate city or agency.' },
-    { title: 'PLAN CHECK & APPROVAL', description: 'We respond to plan-check comments and coordinate revisions through approval.' }
-  ];
-
-  function smallestExact(root, values) {
-    const keys = values.map(compact);
+  function smallestExact(root, value) {
+    const key = compact(value);
     return [root, ...root.querySelectorAll('*')]
-      .filter((node) => keys.includes(compact(node.textContent)))
+      .filter((node) => compact(node.textContent) === key)
       .sort((a, b) => a.querySelectorAll('*').length - b.querySelectorAll('*').length)[0] || null;
   }
 
-  function setText(node, value) {
+  function flattenVisibleText() {
+    const nodes = Array.from(document.querySelectorAll('body *'))
+      .sort((a, b) => a.querySelectorAll('*').length - b.querySelectorAll('*').length);
+
+    for (const node of nodes) {
+      const replacement = replacements.get(compact(node.textContent));
+      if (!replacement) continue;
+      const sameChild = Array.from(node.children).some((child) => compact(child.textContent) === compact(node.textContent));
+      if (sameChild) continue;
+      node.textContent = replacement;
+      node.style.setProperty('white-space', 'normal', 'important');
+      node.style.setProperty('word-break', 'normal', 'important');
+      node.style.setProperty('overflow-wrap', 'normal', 'important');
+    }
+  }
+
+  function findCard(title, description) {
+    const titleNode = smallestExact(document.body, title);
+    if (!titleNode) return null;
+    let card = titleNode;
+    for (let depth = 0; card && depth < 14; depth += 1, card = card.parentElement) {
+      const text = compact(card.textContent);
+      if (!text.includes(compact(title)) || !text.includes(compact(description))) continue;
+      const parent = card.parentElement;
+      if (!parent) return card;
+      const parentText = compact(parent.textContent);
+      const otherTitles = finalTitles.filter((other) => other !== title && parentText.includes(compact(other)));
+      if (otherTitles.length) return card;
+    }
+    return null;
+  }
+
+  function setExact(root, from, to) {
+    const node = smallestExact(root, from);
     if (!node) return false;
-    if (normalize(node.textContent) !== value) node.textContent = value;
+    node.textContent = to;
     node.style.setProperty('white-space', 'normal', 'important');
     node.style.setProperty('word-break', 'normal', 'important');
     node.style.setProperty('overflow-wrap', 'normal', 'important');
     return true;
   }
 
-  function findCard(step) {
-    const titleKeys = step.titles.map(compact);
-    const descriptionKeys = step.descriptions.map(compact);
-    const nodes = Array.from(document.querySelectorAll('body *'));
-    const desc = nodes
-      .filter((node) => descriptionKeys.includes(compact(node.textContent)))
-      .sort((a, b) => a.querySelectorAll('*').length - b.querySelectorAll('*').length)[0];
-    if (!desc) return null;
-
-    let card = desc;
-    for (let depth = 0; card && depth < 12; depth += 1, card = card.parentElement) {
-      const text = compact(card.textContent);
-      if (titleKeys.some((key) => text.includes(key)) && descriptionKeys.some((key) => text.includes(key))) return card;
-    }
-    return null;
-  }
-
-  function patchCard(card, step, index) {
-    card.setAttribute('data-nguyen-process-step', String(index + 1));
-    setText(smallestExact(card, step.titles), step.title);
-    setText(smallestExact(card, step.descriptions), step.description);
-  }
-
-  function cloneStep(template, step, index) {
-    const clone = template.cloneNode(true);
-    clone.removeAttribute('id');
-    clone.querySelectorAll('[id]').forEach((node) => node.removeAttribute('id'));
-    clone.setAttribute('data-nguyen-process-step', String(index + 1));
-    setText(smallestExact(clone, ['DESIGN & ENGINEERING']), step.title);
-    setText(smallestExact(clone, ['We coordinate architectural and engineering drawings into a complete permit-ready design.']), step.description);
-    return clone;
-  }
-
-  function applyProcess() {
-    const cards = steps.map((step, index) => {
-      const card = document.querySelector('[data-nguyen-process-step="' + (index + 1) + '"]') || findCard(step);
-      if (card) patchCard(card, step, index);
-      return card;
-    });
-    if (cards.some((card) => !card)) return false;
-
-    const fourth = cards[3];
+  function addExtraSteps() {
+    if (document.querySelector('[data-nguyen-process-extra="5"]')) return;
+    const fourth = findCard(finalTitles[3], finalDescriptions[3]);
+    if (!fourth || !fourth.parentElement) return;
     const parent = fourth.parentElement;
-    if (!parent) return false;
 
-    extraSteps.forEach((step, offset) => {
-      const index = offset + 4;
-      if (!parent.querySelector(':scope > [data-nguyen-process-step="' + (index + 1) + '"]')) {
-        parent.appendChild(cloneStep(fourth, step, index));
-      }
-    });
-    return true;
-  }
+    const fifth = fourth.cloneNode(true);
+    fifth.removeAttribute('id');
+    fifth.querySelectorAll('[id]').forEach((node) => node.removeAttribute('id'));
+    fifth.setAttribute('data-nguyen-process-extra', '5');
+    setExact(fifth, finalTitles[3], 'PERMIT SUBMITTAL');
+    setExact(fifth, finalDescriptions[3], 'We prepare and submit the permit package to the appropriate city or agency.');
 
-  let observer;
-  let scheduled = false;
-  function run() {
-    scheduled = false;
-    observer?.disconnect();
-    applyProcess();
-    observer?.observe(document.body, { childList: true, subtree: true, characterData: true });
-  }
-  function schedule() {
-    if (scheduled) return;
-    scheduled = true;
-    requestAnimationFrame(run);
-  }
-  function start() {
-    observer = new MutationObserver(schedule);
-    run();
-    setTimeout(run, 250);
-    setTimeout(run, 750);
-    setTimeout(run, 1500);
-    setTimeout(() => { observer?.disconnect(); applyProcess(); }, 4000);
+    const sixth = fourth.cloneNode(true);
+    sixth.removeAttribute('id');
+    sixth.querySelectorAll('[id]').forEach((node) => node.removeAttribute('id'));
+    sixth.setAttribute('data-nguyen-process-extra', '6');
+    setExact(sixth, finalTitles[3], 'PLAN CHECK & APPROVAL');
+    setExact(sixth, finalDescriptions[3], 'We respond to plan-check comments and coordinate revisions through approval.');
+
+    parent.appendChild(fifth);
+    parent.appendChild(sixth);
   }
 
-  if (document.body) start();
-  else window.addEventListener('DOMContentLoaded', start, { once: true });
+  function apply() {
+    flattenVisibleText();
+    addExtraSteps();
+  }
+
+  [0, 150, 400, 900, 1800, 3200, 5200, 7000].forEach((delay) => setTimeout(apply, delay));
 })();
 </script>`;
 
