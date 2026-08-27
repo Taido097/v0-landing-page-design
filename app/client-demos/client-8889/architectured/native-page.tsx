@@ -6,7 +6,7 @@ import { BOBA_PROJECT_IMAGE } from "./branded/project-image-boba"
 import { RESTAURANT_PROJECT_IMAGE } from "./branded/project-image-restaurant"
 import { COMMERCIAL_PROJECT_IMAGE } from "./branded/project-image-commercial"
 
-const HERO_IMAGE = "https://framerusercontent.com/images/1bcyDuRfQDTRBuPmXk32I5cKWc0.webp?height=1920&width=2400"
+const HERO_IMAGE = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/house-2%20%281%29-QeXWU3EwbptsTGu8zUgs8cz63bxAU2.png"
 const ABOUT_SKETCH = "https://framerusercontent.com/images/bPmhZf6Cfqh0tq7ok2WiGtZUc.png?height=1278&width=2400"
 const ABOUT_PHOTO = "https://framerusercontent.com/images/zNwUrKf5wBzZ5mlqn3ZSHYTgQk.png?height=1674&width=1856"
 
