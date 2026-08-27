@@ -16,7 +16,8 @@ const CLIENT_PATCH = String.raw`
       'Designs that earn awards': 'Focused on our clients',
       'Architecture that connects people and places': 'Architecture, engineering and permits—one team.',
       'We design more than buildings—we create spaces that foster connection, creativity, and community': 'NGUYEN Architecture & Engineering provides full-service design, engineering, code compliance and permit support for commercial, residential and ADU projects across California.',
-      'Get Template': 'Request Consultation'
+      'Get Template': 'Request Consultation',
+      '€4 million': '$4 million'
     },
     services: {
       'Explore our services and see how we bring creativity and expertise to every project': 'One coordinated team for planning, architecture, structural, MEP, code, energy compliance and permit services.',
