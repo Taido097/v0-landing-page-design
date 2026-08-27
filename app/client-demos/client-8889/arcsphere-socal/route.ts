@@ -1,4 +1,4 @@
-import { GET as getConcept } from "../arcsphere/route"
+import { GET as getConcept } from "../arcsphere-imagefix/route"
 
 const OLD_COPY = 'Based in Orange County, we provide commercial architecture, engineering and permit support from existing-condition survey and business layout through plan check and approval.'
 const NEW_COPY = 'Based in Southern California, we provide residential and commercial architecture, engineering, and permit support from concept through approval.'
