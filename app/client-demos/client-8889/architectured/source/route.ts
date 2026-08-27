@@ -427,10 +427,11 @@ const CLIENT_PATCH = String.raw`
   };
 
   const observer = new MutationObserver(queuePatch);
-  observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
 
-  patchAll();
+  // Wait until Framer has hydrated its server-rendered tree before changing text.
+  // Patching earlier causes React hydration mismatch errors in the embedded page.
   document.addEventListener('DOMContentLoaded', () => {
+  observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
     patchAll();
     requestAnimationFrame(() => {
       patchAll();
