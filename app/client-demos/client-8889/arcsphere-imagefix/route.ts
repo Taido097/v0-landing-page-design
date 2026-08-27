@@ -1,4 +1,4 @@
-import { GET as getConcept } from "../arcsphere-fixed/route"
+import { GET as getConcept } from "../arcsphere-socal/route"
 
 const DETAIL_IMAGE_PATCH = `
 <script id="nguyen-custom-home-detail-image-patch">
@@ -76,9 +76,6 @@ const DETAIL_IMAGE_PATCH = `
     applying = true;
     try {
       const images = visibleProjectImages();
-      // The detail page has five qualifying <img> elements: the hero plus four
-      // middle project images. The final large exterior is rendered separately,
-      // so waiting for a sixth <img> prevented the replacement from ever running.
       if (images.length < 5) return;
       const crops = await loadSpriteCrops();
       const replacements = [house1, house2, crops[0], crops[1]];
