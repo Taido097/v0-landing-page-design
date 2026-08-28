@@ -1,9 +1,9 @@
 import { GET as getConcept } from "../arcsphere-imagefix/route"
 
 const TARGET_IMAGE_PATCH = `
-<script id="nguyen-custom-home-target-image-patch">
+<script id="nguyen-custom-home-target-image-patch-v2">
 (() => {
-  const TARGET_SRC = window.location.origin + '/client-8889/residential/house-2.webp?v=custom-home-exact-target-20260827-2';
+  const TARGET_SRC = window.location.origin + '/client-8889/residential/house-2.webp?v=custom-home-text-anchor-20260827-3';
   const compact = (value) => (value || '').replace(/\\s+/g, '').trim().toLowerCase();
   let queued = null;
 
@@ -14,117 +14,145 @@ const TARGET_IMAGE_PATCH = `
 
   function findLeafByText(text) {
     const key = compact(text);
-    const nodes = [document.body, ...document.body.querySelectorAll('*')];
-    return nodes.find((node) => {
+    return Array.from(document.body.querySelectorAll('*')).find((node) => {
       if (compact(node.textContent) !== key) return false;
       return !Array.from(node.children || []).some((child) => compact(child.textContent) === key);
     }) || null;
   }
 
-  function visibleImages() {
-    return Array.from(document.images).filter((img) => {
-      if (img.hasAttribute('data-nguyen-custom-home-exact-target')) return false;
-      const rect = img.getBoundingClientRect();
-      if (rect.width < 120 || rect.height < 90) return false;
-      const style = window.getComputedStyle(img);
-      return style.display !== 'none' && style.visibility !== 'hidden' && Number(style.opacity || 1) !== 0;
+  function isVisibleBox(element) {
+    const rect = element.getBoundingClientRect();
+    if (rect.width < 180 || rect.height < 140) return false;
+    const style = window.getComputedStyle(element);
+    return style.display !== 'none' && style.visibility !== 'hidden' && Number(style.opacity || 1) !== 0;
+  }
+
+  function mediaCandidates() {
+    const nodes = Array.from(document.querySelectorAll('img, picture, div, figure'));
+    return nodes.filter((node) => {
+      if (node.hasAttribute('data-nguyen-custom-home-target-box')) return false;
+      if (node.closest('[data-nguyen-custom-home-target-box]')) return false;
+      if (!isVisibleBox(node)) return false;
+
+      if (node.tagName === 'IMG' || node.tagName === 'PICTURE') return true;
+      const style = window.getComputedStyle(node);
+      return style.backgroundImage && style.backgroundImage !== 'none';
     });
   }
 
-  function findTarget() {
+  function dedupeNestedMedia(nodes) {
+    return nodes.filter((node) => {
+      const rect = node.getBoundingClientRect();
+      return !nodes.some((other) => {
+        if (other === node || !other.contains(node)) return false;
+        const otherRect = other.getBoundingClientRect();
+        return Math.abs(otherRect.left - rect.left) < 3 &&
+          Math.abs(otherRect.top - rect.top) < 3 &&
+          Math.abs(otherRect.width - rect.width) < 6 &&
+          Math.abs(otherRect.height - rect.height) < 6;
+      });
+    });
+  }
+
+  function findTargetBox() {
     const details = findLeafByText('Project Details');
     if (!details) return null;
-    const detailsTop = details.getBoundingClientRect().top;
-    const images = visibleImages();
-    if (!images.length) return null;
 
-    const hero = images
-      .filter((img) => img.getBoundingClientRect().top < detailsTop)
-      .sort((a, b) => {
-        const ar = a.getBoundingClientRect();
-        const br = b.getBoundingClientRect();
-        return ar.top - br.top || (br.width * br.height) - (ar.width * ar.height);
-      })[0];
-    const heroBottom = hero ? hero.getBoundingClientRect().bottom : -Infinity;
+    const detailsRect = details.getBoundingClientRect();
+    const media = dedupeNestedMedia(mediaCandidates());
 
-    const candidates = images.filter((img) => {
-      const rect = img.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      return rect.top > heroBottom - 20 &&
-        rect.bottom < detailsTop + 20 &&
-        centerX > window.innerWidth * 0.5;
+    const candidates = media.filter((node) => {
+      const rect = node.getBoundingClientRect();
+      const overlapsDetailsColumn = rect.right >= detailsRect.left - 40;
+      const isAboveDetails = rect.bottom <= detailsRect.top + 35;
+      const isRightSide = rect.left + rect.width / 2 > window.innerWidth * 0.52;
+      return overlapsDetailsColumn && isAboveDetails && isRightSide;
     });
 
     candidates.sort((a, b) => {
       const ar = a.getBoundingClientRect();
       const br = b.getBoundingClientRect();
+      const aGap = Math.max(0, detailsRect.top - ar.bottom);
+      const bGap = Math.max(0, detailsRect.top - br.bottom);
+      if (Math.abs(aGap - bGap) > 8) return aGap - bGap;
       const areaDiff = (br.width * br.height) - (ar.width * ar.height);
-      if (Math.abs(areaDiff) > 1000) return areaDiff;
+      if (Math.abs(areaDiff) > 500) return areaDiff;
       return br.left - ar.left;
     });
+
     return candidates[0] || null;
   }
 
-  function forceImage(img) {
-    if (!img) return false;
-    img.setAttribute('src', TARGET_SRC);
-    img.removeAttribute('srcset');
-    img.removeAttribute('sizes');
-    img.style.setProperty('filter', 'none', 'important');
-    img.style.setProperty('opacity', '1', 'important');
-    img.style.setProperty('visibility', 'visible', 'important');
+  function overlayTarget(target) {
+    if (!target) return false;
 
-    const picture = img.closest('picture');
-    picture?.querySelectorAll('source').forEach((source) => {
-      source.setAttribute('srcset', TARGET_SRC);
-      source.removeAttribute('sizes');
-    });
+    let box = target;
+    if (target.tagName === 'IMG') box = target.parentElement || target;
+    if (target.tagName === 'PICTURE') box = target;
 
-    const parent = img.parentElement;
-    if (!parent) return true;
-    let overlay = parent.querySelector(':scope > img[data-nguyen-custom-home-exact-target="true"]');
+    if (window.getComputedStyle(box).position === 'static') {
+      box.style.setProperty('position', 'relative', 'important');
+    }
+    box.style.setProperty('overflow', 'hidden', 'important');
+
+    let overlay = box.querySelector(':scope > img[data-nguyen-custom-home-target-box="true"]');
     if (!overlay) {
-      overlay = img.cloneNode(false);
-      overlay.setAttribute('data-nguyen-custom-home-exact-target', 'true');
-      overlay.removeAttribute('srcset');
-      overlay.removeAttribute('sizes');
-      const computed = window.getComputedStyle(img);
+      overlay = document.createElement('img');
+      overlay.setAttribute('data-nguyen-custom-home-target-box', 'true');
+      overlay.setAttribute('alt', 'Custom Home exterior');
       overlay.style.setProperty('position', 'absolute', 'important');
       overlay.style.setProperty('inset', '0', 'important');
       overlay.style.setProperty('width', '100%', 'important');
       overlay.style.setProperty('height', '100%', 'important');
-      overlay.style.setProperty('object-fit', computed.objectFit || 'cover', 'important');
-      overlay.style.setProperty('object-position', computed.objectPosition || 'center', 'important');
-      overlay.style.setProperty('filter', 'none', 'important');
+      overlay.style.setProperty('object-fit', 'cover', 'important');
+      overlay.style.setProperty('object-position', 'center', 'important');
+      overlay.style.setProperty('display', 'block', 'important');
       overlay.style.setProperty('opacity', '1', 'important');
       overlay.style.setProperty('visibility', 'visible', 'important');
-      overlay.style.setProperty('z-index', '999', 'important');
+      overlay.style.setProperty('filter', 'none', 'important');
+      overlay.style.setProperty('z-index', '2147483646', 'important');
       overlay.style.setProperty('pointer-events', 'none', 'important');
-      if (window.getComputedStyle(parent).position === 'static') {
-        parent.style.setProperty('position', 'relative', 'important');
-      }
-      parent.appendChild(overlay);
+      box.appendChild(overlay);
     }
     overlay.setAttribute('src', TARGET_SRC);
+
+    if (target.tagName === 'IMG') {
+      target.setAttribute('src', TARGET_SRC);
+      target.removeAttribute('srcset');
+      target.removeAttribute('sizes');
+      const picture = target.closest('picture');
+      picture?.querySelectorAll('source').forEach((source) => {
+        source.setAttribute('srcset', TARGET_SRC);
+        source.removeAttribute('sizes');
+      });
+    }
+
     return true;
   }
 
   function run() {
     if (!isCustomHomeDetail()) return;
-    forceImage(findTarget());
+    overlayTarget(findTargetBox());
   }
 
   function queue() {
     clearTimeout(queued);
-    queued = setTimeout(run, 80);
+    queued = setTimeout(run, 100);
   }
 
   run();
   window.addEventListener('load', run, { once: true });
-  [150, 400, 800, 1400, 2500, 4000, 6500].forEach((delay) => setTimeout(run, delay));
+  [150, 350, 700, 1200, 2000, 3200, 5000, 8000, 12000].forEach((delay) => setTimeout(run, delay));
+
   const observer = new MutationObserver(queue);
-  observer.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['src', 'srcset', 'style'] });
-  setTimeout(() => { run(); observer.disconnect(); }, 9000);
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+    attributes: true,
+    attributeFilter: ['src', 'srcset', 'style', 'class']
+  });
+  setTimeout(() => { run(); observer.disconnect(); }, 15000);
 })();
 </script>`
 
