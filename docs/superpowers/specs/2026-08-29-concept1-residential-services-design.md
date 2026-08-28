@@ -42,7 +42,7 @@ Existing Concept 1 home remains:
 
 - `/client-demos/client-8889/arcsphere`
 
-Future service routes will follow the same hierarchy:
+Future top-level service routes will follow the same hierarchy:
 
 - `/client-demos/client-8889/arcsphere/commercial`
 - `/client-demos/client-8889/arcsphere/adu`
@@ -54,28 +54,27 @@ Only the Residential route is built in Phase 1.
 
 On Demo 8889 Concept 1 only:
 
-- Clicking the `RESIDENTIAL` navigation item opens the dedicated Residential page as a full-page navigation.
+- Clicking the existing Residential service entry opens the dedicated Residential page as a full-page navigation.
+- If Concept 1 currently exposes a `RESIDENTIAL` navigation link as well as a service card, both should point to the same dedicated Residential route.
 - It must not open a dropdown or modal.
-- The Residential page header retains the same NGUYEN brand treatment and navigation style as Concept 1.
-- `RESIDENTIAL` is visually marked active on the Residential page.
+- The Residential page header must preserve the exact existing Concept 1 NGUYEN header structure, labels, brand treatment, spacing, and navigation behavior rather than introducing a new global navigation system.
+- Where the existing header supports an active-state treatment, Residential may use the same understated active styling.
 - The NGUYEN brand/home affordance returns to the Concept 1 home route.
-- Other service navigation items remain unchanged in Phase 1 until their dedicated pages are implemented.
+- Commercial, ADU, and Land Development navigation/service behavior remains unchanged in Phase 1 until those dedicated pages are implemented.
 
 ## Residential Page Structure
 
 ### 1. Header
 
-Match the current Concept 1 navigation proportions and placement.
+Reuse the current Concept 1 header and navigation system without redesigning it.
 
-Desktop structure:
+Requirements:
 
-- Left: Home / Residential / Commercial
-- Center: `NGUYEN` with `ARCHITECTURE & ENGINEERING` treatment
-- Right: About / Projects / Contact Us
-
-Residential receives the same understated active-state underline used in the approved visual reference.
-
-Mobile uses the existing Concept 1 mobile navigation behavior, with minimum 44px touch targets.
+- Same NGUYEN brand treatment
+- Same navigation labels and order already present on Concept 1
+- Same font, spacing, colors, button treatment, and responsive behavior
+- No new top-level navigation labels are introduced solely for this page
+- Minimum 44px touch targets on mobile
 
 ### 2. Residential Hero
 
@@ -158,7 +157,7 @@ Residential offerings:
 8. `PLAN-CHECK SUPPORT`
    - Responsive support for agency comments, corrections, and approval coordination.
 
-Service cards in Phase 1 are informative sections of the Residential overview. They do not create eight additional detail pages.
+These eight cards are sub-services within the Residential overview. They do not create eight additional detail pages in Phase 1. The separate future pages the user approved are the top-level service categories: Residential, Commercial, ADU, and Land Development.
 
 Hover behavior on pointer devices:
 
@@ -292,20 +291,21 @@ Implementation must not modify the visible behavior or styling of:
 - DesignedbyTD main website
 - Demo 8889 Concept 2+
 - Existing Custom Home detail-page layout or image fixes
-- Commercial, ADU, or Land Development navigation behavior until their dedicated pages are explicitly implemented
+- Commercial, ADU, or Land Development service behavior until their dedicated pages are explicitly implemented
 
-Any Concept 1 navigation patch must be scoped so that only the Residential item is redirected in Phase 1.
+Any Concept 1 routing patch must be scoped so that only the Residential entry is redirected in Phase 1.
 
 ## Acceptance Criteria
 
 The Phase 1 Residential work is complete when all of the following are true:
 
-1. Demo 8889 Concept 1 `RESIDENTIAL` opens a standalone full page rather than a dropdown/modal.
+1. Demo 8889 Concept 1 Residential service entry opens a standalone full page rather than a dropdown/modal.
 2. The destination route is `/client-demos/client-8889/arcsphere/residential`.
 3. The page visually follows the approved reference: warm off-white palette, editorial spacing, rounded architectural imagery, two-column service-card grid, compact process section, project strip, and cream CTA/footer panel.
 4. Residential content uses NGUYEN-relevant architecture, engineering, Title 24, permitting, and plan-check services rather than generic home-maintenance services.
-5. No unsupported trust claims are invented.
-6. Desktop and mobile layouts are functional and visually consistent.
-7. Existing Concept 1 Custom Home image fixes remain intact.
-8. The DesignedbyTD main site and all other demo concepts are unchanged.
-9. Production verification confirms the new Residential route loads successfully and Concept 1 navigation reaches it.
+5. The existing Concept 1 header/navigation system is preserved; only the Residential destination behavior changes in Phase 1.
+6. No unsupported trust claims are invented.
+7. Desktop and mobile layouts are functional and visually consistent.
+8. Existing Concept 1 Custom Home image fixes remain intact.
+9. The DesignedbyTD main site and all other demo concepts are unchanged.
+10. Production verification confirms the new Residential route loads successfully and the Concept 1 Residential entry reaches it.
