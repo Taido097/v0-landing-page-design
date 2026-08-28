@@ -207,13 +207,53 @@ const TARGET_IMAGE_PATCH = `
 })();
 </script>`
 
+const RESIDENTIAL_NAV_PATCH = `
+<script id="nguyen-concept1-residential-nav-patch">
+(() => {
+  const TARGET_LABEL = 'RESIDENTIAL';
+  const TARGET_HREF = '/client-demos/client-8889/arcsphere/residential';
+  const normalize = (value) => (value || '').replace(/\s+/g, ' ').trim().toUpperCase();
+
+  function patchResidentialLink(root = document.body) {
+    if (!root) return false;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const matches = [];
+
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      if (normalize(node.nodeValue) === TARGET_LABEL) matches.push(node);
+    }
+
+    let patched = false;
+    for (const node of matches) {
+      const anchor = node.parentElement?.closest('a');
+      if (!anchor) continue;
+      anchor.setAttribute('href', TARGET_HREF);
+      anchor.removeAttribute('target');
+      anchor.removeAttribute('rel');
+      anchor.dataset.nguyenResidentialStandalone = 'true';
+      patched = true;
+    }
+    return patched;
+  }
+
+  patchResidentialLink();
+  window.addEventListener('load', patchResidentialLink, { once: true });
+  [250, 750, 1500, 3000].forEach((delay) => setTimeout(patchResidentialLink, delay));
+
+  const observer = new MutationObserver(() => patchResidentialLink());
+  observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+  setTimeout(() => observer.disconnect(), 6000);
+})();
+</script>`
+
 export async function GET() {
   const response = await getConcept()
   if (!response.ok) return response
 
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${TARGET_IMAGE_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${TARGET_IMAGE_PATCH}${RESIDENTIAL_NAV_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')
