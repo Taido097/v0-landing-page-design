@@ -14,6 +14,17 @@ const CLEANUP = `
   }
 </style>`;
 
+// Failsafe for mobile: Framer starts ~1000 elements at opacity:0.001 and reveals them with its
+// client appear-animation runtime. On phones that runtime does not reveal them, so the whole page
+// stays invisible (blank). Force the appear-start elements visible on small screens so content
+// always shows; desktop keeps its animations untouched.
+const MOBILE_APPEAR_FAILSAFE = `
+<style id="nguyen-mobile-appear-failsafe">
+  @media (max-width: 809.98px) {
+    #main [style*="opacity:0.001"] { opacity: 1 !important; transform: none !important; }
+  }
+</style>`;
+
 const REPLACEMENTS: Array<[RegExp, string]> = [
   [/ArcSphere Studio/gi, 'NGUYEN ARCHITECTURE & ENGINEERING'],
   [/ArcSphere/gi, 'NGUYEN'],
@@ -408,7 +419,7 @@ async function getSource() {
 export async function GET() {
   try {
     let html = await getSource(); html = removeNonVisualTelemetry(html); html = optimizeImageDecoding(html);
-    html = html.replace(/<head([^>]*)>/i, `<head$1><base href="${SOURCE_URL}"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="description" content="NGUYEN ARCHITECTURE & ENGINEERING — commercial architecture, engineering, tenant improvement and building permit support in Orange County.">${CLEANUP}`);
+    html = html.replace(/<head([^>]*)>/i, `<head$1><base href="${SOURCE_URL}"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="description" content="NGUYEN ARCHITECTURE & ENGINEERING — commercial architecture, engineering, tenant improvement and building permit support in Orange County.">${CLEANUP}${MOBILE_APPEAR_FAILSAFE}`);
     html = html.replace(/<title>[^<]*<\/title>/i, '<title>NGUYEN ARCHITECTURE & ENGINEERING — Website Demo</title>');
     for (const [pattern, replacement] of REPLACEMENTS) html = html.replace(pattern, replacement);
     // The branding replacements above run over the whole document, which rewrites "arcsphere"
