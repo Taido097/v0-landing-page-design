@@ -212,7 +212,7 @@ const RESIDENTIAL_NAV_PATCH = `
 (() => {
   const TARGET_LABEL = 'RESIDENTIAL';
   const TARGET_DESCRIPTION = 'Custom homes, additions, remodels, and multifamily residential design with coordinated engineering and permitting.';
-  const TARGET_HREF = '/client-demos/client-8889/arcsphere/residential';
+  const TARGET_HREF = '/client-demos/client-8889/residential';
   const normalize = (value) => (value || '').replace(/\s+/g, ' ').trim();
   const normalizedLabel = TARGET_LABEL.toUpperCase();
   const normalizedDescription = normalize(TARGET_DESCRIPTION).toUpperCase();
