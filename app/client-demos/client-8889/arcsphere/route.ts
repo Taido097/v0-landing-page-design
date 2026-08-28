@@ -309,16 +309,9 @@ const CLIENT_PATCH = `
     const sourceTitleKeys = new Set(spec.sourceTitles.map(compact));
     const sourceDescriptionKey = compact(spec.sourceDescription);
     if (spec.href) {
-      if (window.getComputedStyle(card).position === 'static') card.style.setProperty('position', 'relative', 'important');
+      const target = window.location.origin + spec.href;
+      card.setAttribute('data-nguyen-link', target);
       card.style.setProperty('cursor', 'pointer', 'important');
-      if (!card.querySelector(':scope > a[data-nguyen-service-link="true"]')) {
-        const link = document.createElement('a');
-        link.setAttribute('data-nguyen-service-link', 'true');
-        link.setAttribute('href', window.location.origin + spec.href);
-        link.setAttribute('aria-label', spec.title);
-        link.style.cssText = 'position:absolute;inset:0;z-index:6;display:block;';
-        card.appendChild(link);
-      }
     }
     const candidates = [card, ...card.querySelectorAll('*')];
     candidates.forEach((candidate) => {
@@ -365,6 +358,34 @@ const CLIENT_PATCH = `
     element.querySelectorAll('a[href^="mailto:"], a[href^="tel:"]').forEach(patchContactAnchor);
     const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT); let node; while ((node = walker.nextNode())) patchTextNode(node);
   }
+  function installServiceLinkInterceptor() {
+    if (window.__nguyenServiceLinkInterceptor) return;
+    window.__nguyenServiceLinkInterceptor = true;
+    const findLink = (event) => {
+      const start = event.target && event.target.nodeType === Node.TEXT_NODE ? event.target.parentElement : event.target;
+      return start && start.closest ? start.closest('[data-nguyen-link]') : null;
+    };
+    // Block Framer's own tap/modal handlers before they fire.
+    ['pointerdown', 'mousedown', 'touchstart'].forEach((type) => {
+      document.addEventListener(type, (event) => {
+        if (!findLink(event)) return;
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+      }, true);
+    });
+    // Navigate on click (capture phase, before Framer sees it).
+    document.addEventListener('click', (event) => {
+      const el = findLink(event);
+      if (!el) return;
+      const href = el.getAttribute('data-nguyen-link');
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+      if (href) window.location.href = href;
+    }, true);
+  }
+  installServiceLinkInterceptor();
   patchRoot(document.body);
   window.addEventListener('load', () => { patchThirdProjectImage(document.body); patchServicesSection(document.body); }, { once: true });
   const observer = new MutationObserver((mutations) => { for (const mutation of mutations) { if (mutation.type === 'characterData') { patchTextNode(mutation.target); const paragraph = mutation.target.parentElement?.closest('p'); if (paragraph) patchSplitParagraph(paragraph); const parent = mutation.target.parentElement; if (parent) { patchCounters(parent); patchOfficeCard(parent); patchCustomHomeCard(parent); patchThirdProjectImage(parent); patchServicesSection(parent); keepResidentialLabelOnOneLine(parent); } continue; } if (mutation.type === 'childList') mutation.addedNodes.forEach(patchRoot); } });
