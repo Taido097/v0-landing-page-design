@@ -147,7 +147,8 @@ const CLIENT_PATCH = `
       sourceDescription: 'Designing modern buildings that combine aesthetics, efficiency, and long-term value.',
       sourceTitles: ['Architectural'],
       title: 'RESIDENTIAL',
-      description: 'Custom homes, additions, remodels, and multifamily residential design with coordinated engineering and permitting.'
+      description: 'Custom homes, additions, remodels, and multifamily residential design with coordinated engineering and permitting.',
+      href: '/client-demos/client-8889/residential'
     },
     {
       sourceDescription: 'Creating refined interiors through thoughtful materials, lighting, and spatial composition.',
@@ -307,6 +308,18 @@ const CLIENT_PATCH = `
   function patchServiceCard(card, spec) {
     const sourceTitleKeys = new Set(spec.sourceTitles.map(compact));
     const sourceDescriptionKey = compact(spec.sourceDescription);
+    if (spec.href) {
+      if (window.getComputedStyle(card).position === 'static') card.style.setProperty('position', 'relative', 'important');
+      card.style.setProperty('cursor', 'pointer', 'important');
+      if (!card.querySelector(':scope > a[data-nguyen-service-link="true"]')) {
+        const link = document.createElement('a');
+        link.setAttribute('data-nguyen-service-link', 'true');
+        link.setAttribute('href', window.location.origin + spec.href);
+        link.setAttribute('aria-label', spec.title);
+        link.style.cssText = 'position:absolute;inset:0;z-index:6;display:block;';
+        card.appendChild(link);
+      }
+    }
     const candidates = [card, ...card.querySelectorAll('*')];
     candidates.forEach((candidate) => {
       const key = compact(candidate.textContent);
