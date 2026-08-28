@@ -411,6 +411,11 @@ export async function GET() {
     html = html.replace(/<head([^>]*)>/i, `<head$1><base href="${SOURCE_URL}"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="description" content="NGUYEN ARCHITECTURE & ENGINEERING — commercial architecture, engineering, tenant improvement and building permit support in Orange County.">${CLEANUP}`);
     html = html.replace(/<title>[^<]*<\/title>/i, '<title>NGUYEN ARCHITECTURE & ENGINEERING — Website Demo</title>');
     for (const [pattern, replacement] of REPLACEMENTS) html = html.replace(pattern, replacement);
+    // The branding replacements above run over the whole document, which rewrites "arcsphere"
+    // to "NGUYEN" inside the injected <base> tag too — pointing Framer's relative asset/route
+    // fetches at the wrong origin and leaving the page blank on mobile (Framer's client runtime
+    // fails, so appear-animation content never reveals from opacity:0). Restore the real origin.
+    html = html.replace(/<base\b[^>]*>/i, `<base href="${SOURCE_URL}">`);
     html = html.replace(/info@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/gi, 'info@nguyenarchitecture.com');
     html = html.replace(/href=["']mailto:[^"']+["']/gi, 'href="mailto:info@nguyenarchitecture.com"');
     const phoneReplacements = ['(209) 233-8888', '(714) 707-8889']; let phoneIndex = 0;
