@@ -95,11 +95,11 @@ const BRAND_PATCH = `
 </script>`
 
 const TARGET_IMAGE_PATCH = `
-<script id="nguyen-custom-home-target-image-patch-live-v6">
+<script id="nguyen-custom-home-target-image-patch-live-v7">
 (() => {
   if (window.matchMedia('(max-width: 767px)').matches) return;
 
-  const TARGET_SRC = window.location.origin + '/client-8889/residential/house-2-custom.avif?v=custom-home-house-4k-20260829-live-2';
+  const TARGET_SRC = window.location.origin + '/client-8889/residential/house-2-custom-4k.webp?v=custom-home-red-box-4k-20260828-1';
   const compact = (value) => (value || '').replace(/\\s+/g, '').trim().toLowerCase();
   const WRONG_WIDTH = 1377;
   const WRONG_HEIGHT = 768;
