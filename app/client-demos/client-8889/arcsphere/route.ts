@@ -25,6 +25,39 @@ const MOBILE_APPEAR_FAILSAFE = `
   }
 </style>`;
 
+// The CSS rule above only catches inline opacity; Framer also hides content via CSS classes and
+// nested/plain opacity:0, which leaves the hero and nav invisible on phones. This script walks the
+// tree on small screens and reveals every non-display:none element by computed style (clearing the
+// appear-animation opacity, transform and blur), so the page can never render blank on mobile.
+const MOBILE_REVEAL_SCRIPT = `
+<script id="nguyen-mobile-reveal">
+(function(){
+  try {
+    if (!window.matchMedia || !window.matchMedia('(max-width: 809.98px)').matches) return;
+    function reveal() {
+      var root = document.getElementById('main') || document.body;
+      if (!root) return;
+      var els = root.querySelectorAll('*');
+      for (var i = 0; i < els.length; i += 1) {
+        var el = els[i];
+        var cs = window.getComputedStyle(el);
+        if (cs.display === 'none') continue;
+        if (cs.visibility === 'hidden') el.style.setProperty('visibility', 'visible', 'important');
+        if (parseFloat(cs.opacity) < 0.99) {
+          el.style.setProperty('opacity', '1', 'important');
+          if (cs.transform && cs.transform !== 'none') el.style.setProperty('transform', 'none', 'important');
+          if (cs.filter && cs.filter !== 'none') el.style.setProperty('filter', 'none', 'important');
+        }
+      }
+    }
+    reveal();
+    document.addEventListener('DOMContentLoaded', reveal);
+    window.addEventListener('load', reveal);
+    [200, 600, 1200, 2500].forEach(function (t) { setTimeout(reveal, t); });
+  } catch (e) {}
+})();
+</script>`;
+
 const REPLACEMENTS: Array<[RegExp, string]> = [
   [/ArcSphere Studio/gi, 'NGUYEN ARCHITECTURE & ENGINEERING'],
   [/ArcSphere/gi, 'NGUYEN'],
@@ -431,7 +464,7 @@ export async function GET() {
     html = html.replace(/href=["']mailto:[^"']+["']/gi, 'href="mailto:info@nguyenarchitecture.com"');
     const phoneReplacements = ['(209) 233-8888', '(714) 707-8889']; let phoneIndex = 0;
     html = html.replace(/<a([^>]*href=["']tel:[^"']+["'][^>]*)>([\s\S]*?)<\/a>/gi, (_match, attrs, body) => { const phone = phoneReplacements[Math.min(phoneIndex, phoneReplacements.length - 1)]; phoneIndex += 1; const nextAttrs = attrs.replace(/href=["']tel:[^"']+["']/i, `href="tel:${phone.replace(/[^+\d]/g, '')}"`); const nextBody = body.replace(/>\s*[+()\d .-]{7,}\s*</g, `>${phone}<`); return `<a${nextAttrs}>${nextBody}</a>`; });
-    html = html.replace('</body>', `${CLIENT_PATCH}</body>`);
+    html = html.replace('</body>', `${CLIENT_PATCH}${MOBILE_REVEAL_SCRIPT}</body>`);
     return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400' } });
   } catch {
     return new Response('<!doctype html><html><body style="font-family:Arial,sans-serif;padding:40px">Concept 1 is temporarily unavailable. Please refresh in a moment.</body></html>', { status: 502, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
