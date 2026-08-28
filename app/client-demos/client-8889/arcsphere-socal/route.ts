@@ -64,47 +64,33 @@ const BRAND_PATCH = `
   const TARGET_URL = 'https://nguyen-studio.framer.website/';
   const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim();
 
-  function patchBrand(root = document.body) {
-    if (!root) return;
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  function patchBrand() {
+    if (!document.body) return;
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     const matches = [];
 
     while (walker.nextNode()) {
       const node = walker.currentNode;
       const text = normalize(node.nodeValue);
-      if (text === 'ArcSphere' || text === 'ArcSphere Studio' || text === TARGET_TEXT) {
-        matches.push(node);
-      }
+      if (text === 'ArcSphere' || text === 'ArcSphere Studio') matches.push(node);
     }
 
     matches.forEach((node) => {
+      if (normalize(node.nodeValue) !== 'ArcSphere' && normalize(node.nodeValue) !== 'ArcSphere Studio') return;
       node.nodeValue = TARGET_TEXT;
-      const element = node.parentElement;
-      if (!element) return;
 
-      const anchor = element.closest('a');
-      if (anchor) {
+      const anchor = node.parentElement?.closest('a');
+      if (anchor && anchor.getAttribute('href') !== TARGET_URL) {
         anchor.setAttribute('href', TARGET_URL);
         anchor.removeAttribute('target');
         anchor.removeAttribute('rel');
-        return;
       }
-
-      const link = document.createElement('a');
-      link.href = TARGET_URL;
-      link.style.color = 'inherit';
-      link.style.textDecoration = 'none';
-      element.parentNode?.insertBefore(link, element);
-      link.appendChild(element);
     });
   }
 
   patchBrand();
-  window.addEventListener('load', () => patchBrand(), { once: true });
-
-  const observer = new MutationObserver(() => patchBrand());
-  observer.observe(document.body, { childList: true, subtree: true, characterData: true });
-  setTimeout(() => { patchBrand(); observer.disconnect(); }, 6000);
+  window.addEventListener('load', patchBrand, { once: true });
+  [250, 750, 1500, 3000].forEach((delay) => setTimeout(patchBrand, delay));
 })();
 </script>`
 
