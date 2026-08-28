@@ -211,17 +211,61 @@ const RESIDENTIAL_NAV_PATCH = `
 <script id="nguyen-concept1-residential-nav-patch">
 (() => {
   const TARGET_LABEL = 'RESIDENTIAL';
+  const TARGET_DESCRIPTION = 'Custom homes, additions, remodels, and multifamily residential design with coordinated engineering and permitting.';
   const TARGET_HREF = '/client-demos/client-8889/arcsphere/residential';
-  const normalize = (value) => (value || '').replace(/\s+/g, ' ').trim().toUpperCase();
+  const normalize = (value) => (value || '').replace(/\s+/g, ' ').trim();
+  const normalizedLabel = TARGET_LABEL.toUpperCase();
+  const normalizedDescription = normalize(TARGET_DESCRIPTION).toUpperCase();
 
-  function patchResidentialLink(root = document.body) {
-    if (!root) return false;
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  function navigate(event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    window.location.assign(TARGET_HREF);
+  }
+
+  function patchResidentialServiceRow() {
+    if (!document.body) return false;
+    const elements = Array.from(document.body.querySelectorAll('div, section, article, li, a'));
+    const matches = elements.filter((element) => {
+      const text = normalize(element.textContent).toUpperCase();
+      return text.includes(normalizedLabel) && text.includes(normalizedDescription);
+    });
+    if (!matches.length) return false;
+
+    matches.sort((a, b) => a.textContent.length - b.textContent.length);
+    const row = matches[0];
+    if (!row || row.dataset.nguyenResidentialServiceRow === 'true') return true;
+
+    row.dataset.nguyenResidentialServiceRow = 'true';
+    row.style.setProperty('cursor', 'pointer', 'important');
+    row.setAttribute('role', row.getAttribute('role') || 'link');
+    if (!row.hasAttribute('tabindex')) row.setAttribute('tabindex', '0');
+    row.setAttribute('aria-label', 'Open Residential services');
+
+    row.querySelectorAll('a').forEach((anchor) => {
+      anchor.setAttribute('href', TARGET_HREF);
+      anchor.removeAttribute('target');
+      anchor.removeAttribute('rel');
+      anchor.dataset.nguyenResidentialStandalone = 'true';
+    });
+
+    row.addEventListener('click', navigate, true);
+    row.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') navigate(event);
+    });
+    return true;
+  }
+
+  function patchResidentialTextLinks() {
+    if (!document.body) return false;
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     const matches = [];
 
     while (walker.nextNode()) {
       const node = walker.currentNode;
-      if (normalize(node.nodeValue) === TARGET_LABEL) matches.push(node);
+      if (normalize(node.nodeValue).toUpperCase() === normalizedLabel) matches.push(node);
     }
 
     let patched = false;
@@ -237,11 +281,17 @@ const RESIDENTIAL_NAV_PATCH = `
     return patched;
   }
 
-  patchResidentialLink();
-  window.addEventListener('load', patchResidentialLink, { once: true });
-  [250, 750, 1500, 3000].forEach((delay) => setTimeout(patchResidentialLink, delay));
+  function patchResidentialNavigation() {
+    const serviceRowPatched = patchResidentialServiceRow();
+    const textLinksPatched = patchResidentialTextLinks();
+    return serviceRowPatched || textLinksPatched;
+  }
 
-  const observer = new MutationObserver(() => patchResidentialLink());
+  patchResidentialNavigation();
+  window.addEventListener('load', patchResidentialNavigation, { once: true });
+  [250, 750, 1500, 3000].forEach((delay) => setTimeout(patchResidentialNavigation, delay));
+
+  const observer = new MutationObserver(() => patchResidentialNavigation());
   observer.observe(document.body, { childList: true, subtree: true, characterData: true });
   setTimeout(() => observer.disconnect(), 6000);
 })();
