@@ -14,7 +14,7 @@ const BRAND_LINK_PATCH = `
     while (walker.nextNode()) {
       const node = walker.currentNode;
       const text = normalize(node.nodeValue);
-      if (text === 'ArcSphere Studio' || text === TARGET_TEXT) matches.push(node);
+      if (text === 'ArcSphere' || text === 'ArcSphere Studio' || text === TARGET_TEXT) matches.push(node);
     }
 
     matches.forEach((node) => {
