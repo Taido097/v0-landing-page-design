@@ -6,8 +6,8 @@ const NEW_COPY = 'Based in Southern California, we provide residential and comme
 const SPLIT_TEXT_PATCH = `
 <script id="nguyen-socal-split-text-patch">
 (() => {
-  const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim();
-  const compact = (value) => normalize(value).replace(/\\s+/g, '').toLowerCase();
+  const normalize = (value) => (value || '').replace(/\s+/g, ' ').trim();
+  const compact = (value) => normalize(value).replace(/\s+/g, '').toLowerCase();
   const sources = new Set([
     compact('Based in Dubai, we design residential and commercial spaces that elevate how people live, work, and interact with their environment.'),
     compact('Based in Dubai, we design residential and commercial spaces that elevate how people live, work, and interact with their environment'),
@@ -62,7 +62,7 @@ const BRAND_PATCH = `
 (() => {
   const TARGET_TEXT = 'NGUYEN ARCHITECTURE & ENGINEERING';
   const TARGET_URL = 'https://nguyen-studio.framer.website/';
-  const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim();
+  const normalize = (value) => (value || '').replace(/\s+/g, ' ').trim();
 
   function patchBrand() {
     if (!document.body) return;
@@ -99,8 +99,8 @@ const TARGET_IMAGE_PATCH = `
 (() => {
   if (window.matchMedia('(max-width: 767px)').matches) return;
 
-  const TARGET_SRC = window.location.origin + '/client-8889/residential/house-2-custom-4k.webp?v=custom-home-red-box-4k-20260828-2';
-  const compact = (value) => (value || '').replace(/\\s+/g, '').trim().toLowerCase();
+  const TARGET_SRC = window.location.origin + '/client-8889/residential/nguyen-uploaded-house.webp?v=uploaded-house-20260828';
+  const compact = (value) => (value || '').replace(/\s+/g, '').trim().toLowerCase();
   const WRONG_WIDTH = 1377;
   const WRONG_HEIGHT = 768;
 
