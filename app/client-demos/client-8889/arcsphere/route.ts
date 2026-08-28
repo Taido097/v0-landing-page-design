@@ -21,7 +21,13 @@ const CLEANUP = `
 const MOBILE_APPEAR_FAILSAFE = `
 <style id="nguyen-mobile-appear-failsafe">
   @media (max-width: 809.98px) {
-    #main [style*="opacity:0.001"] { opacity: 1 !important; transform: none !important; }
+    /* Framer hides the section wrappers (hero, nav, …) with inline opacity:0 and the animated
+       children with opacity:0.001, then reveals them via its client runtime — which does not run
+       on phones, leaving the page blank. A stylesheet !important rule overrides the inline styles
+       persistently (it beats the runtime re-hiding, unlike a one-shot script) so content always
+       shows. display:none breakpoint variants stay hidden, so nothing duplicates. */
+    #main [style*="opacity:0"] { opacity: 1 !important; }
+    #main [style*="opacity:0.001"] { transform: none !important; filter: none !important; }
   }
 </style>`;
 
