@@ -18,7 +18,7 @@ jobs:
 
       - name: Download and verify exact 4K WebP
         env:
-          SOURCE_URL: "https://sdmntprwestus3.oaiusercontent.com/files/00000000-40b8-81fd-bd29-7ae64c99d3e0/raw?se=2026-08-28T19%3A52%3A23Z&sp=r&sv=2026-02-06&sr=b&scid=12a880c6-7d6e-5695-b870-196efd340f3b&skoid=1a0ef048-201c-43e0-8950-52d58956a71a&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-28T03%3A33%3A56Z&ske=2026-08-29T03%3A33%3A56Z&sks=b&skv=2026-02-06&sig=Ft5xoqVV6xOZCPucsjUNzj3%2BN8PA0Eh206Ge9jtfRAM%3D"
+          SOURCE_URL: "https://sdmntprwestus3.oaiusercontent.com/files/00000000-ee68-81fd-b79a-a0e891297921/raw?se=2026-08-28T20%3A10%3A29Z&sp=r&sv=2026-02-06&sr=b&scid=461110e5-7860-5eb4-927b-2ab45bccf419&skoid=1a0ef048-201c-43e0-8950-52d58956a71a&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-28T03%3A21%3A49Z&ske=2026-08-29T03%3A21%3A49Z&sks=b&skv=2026-02-06&sig=1uB882hSEXtGORba9EmEbzqTY/xDHE/Y4e9tvEMmr5E%3D"
         run: |
           set -euo pipefail
           mkdir -p public/client-8889/residential
