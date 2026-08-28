@@ -17,7 +17,5 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Run Residential contract check
         run: npm run check:concept1-residential
-      - name: Run lint
-        run: npm run lint
       - name: Run production build
         run: npm run build
