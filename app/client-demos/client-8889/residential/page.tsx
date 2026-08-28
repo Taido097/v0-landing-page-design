@@ -33,8 +33,8 @@ const work = [
   { name: "Urban Townhomes", loc: "Santa Monica, California", img: "/client-8889/residential/work-urban-townhomes.png" },
 ]
 
-function Reveal({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <div data-reveal className={`${styles.reveal} ${className}`}>{children}</div>
+function Reveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  return <div data-reveal className={`${styles.reveal} ${className}`} style={delay ? ({ ["--d" as string]: `${delay}ms` } as React.CSSProperties) : undefined}>{children}</div>
 }
 
 export default function ResidentialPage() {
@@ -121,8 +121,13 @@ export default function ResidentialPage() {
             <p className={styles.eyebrow}>Our Residential Services</p>
           </Reveal>
           <div className={styles.servicesGrid}>
-            {services.map((s) => (
-              <article className={styles.svcCard} key={s.n}>
+            {services.map((s, i) => (
+              <article
+                key={s.n}
+                data-reveal
+                className={`${styles.svcCard} ${styles.reveal}`}
+                style={{ ["--d" as string]: `${(i % 2) * 90}ms` } as React.CSSProperties}
+              >
                 <div className={styles.svcImg}><img src={s.img} alt={s.title} /></div>
                 <div className={styles.svcBody}>
                   <p className={styles.svcNum}>{s.n}</p>
@@ -173,8 +178,8 @@ export default function ResidentialPage() {
             <a className={styles.viewAll} href="https://nguyen-studio.framer.website/">View All Projects →</a>
           </Reveal>
           <div className={styles.workRow}>
-            {work.map((w) => (
-              <Reveal className={styles.workCard} key={w.name}>
+            {work.map((w, i) => (
+              <Reveal className={styles.workCard} key={w.name} delay={i * 80}>
                 <figure>
                   <div className={styles.workImg}><img src={w.img} alt={w.name} /></div>
                   <figcaption>
