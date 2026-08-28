@@ -1,6 +1,6 @@
 .page{
   --paper:#f0ebe6;--paper2:#e7e0d5;--ink:#4f4742;--ink-strong:#1f1c19;
-  --soft:#a79f94;--line:#ddd5c9;--muted:#736b62;--accent:#0099ff;
+  --soft:#a79f94;--line:#ddd5c9;--muted:#736b62;--accent:#2a2622;
   min-height:100vh;background:var(--paper);color:var(--ink);
   font-family:var(--font-inter),"Inter","Inter Display",system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif;
   overflow-x:clip;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
