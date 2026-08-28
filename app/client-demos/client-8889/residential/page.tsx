@@ -3,7 +3,7 @@
 import { useEffect } from "react"
 import styles from "./residential.module.css"
 
-const HERO = "https://framerusercontent.com/images/1bcyDuRfQDTRBuPmXk32I5cKWc0.webp?height=1920&width=2400"
+const HERO = "/client-8889/residential/hero-home.png"
 const INTRO = "/client-8889/residential/intro-living-room.png"
 const BOTTOM = "https://framerusercontent.com/images/NPECM2ziENhHhdNoAT3unXgBhD0.jpg?height=1600&width=2400"
 
