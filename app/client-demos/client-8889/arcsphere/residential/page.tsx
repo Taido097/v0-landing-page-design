@@ -40,11 +40,7 @@ export default function ResidentialServicesPage() {
       <main>
         <section className={`${styles.shell} ${styles.heroSection}`}>
           <div className={styles.hero}>
-            <img
-              className={styles.heroImage}
-              src="/client-8889/residential/house-2-custom-4k.webp"
-              alt="Modern residential architecture"
-            />
+            <img className={styles.heroImage} src="/client-8889/residential/house-2-custom-4k.webp" alt="Modern residential architecture" />
             <div className={styles.heroContent}>
               <p className={styles.eyebrowOnImage}>RESIDENTIAL SERVICES</p>
               <h1>RESIDENTIAL</h1>
@@ -60,11 +56,7 @@ export default function ResidentialServicesPage() {
         <section className={`${styles.shell} ${styles.introSection}`}>
           <div className={styles.introGrid}>
             <div className={styles.introVisual}>
-              <img
-                className={styles.introImage}
-                src="/client-8889/projects/minimalist-apartment-interior.webp"
-                alt="Residential interior design"
-              />
+              <img className={styles.introImage} src="/client-8889/projects/minimalist-apartment-interior.webp" alt="Residential interior design" />
             </div>
 
             <div className={styles.introCopy}>
@@ -110,7 +102,7 @@ export default function ResidentialServicesPage() {
                 <div className={styles.serviceCopy}>
                   <div className={styles.cardTopline}>
                     <span>{service.number}</span>
-                    <span aria-hidden="true" className={styles.cardArrow}>↗</span>
+                    <span aria-hidden="true" className={styles.cardArrow}>→</span>
                   </div>
                   <h3>{service.title}</h3>
                   <p>{service.description}</p>
@@ -132,28 +124,21 @@ export default function ResidentialServicesPage() {
           <div className={styles.summaryGrid}>
             <div className={styles.summaryColumn}>
               <h3>SERVICES</h3>
-              <ul>
-                {residentialServices.map((service) => <li key={service.number}>{service.title}</li>)}
-              </ul>
+              <ul>{residentialServices.map((service) => <li key={service.number}>{service.title}</li>)}</ul>
             </div>
 
             <div className={styles.summaryColumn}>
               <h3>OUR PROCESS</h3>
               <ol>
                 {processSteps.map((step) => (
-                  <li key={step.number}>
-                    <span>{step.number}</span>
-                    <strong>{step.title}</strong>
-                  </li>
+                  <li key={step.number}><span>{step.number}</span><strong>{step.title}</strong></li>
                 ))}
               </ol>
             </div>
 
             <div className={styles.summaryColumn}>
               <h3>SCOPE</h3>
-              <ul>
-                {scopeItems.map((item) => <li key={item}>{item}</li>)}
-              </ul>
+              <ul>{scopeItems.map((item) => <li key={item}>{item}</li>)}</ul>
             </div>
           </div>
         </section>
@@ -176,32 +161,48 @@ export default function ResidentialServicesPage() {
           </div>
         </section>
 
-        <section className={`${styles.shell} ${styles.ctaSection}`}>
-          <div className={styles.ctaPanel}>
-            <div>
-              <p className={styles.sectionLabel}>START A RESIDENTIAL PROJECT</p>
-              <h2>OPEN TO NEW PROJECTS AND COLLABORATIONS THAT SHAPE MEANINGFUL SPACES.</h2>
+        <footer className={`${styles.shell} ${styles.footerSection}`}>
+          <div className={styles.footerPanel}>
+            <div className={styles.footerLead}>
+              <h2>OPEN TO NEW PROJECTS<br />AND COLLABORATIONS THAT<br />SHAPE MEANINGFUL SPACES.</h2>
+              <a href={conceptHome} className={styles.footerContact}>GET IN TOUCH</a>
             </div>
-            <a href={conceptHome} className={styles.ctaLink}>GET IN TOUCH <span aria-hidden="true">↗</span></a>
 
-            <div className={styles.footerMeta}>
-              <a href={conceptHome}>HOME</a>
-              <a href={residentialRoute} aria-current="page">RESIDENTIAL</a>
-              <a href={conceptHome}>COMMERCIAL</a>
-              <a href={conceptHome}>ABOUT</a>
-              <a href={conceptHome}>PROJECTS</a>
-              <a href={conceptHome}>CONTACT</a>
+            <div className={styles.footerLinks}>
+              <div>
+                <a href={conceptHome}>HOME</a>
+                <a href={conceptHome}>ABOUT</a>
+                <a href={conceptHome}>SERVICES</a>
+                <a href={conceptHome}>PROJECTS</a>
+                <a href={conceptHome}>PROCESS</a>
+                <a href={conceptHome}>CONTACT</a>
+              </div>
+              <div>
+                <a href={conceptHome}>LINKEDIN</a>
+                <a href={conceptHome}>INSTAGRAM</a>
+                <a href={conceptHome}>BEHANCE</a>
+              </div>
+              <div>
+                <a href={conceptHome}>PRIVACY POLICY</a>
+                <a href={conceptHome}>COOKIE POLICY</a>
+                <a href={conceptHome}>TERMS & CONDITIONS</a>
+              </div>
+            </div>
+
+            <div className={styles.footerBottom}>
+              <div className={styles.footerIcons} aria-label="Contact links">
+                <a href="mailto:info@nguyenarchitecture.com" aria-label="Email">✉</a>
+                <a href="tel:12092338888" aria-label="Phone">⌕</a>
+                <a href={conceptHome} aria-label="Location">⌖</a>
+              </div>
+              <p>© 2026 NGUYEN Architecture & Engineering. All rights reserved.</p>
             </div>
           </div>
-        </section>
+        </footer>
 
         <section className={`${styles.shell} ${styles.bottomImageSection}`}>
           <div className={styles.bottomImageWrap}>
-            <img
-              className={styles.bottomImage}
-              src="/client-8889/residential/house-1.webp"
-              alt="Residential architecture project"
-            />
+            <img className={styles.bottomImage} src="/client-8889/residential/house-1.webp" alt="Residential architecture project" />
           </div>
         </section>
       </main>
