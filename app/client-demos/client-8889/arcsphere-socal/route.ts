@@ -99,7 +99,7 @@ const TARGET_IMAGE_PATCH = `
 (() => {
   if (window.matchMedia('(max-width: 767px)').matches) return;
 
-  const TARGET_SRC = window.location.origin + '/client-8889/residential/house-2-custom-4k.webp?v=custom-home-red-box-4k-20260828-1';
+  const TARGET_SRC = window.location.origin + '/client-8889/residential/house-2-custom-4k.webp?v=custom-home-red-box-4k-20260828-2';
   const compact = (value) => (value || '').replace(/\\s+/g, '').trim().toLowerCase();
   const WRONG_WIDTH = 1377;
   const WRONG_HEIGHT = 768;
