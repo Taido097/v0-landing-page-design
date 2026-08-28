@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 
 const NGUYEN_CONCEPT01 = "/client-demos/client-8889/arcsphere"
 const NGUYEN_CONCEPT01_DESKTOP = "/client-demos/client-8889/arcsphere-targetfix"
-const NGUYEN_CONCEPT01_MOBILE = "/client-demos/client-8889/arcsphere-fixed"
+const NGUYEN_CONCEPT01_MOBILE = "/client-demos/client-8889/arcsphere-mobile"
 const NGUYEN_CONCEPT04 = "/client-demos/client-8889/architectured"
 
 function isMobileRequest(request: NextRequest) {
