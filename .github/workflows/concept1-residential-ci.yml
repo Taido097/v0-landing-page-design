@@ -1,0 +1,14 @@
+name: Concept 1 Residential CI
+
+on:
+  push:
+    branches:
+      - feature/concept1-residential-page
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Residential contract check
+        run: npm run check:concept1-residential
