@@ -54,33 +54,29 @@ export default function ResidentialPage() {
 
   return (
     <main className={styles.page}>
+      {/* Header */}
+      <header className={styles.topbar}>
+        <nav className={styles.navLeft}>
+          <a href="/client-demos/client-8889/arcsphere-socal">Design Process</a>
+          <a href="https://nguyen-studio.framer.website/">Projects</a>
+          <a href="/client-demos/client-8889/residential">Services</a>
+        </nav>
+        <div className={styles.brand}>NGUYEN ARCHITECTURE &amp; ENGINEERING</div>
+        <nav className={styles.navRight}>
+          <a className={styles.contactBtn} href="mailto:info@nguyenarchitecture.com">Contact Us</a>
+        </nav>
+      </header>
+
       {/* Hero */}
       <section className={styles.hero}>
         <img className={styles.heroImg} src={HERO} alt="Modern residential architecture" />
         <div className={styles.heroScrim} />
-        <div className={styles.topbar}>
-          <nav className={styles.navLeft}>
-            <a href="https://nguyen-studio.framer.website/">Home</a>
-            <a href="/client-demos/client-8889/residential">Residential</a>
-            <a href="/client-demos/client-8889/arcsphere-socal">Commercial</a>
-          </nav>
-          <div className={styles.brand}>
-            <div className={styles.brandName}>NGUYEN</div>
-            <div className={styles.brandSub}>Architecture &amp; Engineering</div>
-          </div>
-          <nav className={styles.navRight}>
-            <a href="https://nguyen-studio.framer.website/">About</a>
-            <a href="https://nguyen-studio.framer.website/">Projects</a>
-            <a className={styles.contactBtn} href="mailto:info@nguyenarchitecture.com">Contact Us</a>
-          </nav>
-        </div>
         <div className={styles.heroBody}>
           <h1 className={styles.heroTitle}>RESIDENTIAL</h1>
           <div className={styles.heroBar}>
-            <span>Residential Services</span>
-            <span>Architecture + Engineering</span>
-            <span>Los Angeles, California</span>
-            <span>2025</span>
+            <span>Residential</span>
+            <span>Residential Architecture</span>
+            <span>Los Angeles, 2025</span>
           </div>
         </div>
       </section>
