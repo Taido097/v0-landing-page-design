@@ -1,5 +1,12 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import { Inter } from 'next/font/google';
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
 
 export const metadata: Metadata = {
   title: 'NGUYEN Architecture & Engineering — Residential',
@@ -22,5 +29,5 @@ export const metadata: Metadata = {
 };
 
 export default function NguyenResidentialLayout({ children }: { children: ReactNode }) {
-  return <>{children}</>;
+  return <div className={inter.variable}>{children}</div>;
 }

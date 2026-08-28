@@ -4,18 +4,18 @@ import { useEffect } from "react"
 import styles from "./residential.module.css"
 
 const HERO = "https://framerusercontent.com/images/1bcyDuRfQDTRBuPmXk32I5cKWc0.webp?height=1920&width=2400"
-const INTRO = "https://framerusercontent.com/images/cKdwx0TQxw7MKiUKihFL5Qif0M.webp?height=1600&width=1400"
+const INTRO = "/client-8889/residential/intro-living-room.png"
 const BOTTOM = "https://framerusercontent.com/images/NPECM2ziENhHhdNoAT3unXgBhD0.jpg?height=1600&width=2400"
 
 const services = [
-  { n: "01", title: "Custom Homes", copy: "Bespoke homes designed around your lifestyle, site, and long-term goals.", img: "/client-8889/residential/house-1.webp" },
-  { n: "02", title: "Additions & Major Remodels", copy: "Seamlessly expand and transform your home with careful planning and detail.", img: "/client-8889/projects/minimalist-apartment-interior.webp" },
-  { n: "03", title: "ADUs", copy: "Beautiful, functional accessory dwelling units for family, rental income, or office use.", img: "/client-8889/residential/house-2.webp" },
-  { n: "04", title: "Multifamily / Townhomes / Condos", copy: "Well-designed residences that balance livability, efficiency, and community.", img: "https://framerusercontent.com/images/xbwRPxHMsVhX9Gse4yisTBolkjM.webp?height=1200&width=1400" },
-  { n: "05", title: "Structural Engineering", copy: "Safe, efficient, and code-compliant structural solutions for new and existing homes.", img: "https://framerusercontent.com/images/Mm4vdpwIwDCj6RkdrL6NcBp3z0.webp" },
-  { n: "06", title: "MEP + Title 24", copy: "Integrated MEP design and Title 24 compliance for comfort, efficiency, and energy performance.", img: "https://framerusercontent.com/images/AfUELZk0dVk5hVjWkreKnPPhCw.jpg" },
-  { n: "07", title: "Permitting", copy: "We manage the permit process to keep your project moving forward with clarity.", img: "https://framerusercontent.com/images/c8yTRHwU0lDfYXWKVCoGbX7HJs.jpg" },
-  { n: "08", title: "Plan-Check Support", copy: "Responsive plan-check support to address comments and accelerate approvals.", img: "https://framerusercontent.com/images/6wohe4Mtd0vJm99l0f5QsIGb8hs.webp" },
+  { n: "01", title: "Custom Homes", copy: "Bespoke homes designed around your lifestyle, site, and long-term goals.", img: "/client-8889/residential/svc-01-custom-homes.png" },
+  { n: "02", title: "Additions & Major Remodels", copy: "Seamlessly expand and transform your home with careful planning and detail.", img: "/client-8889/residential/svc-02-additions-remodels.png" },
+  { n: "03", title: "ADUs", copy: "Beautiful, functional accessory dwelling units for family, rental income, or office use.", img: "/client-8889/residential/svc-03-adus.png" },
+  { n: "04", title: "Multifamily / Townhomes / Condos", copy: "Well-designed residences that balance livability, efficiency, and community.", img: "/client-8889/residential/svc-04-multifamily.png" },
+  { n: "05", title: "Structural Engineering", copy: "Safe, efficient, and code-compliant structural solutions for new and existing homes.", img: "/client-8889/residential/svc-05-structural.png" },
+  { n: "06", title: "MEP + Title 24", copy: "Integrated MEP design and Title 24 compliance for comfort, efficiency, and energy performance.", img: "/client-8889/residential/svc-06-mep-title24.png" },
+  { n: "07", title: "Permitting", copy: "We manage the permit process to keep your project moving forward with clarity.", img: "/client-8889/residential/svc-07-permitting.png" },
+  { n: "08", title: "Plan-Check Support", copy: "Responsive plan-check support to address comments and accelerate approvals.", img: "/client-8889/residential/svc-08-plan-check.png" },
 ]
 
 const scopeServices = ["Custom Homes", "Additions & Remodels", "ADUs", "Multifamily / Townhomes / Condos", "Structural Engineering", "MEP + Title 24", "Permitting", "Plan-Check Support"]
@@ -26,11 +26,11 @@ const processSteps = [
 const scope = ["Architecture", "Structural Engineering", "MEP Engineering", "Title 24 Compliance", "Permitting", "Plan-Check Support"]
 
 const work = [
-  { name: "Hillside Retreat", loc: "Bel Air, California", img: "https://framerusercontent.com/images/1t4Nn4XTSLSI7Gr2H5Y2Jv5oY.webp?height=1200&width=1000" },
-  { name: "Serenity Villa", loc: "Newport Beach, California", img: "/client-8889/residential/house-1.webp" },
-  { name: "Coastal Modern Home", loc: "Laguna Beach, California", img: "https://framerusercontent.com/images/52byqNtSxRbm8zsP7HCFXNnG1pg.webp?height=1200&width=1000" },
-  { name: "Garden ADU", loc: "Pasadena, California", img: "/client-8889/residential/house-2.webp" },
-  { name: "Urban Townhomes", loc: "Santa Monica, California", img: "https://framerusercontent.com/images/xbwRPxHMsVhX9Gse4yisTBolkjM.webp?height=1200&width=1000" },
+  { name: "Hillside Retreat", loc: "Bel Air, California", img: "/client-8889/residential/svc-01-custom-homes.png" },
+  { name: "Serenity Villa", loc: "Newport Beach, California", img: "/client-8889/residential/svc-03-adus.png" },
+  { name: "Coastal Modern Home", loc: "Laguna Beach, California", img: "/client-8889/residential/svc-04-multifamily.png" },
+  { name: "Garden ADU", loc: "Pasadena, California", img: "/client-8889/residential/svc-02-additions-remodels.png" },
+  { name: "Urban Townhomes", loc: "Santa Monica, California", img: "/client-8889/residential/work-urban-townhomes.png" },
 ]
 
 function Reveal({ children, className = "" }: { children: React.ReactNode; className?: string }) {
