@@ -1,9 +1,14 @@
 import { GET as getConcept } from "../arcsphere-imagefix/route"
 
 const TARGET_IMAGE_PATCH = `
-<script id="nguyen-custom-home-target-image-patch-v2">
+<script id="nguyen-custom-home-target-image-patch-v3">
 (() => {
-  const TARGET_SRC = window.location.origin + '/client-8889/residential/house-2.webp?v=custom-home-text-anchor-20260827-3';
+  // This exact-target patch is desktop-only. The mobile layout stacks the gallery,
+  // so the desktop geometry scan is unnecessary and was expensive enough to stall
+  // mobile Safari when combined with Framer DOM mutations.
+  if (window.matchMedia('(max-width: 767px)').matches) return;
+
+  const TARGET_SRC = window.location.origin + '/client-8889/residential/house-2.webp?v=custom-home-text-anchor-20260827-4';
   const compact = (value) => (value || '').replace(/\\s+/g, '').trim().toLowerCase();
   let queued = null;
 
@@ -114,9 +119,9 @@ const TARGET_IMAGE_PATCH = `
       overlay.style.setProperty('pointer-events', 'none', 'important');
       box.appendChild(overlay);
     }
-    overlay.setAttribute('src', TARGET_SRC);
+    if (overlay.getAttribute('src') !== TARGET_SRC) overlay.setAttribute('src', TARGET_SRC);
 
-    if (target.tagName === 'IMG') {
+    if (target.tagName === 'IMG' && target.getAttribute('src') !== TARGET_SRC) {
       target.setAttribute('src', TARGET_SRC);
       target.removeAttribute('srcset');
       target.removeAttribute('sizes');
@@ -137,22 +142,20 @@ const TARGET_IMAGE_PATCH = `
 
   function queue() {
     clearTimeout(queued);
-    queued = setTimeout(run, 100);
+    queued = setTimeout(run, 120);
   }
 
   run();
   window.addEventListener('load', run, { once: true });
-  [150, 350, 700, 1200, 2000, 3200, 5000, 8000, 12000].forEach((delay) => setTimeout(run, delay));
+  [250, 700, 1500, 3000, 5000].forEach((delay) => setTimeout(run, delay));
 
-  const observer = new MutationObserver(queue);
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-    characterData: true,
-    attributes: true,
-    attributeFilter: ['src', 'srcset', 'style', 'class']
+  // Watch only structural/text changes. Watching src/style/class made the patch
+  // observe its own writes and continuously retrigger expensive layout scans.
+  const observer = new MutationObserver((mutations) => {
+    if (mutations.some((mutation) => mutation.type === 'characterData' || mutation.addedNodes.length)) queue();
   });
-  setTimeout(() => { run(); observer.disconnect(); }, 15000);
+  observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+  setTimeout(() => { run(); observer.disconnect(); }, 6000);
 })();
 </script>`
 
