@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import {
   Home, Gem, Hammer, Ruler, Zap, FileCheck, Map, LayoutTemplate, ShieldCheck, Wrench,
-  Check, ArrowRight, ArrowUpRight,
+  Check, ArrowRight,
 } from 'lucide-react';
 import { SERVICE_DETAILS, getServiceDetail } from '../services-data';
 import Gallery from './gallery';
@@ -29,6 +29,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
+function SectionHead({ title, sub }: { title: string; sub?: string }) {
+  return (
+    <div className="nrd-sechead">
+      <h2>{title}</h2>
+      {sub ? <p>{sub}</p> : null}
+    </div>
+  );
+}
+
 const CSS = `
 .nrd{--bg:#efece5;--surface:#f7f4ee;--surface2:#fbf9f5;--ink:#1f1c19;--muted:#6f675e;--soft:#8a8177;--line:#e0d9cc;--gold:#b3894f;
   background:var(--bg);color:var(--ink);min-height:100vh;
@@ -52,44 +61,51 @@ const CSS = `
 /* hero */
 .nrd-hero{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,4vw,56px);align-items:center;margin-top:clamp(22px,2.6vw,34px)}
 .nrd-eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;color:var(--soft);margin:0 0 18px}
-.nrd-h1{font-size:clamp(32px,5vw,58px);line-height:1.03;font-weight:700;letter-spacing:-.02em;text-transform:uppercase;margin:0}
+.nrd-h1{font-size:clamp(32px,5vw,58px);line-height:1.04;font-weight:600;letter-spacing:-.02em;text-transform:uppercase;margin:0}
 .nrd-sub{color:var(--gold);font-size:clamp(15px,1.7vw,21px);font-weight:500;margin:18px 0 0;letter-spacing:.01em}
 .nrd-intro{color:#453f39;font-size:clamp(14.5px,1.2vw,16.5px);line-height:1.62;margin:22px 0 0;max-width:34em}
 .nrd-hero-img{aspect-ratio:4/3;border-radius:0;overflow:hidden;background:#e7e0d5}
 .nrd-hero-img img{width:100%;height:100%;object-fit:cover;display:block}
 /* section scaffolding */
-.nrd-section{margin-top:clamp(46px,5vw,82px)}
-.nrd-label{font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;color:var(--soft);margin:0 0 clamp(20px,2vw,30px)}
+.nrd-section{margin-top:clamp(56px,7vw,104px)}
+.nrd-sechead{text-align:center;max-width:660px;margin:0 auto clamp(32px,4vw,50px)}
+.nrd-sechead h2{margin:0;font-size:clamp(24px,3.4vw,40px);line-height:1.05;font-weight:600;letter-spacing:.005em;text-transform:uppercase;color:var(--ink)}
+.nrd-sechead p{margin:16px 0 0;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);line-height:1.7}
 .nrd-ico{color:var(--gold);flex:none}
-/* approach (bordered container, icon columns) */
-.nrd-approach{background:var(--surface2);border:1px solid var(--line);border-radius:18px;padding:clamp(26px,3vw,44px)}
-.nrd-approach-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(20px,2.4vw,36px)}
-.nrd-appr h4{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600;margin:0 0 10px}
-.nrd-appr p{font-size:13px;line-height:1.5;color:var(--muted);margin:0}
-/* offer (icon grid) */
-.nrd-offer{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(24px,2.6vw,40px)}
-.nrd-off h4{display:flex;align-items:center;gap:10px;font-size:15.5px;font-weight:600;margin:0 0 8px}
-.nrd-off p{font-size:13px;line-height:1.5;color:var(--muted);margin:0;padding-left:32px}
-/* checklist columns */
-.nrd-cols{display:grid;gap:16px}
-.nrd-cols.n1{grid-template-columns:minmax(0,560px)}
+/* approach (centered icon columns, borderless) */
+.nrd-approach-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(26px,3vw,48px)}
+.nrd-appr{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px}
+.nrd-appr h4{font-size:13px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;margin:0}
+.nrd-appr p{font-size:13px;line-height:1.55;color:var(--muted);margin:0;max-width:24ch}
+/* offer (icon grid, borderless, uppercase titles) */
+.nrd-offer{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(28px,3vw,48px)}
+.nrd-off h4{display:flex;align-items:center;gap:10px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin:0 0 10px}
+.nrd-off p{font-size:13px;line-height:1.55;color:var(--muted);margin:0;padding-left:30px}
+/* scope columns (borderless, thin top rule) */
+.nrd-cols{display:grid;gap:clamp(24px,3vw,44px)}
+.nrd-cols.n1{grid-template-columns:minmax(0,520px);justify-content:center}
 .nrd-cols.n2{grid-template-columns:repeat(2,1fr)}
 .nrd-cols.n3{grid-template-columns:repeat(3,1fr)}
 .nrd-cols.n4{grid-template-columns:repeat(4,1fr)}
-.nrd-col{background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:clamp(20px,1.8vw,26px)}
-.nrd-col-h{font-size:12px;letter-spacing:.11em;text-transform:uppercase;font-weight:600;color:var(--ink);margin:0 0 16px}
-.nrd-col ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
-.nrd-col li{display:flex;align-items:flex-start;gap:10px;font-size:13.5px;line-height:1.35;color:#453f39}
+.nrd-col{background:transparent;border:0;border-top:1px solid var(--line);border-radius:0;padding:22px 0 0}
+.nrd-col-h{font-size:12px;letter-spacing:.11em;text-transform:uppercase;font-weight:600;color:var(--ink);margin:0 0 18px}
+.nrd-col ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:13px}
+.nrd-col li{display:flex;align-items:flex-start;gap:10px;font-size:13.5px;line-height:1.4;color:#453f39}
 .nrd-col li svg{margin-top:1px}
-/* gallery */
-.nrd-chips{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 clamp(20px,2vw,28px)}
+/* gallery cards */
+.nrd-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:0 0 clamp(26px,3vw,38px)}
 .nrd-chip{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:999px;padding:9px 18px;cursor:pointer;transition:all .2s}
 .nrd-chip:hover{border-color:#c9bda9;color:var(--ink)}
 .nrd-chip.is-active{background:var(--ink);border-color:var(--ink);color:#f3f0e9}
-.nrd-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.nrd-shot{margin:0;aspect-ratio:4/3;border-radius:0;overflow:hidden;background:#e7e0d5;cursor:zoom-in}
-.nrd-shot img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease}
-.nrd-shot:hover img{transform:scale(1.05)}
+.nrd-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,2.4vw,34px)}
+.nrd-shot{margin:0;cursor:zoom-in}
+.nrd-shot-img{aspect-ratio:4/3;border-radius:0;overflow:hidden;background:#e7e0d5}
+.nrd-shot-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease}
+.nrd-shot:hover .nrd-shot-img img{transform:scale(1.05)}
+.nrd-shot-cap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 2px 0}
+.nrd-shot-cap span{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft)}
+.nrd-shot-arrow{flex:none;width:34px;height:34px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;color:var(--ink);font-size:13px;transition:border-color .2s}
+.nrd-shot:hover .nrd-shot-arrow{border-color:var(--gold);color:var(--gold)}
 /* lightbox */
 .nrd-lb{position:fixed;inset:0;z-index:60;background:rgba(20,17,14,.92);display:flex;align-items:center;justify-content:center;padding:clamp(16px,4vw,64px);cursor:zoom-out}
 .nrd-lb img{max-width:100%;max-height:90vh;object-fit:contain;display:block;box-shadow:0 24px 70px rgba(0,0,0,.55)}
@@ -101,13 +117,13 @@ const CSS = `
 .nrd-pstep::before{content:"";position:absolute;top:22px;left:-50%;width:100%;height:1px;background:var(--line);z-index:0}
 .nrd-pstep:first-child::before{display:none}
 .nrd-circ{position:relative;z-index:1;width:44px;height:44px;border:1px solid var(--gold);border-radius:50%;display:grid;place-items:center;margin:0 auto;background:var(--bg);color:var(--gold);font-size:13px;font-weight:600}
-.nrd-pt{margin:16px 0 6px;font-size:14px;font-weight:600;color:var(--ink)}
+.nrd-pt{margin:16px 0 6px;font-size:13px;letter-spacing:.03em;text-transform:uppercase;font-weight:600;color:var(--ink)}
 .nrd-pd{font-size:12px;color:var(--muted);line-height:1.45}
 /* cta */
-.nrd-cta{margin-top:clamp(52px,6vw,84px);background:#1f1c19;border-radius:18px;color:#efe9df;
-  padding:clamp(30px,4vw,50px);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:22px}
+.nrd-cta{margin-top:clamp(56px,7vw,100px);background:#1f1c19;border-radius:0;color:#efe9df;
+  padding:clamp(34px,5vw,64px);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px}
 .nrd-cta-txt{max-width:620px}
-.nrd-cta-h{font-size:clamp(20px,2.4vw,30px);line-height:1.12;font-weight:600;letter-spacing:-.01em;margin:0;text-transform:uppercase}
+.nrd-cta-h{font-size:clamp(22px,2.8vw,34px);line-height:1.1;font-weight:600;letter-spacing:.005em;margin:0;text-transform:uppercase}
 .nrd-cta-b{font-size:14px;line-height:1.55;color:#c3bbaf;margin:14px 0 0}
 .nrd a.nrd-btn{flex:none;display:inline-flex;align-items:center;gap:10px;background:var(--gold);color:#1c1712;border-radius:999px;
   padding:15px 26px;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;transition:background .2s,transform .2s}
@@ -189,26 +205,25 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
 
         {svc.approach ? (
           <section className="nrd-section">
-            <p className="nrd-label">Our Approach</p>
-            <div className="nrd-approach">
-              <div className="nrd-approach-grid">
-                {svc.approach.map((a) => {
-                  const Ico = a.icon ? ICONS[a.icon] : null;
-                  return (
-                    <div className="nrd-appr" key={a.t}>
-                      <h4>{Ico ? <Ico className="nrd-ico" size={20} strokeWidth={1.5} /> : null}{a.t}</h4>
-                      <p>{a.d}</p>
-                    </div>
-                  );
-                })}
-              </div>
+            <SectionHead title="Our Approach" sub="How we plan, design, and coordinate." />
+            <div className="nrd-approach-grid">
+              {svc.approach.map((a) => {
+                const Ico = a.icon ? ICONS[a.icon] : null;
+                return (
+                  <div className="nrd-appr" key={a.t}>
+                    {Ico ? <Ico className="nrd-ico" size={26} strokeWidth={1.4} /> : null}
+                    <h4>{a.t}</h4>
+                    <p>{a.d}</p>
+                  </div>
+                );
+              })}
             </div>
           </section>
         ) : null}
 
         {svc.offer ? (
           <section className="nrd-section">
-            <p className="nrd-label">What We Offer</p>
+            <SectionHead title="What We Offer" sub="What we design, engineer, and permit." />
             <div className="nrd-offer">
               {svc.offer.map((o) => {
                 const Ico = o.icon ? ICONS[o.icon] : null;
@@ -225,6 +240,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
 
         {svc.columns ? (
           <section className="nrd-section">
+            <SectionHead title="Scope of Services" sub="Coordinated across architecture, engineering, and permitting." />
             <div className={`nrd-cols n${Math.min(svc.columns.length, 4)}`}>
               {svc.columns.map((c) => (
                 <div className="nrd-col" key={c.label}>
@@ -242,13 +258,13 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
 
         {svc.gallery ? (
           <section className="nrd-section">
-            <p className="nrd-label">Project Gallery</p>
+            <SectionHead title="Project Gallery" sub="A selection of recent residential work." />
             <Gallery shots={svc.gallery} />
           </section>
         ) : null}
 
         <section className="nrd-section">
-          <p className="nrd-label">Our Process</p>
+          <SectionHead title="Our Process" sub="From first conversation through approval." />
           <div className="nrd-proc-row">
             {svc.process.map((step, i) => (
               <div className="nrd-pstep" key={step.t}>
@@ -268,8 +284,8 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
           <a className="nrd-btn" href={CONTACT}>{svc.cta} <ArrowRight size={16} strokeWidth={2} /></a>
         </section>
 
-        <nav className="nrd-section" aria-label="Other residential services" style={{ marginTop: 'clamp(46px,5vw,72px)' }}>
-          <p className="nrd-label">Explore Other Services</p>
+        <nav className="nrd-section" aria-label="Other residential services">
+          <SectionHead title="Explore Other Services" />
           <div className="nrd-chips">
             {SERVICE_DETAILS.map((o) => (
               <a

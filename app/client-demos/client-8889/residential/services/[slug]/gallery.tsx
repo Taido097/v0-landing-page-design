@@ -40,7 +40,13 @@ export default function Gallery({ shots }: { shots: GalleryShot[] }) {
       <div className="nrd-gallery">
         {visible.map((s) => (
           <figure className="nrd-shot" key={s.src} onClick={() => setLightbox(s)}>
-            <img src={s.src} alt={s.alt} loading="lazy" />
+            <div className="nrd-shot-img">
+              <img src={s.src} alt={s.alt} loading="lazy" />
+            </div>
+            <figcaption className="nrd-shot-cap">
+              <span>{s.cat}</span>
+              <span className="nrd-shot-arrow" aria-hidden="true">↗</span>
+            </figcaption>
           </figure>
         ))}
       </div>
