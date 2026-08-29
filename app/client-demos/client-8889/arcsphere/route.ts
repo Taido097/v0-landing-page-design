@@ -8,6 +8,17 @@ function isMobileUserAgent(userAgent: string) {
   return /Android|iPhone|iPad|iPod|Mobile|IEMobile|Opera Mini/i.test(userAgent);
 }
 
+// On phones Framer's client runtime hydrates and then wipes the content (the page flashes in, then
+// goes blank). Removing Framer's own scripts on mobile leaves the fully server-rendered HTML — which
+// the mobile CSS failsafe reveals — as a static, visible page with nothing left to wipe it. Our own
+// nguyen-* scripts (rebranding, links) are kept; desktop is untouched and keeps the full runtime.
+function stripFramerRuntime(html: string) {
+  return html
+    .replace(/<script\b[^>]*\bdata-framer-bundle=["']main["'][^>]*>\s*<\/script>/gi, '')
+    .replace(/<script\b[^>]*\btype=["']framer\/[^"']*["'][^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<script\b[^>]*\bdata-framer-appear-animation=[^>]*>[\s\S]*?<\/script>/gi, '');
+}
+
 const CLEANUP = `
 <style id="designedbytd-client-demo-cleanup">
   #__framer-badge-container,
@@ -20,18 +31,55 @@ const CLEANUP = `
   }
 </style>`;
 
-// Mobile stability: Framer's scroll-triggered animations keep re-hiding elements (opacity -> 0) as
-// you scroll, and on phones that reveal stutters, flashing the page to the cream background. Pin any
-// element Framer tries to hide to full opacity with !important so it can never flash to blank. This
-// trades the phone's fade animations for a stable page; desktop (>809.98px) is untouched.
+// Failsafe for mobile: Framer starts ~1000 elements at opacity:0.001 and reveals them with its
+// client appear-animation runtime. On phones that runtime does not reveal them, so the whole page
+// stays invisible (blank). Force the appear-start elements visible on small screens so content
+// always shows; desktop keeps its animations untouched.
 const MOBILE_APPEAR_FAILSAFE = `
 <style id="nguyen-mobile-appear-failsafe">
   @media (max-width: 809.98px) {
+    /* Framer hides the section wrappers (hero, nav, …) with inline opacity:0 and the animated
+       children with opacity:0.001, then reveals them via its client runtime — which does not run
+       on phones, leaving the page blank. A stylesheet !important rule overrides the inline styles
+       persistently (it beats the runtime re-hiding, unlike a one-shot script) so content always
+       shows. display:none breakpoint variants stay hidden, so nothing duplicates. */
     #main [style*="opacity:0"] { opacity: 1 !important; }
     #main [style*="opacity:0.001"] { transform: none !important; filter: none !important; }
   }
 </style>`;
 
+// The CSS rule above only catches inline opacity; Framer also hides content via CSS classes and
+// nested/plain opacity:0, which leaves the hero and nav invisible on phones. This script walks the
+// tree on small screens and reveals every non-display:none element by computed style (clearing the
+// appear-animation opacity, transform and blur), so the page can never render blank on mobile.
+const MOBILE_REVEAL_SCRIPT = `
+<script id="nguyen-mobile-reveal">
+(function(){
+  try {
+    if (!window.matchMedia || !window.matchMedia('(max-width: 809.98px)').matches) return;
+    function reveal() {
+      var root = document.getElementById('main') || document.body;
+      if (!root) return;
+      var els = root.querySelectorAll('*');
+      for (var i = 0; i < els.length; i += 1) {
+        var el = els[i];
+        var cs = window.getComputedStyle(el);
+        if (cs.display === 'none') continue;
+        if (cs.visibility === 'hidden') el.style.setProperty('visibility', 'visible', 'important');
+        if (parseFloat(cs.opacity) < 0.99) {
+          el.style.setProperty('opacity', '1', 'important');
+          if (cs.transform && cs.transform !== 'none') el.style.setProperty('transform', 'none', 'important');
+          if (cs.filter && cs.filter !== 'none') el.style.setProperty('filter', 'none', 'important');
+        }
+      }
+    }
+    reveal();
+    document.addEventListener('DOMContentLoaded', reveal);
+    window.addEventListener('load', reveal);
+    [200, 600, 1200, 2500].forEach(function (t) { setTimeout(reveal, t); });
+  } catch (e) {}
+})();
+</script>`;
 
 const REPLACEMENTS: Array<[RegExp, string]> = [
   [/ArcSphere Studio/gi, 'NGUYEN ARCHITECTURE & ENGINEERING'],
@@ -404,31 +452,11 @@ const CLIENT_PATCH = `
       if (href) window.location.href = href;
     }, true);
   }
-  function rescueHiddenContent() {
-    const root = document.getElementById('main'); if (!root) return;
-    root.querySelectorAll('*').forEach((el) => {
-      const cs = window.getComputedStyle(el);
-      if (cs.display === 'none') return;
-      if (parseFloat(cs.opacity) < 0.05) {
-        el.style.setProperty('opacity', '1', 'important');
-        if (cs.transform && cs.transform !== 'none') el.style.setProperty('transform', 'none', 'important');
-        if (cs.filter && cs.filter !== 'none') el.style.setProperty('filter', 'none', 'important');
-      }
-    });
-  }
-  function kickoff() {
-    installServiceLinkInterceptor();
-    patchRoot(document.body);
-    window.addEventListener('load', () => { patchThirdProjectImage(document.body); patchServicesSection(document.body); }, { once: true });
-    const observer = new MutationObserver((mutations) => { for (const mutation of mutations) { if (mutation.type === 'characterData') { patchTextNode(mutation.target); const paragraph = mutation.target.parentElement?.closest('p'); if (paragraph) patchSplitParagraph(paragraph); const parent = mutation.target.parentElement; if (parent) { patchCounters(parent); patchOfficeCard(parent); patchCustomHomeCard(parent); patchThirdProjectImage(parent); patchServicesSection(parent); keepResidentialLabelOnOneLine(parent); } continue; } if (mutation.type === 'childList') mutation.addedNodes.forEach(patchRoot); } });
-    observer.observe(document.body, { childList: true, subtree: true, characterData: true }); setTimeout(() => observer.disconnect(), 6000);
-  }
-  // On phones, defer all DOM work until after Framer has hydrated and run its animations, so we do
-  // not re-trigger the hydration crash; then rescue anything the runtime left hidden. Desktop runs
-  // immediately as before.
-  const isMobile = window.matchMedia && window.matchMedia('(max-width: 809.98px)').matches;
-  if (isMobile) { setTimeout(kickoff, 1800); setTimeout(rescueHiddenContent, 4500); }
-  else { kickoff(); }
+  installServiceLinkInterceptor();
+  patchRoot(document.body);
+  window.addEventListener('load', () => { patchThirdProjectImage(document.body); patchServicesSection(document.body); }, { once: true });
+  const observer = new MutationObserver((mutations) => { for (const mutation of mutations) { if (mutation.type === 'characterData') { patchTextNode(mutation.target); const paragraph = mutation.target.parentElement?.closest('p'); if (paragraph) patchSplitParagraph(paragraph); const parent = mutation.target.parentElement; if (parent) { patchCounters(parent); patchOfficeCard(parent); patchCustomHomeCard(parent); patchThirdProjectImage(parent); patchServicesSection(parent); keepResidentialLabelOnOneLine(parent); } continue; } if (mutation.type === 'childList') mutation.addedNodes.forEach(patchRoot); } });
+  observer.observe(document.body, { childList: true, subtree: true, characterData: true }); setTimeout(() => observer.disconnect(), 6000);
 })();
 </script>`;
 
@@ -449,25 +477,19 @@ export async function GET() {
     let html = await getSource(); html = removeNonVisualTelemetry(html); html = optimizeImageDecoding(html);
     html = html.replace(/<head([^>]*)>/i, `<head$1><base href="${SOURCE_URL}"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="description" content="NGUYEN ARCHITECTURE & ENGINEERING — commercial architecture, engineering, tenant improvement and building permit support in Orange County.">${CLEANUP}${MOBILE_APPEAR_FAILSAFE}`);
     html = html.replace(/<title>[^<]*<\/title>/i, '<title>NGUYEN ARCHITECTURE & ENGINEERING — Website Demo</title>');
-
+    for (const [pattern, replacement] of REPLACEMENTS) html = html.replace(pattern, replacement);
+    // The branding replacements above run over the whole document, which rewrites "arcsphere"
+    // to "NGUYEN" inside the injected <base> tag too — pointing Framer's relative asset/route
+    // fetches at the wrong origin and leaving the page blank on mobile (Framer's client runtime
+    // fails, so appear-animation content never reveals from opacity:0). Restore the real origin.
+    html = html.replace(/<base\b[^>]*>/i, `<base href="${SOURCE_URL}">`);
+    html = html.replace(/info@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/gi, 'info@nguyenarchitecture.com');
+    html = html.replace(/href=["']mailto:[^"']+["']/gi, 'href="mailto:info@nguyenarchitecture.com"');
+    const phoneReplacements = ['(209) 233-8888', '(714) 707-8889']; let phoneIndex = 0;
+    html = html.replace(/<a([^>]*href=["']tel:[^"']+["'][^>]*)>([\s\S]*?)<\/a>/gi, (_match, attrs, body) => { const phone = phoneReplacements[Math.min(phoneIndex, phoneReplacements.length - 1)]; phoneIndex += 1; const nextAttrs = attrs.replace(/href=["']tel:[^"']+["']/i, `href="tel:${phone.replace(/[^+\d]/g, '')}"`); const nextBody = body.replace(/>\s*[+()\d .-]{7,}\s*</g, `>${phone}<`); return `<a${nextAttrs}>${nextBody}</a>`; });
+    html = html.replace('</body>', `${CLIENT_PATCH}${MOBILE_REVEAL_SCRIPT}</body>`);
     const userAgent = (await headers()).get('user-agent') || '';
-    const mobile = isMobileUserAgent(userAgent);
-
-    // On desktop, rebrand the served HTML directly. On mobile that server rewrite makes the DOM
-    // differ from what Framer's client renders and crashes hydration (flash, then blank), so the
-    // served DOM is left identical to Framer's and CLIENT_PATCH does the same rebranding after
-    // hydration instead (it defers itself on small screens).
-    if (!mobile) {
-      for (const [pattern, replacement] of REPLACEMENTS) html = html.replace(pattern, replacement);
-      // The branding replacements above also rewrite "arcsphere" inside the injected <base> tag —
-      // restore the real origin.
-      html = html.replace(/<base\b[^>]*>/i, `<base href="${SOURCE_URL}">`);
-      html = html.replace(/info@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/gi, 'info@nguyenarchitecture.com');
-      html = html.replace(/href=["']mailto:[^"']+["']/gi, 'href="mailto:info@nguyenarchitecture.com"');
-      const phoneReplacements = ['(209) 233-8888', '(714) 707-8889']; let phoneIndex = 0;
-      html = html.replace(/<a([^>]*href=["']tel:[^"']+["'][^>]*)>([\s\S]*?)<\/a>/gi, (_match, attrs, body) => { const phone = phoneReplacements[Math.min(phoneIndex, phoneReplacements.length - 1)]; phoneIndex += 1; const nextAttrs = attrs.replace(/href=["']tel:[^"']+["']/i, `href="tel:${phone.replace(/[^+\d]/g, '')}"`); const nextBody = body.replace(/>\s*[+()\d .-]{7,}\s*</g, `>${phone}<`); return `<a${nextAttrs}>${nextBody}</a>`; });
-    }
-    html = html.replace('</body>', `${CLIENT_PATCH}</body>`);
+    if (isMobileUserAgent(userAgent)) html = stripFramerRuntime(html);
     return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'private, no-store' } });
   } catch {
     return new Response('<!doctype html><html><body style="font-family:Arial,sans-serif;padding:40px">Concept 1 is temporarily unavailable. Please refresh in a moment.</body></html>', { status: 502, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
