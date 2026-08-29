@@ -59,12 +59,43 @@ function removeNonVisualTelemetry(html: string) {
     .replace(/<link\b(?=[^>]*\bhref=["']https:\/\/events\.framer\.com\/[^"']*["'])[^>]*>/gi, '');
 }
 
+// The reference project page has no services grid, so we inject NGUYEN's eight residential services
+// after hydration, just before the "Project Details" section, styled to match the reference.
+const SERVICES = [
+  { n: '01', t: 'Custom Homes', c: 'Bespoke homes designed around your lifestyle, site, and long-term goals.', img: '/client-8889/residential/svc-01-custom-homes.png' },
+  { n: '02', t: 'Additions &amp; Major Remodels', c: 'Seamlessly expand and transform your home with careful planning and detail.', img: '/client-8889/residential/svc-02-additions-remodels.png' },
+  { n: '03', t: 'ADUs', c: 'Beautiful, functional accessory dwelling units for family, rental income, or office use.', img: '/client-8889/residential/svc-03-adus.png' },
+  { n: '04', t: 'Multifamily / Townhomes / Condos', c: 'Well-designed residences that balance livability, efficiency, and community.', img: '/client-8889/residential/svc-04-multifamily.png' },
+  { n: '05', t: 'Structural Engineering', c: 'Safe, efficient, and code-compliant structural solutions for new and existing homes.', img: '/client-8889/residential/svc-05-structural.png' },
+  { n: '06', t: 'MEP + Title 24', c: 'Integrated MEP design and Title 24 compliance for comfort, efficiency, and energy performance.', img: '/client-8889/residential/svc-06-mep-title24.png' },
+  { n: '07', t: 'Permitting', c: 'We manage the permit process to keep your project moving forward with clarity.', img: '/client-8889/residential/svc-07-permitting.png' },
+  { n: '08', t: 'Plan-Check Support', c: 'Responsive plan-check support to address comments and accelerate approvals.', img: '/client-8889/residential/svc-08-plan-check.png' },
+];
+const SERVICES_STYLE = `
+  #nguyen-residential-services{display:block;background:transparent;padding:clamp(56px,8vw,112px) 0;font-family:"Inter Display","Inter",system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#4f4742}
+  #nguyen-residential-services .nrs-shell{width:min(1200px,100%);margin:0 auto;padding:0 clamp(20px,4vw,60px);box-sizing:border-box}
+  #nguyen-residential-services .nrs-eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.2em;font-weight:600;color:#736b62;margin:0 0 clamp(28px,4vw,46px)}
+  #nguyen-residential-services .nrs-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  #nguyen-residential-services .nrs-card{display:grid;grid-template-columns:minmax(140px,42%) 1fr;background:#fbf9f6;border:1px solid #ddd5c9;border-radius:14px;overflow:hidden;min-height:212px}
+  #nguyen-residential-services .nrs-img{overflow:hidden;background:#e7e0d5}
+  #nguyen-residential-services .nrs-img img{width:100%;height:100%;object-fit:cover;display:block}
+  #nguyen-residential-services .nrs-body{position:relative;padding:clamp(20px,2vw,30px);display:flex;flex-direction:column}
+  #nguyen-residential-services .nrs-num{font-size:12px;letter-spacing:.12em;color:#a79f94;margin:0 0 auto}
+  #nguyen-residential-services .nrs-title{font-size:clamp(17px,1.5vw,21px);line-height:1.16;font-weight:600;color:#1f1c19;margin:20px 0 12px;max-width:82%}
+  #nguyen-residential-services .nrs-copy{font-size:13.5px;line-height:1.5;color:#736b62;margin:0;max-width:94%}
+  #nguyen-residential-services .nrs-arrow{position:absolute;top:clamp(20px,2vw,30px);right:clamp(20px,2vw,30px);width:34px;height:34px;border:1px solid #a79f94;border-radius:50%;display:grid;place-items:center;font-size:14px;color:#1f1c19}
+  @media(max-width:809px){#nguyen-residential-services .nrs-grid{grid-template-columns:1fr}}
+  @media(max-width:600px){#nguyen-residential-services .nrs-card{grid-template-columns:1fr}#nguyen-residential-services .nrs-img{height:180px}}`;
+const SERVICES_HTML =
+  `<style>${SERVICES_STYLE}</style><div class="nrs-shell"><p class="nrs-eyebrow">Our Residential Services</p><div class="nrs-grid">` +
+  SERVICES.map((s) => `<article class="nrs-card"><div class="nrs-img"><img data-nsrc="${s.img}" alt="${s.t}" loading="lazy"></div><div class="nrs-body"><span class="nrs-num">${s.n}</span><span class="nrs-arrow">↗</span><h3 class="nrs-title">${s.t}</h3><p class="nrs-copy">${s.c}</p></div></article>`).join('') +
+  `</div></div>`;
+
 // One client script for both surfaces. It applies the same REPLACEMENTS as substring rules to text
-// nodes (a WeakSet stops any rule whose output contains its input from growing on re-runs) plus the
-// mailto rewrite. On mobile it defers until after Framer hydrates (so it does not cause the hydration
-// crash) and then rescues any content the runtime left hidden; on desktop it runs immediately and
-// keeps a short observer so Framer's re-render doesn't revert the text. A shared safety net reveals
-// the page if the runtime ever stalls and leaves it blank.
+// nodes (a WeakSet stops any rule whose output contains its input from growing on re-runs), rewrites
+// mailto, injects the residential services section after hydration, and rescues any content the
+// runtime leaves hidden. It defers on mobile (clean hydration) and runs immediately + observes on
+// desktop; a shared safety net reveals the page if the runtime ever stalls and leaves it blank.
 const RULES_JSON = JSON.stringify(REPLACEMENTS.map(([re, rep]) => [re.source, re.flags, rep]));
 const CLIENT_REBRAND = `
 <script id="nguyen-residential-rebrand">
@@ -73,6 +104,22 @@ const CLIENT_REBRAND = `
     var isMobile = window.matchMedia && window.matchMedia('(max-width: 809.98px)').matches;
     var rules = ${RULES_JSON}.map(function (r) { return [new RegExp(r[0], r[1]), r[2]]; });
     var done = new WeakSet();
+    var SERVICES_HTML = ${JSON.stringify(SERVICES_HTML)};
+    function injectServices(){
+      if (document.getElementById('nguyen-residential-services')) return true;
+      var anchor = document.querySelector('[data-framer-name="Details"]');
+      if (!anchor) {
+        var heads = document.querySelectorAll('h1,h2,h3');
+        for (var i = 0; i < heads.length; i++) { if (/project\\s*details/i.test((heads[i].textContent || ''))) { anchor = heads[i].closest('[data-framer-name]') || heads[i]; break; } }
+      }
+      if (!anchor || !anchor.parentNode) return false;
+      var sec = document.createElement('section');
+      sec.id = 'nguyen-residential-services';
+      sec.innerHTML = SERVICES_HTML;
+      anchor.parentNode.insertBefore(sec, anchor);
+      sec.querySelectorAll('[data-nsrc]').forEach(function (img) { img.setAttribute('src', window.location.origin + img.getAttribute('data-nsrc')); });
+      return true;
+    }
     function rebrandNode(node){
       var raw = node.nodeValue; if (!raw || !raw.trim() || done.has(node)) return;
       done.add(node);
@@ -126,6 +173,8 @@ const CLIENT_REBRAND = `
     }
     if (isMobile) { setTimeout(start, 1800); setTimeout(function () { reveal(); }, 4500); }
     else { start(); }
+    // Insert the services section after Framer has hydrated so it is not reconciled away; retry until it lands.
+    [1600, 2600, 4000, 6000].forEach(function (t) { setTimeout(injectServices, t); });
     [5000, 8000].forEach(function (t) { setTimeout(function () { if (looksBlank()) reveal(); }, t); });
   } catch (e) {}
 })();
