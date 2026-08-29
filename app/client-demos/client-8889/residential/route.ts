@@ -72,20 +72,20 @@ const SERVICES = [
   { n: '08', t: 'Plan-Check Support', c: 'Responsive plan-check support to address comments and accelerate approvals.', img: '/client-8889/residential/svc-08-plan-check.jpg' },
 ];
 const SERVICES_STYLE = `
-  #nguyen-residential-services{display:block;background:transparent;padding:clamp(56px,8vw,112px) 0;font-family:"Inter Display","Inter",system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#4f4742}
-  #nguyen-residential-services .nrs-shell{width:min(1200px,100%);margin:0 auto;padding:0 clamp(20px,4vw,60px);box-sizing:border-box}
-  #nguyen-residential-services .nrs-eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.2em;font-weight:600;color:#736b62;margin:0 0 clamp(28px,4vw,46px)}
-  #nguyen-residential-services .nrs-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  #nguyen-residential-services .nrs-card{display:grid;grid-template-columns:minmax(140px,42%) 1fr;background:#fbf9f6;border:1px solid #ddd5c9;border-radius:14px;overflow:hidden;min-height:212px}
+  #nguyen-residential-services{display:block;background:transparent;padding:clamp(56px,8vw,120px) 0;font-family:"Inter Display","Inter",system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#4f4742}
+  #nguyen-residential-services .nrs-shell{width:min(1280px,100%);margin:0 auto;padding:0 clamp(20px,4vw,60px);box-sizing:border-box}
+  #nguyen-residential-services .nrs-eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.2em;font-weight:600;color:#736b62;margin:0 0 clamp(32px,4vw,52px)}
+  #nguyen-residential-services .nrs-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,2vw,28px)}
+  #nguyen-residential-services .nrs-card{display:grid;grid-template-columns:minmax(200px,48%) 1fr;background:#fbf9f6;border:1px solid #ddd5c9;border-radius:18px;overflow:hidden;min-height:clamp(300px,26vw,360px)}
   #nguyen-residential-services .nrs-img{overflow:hidden;background:#e7e0d5}
   #nguyen-residential-services .nrs-img img{width:100%;height:100%;object-fit:cover;display:block}
-  #nguyen-residential-services .nrs-body{position:relative;padding:clamp(20px,2vw,30px);display:flex;flex-direction:column}
-  #nguyen-residential-services .nrs-num{font-size:12px;letter-spacing:.12em;color:#a79f94;margin:0 0 auto}
-  #nguyen-residential-services .nrs-title{font-size:clamp(17px,1.5vw,21px);line-height:1.16;font-weight:600;color:#1f1c19;margin:20px 0 12px;max-width:82%}
-  #nguyen-residential-services .nrs-copy{font-size:13.5px;line-height:1.5;color:#736b62;margin:0;max-width:94%}
-  #nguyen-residential-services .nrs-arrow{position:absolute;top:clamp(20px,2vw,30px);right:clamp(20px,2vw,30px);width:34px;height:34px;border:1px solid #a79f94;border-radius:50%;display:grid;place-items:center;font-size:14px;color:#1f1c19}
-  @media(max-width:809px){#nguyen-residential-services .nrs-grid{grid-template-columns:1fr}}
-  @media(max-width:600px){#nguyen-residential-services .nrs-card{grid-template-columns:1fr}#nguyen-residential-services .nrs-img{height:180px}}`;
+  #nguyen-residential-services .nrs-body{position:relative;padding:clamp(28px,2.4vw,42px);display:flex;flex-direction:column}
+  #nguyen-residential-services .nrs-num{font-size:13px;letter-spacing:.12em;color:#a79f94;margin:0 0 auto}
+  #nguyen-residential-services .nrs-title{font-size:clamp(21px,1.9vw,28px);line-height:1.14;font-weight:600;color:#1f1c19;margin:28px 0 16px;max-width:88%}
+  #nguyen-residential-services .nrs-copy{font-size:clamp(14px,1vw,16px);line-height:1.55;color:#736b62;margin:0;max-width:95%}
+  #nguyen-residential-services .nrs-arrow{position:absolute;top:clamp(28px,2.4vw,42px);right:clamp(28px,2.4vw,42px);width:42px;height:42px;border:1px solid #a79f94;border-radius:50%;display:grid;place-items:center;font-size:16px;color:#1f1c19}
+  @media(max-width:900px){#nguyen-residential-services .nrs-grid{grid-template-columns:1fr}}
+  @media(max-width:600px){#nguyen-residential-services .nrs-card{grid-template-columns:1fr;min-height:0}#nguyen-residential-services .nrs-img{height:220px}}`;
 const SERVICES_HTML =
   `<style>${SERVICES_STYLE}</style><div class="nrs-shell"><p class="nrs-eyebrow">Our Residential Services</p><div class="nrs-grid">` +
   SERVICES.map((s) => `<article class="nrs-card"><div class="nrs-img"><img data-nsrc="${s.img}" alt="${s.t}" loading="lazy"></div><div class="nrs-body"><span class="nrs-num">${s.n}</span><span class="nrs-arrow">↗</span><h3 class="nrs-title">${s.t}</h3><p class="nrs-copy">${s.c}</p></div></article>`).join('') +
@@ -105,9 +105,30 @@ const CLIENT_REBRAND = `
     var rules = ${RULES_JSON}.map(function (r) { return [new RegExp(r[0], r[1]), r[2]]; });
     var done = new WeakSet();
     var SERVICES_HTML = ${JSON.stringify(SERVICES_HTML)};
+    // The reference's interior gallery sits directly before the "Project Details" section:
+    // it's the block holding multiple images and no <h1> (the intro block has the hero <h1>).
+    function findGallery(){
+      var details = document.querySelector('section[data-framer-name="Details"]');
+      if (!details) return null;
+      var el = details.previousElementSibling, guard = 0;
+      while (el && guard++ < 8) {
+        if (el.querySelectorAll && el.id !== 'nguyen-residential-services') {
+          if (el.querySelectorAll('img').length >= 2 && el.querySelectorAll('h1').length === 0) return el;
+        }
+        el = el.previousElementSibling;
+      }
+      return null;
+    }
+    function hideGallery(){
+      var g = findGallery();
+      if (g) { g.style.setProperty('display', 'none', 'important'); return true; }
+      return false;
+    }
     function injectServices(){
-      if (document.getElementById('nguyen-residential-services')) return true;
-      var anchor = document.querySelector('[data-framer-name="Details"]');
+      if (document.getElementById('nguyen-residential-services')) { hideGallery(); return true; }
+      // Prefer the gallery's spot so the cards move up into it; fall back to before Project Details.
+      var gallery = findGallery();
+      var anchor = gallery || document.querySelector('[data-framer-name="Details"]');
       if (!anchor) {
         var heads = document.querySelectorAll('h1,h2,h3');
         for (var i = 0; i < heads.length; i++) { if (/project\\s*details/i.test((heads[i].textContent || ''))) { anchor = heads[i].closest('[data-framer-name]') || heads[i]; break; } }
@@ -118,6 +139,7 @@ const CLIENT_REBRAND = `
       sec.innerHTML = SERVICES_HTML;
       anchor.parentNode.insertBefore(sec, anchor);
       sec.querySelectorAll('[data-nsrc]').forEach(function (img) { img.setAttribute('src', window.location.origin + img.getAttribute('data-nsrc')); });
+      if (gallery) gallery.style.setProperty('display', 'none', 'important');
       return true;
     }
     function rebrandNode(node){
@@ -173,8 +195,9 @@ const CLIENT_REBRAND = `
     }
     if (isMobile) { setTimeout(start, 1800); setTimeout(function () { reveal(); }, 4500); }
     else { start(); }
-    // Insert the services section after Framer has hydrated so it is not reconciled away; retry until it lands.
-    [1600, 2600, 4000, 6000].forEach(function (t) { setTimeout(injectServices, t); });
+    // Insert the services section after Framer has hydrated so it is not reconciled away; retry until it
+    // lands, and keep the reference's interior gallery hidden across any re-render.
+    [1600, 2600, 4000, 6000].forEach(function (t) { setTimeout(function () { injectServices(); hideGallery(); }, t); });
     [5000, 8000].forEach(function (t) { setTimeout(function () { if (looksBlank()) reveal(); }, t); });
   } catch (e) {}
 })();
