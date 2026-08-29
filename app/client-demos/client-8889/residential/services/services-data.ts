@@ -1,22 +1,45 @@
-// Content model for the eight residential service detail pages.
-// These pages are native Next.js/CSS and reuse the NGUYEN Residential design system.
+// Content model for the residential service detail pages.
+// Native Next.js/CSS; reuses the NGUYEN Residential design system.
+// Two services (Custom Homes, Townhomes + Condominiums) carry the full reference
+// layout (approach/offer, columns, gallery, described process); the rest use a
+// lighter subset of the same template.
 
-export interface ServiceGroup {
+export interface DetailItem {
+  t: string; // title
+  d?: string; // description
+  icon?: string; // lucide icon name (see ICONS map in the page)
+}
+
+export interface DetailColumn {
   label: string;
   items: string[];
+}
+
+export interface GalleryShot {
+  src: string;
+  cat: string; // category label, uppercase (drives the filter chips)
+  alt: string;
 }
 
 export interface ServiceDetail {
   slug: string;
   num: string;
-  title: string; // display title (uppercase)
+  title: string;
   subtitle?: string;
   intro: string;
-  hero: string; // public path
-  groups: ServiceGroup[];
-  process: string[];
-  cta: string;
+  hero: string;
+  approach?: DetailItem[]; // "Our Approach" icon columns
+  offer?: DetailItem[]; // "What We Offer" icon grid
+  columns?: DetailColumn[]; // checklist columns
+  gallery?: GalleryShot[]; // "Project Gallery" (filters derived from cat)
+  process: DetailItem[]; // numbered process steps
+  ctaHeadline: string;
+  ctaBody?: string;
+  cta: string; // button label
 }
+
+const D = '/client-8889/residential/detail';
+const S = '/client-8889/residential';
 
 export const SERVICE_DETAILS: ServiceDetail[] = [
   {
@@ -25,13 +48,33 @@ export const SERVICE_DETAILS: ServiceDetail[] = [
     title: 'Custom Homes',
     subtitle: 'Designed around your site, lifestyle & vision.',
     intro:
-      'NGUYEN provides coordinated architecture, engineering, and permitting for new custom residences and major residential projects — one team from first conversation through approval.',
-    hero: '/client-8889/residential/svc-01-custom-homes.jpg',
-    groups: [
-      { label: 'Service Types', items: ['New Custom Residences', 'Luxury + Estate Homes', 'Additions + Major Remodels'] },
-      { label: 'Engineering Support', items: ['Structural Engineering', 'MEP + Title 24', 'Permit Processing'] },
+      'We design and engineer custom homes that reflect how you live. From first concept through permit approval, our team coordinates architecture, engineering, and documentation with precision and care.',
+    hero: `${D}/hero-custom-homes.jpg`,
+    offer: [
+      { t: 'New Custom Residences', d: 'Timeless architecture shaped around the site and the client’s goals.', icon: 'Home' },
+      { t: 'Luxury + Estate Homes', d: 'Elevated residential design with coordinated technical development.', icon: 'Gem' },
+      { t: 'Additions + Major Remodels', d: 'Seamless expansions and significant home transformations.', icon: 'Hammer' },
+      { t: 'Structural Engineering', d: 'Structural coordination for new residential construction and major modifications.', icon: 'Ruler' },
+      { t: 'MEP + Title 24', d: 'Mechanical, electrical, plumbing, and California energy-code coordination.', icon: 'Zap' },
+      { t: 'Permit Processing', d: 'Permit-ready documentation, submittal, and plan-check support.', icon: 'FileCheck' },
     ],
-    process: ['Consultation', 'Site / Feasibility Review', 'Concept Design', 'Architecture + Engineering', 'Permit Submittal', 'Plan Check + Approval'],
+    gallery: [
+      { src: `${D}/ch-exterior-01.jpg`, cat: 'Exteriors', alt: 'Custom home exterior at dusk' },
+      { src: `${S}/svc-01-custom-homes.jpg`, cat: 'Exteriors', alt: 'Custom stone-and-glass residence' },
+      { src: `${D}/ch-interior-01.jpg`, cat: 'Interiors', alt: 'Custom home interior' },
+      { src: `${D}/ch-exterior-02.jpg`, cat: 'Exteriors', alt: 'Custom home exterior elevation' },
+      { src: `${S}/svc-02-additions-remodels.jpg`, cat: 'Interiors', alt: 'Open-plan living and kitchen' },
+      { src: `${D}/ch-interior-02.jpg`, cat: 'Interiors', alt: 'Custom home interior detail' },
+    ],
+    process: [
+      { t: 'Consultation', d: 'Discuss goals, scope, site, budget, timeline, and requirements.' },
+      { t: 'Site / Feasibility Review', d: 'Review site conditions, zoning, project constraints, and development potential.' },
+      { t: 'Concept Design', d: 'Develop layout, massing, architectural direction, and core design ideas.' },
+      { t: 'Architecture + Engineering', d: 'Coordinate architectural, structural, MEP, and code documentation.' },
+      { t: 'Permit Submittal', d: 'Prepare and submit the permit package.' },
+      { t: 'Plan Check + Approval', d: 'Respond to plan-check comments and coordinate revisions through approval.' },
+    ],
+    ctaHeadline: "Let’s build your vision together.",
     cta: 'Start Your Project',
   },
   {
@@ -41,12 +84,19 @@ export const SERVICE_DETAILS: ServiceDetail[] = [
     subtitle: 'Expand and rework your existing home.',
     intro:
       'NGUYEN helps expand and rework existing homes — coordinating architectural design, structural changes, engineering, and permit-ready documentation into one clear process.',
-    hero: '/client-8889/residential/svc-02-additions-remodels.jpg',
-    groups: [
+    hero: `${S}/svc-02-additions-remodels.jpg`,
+    columns: [
       { label: 'Scope', items: ['Home Additions', 'Major Interior Remodels', 'Exterior / Façade Updates', 'Layout Reconfiguration', 'Structural Modifications'] },
       { label: 'Engineering Support', items: ['Structural Engineering', 'MEP Coordination', 'Title 24', 'Permit Processing'] },
     ],
-    process: ['Existing Conditions Review', 'Design Development', 'Structural / Engineering Coordination', 'Permit Documents', 'Plan Check'],
+    process: [
+      { t: 'Existing Conditions Review' },
+      { t: 'Design Development' },
+      { t: 'Structural / Engineering Coordination' },
+      { t: 'Permit Documents' },
+      { t: 'Plan Check' },
+    ],
+    ctaHeadline: "Let’s plan your remodel.",
     cta: 'Plan Your Remodel',
   },
   {
@@ -56,35 +106,60 @@ export const SERVICE_DETAILS: ServiceDetail[] = [
     subtitle: 'Detached · Attached · Garage Conversion',
     intro:
       'NGUYEN provides coordinated ADU design from early site study through engineering and permitting — a practical path to added space, flexibility, and value.',
-    hero: '/client-8889/residential/svc-03-adus.jpg',
-    groups: [
+    hero: `${S}/svc-03-adus.jpg`,
+    columns: [
       { label: 'ADU Types', items: ['Detached ADUs', 'Attached ADUs', 'Garage Conversions'] },
       { label: "What's Included", items: ['Site Evaluation + Feasibility', 'Concept Design + Floor Plans', 'Architectural Design', 'Structural Engineering', 'MEP Design', 'Title 24 Compliance', 'Permit Submittal + Plan Check'] },
     ],
-    process: ['Site Study', 'Architecture', 'Structural', 'MEP + Title 24', 'Permit Submittal'],
+    process: [
+      { t: 'Site Study' },
+      { t: 'Architecture' },
+      { t: 'Structural' },
+      { t: 'MEP + Title 24' },
+      { t: 'Permit Submittal' },
+    ],
+    ctaHeadline: "Let’s start your ADU.",
     cta: 'Start Your ADU',
   },
   {
     slug: 'multifamily',
     num: '04',
     title: 'Townhomes + Condominiums',
-    subtitle: 'Efficient density, thoughtfully planned.',
+    subtitle: 'Smart density. Thoughtful design.',
     intro:
-      'NGUYEN designs townhomes, condominiums, and multifamily residential development — balancing efficient density with coordinated site planning, unit planning, and engineering.',
-    hero: '/client-8889/residential/svc-04-multifamily.jpg',
-    groups: [
-      {
-        label: 'Key Areas',
-        items: [
-          'Site Planning — Access, Parking, Open Space',
-          'Unit Design — Efficient, Marketable Layouts',
-          'Code — Life Safety + Accessibility',
-          'Engineering — Structural + MEP Coordination',
-        ],
-      },
+      'We help plan and design efficient residential communities with coordinated architecture, engineering, site planning, and permitting.',
+    hero: `${D}/hero-townhomes.jpg`,
+    approach: [
+      { t: 'Site Planning', d: 'Access, parking, open space, and coordinated site design.', icon: 'Map' },
+      { t: 'Unit Design', d: 'Efficient, marketable layouts that support livability and project goals.', icon: 'LayoutTemplate' },
+      { t: 'Code', d: 'Life safety, accessibility, and code coordination.', icon: 'ShieldCheck' },
+      { t: 'Engineering', d: 'Structural + MEP coordination integrated with the architectural design.', icon: 'Wrench' },
     ],
-    process: ['Feasibility', 'Site Planning', 'Unit Planning', 'Architecture', 'Engineering', 'Permitting'],
-    cta: 'Discuss Your Development',
+    columns: [
+      { label: 'Project Types', items: ['Townhomes', 'Condominiums', 'Multifamily Housing', 'Small Infill Developments'] },
+      { label: 'Feasibility & Site Planning', items: ['Zoning Analysis', 'Site Feasibility Review', 'Density + Unit-Yield Studies', 'Access, Parking, Open Space', 'Grading + Utilities Coordination'] },
+      { label: 'Engineering Coordination', items: ['Structural Engineering', 'MEP Design & Coordination', 'Civil / Grading Coordination', 'Title 24 Compliance', 'Code + Life Safety'] },
+      { label: 'Permit & Project Support', items: ['Permit-Ready Documents', 'Permit Submittal', 'Plan Check Responses', 'Agency Coordination', 'Project Support Through Approval'] },
+    ],
+    gallery: [
+      { src: `${S}/svc-04-multifamily.jpg`, cat: 'Townhomes', alt: 'Townhome street elevation' },
+      { src: `${D}/th-interior-01.jpg`, cat: 'Interiors', alt: 'Residential interior' },
+      { src: `${S}/work-urban-townhomes.png`, cat: 'Townhomes', alt: 'Urban townhomes' },
+      { src: `${D}/th-multifamily-01.jpg`, cat: 'Multifamily', alt: 'Multifamily residence' },
+      { src: `${D}/th-townhomes-01.jpg`, cat: 'Townhomes', alt: 'Townhome community' },
+    ],
+    process: [
+      { t: 'Feasibility', d: 'Understand goals, budget, site constraints, and development potential.' },
+      { t: 'Site Planning', d: 'Analyze access, parking, open space, utilities, and development opportunities.' },
+      { t: 'Unit Planning', d: 'Develop efficient residential layouts and coordinated unit concepts.' },
+      { t: 'Architecture', d: 'Create architecture that balances form, function, code, and community.' },
+      { t: 'Engineering', d: 'Coordinate structural, MEP, Title 24, civil/grading, and related documentation.' },
+      { t: 'Permitting', d: 'Coordinate permit submittal, plan check, revisions, and approval support.' },
+    ],
+    ctaHeadline: "Let’s build better communities.",
+    ctaBody:
+      "Whether you’re planning a townhome development, condominium project, or multifamily community, our team is ready to help move it forward.",
+    cta: 'Discuss Your Project',
   },
   {
     slug: 'structural',
@@ -93,12 +168,19 @@ export const SERVICE_DETAILS: ServiceDetail[] = [
     subtitle: 'Coordinated with the architecture.',
     intro:
       'Structural systems are coordinated directly with the architectural design for residential projects — keeping structure, space, and detailing aligned from concept through permit.',
-    hero: '/client-8889/residential/svc-05-structural.jpg',
-    groups: [
+    hero: `${S}/svc-05-structural.jpg`,
+    columns: [
       { label: 'Project Types', items: ['New Homes', 'Additions', 'Major Remodels', 'ADUs', 'Multifamily / Townhomes'] },
       { label: 'Service Scope', items: ['Structural Framing Design', 'Foundation Coordination', 'Structural Modifications', 'Architectural / Structural Coordination', 'Permit Documentation'] },
     ],
-    process: ['Existing / Proposed Conditions', 'Structural Analysis', 'Design', 'Coordination', 'Permit Documents'],
+    process: [
+      { t: 'Existing / Proposed Conditions' },
+      { t: 'Structural Analysis' },
+      { t: 'Design' },
+      { t: 'Coordination' },
+      { t: 'Permit Documents' },
+    ],
+    ctaHeadline: "Let’s coordinate your structure.",
     cta: 'Start Engineering',
   },
   {
@@ -108,12 +190,19 @@ export const SERVICE_DETAILS: ServiceDetail[] = [
     subtitle: 'Systems coordinated with design.',
     intro:
       'Coordinated mechanical, electrical, plumbing, and energy compliance support for residential projects — integrated with the architecture and structural design rather than added on.',
-    hero: '/client-8889/residential/svc-06-mep-title24.jpg',
-    groups: [
+    hero: `${S}/svc-06-mep-title24.jpg`,
+    columns: [
       { label: 'Scope', items: ['Mechanical Coordination', 'Electrical Coordination', 'Plumbing Coordination', 'Title 24 Compliance', 'Energy / Code Coordination'] },
       { label: 'Integration', items: ['Coordinated with Architecture', 'Coordinated with Structural Design'] },
     ],
-    process: ['Project Review', 'System Coordination', 'Title 24 / Code Review', 'Documentation', 'Permit Coordination'],
+    process: [
+      { t: 'Project Review' },
+      { t: 'System Coordination' },
+      { t: 'Title 24 / Code Review' },
+      { t: 'Documentation' },
+      { t: 'Permit Coordination' },
+    ],
+    ctaHeadline: "Let’s coordinate your project.",
     cta: 'Coordinate Your Project',
   },
   {
@@ -123,11 +212,18 @@ export const SERVICE_DETAILS: ServiceDetail[] = [
     subtitle: 'From completed design toward approval.',
     intro:
       'NGUYEN coordinates the permit process to help move residential projects from completed design toward approval — keeping submittals, agencies, and revisions organized.',
-    hero: '/client-8889/residential/svc-07-permitting.jpg',
-    groups: [
+    hero: `${S}/svc-07-permitting.jpg`,
+    columns: [
       { label: 'Scope', items: ['Permit Package Preparation', 'Submittal Coordination', 'Agency Coordination', 'Plan Check Responses', 'Revision Coordination'] },
     ],
-    process: ['Permit-Ready Documents', 'Submittal', 'Agency Review', 'Corrections', 'Approval'],
+    process: [
+      { t: 'Permit-Ready Documents' },
+      { t: 'Submittal' },
+      { t: 'Agency Review' },
+      { t: 'Corrections' },
+      { t: 'Approval' },
+    ],
+    ctaHeadline: "Let’s start your permit.",
     cta: 'Start Your Permit',
   },
   {
@@ -137,11 +233,19 @@ export const SERVICE_DETAILS: ServiceDetail[] = [
     subtitle: 'Support through the approval process.',
     intro:
       'NGUYEN helps coordinate responses to plan-check comments and revisions during the approval process — a focused support service to keep a project moving.',
-    hero: '/client-8889/residential/svc-08-plan-check.jpg',
-    groups: [
+    hero: `${S}/svc-08-plan-check.jpg`,
+    columns: [
       { label: 'Scope', items: ['Plan-Check Comment Review', 'Architectural Revisions', 'Engineering Coordination', 'Resubmittal Support', 'Agency Coordination'] },
     ],
-    process: ['Receive Comments', 'Review', 'Coordinate Revisions', 'Update Documents', 'Resubmit', 'Continue Through Approval'],
+    process: [
+      { t: 'Receive Comments' },
+      { t: 'Review' },
+      { t: 'Coordinate Revisions' },
+      { t: 'Update Documents' },
+      { t: 'Resubmit' },
+      { t: 'Continue Through Approval' },
+    ],
+    ctaHeadline: "Let’s get your plan check moving.",
     cta: 'Get Plan-Check Support',
   },
 ];
