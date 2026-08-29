@@ -471,6 +471,60 @@ const CLIENT_PATCH = `
 })();
 </script>`;
 
+// Desktop safety net: Framer ships the page hidden (opacity:0) and reveals it with its client
+// runtime. On a slow or cache-cold load that reveal can stall, leaving the cream blank. This checks
+// a few seconds in whether anything actually rendered; only if the page still looks blank does it
+// force the content visible. On a normal load it does nothing, so all animations (including scroll
+// reveals) are preserved.
+const DESKTOP_SAFETYNET_SCRIPT = `
+<script id="nguyen-desktop-safetynet">
+(function(){
+  try {
+    function effectiveOpacity(el) {
+      var o = 1, n = el;
+      while (n && n !== document.body) {
+        var v = parseFloat(window.getComputedStyle(n).opacity);
+        if (!isNaN(v)) o *= v;
+        if (o < 0.05) return 0;
+        n = n.parentElement;
+      }
+      return o;
+    }
+    function looksBlank() {
+      var root = document.getElementById('main'); if (!root) return false;
+      var els = root.querySelectorAll('h1,h2,h3,p,a,button,span,li'); var visible = 0;
+      var vh = window.innerHeight || 800;
+      for (var i = 0; i < els.length && visible < 3; i++) {
+        var el = els[i], cs = window.getComputedStyle(el);
+        if (cs.display === 'none' || cs.visibility === 'hidden') continue;
+        if (effectiveOpacity(el) < 0.5) continue;
+        var r = el.getBoundingClientRect();
+        // Only count content in the first screenful — the cream blank is the hero area up top being
+        // hidden, even though lower sections may carry visible text.
+        if (r.top >= vh || r.bottom <= 0 || r.width <= 0 || r.height <= 0) continue;
+        if (el.textContent && el.textContent.trim()) visible++;
+      }
+      return visible < 3;
+    }
+    function reveal() {
+      var root = document.getElementById('main'); if (!root) return;
+      var els = root.querySelectorAll('*');
+      for (var i = 0; i < els.length; i++) {
+        var el = els[i], cs = window.getComputedStyle(el);
+        if (cs.display === 'none') continue;
+        if (cs.visibility === 'hidden') el.style.setProperty('visibility', 'visible', 'important');
+        if (parseFloat(cs.opacity) < 0.05) {
+          el.style.setProperty('opacity', '1', 'important');
+          if (cs.transform && cs.transform !== 'none') el.style.setProperty('transform', 'none', 'important');
+          if (cs.filter && cs.filter !== 'none') el.style.setProperty('filter', 'none', 'important');
+        }
+      }
+    }
+    [5000, 8000].forEach(function (t) { setTimeout(function () { if (looksBlank()) reveal(); }, t); });
+  } catch (e) {}
+})();
+</script>`;
+
 async function getSource() {
   let lastError: unknown = null;
   for (let attempt = 0; attempt < 3; attempt += 1) {
@@ -507,7 +561,7 @@ export async function GET() {
       html = html.replace(/href=["']mailto:[^"']+["']/gi, 'href="mailto:info@nguyenarchitecture.com"');
       const phoneReplacements = ['(209) 233-8888', '(714) 707-8889']; let phoneIndex = 0;
       html = html.replace(/<a([^>]*href=["']tel:[^"']+["'][^>]*)>([\s\S]*?)<\/a>/gi, (_match, attrs, body) => { const phone = phoneReplacements[Math.min(phoneIndex, phoneReplacements.length - 1)]; phoneIndex += 1; const nextAttrs = attrs.replace(/href=["']tel:[^"']+["']/i, `href="tel:${phone.replace(/[^+\d]/g, '')}"`); const nextBody = body.replace(/>\s*[+()\d .-]{7,}\s*</g, `>${phone}<`); return `<a${nextAttrs}>${nextBody}</a>`; });
-      html = html.replace('</body>', `${CLIENT_PATCH}</body>`);
+      html = html.replace('</body>', `${CLIENT_PATCH}${DESKTOP_SAFETYNET_SCRIPT}</body>`);
     }
     return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'private, no-store' } });
   } catch {
