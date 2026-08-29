@@ -1,6 +1,23 @@
+import { headers } from 'next/headers';
+
 const SOURCE_URL = 'https://arcsphere-studio.framer.website/';
 
 export const revalidate = 3600;
+
+function isMobileUserAgent(userAgent: string) {
+  return /Android|iPhone|iPad|iPod|Mobile|IEMobile|Opera Mini/i.test(userAgent);
+}
+
+// On phones Framer's client runtime hydrates and then wipes the content (the page flashes in, then
+// goes blank). Removing Framer's own scripts on mobile leaves the fully server-rendered HTML — which
+// the mobile CSS failsafe reveals — as a static, visible page with nothing left to wipe it. Our own
+// nguyen-* scripts (rebranding, links) are kept; desktop is untouched and keeps the full runtime.
+function stripFramerRuntime(html: string) {
+  return html
+    .replace(/<script\b[^>]*\bdata-framer-bundle=["']main["'][^>]*>\s*<\/script>/gi, '')
+    .replace(/<script\b[^>]*\btype=["']framer\/[^"']*["'][^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<script\b[^>]*\bdata-framer-appear-animation=[^>]*>[\s\S]*?<\/script>/gi, '');
+}
 
 const CLEANUP = `
 <style id="designedbytd-client-demo-cleanup">
@@ -471,7 +488,9 @@ export async function GET() {
     const phoneReplacements = ['(209) 233-8888', '(714) 707-8889']; let phoneIndex = 0;
     html = html.replace(/<a([^>]*href=["']tel:[^"']+["'][^>]*)>([\s\S]*?)<\/a>/gi, (_match, attrs, body) => { const phone = phoneReplacements[Math.min(phoneIndex, phoneReplacements.length - 1)]; phoneIndex += 1; const nextAttrs = attrs.replace(/href=["']tel:[^"']+["']/i, `href="tel:${phone.replace(/[^+\d]/g, '')}"`); const nextBody = body.replace(/>\s*[+()\d .-]{7,}\s*</g, `>${phone}<`); return `<a${nextAttrs}>${nextBody}</a>`; });
     html = html.replace('</body>', `${CLIENT_PATCH}${MOBILE_REVEAL_SCRIPT}</body>`);
-    return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400' } });
+    const userAgent = (await headers()).get('user-agent') || '';
+    if (isMobileUserAgent(userAgent)) html = stripFramerRuntime(html);
+    return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'private, no-store' } });
   } catch {
     return new Response('<!doctype html><html><body style="font-family:Arial,sans-serif;padding:40px">Concept 1 is temporarily unavailable. Please refresh in a moment.</body></html>', { status: 502, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
   }
