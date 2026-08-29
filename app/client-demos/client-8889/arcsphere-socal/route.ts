@@ -94,13 +94,51 @@ const BRAND_PATCH = `
 })();
 </script>`
 
+const SQUARE_IMAGES_PATCH = `
+<script id="nguyen-socal-square-projects">
+(() => {
+  // Square the "Featured Projects" image corners (keep the round arrow buttons round).
+  function findSection() {
+    var heads = document.querySelectorAll('h1,h2,h3,h4');
+    for (var i = 0; i < heads.length; i++) {
+      if (/featured\\s*projects/i.test((heads[i].textContent || ''))) {
+        return heads[i].closest('section') || heads[i].closest('[data-framer-name]') || heads[i].parentElement;
+      }
+    }
+    return null;
+  }
+  function squareImages() {
+    var sec = findSection();
+    if (!sec) return false;
+    var imgs = sec.querySelectorAll('img');
+    for (var i = 0; i < imgs.length; i++) {
+      var img = imgs[i];
+      img.style.setProperty('border-radius', '0', 'important');
+      var el = img, depth = 0;
+      while (el && el !== sec && depth < 5) {
+        var cs = window.getComputedStyle(el);
+        var br = parseFloat(cs.borderTopLeftRadius) || 0;
+        var w = el.getBoundingClientRect().width || 0;
+        // square rounded rectangles, but never touch circles/pills (radius ~ half the width)
+        if (br > 0 && br < w / 2) el.style.setProperty('border-radius', '0', 'important');
+        el = el.parentElement; depth++;
+      }
+    }
+    return imgs.length > 0;
+  }
+  squareImages();
+  window.addEventListener('load', squareImages, { once: true });
+  [400, 1000, 2000, 3500, 5500].forEach(function (t) { setTimeout(squareImages, t); });
+})();
+</script>`
+
 export async function GET() {
   const response = await getConcept()
   if (!response.ok) return response
 
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')
