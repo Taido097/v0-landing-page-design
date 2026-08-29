@@ -20,6 +20,18 @@ const CLEANUP = `
   }
 </style>`;
 
+// Mobile stability: Framer's scroll-triggered animations keep re-hiding elements (opacity -> 0) as
+// you scroll, and on phones that reveal stutters, flashing the page to the cream background. Pin any
+// element Framer tries to hide to full opacity with !important so it can never flash to blank. This
+// trades the phone's fade animations for a stable page; desktop (>809.98px) is untouched.
+const MOBILE_APPEAR_FAILSAFE = `
+<style id="nguyen-mobile-appear-failsafe">
+  @media (max-width: 809.98px) {
+    #main [style*="opacity:0"] { opacity: 1 !important; }
+    #main [style*="opacity:0.001"] { transform: none !important; filter: none !important; }
+  }
+</style>`;
+
 
 const REPLACEMENTS: Array<[RegExp, string]> = [
   [/ArcSphere Studio/gi, 'NGUYEN ARCHITECTURE & ENGINEERING'],
@@ -435,7 +447,7 @@ async function getSource() {
 export async function GET() {
   try {
     let html = await getSource(); html = removeNonVisualTelemetry(html); html = optimizeImageDecoding(html);
-    html = html.replace(/<head([^>]*)>/i, `<head$1><base href="${SOURCE_URL}"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="description" content="NGUYEN ARCHITECTURE & ENGINEERING — commercial architecture, engineering, tenant improvement and building permit support in Orange County.">${CLEANUP}`);
+    html = html.replace(/<head([^>]*)>/i, `<head$1><base href="${SOURCE_URL}"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="description" content="NGUYEN ARCHITECTURE & ENGINEERING — commercial architecture, engineering, tenant improvement and building permit support in Orange County.">${CLEANUP}${MOBILE_APPEAR_FAILSAFE}`);
     html = html.replace(/<title>[^<]*<\/title>/i, '<title>NGUYEN ARCHITECTURE & ENGINEERING — Website Demo</title>');
 
     const userAgent = (await headers()).get('user-agent') || '';
