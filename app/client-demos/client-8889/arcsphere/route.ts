@@ -14,6 +14,56 @@ const CLEANUP = `
   }
 </style>`;
 
+// Failsafe for mobile: Framer starts ~1000 elements at opacity:0.001 and reveals them with its
+// client appear-animation runtime. On phones that runtime does not reveal them, so the whole page
+// stays invisible (blank). Force the appear-start elements visible on small screens so content
+// always shows; desktop keeps its animations untouched.
+const MOBILE_APPEAR_FAILSAFE = `
+<style id="nguyen-mobile-appear-failsafe">
+  @media (max-width: 809.98px) {
+    /* Framer hides the section wrappers (hero, nav, …) with inline opacity:0 and the animated
+       children with opacity:0.001, then reveals them via its client runtime — which does not run
+       on phones, leaving the page blank. A stylesheet !important rule overrides the inline styles
+       persistently (it beats the runtime re-hiding, unlike a one-shot script) so content always
+       shows. display:none breakpoint variants stay hidden, so nothing duplicates. */
+    #main [style*="opacity:0"] { opacity: 1 !important; }
+    #main [style*="opacity:0.001"] { transform: none !important; filter: none !important; }
+  }
+</style>`;
+
+// The CSS rule above only catches inline opacity; Framer also hides content via CSS classes and
+// nested/plain opacity:0, which leaves the hero and nav invisible on phones. This script walks the
+// tree on small screens and reveals every non-display:none element by computed style (clearing the
+// appear-animation opacity, transform and blur), so the page can never render blank on mobile.
+const MOBILE_REVEAL_SCRIPT = `
+<script id="nguyen-mobile-reveal">
+(function(){
+  try {
+    if (!window.matchMedia || !window.matchMedia('(max-width: 809.98px)').matches) return;
+    function reveal() {
+      var root = document.getElementById('main') || document.body;
+      if (!root) return;
+      var els = root.querySelectorAll('*');
+      for (var i = 0; i < els.length; i += 1) {
+        var el = els[i];
+        var cs = window.getComputedStyle(el);
+        if (cs.display === 'none') continue;
+        if (cs.visibility === 'hidden') el.style.setProperty('visibility', 'visible', 'important');
+        if (parseFloat(cs.opacity) < 0.99) {
+          el.style.setProperty('opacity', '1', 'important');
+          if (cs.transform && cs.transform !== 'none') el.style.setProperty('transform', 'none', 'important');
+          if (cs.filter && cs.filter !== 'none') el.style.setProperty('filter', 'none', 'important');
+        }
+      }
+    }
+    reveal();
+    document.addEventListener('DOMContentLoaded', reveal);
+    window.addEventListener('load', reveal);
+    [200, 600, 1200, 2500].forEach(function (t) { setTimeout(reveal, t); });
+  } catch (e) {}
+})();
+</script>`;
+
 const REPLACEMENTS: Array<[RegExp, string]> = [
   [/ArcSphere Studio/gi, 'NGUYEN ARCHITECTURE & ENGINEERING'],
   [/ArcSphere/gi, 'NGUYEN'],
@@ -147,7 +197,8 @@ const CLIENT_PATCH = `
       sourceDescription: 'Designing modern buildings that combine aesthetics, efficiency, and long-term value.',
       sourceTitles: ['Architectural'],
       title: 'RESIDENTIAL',
-      description: 'Custom homes, additions, remodels, and multifamily residential design with coordinated engineering and permitting.'
+      description: 'Custom homes, additions, remodels, and multifamily residential design with coordinated engineering and permitting.',
+      href: '/client-demos/client-8889/residential'
     },
     {
       sourceDescription: 'Creating refined interiors through thoughtful materials, lighting, and spatial composition.',
@@ -307,6 +358,11 @@ const CLIENT_PATCH = `
   function patchServiceCard(card, spec) {
     const sourceTitleKeys = new Set(spec.sourceTitles.map(compact));
     const sourceDescriptionKey = compact(spec.sourceDescription);
+    if (spec.href) {
+      const target = window.location.origin + spec.href;
+      card.setAttribute('data-nguyen-link', target);
+      card.style.setProperty('cursor', 'pointer', 'important');
+    }
     const candidates = [card, ...card.querySelectorAll('*')];
     candidates.forEach((candidate) => {
       const key = compact(candidate.textContent);
@@ -352,6 +408,34 @@ const CLIENT_PATCH = `
     element.querySelectorAll('a[href^="mailto:"], a[href^="tel:"]').forEach(patchContactAnchor);
     const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT); let node; while ((node = walker.nextNode())) patchTextNode(node);
   }
+  function installServiceLinkInterceptor() {
+    if (window.__nguyenServiceLinkInterceptor) return;
+    window.__nguyenServiceLinkInterceptor = true;
+    const findLink = (event) => {
+      const start = event.target && event.target.nodeType === Node.TEXT_NODE ? event.target.parentElement : event.target;
+      return start && start.closest ? start.closest('[data-nguyen-link]') : null;
+    };
+    // Block Framer's own tap/modal handlers before they fire.
+    ['pointerdown', 'mousedown', 'touchstart'].forEach((type) => {
+      document.addEventListener(type, (event) => {
+        if (!findLink(event)) return;
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+      }, true);
+    });
+    // Navigate on click (capture phase, before Framer sees it).
+    document.addEventListener('click', (event) => {
+      const el = findLink(event);
+      if (!el) return;
+      const href = el.getAttribute('data-nguyen-link');
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+      if (href) window.location.href = href;
+    }, true);
+  }
+  installServiceLinkInterceptor();
   patchRoot(document.body);
   window.addEventListener('load', () => { patchThirdProjectImage(document.body); patchServicesSection(document.body); }, { once: true });
   const observer = new MutationObserver((mutations) => { for (const mutation of mutations) { if (mutation.type === 'characterData') { patchTextNode(mutation.target); const paragraph = mutation.target.parentElement?.closest('p'); if (paragraph) patchSplitParagraph(paragraph); const parent = mutation.target.parentElement; if (parent) { patchCounters(parent); patchOfficeCard(parent); patchCustomHomeCard(parent); patchThirdProjectImage(parent); patchServicesSection(parent); keepResidentialLabelOnOneLine(parent); } continue; } if (mutation.type === 'childList') mutation.addedNodes.forEach(patchRoot); } });
@@ -374,14 +458,19 @@ async function getSource() {
 export async function GET() {
   try {
     let html = await getSource(); html = removeNonVisualTelemetry(html); html = optimizeImageDecoding(html);
-    html = html.replace(/<head([^>]*)>/i, `<head$1><base href="${SOURCE_URL}"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="description" content="NGUYEN ARCHITECTURE & ENGINEERING — commercial architecture, engineering, tenant improvement and building permit support in Orange County.">${CLEANUP}`);
+    html = html.replace(/<head([^>]*)>/i, `<head$1><base href="${SOURCE_URL}"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="description" content="NGUYEN ARCHITECTURE & ENGINEERING — commercial architecture, engineering, tenant improvement and building permit support in Orange County.">${CLEANUP}${MOBILE_APPEAR_FAILSAFE}`);
     html = html.replace(/<title>[^<]*<\/title>/i, '<title>NGUYEN ARCHITECTURE & ENGINEERING — Website Demo</title>');
     for (const [pattern, replacement] of REPLACEMENTS) html = html.replace(pattern, replacement);
+    // The branding replacements above run over the whole document, which rewrites "arcsphere"
+    // to "NGUYEN" inside the injected <base> tag too — pointing Framer's relative asset/route
+    // fetches at the wrong origin and leaving the page blank on mobile (Framer's client runtime
+    // fails, so appear-animation content never reveals from opacity:0). Restore the real origin.
+    html = html.replace(/<base\b[^>]*>/i, `<base href="${SOURCE_URL}">`);
     html = html.replace(/info@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/gi, 'info@nguyenarchitecture.com');
     html = html.replace(/href=["']mailto:[^"']+["']/gi, 'href="mailto:info@nguyenarchitecture.com"');
     const phoneReplacements = ['(209) 233-8888', '(714) 707-8889']; let phoneIndex = 0;
     html = html.replace(/<a([^>]*href=["']tel:[^"']+["'][^>]*)>([\s\S]*?)<\/a>/gi, (_match, attrs, body) => { const phone = phoneReplacements[Math.min(phoneIndex, phoneReplacements.length - 1)]; phoneIndex += 1; const nextAttrs = attrs.replace(/href=["']tel:[^"']+["']/i, `href="tel:${phone.replace(/[^+\d]/g, '')}"`); const nextBody = body.replace(/>\s*[+()\d .-]{7,}\s*</g, `>${phone}<`); return `<a${nextAttrs}>${nextBody}</a>`; });
-    html = html.replace('</body>', `${CLIENT_PATCH}</body>`);
+    html = html.replace('</body>', `${CLIENT_PATCH}${MOBILE_REVEAL_SCRIPT}</body>`);
     return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400' } });
   } catch {
     return new Response('<!doctype html><html><body style="font-family:Arial,sans-serif;padding:40px">Concept 1 is temporarily unavailable. Please refresh in a moment.</body></html>', { status: 502, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
