@@ -86,10 +86,15 @@ const CSS = `
 .nrd-chip{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:999px;padding:9px 18px;cursor:pointer;transition:all .2s}
 .nrd-chip:hover{border-color:#c9bda9;color:var(--ink)}
 .nrd-chip.is-active{background:var(--ink);border-color:var(--ink);color:#f3f0e9}
-.nrd-gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.nrd-shot{margin:0;aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:#e7e0d5}
+.nrd-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.nrd-shot{margin:0;aspect-ratio:4/3;border-radius:0;overflow:hidden;background:#e7e0d5;cursor:zoom-in}
 .nrd-shot img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease}
 .nrd-shot:hover img{transform:scale(1.05)}
+/* lightbox */
+.nrd-lb{position:fixed;inset:0;z-index:60;background:rgba(20,17,14,.92);display:flex;align-items:center;justify-content:center;padding:clamp(16px,4vw,64px);cursor:zoom-out}
+.nrd-lb img{max-width:100%;max-height:90vh;object-fit:contain;display:block;box-shadow:0 24px 70px rgba(0,0,0,.55)}
+.nrd-lb-x{position:absolute;top:clamp(14px,2vw,24px);right:clamp(16px,2vw,28px);width:44px;height:44px;border:1px solid rgba(243,240,233,.4);border-radius:50%;background:transparent;color:#f3f0e9;font-size:20px;line-height:1;display:grid;place-items:center;cursor:pointer;transition:background .2s}
+.nrd-lb-x:hover{background:rgba(243,240,233,.14)}
 /* process */
 .nrd-proc-row{display:flex;gap:0}
 .nrd-pstep{flex:1;text-align:center;position:relative;padding:0 clamp(6px,1vw,14px)}
@@ -121,8 +126,7 @@ const CSS = `
 .nrd-lock-c{font-size:11.5px;color:var(--soft);text-align:right}
 @media(max-width:940px){
   .nrd-approach-grid,.nrd-cols.n3,.nrd-cols.n4{grid-template-columns:repeat(2,1fr)}
-  .nrd-offer{grid-template-columns:repeat(2,1fr)}
-  .nrd-gallery{grid-template-columns:repeat(2,1fr)}
+  .nrd-offer,.nrd-gallery{grid-template-columns:repeat(2,1fr)}
   .nrd-foot-grid{grid-template-columns:1fr 1fr}
 }
 @media(max-width:720px){

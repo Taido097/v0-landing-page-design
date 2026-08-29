@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { GalleryShot } from '../services-data';
 
 export default function Gallery({ shots }: { shots: GalleryShot[] }) {
@@ -10,7 +10,17 @@ export default function Gallery({ shots }: { shots: GalleryShot[] }) {
     return ['All', ...cats];
   }, [shots]);
   const [active, setActive] = useState('All');
+  const [lightbox, setLightbox] = useState<GalleryShot | null>(null);
   const visible = active === 'All' ? shots : shots.filter((s) => s.cat === active);
+
+  useEffect(() => {
+    if (!lightbox) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightbox(null);
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [lightbox]);
 
   return (
     <div>
@@ -29,11 +39,19 @@ export default function Gallery({ shots }: { shots: GalleryShot[] }) {
       </div>
       <div className="nrd-gallery">
         {visible.map((s) => (
-          <figure className="nrd-shot" key={s.src}>
+          <figure className="nrd-shot" key={s.src} onClick={() => setLightbox(s)}>
             <img src={s.src} alt={s.alt} loading="lazy" />
           </figure>
         ))}
       </div>
+
+      {lightbox ? (
+        <div className="nrd-lb" role="dialog" aria-modal="true" aria-label={lightbox.alt} onClick={() => setLightbox(null)}>
+          <button type="button" className="nrd-lb-x" aria-label="Close" onClick={() => setLightbox(null)}>✕</button>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={lightbox.src} alt={lightbox.alt} onClick={(e) => e.stopPropagation()} />
+        </div>
+      ) : null}
     </div>
   );
 }
