@@ -73,22 +73,24 @@ const SERVICES = [
 ];
 const SERVICES_STYLE = `
   #nguyen-residential-services{display:block;background:transparent;padding:clamp(56px,8vw,120px) 0;font-family:"Inter Display","Inter",system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#4f4742}
-  #nguyen-residential-services .nrs-shell{width:min(1280px,100%);margin:0 auto;padding:0 clamp(20px,4vw,60px);box-sizing:border-box}
-  #nguyen-residential-services .nrs-eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.2em;font-weight:600;color:#736b62;margin:0 0 clamp(32px,4vw,52px)}
-  #nguyen-residential-services .nrs-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,2vw,28px)}
-  #nguyen-residential-services .nrs-card{display:grid;grid-template-columns:minmax(200px,48%) 1fr;background:#fbf9f6;border:1px solid #ddd5c9;border-radius:18px;overflow:hidden;min-height:clamp(300px,26vw,360px)}
-  #nguyen-residential-services .nrs-img{overflow:hidden;background:#e7e0d5}
-  #nguyen-residential-services .nrs-img img{width:100%;height:100%;object-fit:cover;display:block}
-  #nguyen-residential-services .nrs-body{position:relative;padding:clamp(28px,2.4vw,42px);display:flex;flex-direction:column}
-  #nguyen-residential-services .nrs-num{font-size:13px;letter-spacing:.12em;color:#a79f94;margin:0 0 auto}
-  #nguyen-residential-services .nrs-title{font-size:clamp(21px,1.9vw,28px);line-height:1.14;font-weight:600;color:#1f1c19;margin:28px 0 16px;max-width:88%}
-  #nguyen-residential-services .nrs-copy{font-size:clamp(14px,1vw,16px);line-height:1.55;color:#736b62;margin:0;max-width:95%}
-  #nguyen-residential-services .nrs-arrow{position:absolute;top:clamp(28px,2.4vw,42px);right:clamp(28px,2.4vw,42px);width:42px;height:42px;border:1px solid #a79f94;border-radius:50%;display:grid;place-items:center;font-size:16px;color:#1f1c19}
-  @media(max-width:900px){#nguyen-residential-services .nrs-grid{grid-template-columns:1fr}}
-  @media(max-width:600px){#nguyen-residential-services .nrs-card{grid-template-columns:1fr;min-height:0}#nguyen-residential-services .nrs-img{height:220px}}`;
+  #nguyen-residential-services .nrs-shell{width:min(1320px,100%);margin:0 auto;padding:0 clamp(20px,4vw,60px);box-sizing:border-box}
+  #nguyen-residential-services .nrs-eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.2em;font-weight:600;color:#736b62;margin:0 0 clamp(32px,4vw,54px)}
+  #nguyen-residential-services .nrs-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(24px,2.4vw,40px)}
+  #nguyen-residential-services .nrs-card{display:flex;flex-direction:column}
+  #nguyen-residential-services .nrs-img{aspect-ratio:3/4;overflow:hidden;background:#e7e0d5;border-radius:3px}
+  #nguyen-residential-services .nrs-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease}
+  #nguyen-residential-services .nrs-card:hover .nrs-img img{transform:scale(1.045)}
+  #nguyen-residential-services .nrs-text{padding-top:clamp(18px,1.5vw,24px)}
+  #nguyen-residential-services .nrs-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  #nguyen-residential-services .nrs-title{text-transform:uppercase;font-size:clamp(15px,1.15vw,18.5px);line-height:1.22;font-weight:600;letter-spacing:.005em;color:#1f1c19;margin:0}
+  #nguyen-residential-services .nrs-arrow{flex:none;width:38px;height:38px;border:1px solid #b7afa3;border-radius:50%;display:grid;place-items:center;font-size:15px;color:#1f1c19;transition:background .3s,color .3s}
+  #nguyen-residential-services .nrs-card:hover .nrs-arrow{background:#1f1c19;color:#f3f0e9;border-color:#1f1c19}
+  #nguyen-residential-services .nrs-copy{font-size:13px;line-height:1.5;color:#8a8177;margin:14px 0 0;max-width:94%}
+  @media(max-width:1100px){#nguyen-residential-services .nrs-grid{grid-template-columns:repeat(2,1fr);gap:32px}}
+  @media(max-width:560px){#nguyen-residential-services .nrs-grid{grid-template-columns:1fr}#nguyen-residential-services .nrs-img{aspect-ratio:4/3}}`;
 const SERVICES_HTML =
   `<style>${SERVICES_STYLE}</style><div class="nrs-shell"><p class="nrs-eyebrow">Our Residential Services</p><div class="nrs-grid">` +
-  SERVICES.map((s) => `<article class="nrs-card"><div class="nrs-img"><img data-nsrc="${s.img}" alt="${s.t}" loading="lazy"></div><div class="nrs-body"><span class="nrs-num">${s.n}</span><span class="nrs-arrow">↗</span><h3 class="nrs-title">${s.t}</h3><p class="nrs-copy">${s.c}</p></div></article>`).join('') +
+  SERVICES.map((s) => `<article class="nrs-card"><div class="nrs-img"><img data-nsrc="${s.img}" alt="${s.t}" loading="lazy"></div><div class="nrs-text"><div class="nrs-head"><h3 class="nrs-title">${s.t}</h3><span class="nrs-arrow">↗</span></div><p class="nrs-copy">${s.c}</p></div></article>`).join('') +
   `</div></div>`;
 
 // One client script for both surfaces. It applies the same REPLACEMENTS as substring rules to text
