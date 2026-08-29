@@ -46,7 +46,7 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/Modern Co-Working Space/gi, 'Garden ADU'],
   [/Harmony Living Space/gi, 'Coastal Modern Home'],
   [/Minimalist Apartment Interior/gi, 'Urban Townhomes'],
-  [/Dubai, 2025/gi, 'Los Angeles, 2025'],
+  [/Dubai, 2025/gi, 'Los Angeles'],
   [/Dubai/gi, 'Southern California'],
   [/United Arab Emirates/gi, 'California'],
   [/Your Architecture Studio/gi, 'NGUYEN Architecture & Engineering'],
