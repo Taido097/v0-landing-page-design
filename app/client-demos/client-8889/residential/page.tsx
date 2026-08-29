@@ -5,7 +5,6 @@ import styles from "./residential.module.css"
 
 const HERO = "/client-8889/residential/hero-home.png"
 const INTRO = "/client-8889/residential/intro-living-room.png"
-const BOTTOM = "https://framerusercontent.com/images/NPECM2ziENhHhdNoAT3unXgBhD0.jpg?height=1600&width=2400"
 
 const services = [
   { n: "01", title: "Custom Homes", copy: "Bespoke homes designed around your lifestyle, site, and long-term goals.", img: "/client-8889/residential/svc-01-custom-homes.png" },
@@ -226,7 +225,7 @@ export default function ResidentialPage() {
             <div className={styles.copyright}>© 2025 Nguyen Architecture &amp; Engineering. All rights reserved.</div>
           </div>
         </div>
-        <div className={styles.bottomImg}><img src={BOTTOM} alt="Residential architecture at dusk" /></div>
+        <div className={styles.wordmark} aria-hidden="true">NGUYEN ARCHITECTURE &amp; ENGINEERING</div>
       </section>
     </main>
   )
