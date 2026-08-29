@@ -62,21 +62,22 @@ function removeNonVisualTelemetry(html: string) {
 // The reference project page has no services grid, so we inject NGUYEN's eight residential services
 // after hydration, just before the "Project Details" section, styled to match the reference.
 const SERVICES = [
-  { n: '01', t: 'Custom Homes', c: 'Bespoke homes designed around your lifestyle, site, and long-term goals.', img: '/client-8889/residential/svc-01-custom-homes.jpg' },
-  { n: '02', t: 'Additions &amp; Major Remodels', c: 'Seamlessly expand and transform your home with careful planning and detail.', img: '/client-8889/residential/svc-02-additions-remodels.jpg' },
-  { n: '03', t: 'ADUs', c: 'Beautiful, functional accessory dwelling units for family, rental income, or office use.', img: '/client-8889/residential/svc-03-adus.jpg' },
-  { n: '04', t: 'Multifamily / Townhomes / Condos', c: 'Well-designed residences that balance livability, efficiency, and community.', img: '/client-8889/residential/svc-04-multifamily.jpg' },
-  { n: '05', t: 'Structural Engineering', c: 'Safe, efficient, and code-compliant structural solutions for new and existing homes.', img: '/client-8889/residential/svc-05-structural.jpg' },
-  { n: '06', t: 'MEP + Title 24', c: 'Integrated MEP design and Title 24 compliance for comfort, efficiency, and energy performance.', img: '/client-8889/residential/svc-06-mep-title24.jpg' },
-  { n: '07', t: 'Permitting', c: 'We manage the permit process to keep your project moving forward with clarity.', img: '/client-8889/residential/svc-07-permitting.jpg' },
-  { n: '08', t: 'Plan-Check Support', c: 'Responsive plan-check support to address comments and accelerate approvals.', img: '/client-8889/residential/svc-08-plan-check.jpg' },
+  { n: '01', t: 'Custom Homes', c: 'Bespoke homes designed around your lifestyle, site, and long-term goals.', img: '/client-8889/residential/svc-01-custom-homes.jpg', slug: 'custom-homes' },
+  { n: '02', t: 'Additions &amp; Major Remodels', c: 'Seamlessly expand and transform your home with careful planning and detail.', img: '/client-8889/residential/svc-02-additions-remodels.jpg', slug: 'additions-remodels' },
+  { n: '03', t: 'ADUs', c: 'Beautiful, functional accessory dwelling units for family, rental income, or office use.', img: '/client-8889/residential/svc-03-adus.jpg', slug: 'adus' },
+  { n: '04', t: 'Multifamily / Townhomes / Condos', c: 'Well-designed residences that balance livability, efficiency, and community.', img: '/client-8889/residential/svc-04-multifamily.jpg', slug: 'multifamily' },
+  { n: '05', t: 'Structural Engineering', c: 'Safe, efficient, and code-compliant structural solutions for new and existing homes.', img: '/client-8889/residential/svc-05-structural.jpg', slug: 'structural' },
+  { n: '06', t: 'MEP + Title 24', c: 'Integrated MEP design and Title 24 compliance for comfort, efficiency, and energy performance.', img: '/client-8889/residential/svc-06-mep-title24.jpg', slug: 'mep-title24' },
+  { n: '07', t: 'Permitting', c: 'We manage the permit process to keep your project moving forward with clarity.', img: '/client-8889/residential/svc-07-permitting.jpg', slug: 'permitting' },
+  { n: '08', t: 'Plan-Check Support', c: 'Responsive plan-check support to address comments and accelerate approvals.', img: '/client-8889/residential/svc-08-plan-check.jpg', slug: 'plan-check' },
 ];
+const SERVICES_BASE = '/client-demos/client-8889/residential/services/';
 const SERVICES_STYLE = `
   #nguyen-residential-services{display:block;background:transparent;padding:clamp(56px,8vw,120px) 0;font-family:"Inter Display","Inter",system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#4f4742}
   #nguyen-residential-services .nrs-shell{width:min(1320px,100%);margin:0 auto;padding:0 clamp(20px,4vw,60px);box-sizing:border-box}
   #nguyen-residential-services .nrs-eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.2em;font-weight:600;color:#736b62;margin:0 0 clamp(32px,4vw,54px)}
   #nguyen-residential-services .nrs-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(24px,2.4vw,40px)}
-  #nguyen-residential-services .nrs-card{display:flex;flex-direction:column}
+  #nguyen-residential-services .nrs-card{display:flex;flex-direction:column;color:inherit;text-decoration:none;cursor:pointer}
   #nguyen-residential-services .nrs-img{aspect-ratio:3/4;overflow:hidden;background:#e7e0d5;border-radius:3px}
   #nguyen-residential-services .nrs-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease}
   #nguyen-residential-services .nrs-card:hover .nrs-img img{transform:scale(1.045)}
@@ -90,7 +91,7 @@ const SERVICES_STYLE = `
   @media(max-width:560px){#nguyen-residential-services .nrs-grid{grid-template-columns:1fr}#nguyen-residential-services .nrs-img{aspect-ratio:4/3}}`;
 const SERVICES_HTML =
   `<style>${SERVICES_STYLE}</style><div class="nrs-shell"><p class="nrs-eyebrow">Our Residential Services</p><div class="nrs-grid">` +
-  SERVICES.map((s) => `<article class="nrs-card"><div class="nrs-img"><img data-nsrc="${s.img}" alt="${s.t}" loading="lazy"></div><div class="nrs-text"><div class="nrs-head"><h3 class="nrs-title">${s.t}</h3><span class="nrs-arrow">↗</span></div><p class="nrs-copy">${s.c}</p></div></article>`).join('') +
+  SERVICES.map((s) => `<a class="nrs-card" data-nhref="${SERVICES_BASE}${s.slug}"><div class="nrs-img"><img data-nsrc="${s.img}" alt="${s.t}" loading="lazy"></div><div class="nrs-text"><div class="nrs-head"><h3 class="nrs-title">${s.t}</h3><span class="nrs-arrow">↗</span></div><p class="nrs-copy">${s.c}</p></div></a>`).join('') +
   `</div></div>`;
 
 // One client script for both surfaces. It applies the same REPLACEMENTS as substring rules to text
@@ -141,6 +142,8 @@ const CLIENT_REBRAND = `
       sec.innerHTML = SERVICES_HTML;
       anchor.parentNode.insertBefore(sec, anchor);
       sec.querySelectorAll('[data-nsrc]').forEach(function (img) { img.setAttribute('src', window.location.origin + img.getAttribute('data-nsrc')); });
+      // The page <base href> points at the Framer origin, so resolve card links against the real origin.
+      sec.querySelectorAll('[data-nhref]').forEach(function (a) { a.setAttribute('href', window.location.origin + a.getAttribute('data-nhref')); });
       if (gallery) gallery.style.setProperty('display', 'none', 'important');
       return true;
     }
