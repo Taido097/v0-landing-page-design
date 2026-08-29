@@ -62,14 +62,14 @@ function removeNonVisualTelemetry(html: string) {
 // The reference project page has no services grid, so we inject NGUYEN's eight residential services
 // after hydration, just before the "Project Details" section, styled to match the reference.
 const SERVICES = [
-  { n: '01', t: 'Custom Homes', c: 'Bespoke homes designed around your lifestyle, site, and long-term goals.', img: '/client-8889/residential/svc-01-custom-homes.png' },
-  { n: '02', t: 'Additions &amp; Major Remodels', c: 'Seamlessly expand and transform your home with careful planning and detail.', img: '/client-8889/residential/svc-02-additions-remodels.png' },
-  { n: '03', t: 'ADUs', c: 'Beautiful, functional accessory dwelling units for family, rental income, or office use.', img: '/client-8889/residential/svc-03-adus.png' },
-  { n: '04', t: 'Multifamily / Townhomes / Condos', c: 'Well-designed residences that balance livability, efficiency, and community.', img: '/client-8889/residential/svc-04-multifamily.png' },
-  { n: '05', t: 'Structural Engineering', c: 'Safe, efficient, and code-compliant structural solutions for new and existing homes.', img: '/client-8889/residential/svc-05-structural.png' },
-  { n: '06', t: 'MEP + Title 24', c: 'Integrated MEP design and Title 24 compliance for comfort, efficiency, and energy performance.', img: '/client-8889/residential/svc-06-mep-title24.png' },
-  { n: '07', t: 'Permitting', c: 'We manage the permit process to keep your project moving forward with clarity.', img: '/client-8889/residential/svc-07-permitting.png' },
-  { n: '08', t: 'Plan-Check Support', c: 'Responsive plan-check support to address comments and accelerate approvals.', img: '/client-8889/residential/svc-08-plan-check.png' },
+  { n: '01', t: 'Custom Homes', c: 'Bespoke homes designed around your lifestyle, site, and long-term goals.', img: '/client-8889/residential/svc-01-custom-homes.jpg' },
+  { n: '02', t: 'Additions &amp; Major Remodels', c: 'Seamlessly expand and transform your home with careful planning and detail.', img: '/client-8889/residential/svc-02-additions-remodels.jpg' },
+  { n: '03', t: 'ADUs', c: 'Beautiful, functional accessory dwelling units for family, rental income, or office use.', img: '/client-8889/residential/svc-03-adus.jpg' },
+  { n: '04', t: 'Multifamily / Townhomes / Condos', c: 'Well-designed residences that balance livability, efficiency, and community.', img: '/client-8889/residential/svc-04-multifamily.jpg' },
+  { n: '05', t: 'Structural Engineering', c: 'Safe, efficient, and code-compliant structural solutions for new and existing homes.', img: '/client-8889/residential/svc-05-structural.jpg' },
+  { n: '06', t: 'MEP + Title 24', c: 'Integrated MEP design and Title 24 compliance for comfort, efficiency, and energy performance.', img: '/client-8889/residential/svc-06-mep-title24.jpg' },
+  { n: '07', t: 'Permitting', c: 'We manage the permit process to keep your project moving forward with clarity.', img: '/client-8889/residential/svc-07-permitting.jpg' },
+  { n: '08', t: 'Plan-Check Support', c: 'Responsive plan-check support to address comments and accelerate approvals.', img: '/client-8889/residential/svc-08-plan-check.jpg' },
 ];
 const SERVICES_STYLE = `
   #nguyen-residential-services{display:block;background:transparent;padding:clamp(56px,8vw,112px) 0;font-family:"Inter Display","Inter",system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#4f4742}
