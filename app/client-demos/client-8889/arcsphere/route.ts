@@ -8,17 +8,6 @@ function isMobileUserAgent(userAgent: string) {
   return /Android|iPhone|iPad|iPod|Mobile|IEMobile|Opera Mini/i.test(userAgent);
 }
 
-// On phones Framer's client runtime hydrates and then wipes the content (the page flashes in, then
-// goes blank). Removing Framer's own scripts on mobile leaves the fully server-rendered HTML — which
-// the mobile CSS failsafe reveals — as a static, visible page with nothing left to wipe it. Our own
-// nguyen-* scripts (rebranding, links) are kept; desktop is untouched and keeps the full runtime.
-function stripFramerRuntime(html: string) {
-  return html
-    .replace(/<script\b[^>]*\bdata-framer-bundle=["']main["'][^>]*>\s*<\/script>/gi, '')
-    .replace(/<script\b[^>]*\btype=["']framer\/[^"']*["'][^>]*>[\s\S]*?<\/script>/gi, '')
-    .replace(/<script\b[^>]*\bdata-framer-appear-animation=[^>]*>[\s\S]*?<\/script>/gi, '');
-}
-
 const CLEANUP = `
 <style id="designedbytd-client-demo-cleanup">
   #__framer-badge-container,
@@ -31,52 +20,67 @@ const CLEANUP = `
   }
 </style>`;
 
-// Failsafe for mobile: Framer starts ~1000 elements at opacity:0.001 and reveals them with its
-// client appear-animation runtime. On phones that runtime does not reveal them, so the whole page
-// stays invisible (blank). Force the appear-start elements visible on small screens so content
-// always shows; desktop keeps its animations untouched.
-const MOBILE_APPEAR_FAILSAFE = `
-<style id="nguyen-mobile-appear-failsafe">
-  @media (max-width: 809.98px) {
-    /* Framer hides the section wrappers (hero, nav, …) with inline opacity:0 and the animated
-       children with opacity:0.001, then reveals them via its client runtime — which does not run
-       on phones, leaving the page blank. A stylesheet !important rule overrides the inline styles
-       persistently (it beats the runtime re-hiding, unlike a one-shot script) so content always
-       shows. display:none breakpoint variants stay hidden, so nothing duplicates. */
-    #main [style*="opacity:0"] { opacity: 1 !important; }
-    #main [style*="opacity:0.001"] { transform: none !important; filter: none !important; }
-  }
-</style>`;
-
-// The CSS rule above only catches inline opacity; Framer also hides content via CSS classes and
-// nested/plain opacity:0, which leaves the hero and nav invisible on phones. This script walks the
-// tree on small screens and reveals every non-display:none element by computed style (clearing the
-// appear-animation opacity, transform and blur), so the page can never render blank on mobile.
-const MOBILE_REVEAL_SCRIPT = `
-<script id="nguyen-mobile-reveal">
+// Mobile keeps Framer's client runtime so the appear animations play like on desktop. To avoid the
+// hydration mismatch that was blanking phones, the served DOM is left identical to Framer's (no
+// server-side text rewrites), and everything we change is deferred until AFTER hydration: the
+// rebranding runs on a timer + observer, and a one-time safety net at the end reveals any content
+// that is still hidden if the runtime ever fails — so the page can flash-and-blank no more.
+const MOBILE_ENHANCE_SCRIPT = `
+<script id="nguyen-mobile-enhance">
 (function(){
   try {
     if (!window.matchMedia || !window.matchMedia('(max-width: 809.98px)').matches) return;
-    function reveal() {
-      var root = document.getElementById('main') || document.body;
+    var pairs = [
+      ['ArcSphere Studio', 'NGUYEN ARCHITECTURE & ENGINEERING'], ['ArcSphere', 'NGUYEN'],
+      ['Interior & Architecture', 'Architecture · Engineering · Permit'], ['Interior and Architecture', 'Architecture · Engineering · Permit'],
+      ['Where Architecture Meets Experience', 'Commercial Architecture — Engineering & Permit'], ['Where Architecture', 'Commercial Architecture'], ['Meets Experience', 'Engineering & Permit'],
+      ['Based in Dubai, we design residential and commercial spaces that elevate how people live, work, and interact with their environment', 'Based in Southern California, we provide residential and commercial architecture, engineering, and permit support from concept through approval.'],
+      ['Our Projects', 'Commercial Project Types'], ['About Us', 'About NGUYEN'], ['About us', 'About NGUYEN'],
+      ['VIEW PROJECTS', 'VIEW PROJECT TYPES'], ['BOOK CONSULTATION', 'START A PROJECT'], ['DESIGN PROCESS', 'PROJECT PROCESS'],
+      ['12+ YEARS EXPERIENCE', '15+ YEARS EXPERIENCE'], ['150+ PROJECTS COMPLETED', '500+ SUCCESSFUL PROJECTS'], ['250+ PROJECTS WORLDWIDE', '500+ SUCCESSFUL PROJECTS'],
+      ['SERENITY VILLA', 'CUSTOM HOME'], ['DUBAI, 2025', 'LOS ANGELES, 2025'],
+      ['Get in touch', 'Start a Project'], ['Contact Us', 'Contact'], ['Contact us', 'Contact'],
+      ['Dubai', 'Huntington Beach, CA'], ['United Arab Emirates', 'Orange County, CA']
+    ];
+    var norm = function (v) { return (v || '').replace(/\\s+/g, ' ').trim(); };
+    var map = new Map(pairs.map(function (p) { return [norm(p[0]), p[1]]; }));
+    function rebrandNode(node) { var next = map.get(norm(node.nodeValue)); if (next && node.nodeValue !== next) node.nodeValue = next; }
+    function rebrand(root) {
       if (!root) return;
+      var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); var n;
+      while ((n = walker.nextNode())) rebrandNode(n);
+      document.querySelectorAll('a[href^="mailto:"]').forEach(function (a) { a.setAttribute('href', 'mailto:info@nguyenarchitecture.com'); });
+    }
+    function rescue() {
+      var root = document.getElementById('main'); if (!root) return;
       var els = root.querySelectorAll('*');
       for (var i = 0; i < els.length; i += 1) {
-        var el = els[i];
-        var cs = window.getComputedStyle(el);
+        var el = els[i]; var cs = window.getComputedStyle(el);
         if (cs.display === 'none') continue;
-        if (cs.visibility === 'hidden') el.style.setProperty('visibility', 'visible', 'important');
-        if (parseFloat(cs.opacity) < 0.99) {
+        if (parseFloat(cs.opacity) < 0.05) {
           el.style.setProperty('opacity', '1', 'important');
           if (cs.transform && cs.transform !== 'none') el.style.setProperty('transform', 'none', 'important');
           if (cs.filter && cs.filter !== 'none') el.style.setProperty('filter', 'none', 'important');
         }
       }
     }
-    reveal();
-    document.addEventListener('DOMContentLoaded', reveal);
-    window.addEventListener('load', reveal);
-    [200, 600, 1200, 2500].forEach(function (t) { setTimeout(reveal, t); });
+    function start() {
+      rebrand(document.body);
+      var observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (m) {
+          if (m.type === 'characterData') { rebrandNode(m.target); return; }
+          m.addedNodes.forEach(function (node) {
+            if (node.nodeType === 3) rebrandNode(node);
+            else if (node.querySelectorAll) rebrand(node);
+          });
+        });
+      });
+      observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+      setTimeout(function () { observer.disconnect(); }, 9000);
+    }
+    // Defer everything until Framer has hydrated and run its animations.
+    setTimeout(start, 1800);
+    setTimeout(rescue, 4500);
   } catch (e) {}
 })();
 </script>`;
@@ -475,21 +479,29 @@ async function getSource() {
 export async function GET() {
   try {
     let html = await getSource(); html = removeNonVisualTelemetry(html); html = optimizeImageDecoding(html);
-    html = html.replace(/<head([^>]*)>/i, `<head$1><base href="${SOURCE_URL}"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="description" content="NGUYEN ARCHITECTURE & ENGINEERING — commercial architecture, engineering, tenant improvement and building permit support in Orange County.">${CLEANUP}${MOBILE_APPEAR_FAILSAFE}`);
+    html = html.replace(/<head([^>]*)>/i, `<head$1><base href="${SOURCE_URL}"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="description" content="NGUYEN ARCHITECTURE & ENGINEERING — commercial architecture, engineering, tenant improvement and building permit support in Orange County.">${CLEANUP}`);
     html = html.replace(/<title>[^<]*<\/title>/i, '<title>NGUYEN ARCHITECTURE & ENGINEERING — Website Demo</title>');
-    for (const [pattern, replacement] of REPLACEMENTS) html = html.replace(pattern, replacement);
-    // The branding replacements above run over the whole document, which rewrites "arcsphere"
-    // to "NGUYEN" inside the injected <base> tag too — pointing Framer's relative asset/route
-    // fetches at the wrong origin and leaving the page blank on mobile (Framer's client runtime
-    // fails, so appear-animation content never reveals from opacity:0). Restore the real origin.
-    html = html.replace(/<base\b[^>]*>/i, `<base href="${SOURCE_URL}">`);
-    html = html.replace(/info@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/gi, 'info@nguyenarchitecture.com');
-    html = html.replace(/href=["']mailto:[^"']+["']/gi, 'href="mailto:info@nguyenarchitecture.com"');
-    const phoneReplacements = ['(209) 233-8888', '(714) 707-8889']; let phoneIndex = 0;
-    html = html.replace(/<a([^>]*href=["']tel:[^"']+["'][^>]*)>([\s\S]*?)<\/a>/gi, (_match, attrs, body) => { const phone = phoneReplacements[Math.min(phoneIndex, phoneReplacements.length - 1)]; phoneIndex += 1; const nextAttrs = attrs.replace(/href=["']tel:[^"']+["']/i, `href="tel:${phone.replace(/[^+\d]/g, '')}"`); const nextBody = body.replace(/>\s*[+()\d .-]{7,}\s*</g, `>${phone}<`); return `<a${nextAttrs}>${nextBody}</a>`; });
-    html = html.replace('</body>', `${CLIENT_PATCH}${MOBILE_REVEAL_SCRIPT}</body>`);
+
     const userAgent = (await headers()).get('user-agent') || '';
-    if (isMobileUserAgent(userAgent)) html = stripFramerRuntime(html);
+    const mobile = isMobileUserAgent(userAgent);
+
+    if (mobile) {
+      // On phones, rewriting the server HTML makes it differ from what Framer's client renders,
+      // and that hydration mismatch crashes the mobile tree (the page flashes in, then blanks).
+      // Keep the served DOM identical to Framer's so hydration succeeds and the animations run;
+      // the rebranding is applied after hydration by MOBILE_ENHANCE_SCRIPT instead.
+      html = html.replace('</body>', `${MOBILE_ENHANCE_SCRIPT}</body>`);
+    } else {
+      for (const [pattern, replacement] of REPLACEMENTS) html = html.replace(pattern, replacement);
+      // The branding replacements above run over the whole document, which rewrites "arcsphere"
+      // to "NGUYEN" inside the injected <base> tag too — restore the real origin.
+      html = html.replace(/<base\b[^>]*>/i, `<base href="${SOURCE_URL}">`);
+      html = html.replace(/info@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/gi, 'info@nguyenarchitecture.com');
+      html = html.replace(/href=["']mailto:[^"']+["']/gi, 'href="mailto:info@nguyenarchitecture.com"');
+      const phoneReplacements = ['(209) 233-8888', '(714) 707-8889']; let phoneIndex = 0;
+      html = html.replace(/<a([^>]*href=["']tel:[^"']+["'][^>]*)>([\s\S]*?)<\/a>/gi, (_match, attrs, body) => { const phone = phoneReplacements[Math.min(phoneIndex, phoneReplacements.length - 1)]; phoneIndex += 1; const nextAttrs = attrs.replace(/href=["']tel:[^"']+["']/i, `href="tel:${phone.replace(/[^+\d]/g, '')}"`); const nextBody = body.replace(/>\s*[+()\d .-]{7,}\s*</g, `>${phone}<`); return `<a${nextAttrs}>${nextBody}</a>`; });
+      html = html.replace('</body>', `${CLIENT_PATCH}</body>`);
+    }
     return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'private, no-store' } });
   } catch {
     return new Response('<!doctype html><html><body style="font-family:Arial,sans-serif;padding:40px">Concept 1 is temporarily unavailable. Please refresh in a moment.</body></html>', { status: 502, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
