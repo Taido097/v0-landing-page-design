@@ -4,7 +4,6 @@ import { useEffect } from "react"
 import styles from "./residential.module.css"
 
 const HERO = "/client-8889/residential/hero-home.png"
-const INTRO = "/client-8889/residential/intro-living-room.png"
 
 const services = [
   { n: "01", title: "Custom Homes", copy: "Bespoke homes designed around your lifestyle, site, and long-term goals.", img: "/client-8889/residential/svc-01-custom-homes.png" },
@@ -17,12 +16,21 @@ const services = [
   { n: "08", title: "Plan-Check Support", copy: "Responsive plan-check support to address comments and accelerate approvals.", img: "/client-8889/residential/svc-08-plan-check.png" },
 ]
 
-const scopeServices = ["Custom Homes", "Additions & Remodels", "ADUs", "Multifamily / Townhomes / Condos", "Structural Engineering", "MEP + Title 24", "Permitting", "Plan-Check Support"]
-const processSteps = [
-  ["01", "Discovery & Site Review"], ["02", "Design & Engineering"], ["03", "Documentation"],
-  ["04", "Permitting"], ["05", "Plan-Check & Approval"], ["06", "Construction Support"],
+
+const details: [string, string][] = [
+  ["Services", "Custom Homes · Additions & Remodels · ADUs · Multifamily / Townhomes / Condos"],
+  ["Engineering", "Structural · MEP · Title 24"],
+  ["Process", "Discovery · Design · Documentation · Permitting · Plan-Check · Construction"],
+  ["Scope", "Architecture · Structural · MEP Engineering · Title 24 · Permitting · Plan-Check"],
+  ["Regions", "Los Angeles · Orange County · Southern California"],
 ]
-const scope = ["Architecture", "Structural Engineering", "MEP Engineering", "Title 24 Compliance", "Permitting", "Plan-Check Support"]
+
+const introCollage = [
+  { src: "/client-8889/residential/intro-living-room.png", alt: "Residential interior" },
+  { src: "/client-8889/residential/svc-01-custom-homes.png", alt: "Custom home exterior" },
+  { src: "/client-8889/residential/svc-03-adus.png", alt: "Accessory dwelling unit" },
+  { src: "/client-8889/residential/svc-04-multifamily.png", alt: "Multifamily residence" },
+]
 
 const work = [
   { name: "Hillside Retreat", loc: "Bel Air, California", img: "/client-8889/residential/svc-01-custom-homes.png" },
@@ -83,10 +91,7 @@ export default function ResidentialPage() {
       {/* Intro */}
       <section className={styles.section}>
         <div className={styles.shell}>
-          <div className={styles.introGrid}>
-            <Reveal className={styles.introMedia}>
-              <img src={INTRO} alt="Residential interior" />
-            </Reveal>
+          <div className={styles.introTop}>
             <Reveal className={styles.introCopy}>
               <h2>Thoughtful Residential Design Rooted In Beauty, Function, And Everyday Living.</h2>
               <p className={styles.introLead}>
@@ -106,6 +111,11 @@ export default function ResidentialPage() {
               </div>
             </Reveal>
           </div>
+          <Reveal className={styles.introCollage}>
+            {introCollage.map((img) => (
+              <figure key={img.src}><img src={img.src} alt={img.alt} /></figure>
+            ))}
+          </Reveal>
         </div>
       </section>
 
@@ -136,30 +146,26 @@ export default function ResidentialPage() {
         </div>
       </section>
 
-      {/* Process */}
+      {/* Details */}
       <section className={styles.section} style={{ background: "var(--paper2)" }}>
         <div className={styles.shell}>
-          <div className={styles.processGrid}>
-            <Reveal className={styles.processIntro}>
-              <p className={styles.eyebrow}>Residential Services</p>
-              <h2>Our Process. Your Vision. Delivered With Care.</h2>
-              <p>We combine thoughtful design with technical expertise to create homes that are beautiful, functional, and built to perform.</p>
+          <div className={styles.detailsGrid}>
+            <Reveal className={styles.detailsHead}>
+              <h2>Residential Details</h2>
             </Reveal>
-            <Reveal>
-              <div className={styles.colGrid}>
-                <div className={styles.col}>
-                  <h5>Services</h5>
-                  <ul>{scopeServices.map((item) => <li key={item}>{item}</li>)}</ul>
-                </div>
-                <div className={styles.col}>
-                  <h5>Our Process</h5>
-                  <ul>{processSteps.map(([n, item]) => <li key={n}><span>{n}</span>{item}</li>)}</ul>
-                </div>
-                <div className={styles.col}>
-                  <h5>Scope</h5>
-                  <ul>{scope.map((item) => <li key={item}>{item}</li>)}</ul>
-                </div>
-              </div>
+            <Reveal className={styles.detailsBody}>
+              <p className={styles.detailsLead}>
+                We combine thoughtful design with technical expertise to create homes that are beautiful, functional, and built to perform — coordinating architecture, engineering, Title&nbsp;24 and permitting from first conversation through approval.
+              </p>
+              <div className={styles.detailsRule} />
+              <dl className={styles.specGrid}>
+                {details.map(([label, value]) => (
+                  <div className={styles.specItem} key={label}>
+                    <dt>{label}</dt>
+                    <dd>{value}</dd>
+                  </div>
+                ))}
+              </dl>
             </Reveal>
           </div>
         </div>

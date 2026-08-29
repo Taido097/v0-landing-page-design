@@ -31,9 +31,14 @@
 .heroBar span:last-child{text-align:right}
 
 /* Intro */
-.introGrid{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:clamp(30px,5vw,74px);align-items:center}
-.introMedia{aspect-ratio:4/3.35;overflow:hidden;background:var(--paper2);border-radius:14px}
-.introMedia img{width:100%;height:100%;object-fit:cover;display:block}
+.introTop{display:flex;justify-content:flex-end;margin-bottom:clamp(32px,4.5vw,64px)}
+.introCopy{max-width:720px}
+.introCollage{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:clamp(178px,20vw,262px);gap:14px}
+.introCollage figure{margin:0;overflow:hidden;border-radius:14px;background:var(--paper2)}
+.introCollage img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .7s cubic-bezier(.22,1,.36,1)}
+.introCollage figure:hover img{transform:scale(1.04)}
+.introCollage figure:nth-child(1){grid-row:span 2}
+.introCollage figure:nth-child(4){grid-column:1 / -1}
 .introCopy h2{font-size:clamp(30px,3.4vw,50px);line-height:1.07;letter-spacing:-.03em;font-weight:600;color:var(--ink-strong);margin:0 0 26px}
 .introLead{font-size:clamp(15px,1.15vw,17px);line-height:1.65;color:var(--muted);margin:0 0 40px;max-width:560px}
 .featRow{display:grid;grid-template-columns:1fr 1fr;gap:34px;border-top:1px solid var(--line);padding-top:28px}
@@ -58,15 +63,13 @@
 .svcCard:hover .svcArrow{background:var(--accent);color:#fff;border-color:var(--accent)}
 
 /* Process */
-.processGrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:clamp(30px,6vw,90px);align-items:start}
-.processIntro .eyebrow{margin-bottom:22px}
-.processIntro h2{font-size:clamp(26px,2.6vw,38px);line-height:1.13;letter-spacing:-.03em;font-weight:600;color:var(--ink-strong);margin:0 0 22px}
-.processIntro p{font-size:15px;line-height:1.62;color:var(--muted);margin:0;max-width:420px}
-.colGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:34px}
-.col h5{font-size:10.5px;text-transform:uppercase;letter-spacing:.15em;color:var(--soft);margin:0 0 20px;font-weight:600}
-.col ul{list-style:none;margin:0;padding:0}
-.col li{font-size:14px;line-height:1.5;padding:10px 0;border-bottom:1px solid var(--line);display:flex;gap:10px;color:var(--ink)}
-.col li span{color:var(--accent);font-size:11px;min-width:20px;font-weight:600}
+.detailsGrid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.5fr);gap:clamp(28px,6vw,100px);align-items:start}
+.detailsHead h2{font-size:clamp(30px,3.6vw,54px);line-height:1.02;letter-spacing:-.035em;font-weight:600;color:var(--ink-strong);margin:0}
+.detailsLead{font-size:clamp(15px,1.2vw,18px);line-height:1.6;color:var(--muted);margin:0 0 clamp(26px,3vw,38px);max-width:640px}
+.detailsRule{height:1px;background:var(--line);margin:0 0 clamp(24px,3vw,36px)}
+.specGrid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,3vw,38px) clamp(30px,5vw,80px);margin:0}
+.specItem dt{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--soft);font-weight:600;margin:0 0 10px}
+.specItem dd{margin:0;font-size:clamp(14px,1.05vw,16px);line-height:1.5;color:var(--ink-strong);letter-spacing:-.005em}
 
 /* Work gallery */
 .workHead{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:clamp(26px,3vw,40px)}
@@ -109,10 +112,9 @@
 @media(max-width:1000px){
   .topbar{grid-template-columns:auto 1fr auto}
   .navLeft,.navRight a:not(.contactBtn){display:none}
-  .introGrid{grid-template-columns:1fr}
+  .introTop{justify-content:stretch}
   .servicesGrid{grid-template-columns:1fr}
-  .processGrid{grid-template-columns:1fr}
-  .colGrid{gap:24px}
+  .detailsGrid{grid-template-columns:1fr;gap:26px}
   .workRow{grid-template-columns:repeat(2,1fr)}
   .ctaTop{grid-template-columns:1fr}
   .footCols{grid-template-columns:1fr 1fr}
@@ -123,7 +125,8 @@
   .featRow{grid-template-columns:1fr;gap:22px}
   .svcCard{grid-template-columns:1fr}
   .svcImg{height:180px}
-  .colGrid{grid-template-columns:1fr}
+  .specGrid{grid-template-columns:1fr}
+  .introCollage{grid-auto-rows:200px}
   .workRow{grid-template-columns:1fr 1fr}
   .footCols{grid-template-columns:1fr}
   .copyright{justify-content:flex-start}
