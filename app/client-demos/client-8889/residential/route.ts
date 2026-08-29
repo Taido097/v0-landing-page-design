@@ -24,6 +24,10 @@ const CLEANUP = `
 // Rebrand the reference (ArcSphere "Serenity Villa" project page) to NGUYEN residential content.
 // These run as substring rules server-side on desktop and, deferred, client-side on mobile.
 const REPLACEMENTS: Array<[RegExp, string]> = [
+  // Full-sentence residential copy first, so it matches the original text before the word rules run.
+  [/A tranquil residential sanctuary blending natural beauty with luxury\.?/gi, 'Thoughtful residential design rooted in beauty, function, and everyday living.'],
+  [/Dubai['’]s Serenity Villa emphasizes calm, minimalist living\. Open interiors, light-filled rooms, and natural textures create a serene home that perfectly aligns with the owners['’] vision of peaceful luxury\.?/gi, 'We design and engineer homes that reflect how you live — blending timeless architecture with modern performance. From custom homes and additions to ADUs and multifamily, every detail supports your vision, lifestyle, and long-term value.'],
+  [/Serenity Villa, completed in 2025 in Dubai, is a tranquil residential project that highlights minimalism and natural harmony — designed to create a peaceful and elegant living atmosphere\.?/gi, 'NGUYEN provides full-service residential architecture, engineering, Title 24 and permitting — from custom homes and additions to ADUs and multifamily — coordinated from first conversation through approval.'],
   [/ArcSphere Studio/gi, 'NGUYEN ARCHITECTURE & ENGINEERING'],
   [/ArcSphere/gi, 'NGUYEN'],
   [/Serenity Villa/gi, 'Residential'],
@@ -36,6 +40,7 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/\bBudget\b/gi, 'Focus'],
   [/680 m²/gi, 'Architecture · Structural · MEP · Permit'],
   [/\bSurface\b/gi, 'Scope'],
+  [/\bAddress\b/gi, 'Region'],
   [/Corporate Office Space/gi, 'Hillside Retreat'],
   [/Modern Co-working Space/gi, 'Garden ADU'],
   [/Modern Co-Working Space/gi, 'Garden ADU'],
