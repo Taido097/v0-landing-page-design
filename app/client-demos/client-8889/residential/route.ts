@@ -25,8 +25,8 @@ const CLEANUP = `
 // These run as substring rules server-side on desktop and, deferred, client-side on mobile.
 const REPLACEMENTS: Array<[RegExp, string]> = [
   // Full-sentence residential copy first, so it matches the original text before the word rules run.
-  [/A tranquil residential sanctuary blending natural beauty with luxury\.?/gi, 'Thoughtful residential design rooted in beauty, function, and everyday living.'],
-  [/Dubai['’]s Serenity Villa emphasizes calm, minimalist living\. Open interiors, light-filled rooms, and natural textures create a serene home that perfectly aligns with the owners['’] vision of peaceful luxury\.?/gi, 'We design and engineer homes that reflect how you live — blending timeless architecture with modern performance. From custom homes and additions to ADUs and multifamily, every detail supports your vision, lifestyle, and long-term value.'],
+  [/A tranquil residential sanctuary blending natural beauty with luxury\.?/gi, 'From land to building.'],
+  [/Dubai['’]s Serenity Villa emphasizes calm, minimalist living\. Open interiors, light-filled rooms, and natural textures create a serene home that perfectly aligns with the owners['’] vision of peaceful luxury\.?/gi, 'One coordinated team for planning, architecture, engineering, permitting, and project support.'],
   [/Serenity Villa, completed in 2025 in Dubai, is a tranquil residential project that highlights minimalism and natural harmony — designed to create a peaceful and elegant living atmosphere\.?/gi, 'NGUYEN provides full-service residential architecture, engineering, Title 24 and permitting — from custom homes and additions to ADUs and multifamily — coordinated from first conversation through approval.'],
   [/ArcSphere Studio/gi, 'NGUYEN ARCHITECTURE & ENGINEERING'],
   [/ArcSphere/gi, 'NGUYEN'],
