@@ -130,8 +130,8 @@ const CSS = `
 .nrd a.nrd-btn:hover{background:#c99a58;transform:translateY(-2px)}
 /* footer */
 .nrd-foot{margin-top:clamp(56px,7vw,96px);border-top:1px solid var(--line);padding:clamp(40px,5vw,72px) 0 0;overflow:hidden}
-.nrd-foot-main{display:grid;grid-template-columns:1.25fr .75fr;gap:clamp(28px,4vw,56px);align-items:start}
-.nrd-foot-head{font-size:clamp(19px,2.1vw,27px);line-height:1.22;font-weight:600;letter-spacing:.005em;text-transform:uppercase;margin:0;max-width:22em;color:var(--ink)}
+.nrd-foot-main{display:grid;grid-template-columns:1.3fr .7fr;gap:clamp(28px,4vw,56px);align-items:start}
+.nrd-foot-head{font-size:clamp(26px,3.4vw,40px);line-height:1.2;font-weight:500;letter-spacing:-.035em;text-transform:uppercase;margin:0;max-width:14em;color:#4f4742}
 .nrd a.nrd-foot-cta{display:inline-block;margin-top:clamp(20px,2.4vw,30px);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;border-bottom:1px solid var(--ink);padding-bottom:6px;color:var(--ink);transition:color .2s,border-color .2s}
 .nrd a.nrd-foot-cta:hover{color:var(--gold);border-color:var(--gold)}
 .nrd-foot-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2vw,30px)}
@@ -147,8 +147,8 @@ const CSS = `
 .nrd-foot-copy{font-size:11.5px;color:var(--soft);letter-spacing:.02em;margin:0}
 .nrd-marquee{overflow:hidden;white-space:nowrap;margin:clamp(30px,4vw,56px) 0 clamp(24px,3vw,40px)}
 .nrd-marquee-track{display:inline-flex;align-items:center;animation:nrd-scroll 40s linear infinite;will-change:transform}
-.nrd-marquee-track span{flex:none;white-space:nowrap;font-size:clamp(44px,13.2vw,208px);line-height:.82;font-weight:700;letter-spacing:-.02em;text-transform:uppercase;color:var(--ink)}
-.nrd-marquee-track span::after{content:"·";padding:0 .32em;color:var(--gold)}
+.nrd-marquee-track span{flex:none;white-space:nowrap;font-size:clamp(56px,18vw,240px);line-height:.9;font-weight:800;letter-spacing:-.04em;text-transform:uppercase;color:#33302b}
+.nrd-marquee-track span::after{content:"·";padding:0 .3em;color:#33302b}
 @keyframes nrd-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @media(prefers-reduced-motion:reduce){.nrd-marquee-track{animation:none}}
 .nrd-foot-img{width:100%;aspect-ratio:16/6;overflow:hidden;background:#e7e0d5}
@@ -185,7 +185,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
       {/* eslint-disable-next-line @next/next/no-page-custom-font */}
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
 
       <nav className="nrd-nav">
