@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import {
   Home, Gem, Hammer, Ruler, Zap, FileCheck, Map, LayoutTemplate, ShieldCheck, Wrench,
-  Check, ArrowRight,
+  Check, ArrowRight, ArrowUpRight,
 } from 'lucide-react';
 import { SERVICE_DETAILS, getServiceDetail } from '../services-data';
 import Gallery from './gallery';
@@ -137,8 +137,17 @@ const CSS = `
 .nrd-foot-col{display:flex;flex-direction:column;gap:9px}
 .nrd-foot-col a{font-size:12.5px;letter-spacing:.05em;color:var(--muted);transition:color .2s}
 .nrd-foot-col a:hover{color:var(--ink)}
+.nrd-foot-top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:24px;padding-bottom:clamp(30px,4vw,50px);border-bottom:1px solid var(--line);margin-bottom:clamp(30px,4vw,44px)}
+.nrd-foot-head{font-size:clamp(22px,3vw,40px);line-height:1.14;font-weight:600;letter-spacing:-.01em;margin:0;max-width:15ch;color:var(--ink)}
+.nrd a.nrd-foot-cta{display:inline-flex;align-items:center;gap:10px;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;border-bottom:1px solid var(--ink);padding-bottom:6px;color:var(--ink);transition:color .2s,border-color .2s}
+.nrd a.nrd-foot-cta:hover{color:var(--gold);border-color:var(--gold)}
 .nrd-foot-copy{margin:clamp(28px,3vw,44px) 0 0;font-size:11.5px;color:var(--soft);letter-spacing:.02em}
-.nrd-wordmark{margin:clamp(30px,4vw,56px) 0 clamp(24px,3vw,40px);font-size:clamp(44px,13.2vw,210px);line-height:.82;font-weight:700;letter-spacing:-.02em;text-transform:uppercase;color:var(--ink);white-space:nowrap;text-align:center;overflow:hidden}
+.nrd-marquee{overflow:hidden;white-space:nowrap;margin:clamp(30px,4vw,56px) 0 clamp(24px,3vw,40px)}
+.nrd-marquee-track{display:inline-flex;align-items:center;animation:nrd-scroll 40s linear infinite;will-change:transform}
+.nrd-marquee-track span{flex:none;white-space:nowrap;font-size:clamp(44px,13.2vw,208px);line-height:.82;font-weight:700;letter-spacing:-.02em;text-transform:uppercase;color:var(--ink)}
+.nrd-marquee-track span::after{content:"·";padding:0 .32em;color:var(--gold)}
+@keyframes nrd-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.nrd-marquee-track{animation:none}}
 .nrd-foot-img{width:100%;aspect-ratio:16/6;overflow:hidden;background:#e7e0d5}
 .nrd-foot-img img{width:100%;height:100%;object-fit:cover;display:block}
 @media(max-width:940px){
@@ -303,6 +312,10 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
 
       <footer className="nrd-foot">
         <div className="nrd-shell">
+          <div className="nrd-foot-top">
+            <h2 className="nrd-foot-head">Open to new projects and collaborations that shape meaningful spaces.</h2>
+            <a className="nrd-foot-cta" href={CONTACT}>Get in Touch <ArrowUpRight size={16} strokeWidth={2} /></a>
+          </div>
           <div className="nrd-foot-grid">
             <div className="nrd-mono">N</div>
             <div className="nrd-foot-c">
@@ -325,7 +338,13 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
           </div>
           <p className="nrd-foot-copy">© 2024 NGUYEN Architecture &amp; Engineering. All rights reserved.</p>
         </div>
-        <div className="nrd-wordmark">NGUYEN Architecture &amp; Engineering</div>
+        <div className="nrd-marquee" aria-hidden="true">
+          <div className="nrd-marquee-track">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <span key={i}>NGUYEN Architecture &amp; Engineering</span>
+            ))}
+          </div>
+        </div>
         <div className="nrd-foot-img">
           <img src="/client-8889/residential/svc-03-adus.jpg" alt="NGUYEN residential architecture" />
         </div>
