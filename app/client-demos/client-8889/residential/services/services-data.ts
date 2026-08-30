@@ -17,8 +17,9 @@ export interface DetailColumn {
 
 export interface GalleryShot {
   src: string;
-  cat: string; // category label, uppercase (drives the filter chips)
+  cat: string; // category (drives the filter chips)
   alt: string;
+  label?: string; // caption shown on the card (falls back to cat)
 }
 
 export interface ServiceDetail {
@@ -88,6 +89,18 @@ export const SERVICE_DETAILS: ServiceDetail[] = [
     columns: [
       { label: 'Scope', items: ['Home Additions', 'Major Interior Remodels', 'Exterior / Façade Updates', 'Layout Reconfiguration', 'Structural Modifications'] },
       { label: 'Engineering Support', items: ['Structural Engineering', 'MEP Coordination', 'Title 24', 'Permit Processing'] },
+    ],
+    gallery: [
+      { src: `${D}/ar-01-rear-addition.jpg`, cat: 'Additions', label: 'Rear Addition', alt: 'Rear addition with open living space' },
+      { src: `${D}/ar-03-kitchen.jpg`, cat: 'Remodels', label: 'Kitchen Remodel', alt: 'Kitchen remodel' },
+      { src: `${D}/ar-02-front-facade.jpg`, cat: 'Exteriors', label: 'Front Façade Update', alt: 'Front façade update' },
+      { src: `${D}/ar-07-second-story.jpg`, cat: 'Additions', label: 'Second-Story Addition', alt: 'Second-story addition' },
+      { src: `${D}/ar-04-primary-bath.jpg`, cat: 'Remodels', label: 'Primary Bath Remodel', alt: 'Primary bath remodel' },
+      { src: `${D}/ar-05-outdoor-living.jpg`, cat: 'Additions', label: 'Outdoor Living Addition', alt: 'Outdoor living addition' },
+      { src: `${D}/ar-08-whole-home.jpg`, cat: 'Remodels', label: 'Whole-Home Remodel', alt: 'Whole-home remodel' },
+      { src: `${D}/ar-06-garage-conversion.jpg`, cat: 'Additions', label: 'Garage Conversion', alt: 'Garage conversion' },
+      { src: `${D}/ar-10-interior-remodel.jpg`, cat: 'Remodels', label: 'Interior Remodel', alt: 'Interior remodel' },
+      { src: `${D}/ar-09-adu-guest-house.jpg`, cat: 'Additions', label: 'ADU / Guest House', alt: 'ADU / guest house addition' },
     ],
     process: [
       { t: 'Existing Conditions Review' },

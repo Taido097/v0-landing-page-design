@@ -44,7 +44,7 @@ export default function Gallery({ shots }: { shots: GalleryShot[] }) {
               <img src={s.src} alt={s.alt} loading="lazy" />
             </div>
             <figcaption className="nrd-shot-cap">
-              <span>{s.cat}</span>
+              <span>{s.label ?? s.cat}</span>
               <span className="nrd-shot-arrow" aria-hidden="true">↗</span>
             </figcaption>
           </figure>
