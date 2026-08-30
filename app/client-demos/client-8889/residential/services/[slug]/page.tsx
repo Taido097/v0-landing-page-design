@@ -130,18 +130,20 @@ const CSS = `
 .nrd a.nrd-btn:hover{background:#c99a58;transform:translateY(-2px)}
 /* footer */
 .nrd-foot{margin-top:clamp(56px,7vw,96px);border-top:1px solid var(--line);padding:clamp(40px,5vw,72px) 0 0;overflow:hidden}
-.nrd-foot-main{display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(30px,5vw,64px);align-items:start}
-.nrd-foot-head{font-size:clamp(20px,2.4vw,30px);line-height:1.26;font-weight:600;letter-spacing:.005em;text-transform:uppercase;margin:0;max-width:17ch;color:var(--ink)}
+.nrd-foot-main{display:grid;grid-template-columns:1.25fr .75fr;gap:clamp(28px,4vw,56px);align-items:start}
+.nrd-foot-head{font-size:clamp(19px,2.1vw,27px);line-height:1.22;font-weight:600;letter-spacing:.005em;text-transform:uppercase;margin:0;max-width:22em;color:var(--ink)}
 .nrd a.nrd-foot-cta{display:inline-block;margin-top:clamp(20px,2.4vw,30px);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;border-bottom:1px solid var(--ink);padding-bottom:6px;color:var(--ink);transition:color .2s,border-color .2s}
 .nrd a.nrd-foot-cta:hover{color:var(--gold);border-color:var(--gold)}
 .nrd-foot-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2vw,30px)}
 .nrd-foot-col{display:flex;flex-direction:column;gap:12px}
 .nrd-foot-col a,.nrd-foot-col span{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);transition:color .2s}
 .nrd-foot-col a:hover{color:var(--ink)}
-.nrd-foot-bottom{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:clamp(38px,5vw,60px);flex-wrap:wrap}
-.nrd-foot-icons{display:flex;gap:12px}
-.nrd-foot-icons a,.nrd-foot-icons span{width:38px;height:38px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;color:var(--ink);transition:border-color .2s,color .2s}
-.nrd-foot-icons a:hover{border-color:var(--gold);color:var(--gold)}
+.nrd-foot-bottom{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:clamp(34px,4vw,52px);padding-top:clamp(22px,2.6vw,32px);border-top:1px solid var(--line);flex-wrap:wrap}
+.nrd-foot-icons{display:flex;align-items:center}
+.nrd-foot-icons a,.nrd-foot-icons span{display:grid;place-items:center;color:var(--ink);padding:0 16px;border-right:1px solid var(--line);transition:color .2s}
+.nrd-foot-icons a:first-child,.nrd-foot-icons span:first-child{padding-left:0}
+.nrd-foot-icons a:last-child,.nrd-foot-icons span:last-child{border-right:0;padding-right:0}
+.nrd-foot-icons a:hover{color:var(--gold)}
 .nrd-foot-copy{font-size:11.5px;color:var(--soft);letter-spacing:.02em;margin:0}
 .nrd-marquee{overflow:hidden;white-space:nowrap;margin:clamp(30px,4vw,56px) 0 clamp(24px,3vw,40px)}
 .nrd-marquee-track{display:inline-flex;align-items:center;animation:nrd-scroll 40s linear infinite;will-change:transform}
