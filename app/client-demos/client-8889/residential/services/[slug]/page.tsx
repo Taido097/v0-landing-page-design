@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import {
   Home, Gem, Hammer, Ruler, Zap, FileCheck, Map, LayoutTemplate, ShieldCheck, Wrench,
-  Check, ArrowRight, ArrowUpRight,
+  Check, ArrowRight, Mail, Phone, MapPin,
 } from 'lucide-react';
 import { SERVICE_DETAILS, getServiceDetail } from '../services-data';
 import Gallery from './gallery';
@@ -129,19 +129,20 @@ const CSS = `
   padding:15px 26px;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;transition:background .2s,transform .2s}
 .nrd a.nrd-btn:hover{background:#c99a58;transform:translateY(-2px)}
 /* footer */
-.nrd-foot{margin-top:clamp(56px,7vw,96px);border-top:1px solid var(--line);padding:clamp(34px,4vw,52px) 0 0;overflow:hidden}
-.nrd-foot-grid{display:grid;grid-template-columns:auto 1.4fr 1fr 1fr;gap:clamp(20px,3vw,44px);align-items:start}
-.nrd-mono{font-family:Georgia,"Times New Roman",serif;font-size:34px;line-height:1;color:var(--ink)}
-.nrd-foot-c{font-size:13px;color:var(--muted);line-height:1.5;display:flex;flex-direction:column;gap:10px}
-.nrd-foot-c a{display:inline-flex;align-items:center;gap:8px}
-.nrd-foot-col{display:flex;flex-direction:column;gap:9px}
-.nrd-foot-col a{font-size:12.5px;letter-spacing:.05em;color:var(--muted);transition:color .2s}
-.nrd-foot-col a:hover{color:var(--ink)}
-.nrd-foot-top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:24px;padding-bottom:clamp(30px,4vw,50px);border-bottom:1px solid var(--line);margin-bottom:clamp(30px,4vw,44px)}
-.nrd-foot-head{font-size:clamp(22px,3vw,40px);line-height:1.14;font-weight:600;letter-spacing:-.01em;margin:0;max-width:15ch;color:var(--ink)}
-.nrd a.nrd-foot-cta{display:inline-flex;align-items:center;gap:10px;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;border-bottom:1px solid var(--ink);padding-bottom:6px;color:var(--ink);transition:color .2s,border-color .2s}
+.nrd-foot{margin-top:clamp(56px,7vw,96px);border-top:1px solid var(--line);padding:clamp(40px,5vw,72px) 0 0;overflow:hidden}
+.nrd-foot-main{display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(30px,5vw,64px);align-items:start}
+.nrd-foot-head{font-size:clamp(20px,2.4vw,30px);line-height:1.26;font-weight:600;letter-spacing:.005em;text-transform:uppercase;margin:0;max-width:17ch;color:var(--ink)}
+.nrd a.nrd-foot-cta{display:inline-block;margin-top:clamp(20px,2.4vw,30px);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;border-bottom:1px solid var(--ink);padding-bottom:6px;color:var(--ink);transition:color .2s,border-color .2s}
 .nrd a.nrd-foot-cta:hover{color:var(--gold);border-color:var(--gold)}
-.nrd-foot-copy{margin:clamp(28px,3vw,44px) 0 0;font-size:11.5px;color:var(--soft);letter-spacing:.02em}
+.nrd-foot-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2vw,30px)}
+.nrd-foot-col{display:flex;flex-direction:column;gap:12px}
+.nrd-foot-col a,.nrd-foot-col span{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);transition:color .2s}
+.nrd-foot-col a:hover{color:var(--ink)}
+.nrd-foot-bottom{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:clamp(38px,5vw,60px);flex-wrap:wrap}
+.nrd-foot-icons{display:flex;gap:12px}
+.nrd-foot-icons a,.nrd-foot-icons span{width:38px;height:38px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;color:var(--ink);transition:border-color .2s,color .2s}
+.nrd-foot-icons a:hover{border-color:var(--gold);color:var(--gold)}
+.nrd-foot-copy{font-size:11.5px;color:var(--soft);letter-spacing:.02em;margin:0}
 .nrd-marquee{overflow:hidden;white-space:nowrap;margin:clamp(30px,4vw,56px) 0 clamp(24px,3vw,40px)}
 .nrd-marquee-track{display:inline-flex;align-items:center;animation:nrd-scroll 40s linear infinite;will-change:transform}
 .nrd-marquee-track span{flex:none;white-space:nowrap;font-size:clamp(44px,13.2vw,208px);line-height:.82;font-weight:700;letter-spacing:-.02em;text-transform:uppercase;color:var(--ink)}
@@ -153,7 +154,7 @@ const CSS = `
 @media(max-width:940px){
   .nrd-approach-grid,.nrd-cols.n3,.nrd-cols.n4{grid-template-columns:repeat(2,1fr)}
   .nrd-offer,.nrd-gallery{grid-template-columns:repeat(2,1fr)}
-  .nrd-foot-grid{grid-template-columns:1fr 1fr}
+  .nrd-foot-main{grid-template-columns:1fr}
 }
 @media(max-width:720px){
   .nrd-brand{display:none}
@@ -169,7 +170,6 @@ const CSS = `
   .nrd-nav-left{display:none}
   .nrd-approach-grid,.nrd-offer,.nrd-cols.n1,.nrd-cols.n2,.nrd-cols.n3,.nrd-cols.n4,.nrd-gallery{grid-template-columns:1fr}
   .nrd-off p{padding-left:0}
-  .nrd-foot-grid{grid-template-columns:1fr}
 }
 `;
 
@@ -312,31 +312,41 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
 
       <footer className="nrd-foot">
         <div className="nrd-shell">
-          <div className="nrd-foot-top">
-            <h2 className="nrd-foot-head">Open to new projects and collaborations that shape meaningful spaces.</h2>
-            <a className="nrd-foot-cta" href={CONTACT}>Get in Touch <ArrowUpRight size={16} strokeWidth={2} /></a>
+          <div className="nrd-foot-main">
+            <div className="nrd-foot-lead">
+              <h2 className="nrd-foot-head">Open to new projects and collaborations that shape meaningful spaces.</h2>
+              <a className="nrd-foot-cta" href={CONTACT}>Start a Project</a>
+            </div>
+            <div className="nrd-foot-cols">
+              <div className="nrd-foot-col">
+                <a href={HOME_HREF}>Home</a>
+                <a href={RESIDENTIAL_HREF}>About</a>
+                <a href={RESIDENTIAL_HREF}>Services</a>
+                <a href={RESIDENTIAL_HREF}>Projects</a>
+                <a href={RESIDENTIAL_HREF}>Process</a>
+                <a href={CONTACT}>Contact</a>
+              </div>
+              <div className="nrd-foot-col">
+                <a href={CONTACT}>Pinterest</a>
+                <a href={CONTACT}>LinkedIn</a>
+                <a href={CONTACT}>Instagram</a>
+                <a href={CONTACT}>Behance</a>
+              </div>
+              <div className="nrd-foot-col">
+                <a href={RESIDENTIAL_HREF}>Privacy Policy</a>
+                <a href={RESIDENTIAL_HREF}>Cookie Policy</a>
+                <a href={RESIDENTIAL_HREF}>Terms &amp; Conditions</a>
+              </div>
+            </div>
           </div>
-          <div className="nrd-foot-grid">
-            <div className="nrd-mono">N</div>
-            <div className="nrd-foot-c">
-              <a href="tel:+17141234567">(714) 123-4567</a>
-              <a href={CONTACT}>info@nguyen-ae.com</a>
-              <span>Los Angeles, CA</span>
+          <div className="nrd-foot-bottom">
+            <div className="nrd-foot-icons">
+              <a href={CONTACT} aria-label="Email"><Mail size={16} strokeWidth={1.6} /></a>
+              <a href="tel:+17141234567" aria-label="Phone"><Phone size={16} strokeWidth={1.6} /></a>
+              <span aria-label="Location, Los Angeles, CA"><MapPin size={16} strokeWidth={1.6} /></span>
             </div>
-            <div className="nrd-foot-col">
-              <a href={HOME_HREF}>Home</a>
-              <a href={RESIDENTIAL_HREF}>Services</a>
-              <a href={RESIDENTIAL_HREF}>Residential</a>
-              <a href={RESIDENTIAL_HREF}>Projects</a>
-            </div>
-            <div className="nrd-foot-col">
-              <a href={RESIDENTIAL_HREF}>About</a>
-              <a href={RESIDENTIAL_HREF}>Careers</a>
-              <a href={RESIDENTIAL_HREF}>Blog</a>
-              <a href={CONTACT}>Contact</a>
-            </div>
+            <p className="nrd-foot-copy">© 2026 NGUYEN Architecture &amp; Engineering. All Rights Reserved.</p>
           </div>
-          <p className="nrd-foot-copy">© 2024 NGUYEN Architecture &amp; Engineering. All rights reserved.</p>
         </div>
         <div className="nrd-marquee" aria-hidden="true">
           <div className="nrd-marquee-track">
