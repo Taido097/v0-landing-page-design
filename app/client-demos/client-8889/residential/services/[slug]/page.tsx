@@ -129,7 +129,7 @@ const CSS = `
   padding:15px 26px;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;transition:background .2s,transform .2s}
 .nrd a.nrd-btn:hover{background:#c99a58;transform:translateY(-2px)}
 /* footer */
-.nrd-foot{margin-top:clamp(56px,7vw,96px);border-top:1px solid var(--line);padding:clamp(34px,4vw,52px) 0 clamp(40px,5vw,60px)}
+.nrd-foot{margin-top:clamp(56px,7vw,96px);border-top:1px solid var(--line);padding:clamp(34px,4vw,52px) 0 0;overflow:hidden}
 .nrd-foot-grid{display:grid;grid-template-columns:auto 1.4fr 1fr 1fr;gap:clamp(20px,3vw,44px);align-items:start}
 .nrd-mono{font-family:Georgia,"Times New Roman",serif;font-size:34px;line-height:1;color:var(--ink)}
 .nrd-foot-c{font-size:13px;color:var(--muted);line-height:1.5;display:flex;flex-direction:column;gap:10px}
@@ -137,9 +137,10 @@ const CSS = `
 .nrd-foot-col{display:flex;flex-direction:column;gap:9px}
 .nrd-foot-col a{font-size:12.5px;letter-spacing:.05em;color:var(--muted);transition:color .2s}
 .nrd-foot-col a:hover{color:var(--ink)}
-.nrd-lock{margin-top:clamp(30px,4vw,48px);display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
-.nrd-lock-brand{font-size:clamp(15px,2.4vw,24px);letter-spacing:.14em;text-transform:uppercase;font-weight:600;line-height:1.25;color:var(--ink)}
-.nrd-lock-c{font-size:11.5px;color:var(--soft);text-align:right}
+.nrd-foot-copy{margin:clamp(28px,3vw,44px) 0 0;font-size:11.5px;color:var(--soft);letter-spacing:.02em}
+.nrd-wordmark{margin:clamp(30px,4vw,56px) 0 clamp(24px,3vw,40px);font-size:clamp(44px,13.2vw,210px);line-height:.82;font-weight:700;letter-spacing:-.02em;text-transform:uppercase;color:var(--ink);white-space:nowrap;text-align:center;overflow:hidden}
+.nrd-foot-img{width:100%;aspect-ratio:16/6;overflow:hidden;background:#e7e0d5}
+.nrd-foot-img img{width:100%;height:100%;object-fit:cover;display:block}
 @media(max-width:940px){
   .nrd-approach-grid,.nrd-cols.n3,.nrd-cols.n4{grid-template-columns:repeat(2,1fr)}
   .nrd-offer,.nrd-gallery{grid-template-columns:repeat(2,1fr)}
@@ -322,10 +323,11 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
               <a href={CONTACT}>Contact</a>
             </div>
           </div>
-          <div className="nrd-lock">
-            <div className="nrd-lock-brand">NGUYEN<br />Architecture<br />&amp; Engineering</div>
-            <div className="nrd-lock-c">© 2024 NGUYEN Architecture &amp; Engineering.<br />All rights reserved.</div>
-          </div>
+          <p className="nrd-foot-copy">© 2024 NGUYEN Architecture &amp; Engineering. All rights reserved.</p>
+        </div>
+        <div className="nrd-wordmark">NGUYEN Architecture &amp; Engineering</div>
+        <div className="nrd-foot-img">
+          <img src="/client-8889/residential/svc-03-adus.jpg" alt="NGUYEN residential architecture" />
         </div>
       </footer>
     </div>
