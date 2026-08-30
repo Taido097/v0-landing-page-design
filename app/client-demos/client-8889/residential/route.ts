@@ -78,7 +78,7 @@ const SERVICES_STYLE = `
   #nguyen-residential-services .nrs-eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.2em;font-weight:600;color:#736b62;margin:0 0 clamp(32px,4vw,54px)}
   #nguyen-residential-services .nrs-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(24px,2.4vw,40px)}
   #nguyen-residential-services .nrs-card{display:flex;flex-direction:column;color:inherit;text-decoration:none;cursor:pointer}
-  #nguyen-residential-services .nrs-img{aspect-ratio:3/4;overflow:hidden;background:#e7e0d5;border-radius:3px}
+  #nguyen-residential-services .nrs-img{aspect-ratio:3/4;overflow:hidden;background:#e7e0d5;border-radius:0}
   #nguyen-residential-services .nrs-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease}
   #nguyen-residential-services .nrs-card:hover .nrs-img img{transform:scale(1.045)}
   #nguyen-residential-services .nrs-text{padding-top:clamp(18px,1.5vw,24px)}
@@ -187,6 +187,23 @@ const CLIENT_REBRAND = `
         }
       }
     }
+    function squareImages(){
+      var imgs = document.querySelectorAll('img');
+      for (var i = 0; i < imgs.length; i++) {
+        var img = imgs[i];
+        var ir = parseFloat(window.getComputedStyle(img).borderTopLeftRadius) || 0;
+        var iw = img.getBoundingClientRect().width || 0;
+        if (ir > 0 && ir < iw / 2) img.style.setProperty('border-radius', '0', 'important');
+        var el = img.parentElement, depth = 0;
+        while (el && el !== document.body && depth < 4) {
+          var cs = window.getComputedStyle(el);
+          var br = parseFloat(cs.borderTopLeftRadius) || 0;
+          var w = el.getBoundingClientRect().width || 0;
+          if (br > 0 && br < w / 2) el.style.setProperty('border-radius', '0', 'important');
+          el = el.parentElement; depth++;
+        }
+      }
+    }
     function start(){
       rebrand(document.body);
       var observer = new MutationObserver(function (muts) {
@@ -202,8 +219,8 @@ const CLIENT_REBRAND = `
     else { start(); }
     // Insert the services section after Framer has hydrated so it is not reconciled away; retry until it
     // lands, and keep the reference's interior gallery hidden across any re-render.
-    [1600, 2600, 4000, 6000].forEach(function (t) { setTimeout(function () { injectServices(); hideGallery(); }, t); });
-    [5000, 8000].forEach(function (t) { setTimeout(function () { if (looksBlank()) reveal(); }, t); });
+    [1600, 2600, 4000, 6000].forEach(function (t) { setTimeout(function () { injectServices(); hideGallery(); squareImages(); }, t); });
+    [800, 5000, 8000].forEach(function (t) { setTimeout(function () { squareImages(); if (looksBlank()) reveal(); }, t); });
   } catch (e) {}
 })();
 </script>`;

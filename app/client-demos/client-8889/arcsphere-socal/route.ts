@@ -95,27 +95,18 @@ const BRAND_PATCH = `
 </script>`
 
 const SQUARE_IMAGES_PATCH = `
-<script id="nguyen-socal-square-projects">
+<script id="nguyen-socal-square-cards">
 (() => {
-  // Square the "Featured Projects" image corners (keep the round arrow buttons round).
-  function findSection() {
-    var heads = document.querySelectorAll('h1,h2,h3,h4');
-    for (var i = 0; i < heads.length; i++) {
-      if (/featured\\s*projects/i.test((heads[i].textContent || ''))) {
-        return heads[i].closest('section') || heads[i].closest('[data-framer-name]') || heads[i].parentElement;
-      }
-    }
-    return null;
-  }
+  // Square every image/card corner across the page; keep round arrow buttons and circular avatars round.
   function squareImages() {
-    var sec = findSection();
-    if (!sec) return false;
-    var imgs = sec.querySelectorAll('img');
+    var imgs = document.querySelectorAll('img');
     for (var i = 0; i < imgs.length; i++) {
       var img = imgs[i];
-      img.style.setProperty('border-radius', '0', 'important');
-      var el = img, depth = 0;
-      while (el && el !== sec && depth < 5) {
+      var ir = parseFloat(window.getComputedStyle(img).borderTopLeftRadius) || 0;
+      var iw = img.getBoundingClientRect().width || 0;
+      if (ir > 0 && ir < iw / 2) img.style.setProperty('border-radius', '0', 'important');
+      var el = img.parentElement, depth = 0;
+      while (el && el !== document.body && depth < 4) {
         var cs = window.getComputedStyle(el);
         var br = parseFloat(cs.borderTopLeftRadius) || 0;
         var w = el.getBoundingClientRect().width || 0;
