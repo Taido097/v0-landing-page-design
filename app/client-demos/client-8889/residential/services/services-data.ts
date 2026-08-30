@@ -119,10 +119,22 @@ export const SERVICE_DETAILS: ServiceDetail[] = [
     subtitle: 'Detached · Attached · Garage Conversion',
     intro:
       'NGUYEN provides coordinated ADU design from early site study through engineering and permitting — a practical path to added space, flexibility, and value.',
-    hero: `${S}/svc-03-adus.jpg`,
+    hero: `${D}/adu-04-golden-hour.jpg`,
     columns: [
       { label: 'ADU Types', items: ['Detached ADUs', 'Attached ADUs', 'Garage Conversions'] },
       { label: "What's Included", items: ['Site Evaluation + Feasibility', 'Concept Design + Floor Plans', 'Architectural Design', 'Structural Engineering', 'MEP Design', 'Title 24 Compliance', 'Permit Submittal + Plan Check'] },
+    ],
+    gallery: [
+      { src: `${D}/adu-01-backyard.jpg`, cat: 'Exteriors', label: 'Backyard Guest House', alt: 'Backyard guest-house ADU' },
+      { src: `${D}/adu-07-living-space.jpg`, cat: 'Interiors', label: 'Living Space', alt: 'ADU interior living space' },
+      { src: `${D}/adu-03-glass-corner.jpg`, cat: 'Exteriors', label: 'Glass Corner', alt: 'ADU glass-corner exterior' },
+      { src: `${D}/adu-10-living-kitchen.jpg`, cat: 'Interiors', label: 'Living + Kitchen', alt: 'ADU living and kitchen' },
+      { src: `${D}/adu-02-garden-path.jpg`, cat: 'Exteriors', label: 'Garden Path', alt: 'ADU garden-path exterior' },
+      { src: `${D}/adu-08-bedroom.jpg`, cat: 'Interiors', label: 'Bedroom', alt: 'ADU bedroom' },
+      { src: `${D}/adu-04-golden-hour.jpg`, cat: 'Exteriors', label: 'Golden Hour', alt: 'ADU exterior at golden hour' },
+      { src: `${D}/adu-05-studio-retreat.jpg`, cat: 'Interiors', label: 'Studio Retreat', alt: 'ADU studio retreat' },
+      { src: `${D}/adu-09-bathroom.jpg`, cat: 'Interiors', label: 'Bathroom', alt: 'ADU bathroom' },
+      { src: `${D}/adu-06-warm-studio.jpg`, cat: 'Interiors', label: 'Warm Studio', alt: 'ADU warm studio interior' },
     ],
     process: [
       { t: 'Site Study' },
