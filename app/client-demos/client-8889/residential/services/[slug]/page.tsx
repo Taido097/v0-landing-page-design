@@ -205,7 +205,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
 
         <section className="nrd-hero">
           <div>
-            <p className="nrd-eyebrow">Residential Service · {svc.num}</p>
+            <p className="nrd-eyebrow">{svc.kicker ?? `Residential Service · ${svc.num}`}</p>
             <h1 className="nrd-h1">{svc.title}</h1>
             {svc.subtitle ? <p className="nrd-sub">{svc.subtitle}</p> : null}
             <p className="nrd-intro">{svc.intro}</p>

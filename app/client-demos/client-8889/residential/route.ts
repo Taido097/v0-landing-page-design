@@ -41,11 +41,12 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/680 m²/gi, 'Architecture · Structural · MEP · Permit'],
   [/\bSurface\b/gi, 'Scope'],
   [/\bAddress\b/gi, 'Region'],
-  [/Corporate Office Space/gi, 'Hillside Retreat'],
-  [/Modern Co-working Space/gi, 'Garden ADU'],
-  [/Modern Co-Working Space/gi, 'Garden ADU'],
-  [/Harmony Living Space/gi, 'Coastal Modern Home'],
-  [/Minimalist Apartment Interior/gi, 'Urban Townhomes'],
+  [/Other Projects?/gi, 'Our Services'],
+  [/Corporate Office Space/gi, 'ADU'],
+  [/Modern Co-working Space/gi, 'Land Development'],
+  [/Modern Co-Working Space/gi, 'Land Development'],
+  [/Harmony Living Space/gi, 'Commercial'],
+  [/Minimalist Apartment Interior/gi, 'Engineering'],
   [/Dubai, 2025/gi, 'Los Angeles'],
   [/Dubai/gi, 'Southern California'],
   [/United Arab Emirates/gi, 'California'],
@@ -201,6 +202,35 @@ const CLIENT_REBRAND = `
         }
       }
     }
+    // Retarget the reference's "Other Projects" cards to NGUYEN's service pages.
+    var SERVICE_CARDS = [
+      { m: 'land development', href: '/client-demos/client-8889/residential/services/land-development', img: '/client-8889/residential/svc-04-multifamily.jpg' },
+      { m: 'commercial', href: '/client-demos/client-8889/residential/services/commercial', img: '/client-8889/residential/detail/cm-01-multifamily-exterior.jpg' },
+      { m: 'engineering', href: '/client-demos/client-8889/residential/services/engineering-approvals', img: '/client-8889/residential/detail/eng-01-structural-frame.jpg' },
+      { m: 'adu', href: '/client-demos/client-8889/residential/services/adus', img: '/client-8889/residential/svc-03-adus.jpg' }
+    ];
+    function routeServices(){
+      var sec = document.querySelector('[data-framer-name="More-Projects"]');
+      if (!sec) {
+        var heads = document.querySelectorAll('h1,h2,h3');
+        for (var i = 0; i < heads.length; i++) { if (/our services|other project/i.test(heads[i].textContent || '')) { sec = heads[i].closest('section') || heads[i].parentElement; break; } }
+      }
+      if (!sec) return false;
+      var links = sec.querySelectorAll('a');
+      links.forEach(function (a) {
+        var t = (a.textContent || '').toLowerCase();
+        for (var i = 0; i < SERVICE_CARDS.length; i++) {
+          if (t.indexOf(SERVICE_CARDS[i].m) >= 0) {
+            a.setAttribute('href', window.location.origin + SERVICE_CARDS[i].href);
+            a.removeAttribute('target'); a.removeAttribute('rel');
+            var img = a.querySelector('img');
+            if (img) { img.removeAttribute('srcset'); img.setAttribute('src', window.location.origin + SERVICE_CARDS[i].img); }
+            break;
+          }
+        }
+      });
+      return true;
+    }
     function start(){
       rebrand(document.body);
       var observer = new MutationObserver(function (muts) {
@@ -216,8 +246,8 @@ const CLIENT_REBRAND = `
     else { start(); }
     // Insert the services section after Framer has hydrated so it is not reconciled away; retry until it
     // lands, and keep the reference's interior gallery hidden across any re-render.
-    [1600, 2600, 4000, 6000].forEach(function (t) { setTimeout(function () { injectServices(); hideGallery(); squareImages(); }, t); });
-    [800, 5000, 8000].forEach(function (t) { setTimeout(function () { squareImages(); if (looksBlank()) reveal(); }, t); });
+    [1600, 2600, 4000, 6000].forEach(function (t) { setTimeout(function () { injectServices(); hideGallery(); squareImages(); routeServices(); }, t); });
+    [800, 5000, 8000].forEach(function (t) { setTimeout(function () { squareImages(); routeServices(); if (looksBlank()) reveal(); }, t); });
   } catch (e) {}
 })();
 </script>`;

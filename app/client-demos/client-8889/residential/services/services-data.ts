@@ -26,6 +26,7 @@ export interface ServiceDetail {
   slug: string;
   num: string;
   title: string;
+  kicker?: string; // hero eyebrow override (defaults to "Residential Service · {num}")
   subtitle?: string;
   intro: string;
   hero: string;
@@ -227,6 +228,53 @@ export const SERVICE_DETAILS: ServiceDetail[] = [
     ],
     ctaHeadline: "Let’s coordinate the technical work.",
     cta: 'Start Engineering',
+  },
+  {
+    slug: 'commercial',
+    num: '06',
+    kicker: 'NGUYEN · Commercial',
+    title: 'Commercial',
+    subtitle: 'Architecture, engineering & permitting for commercial projects.',
+    intro:
+      'NGUYEN provides coordinated architecture, engineering, Title 24, and permitting for commercial projects — from tenant improvements and office build-outs to mixed-use — coordinated from concept through approval.',
+    hero: `${D}/cm-01-multifamily-exterior.jpg`,
+    columns: [
+      { label: 'Project Types', items: ['Office / Workplace', 'Retail / Restaurant', 'Tenant Improvements', 'Mixed-Use'] },
+      { label: 'Services', items: ['Architecture', 'Structural Engineering', 'MEP + Title 24', 'Permitting & Plan Check'] },
+    ],
+    process: [
+      { t: 'Consultation' },
+      { t: 'Feasibility / Existing Conditions' },
+      { t: 'Design' },
+      { t: 'Engineering Coordination' },
+      { t: 'Permit Submittal' },
+      { t: 'Plan Check + Approval' },
+    ],
+    ctaHeadline: "Let’s build your commercial project.",
+    cta: 'Start Your Project',
+  },
+  {
+    slug: 'land-development',
+    num: '07',
+    kicker: 'NGUYEN · Land Development',
+    title: 'Land Development',
+    subtitle: 'Feasibility, site planning & entitlement support.',
+    intro:
+      'NGUYEN supports land development with feasibility, site planning, and entitlement coordination — aligning zoning, access, and engineering early so projects can move toward approval.',
+    hero: `${S}/svc-04-multifamily.jpg`,
+    columns: [
+      { label: 'Scope', items: ['Feasibility Studies', 'Zoning / Entitlement Review', 'Site Planning', 'Density + Yield Studies'] },
+      { label: 'Coordination', items: ['Civil / Grading', 'Access & Parking', 'Utilities', 'Permitting'] },
+    ],
+    process: [
+      { t: 'Feasibility' },
+      { t: 'Site Analysis' },
+      { t: 'Planning' },
+      { t: 'Engineering Coordination' },
+      { t: 'Entitlement / Permitting' },
+    ],
+    ctaHeadline: "Let’s evaluate your site.",
+    cta: 'Discuss Your Site',
   },
 ];
 
