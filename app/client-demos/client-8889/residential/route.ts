@@ -66,17 +66,14 @@ const SERVICES = [
   { n: '02', t: 'Additions &amp; Major Remodels', c: 'Seamlessly expand and transform your home with careful planning and detail.', img: '/client-8889/residential/svc-02-additions-remodels.jpg', slug: 'additions-remodels' },
   { n: '03', t: 'ADUs', c: 'Beautiful, functional accessory dwelling units for family, rental income, or office use.', img: '/client-8889/residential/svc-03-adus.jpg', slug: 'adus' },
   { n: '04', t: 'Multifamily / Townhomes / Condos', c: 'Well-designed residences that balance livability, efficiency, and community.', img: '/client-8889/residential/svc-04-multifamily.jpg', slug: 'multifamily' },
-  { n: '05', t: 'Structural Engineering', c: 'Safe, efficient, and code-compliant structural solutions for new and existing homes.', img: '/client-8889/residential/svc-05-structural.jpg', slug: 'structural' },
-  { n: '06', t: 'MEP + Title 24', c: 'Integrated MEP design and Title 24 compliance for comfort, efficiency, and energy performance.', img: '/client-8889/residential/svc-06-mep-title24.jpg', slug: 'mep-title24' },
-  { n: '07', t: 'Permitting', c: 'We manage the permit process to keep your project moving forward with clarity.', img: '/client-8889/residential/svc-07-permitting.jpg', slug: 'permitting' },
-  { n: '08', t: 'Plan-Check Support', c: 'Responsive plan-check support to address comments and accelerate approvals.', img: '/client-8889/residential/svc-08-plan-check.jpg', slug: 'plan-check' },
+  { n: '05', t: 'Engineering &amp; Approvals', c: 'Structural, MEP + Title 24, permitting, and plan-check support — coordinated with your design.', img: '/client-8889/residential/detail/eng-01-structural-frame.jpg', slug: 'engineering-approvals' },
 ];
 const SERVICES_BASE = '/client-demos/client-8889/residential/services/';
 const SERVICES_STYLE = `
   #nguyen-residential-services{display:block;background:transparent;padding:clamp(56px,8vw,120px) 0;font-family:"Inter Display","Inter",system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#4f4742}
   #nguyen-residential-services .nrs-shell{width:min(1320px,100%);margin:0 auto;padding:0 clamp(20px,4vw,60px);box-sizing:border-box}
   #nguyen-residential-services .nrs-eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.2em;font-weight:600;color:#736b62;margin:0 0 clamp(32px,4vw,54px)}
-  #nguyen-residential-services .nrs-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(24px,2.4vw,40px)}
+  #nguyen-residential-services .nrs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:clamp(20px,2vw,32px)}
   #nguyen-residential-services .nrs-card{display:flex;flex-direction:column;color:inherit;text-decoration:none;cursor:pointer}
   #nguyen-residential-services .nrs-img{aspect-ratio:3/4;overflow:hidden;background:#e7e0d5;border-radius:0}
   #nguyen-residential-services .nrs-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease}
