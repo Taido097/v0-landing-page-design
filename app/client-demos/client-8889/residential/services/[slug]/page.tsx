@@ -272,7 +272,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
 
         {svc.gallery ? (
           <section className="nrd-section">
-            <SectionHead title="Project Gallery" sub="A selection of recent residential work." />
+            <SectionHead title="Project Gallery" sub="A selection of recent project work." />
             <Gallery shots={svc.gallery} />
           </section>
         ) : null}
