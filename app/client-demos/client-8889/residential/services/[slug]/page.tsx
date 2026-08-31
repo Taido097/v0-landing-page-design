@@ -68,7 +68,7 @@ const CSS = `
 .nrd-hero-img{aspect-ratio:4/3;border-radius:0;overflow:hidden;background:#e7e0d5}
 .nrd-hero-img img{width:100%;height:100%;object-fit:cover;display:block}
 /* full-width banner hero */
-.nrd-banner{position:relative;width:100vw;margin-left:calc(50% - 50vw);height:clamp(460px,62vw,780px);margin-top:clamp(16px,1.6vw,24px);overflow:hidden;background:#e7e0d5}
+.nrd-banner{position:relative;width:100%;height:clamp(460px,62vw,780px);margin-top:clamp(16px,1.6vw,24px);overflow:hidden;background:#e7e0d5}
 .nrd-banner img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .nrd-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,17,14,.03),rgba(20,17,14,.02) 55%,rgba(20,17,14,.45) 86%,rgba(20,17,14,.6))}
 .nrd-banner-body{position:absolute;left:0;right:0;bottom:clamp(60px,7vw,104px);z-index:1;width:min(1280px,100%);margin:0 auto;padding:0 clamp(20px,4vw,56px)}
@@ -214,26 +214,29 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
 
       <div className="nrd-shell">
         <a href={RESIDENTIAL_HREF} className="nrd-back">← Back to Residential</a>
+      </div>
 
-        {svc.heroBanner ? (
-          <>
-            <section className="nrd-banner">
-              <img src={svc.hero} alt={svc.title} />
-              <div className="nrd-banner-body">
-                <h1 className="nrd-banner-h1">{svc.bannerLabel ?? svc.title}</h1>
-              </div>
-              {svc.heroCaption ? (
-                <div className="nrd-banner-cap">
-                  {svc.heroCaption.map((c) => <span key={c}>{c}</span>)}
-                </div>
-              ) : null}
-            </section>
-            <div className="nrd-lead">
-              {svc.subtitle ? <h2 className="nrd-lead-h">{svc.subtitle}</h2> : null}
-              <p className="nrd-lead-p">{svc.intro}</p>
-              {svc.note ? <p className="nrd-note">{svc.note}</p> : null}
+      {svc.heroBanner ? (
+        <section className="nrd-banner">
+          <img src={svc.hero} alt={svc.title} />
+          <div className="nrd-banner-body">
+            <h1 className="nrd-banner-h1">{svc.bannerLabel ?? svc.title}</h1>
+          </div>
+          {svc.heroCaption ? (
+            <div className="nrd-banner-cap">
+              {svc.heroCaption.map((c) => <span key={c}>{c}</span>)}
             </div>
-          </>
+          ) : null}
+        </section>
+      ) : null}
+
+      <div className="nrd-shell">
+        {svc.heroBanner ? (
+          <div className="nrd-lead">
+            {svc.subtitle ? <h2 className="nrd-lead-h">{svc.subtitle}</h2> : null}
+            <p className="nrd-lead-p">{svc.intro}</p>
+            {svc.note ? <p className="nrd-note">{svc.note}</p> : null}
+          </div>
         ) : (
           <section className="nrd-hero">
             <div>
