@@ -35,6 +35,7 @@ export interface ServiceDetail {
   columns?: DetailColumn[]; // checklist columns
   gallery?: GalleryShot[]; // "Project Gallery" (filters derived from cat)
   process: DetailItem[]; // numbered process steps
+  note?: string; // small disclaimer shown near the intro
   ctaHeadline: string;
   ctaBody?: string;
   cta: string; // button label
@@ -275,6 +276,43 @@ export const SERVICE_DETAILS: ServiceDetail[] = [
     ],
     ctaHeadline: "Let’s evaluate your site.",
     cta: 'Discuss Your Site',
+  },
+  {
+    slug: 'sb9-development',
+    num: '08',
+    kicker: 'NGUYEN · SB 9 Development',
+    title: 'SB 9 Development',
+    subtitle: 'California infill housing opportunities for qualifying properties.',
+    intro:
+      'Feasibility, zoning review, two-unit concepts, urban lot split planning, access + utility coordination, primary home + ADU strategies, and permit support.',
+    note:
+      'Eligibility and allowable development depend on current state law, local objective standards, and site-specific conditions.',
+    hero: `${D}/sb9-04-paired-homes.jpg`,
+    columns: [
+      { label: 'Scope', items: ['Feasibility Studies', 'Zoning Review', 'Two-Unit Concepts', 'Urban Lot Split Planning'] },
+      { label: 'Coordination', items: ['Access + Utility Coordination', 'Primary Home + ADU Strategies', 'Permit Support'] },
+    ],
+    gallery: [
+      { src: `${D}/sb9-01-modern-duplex.jpg`, cat: 'Two-Unit', label: 'Modern Duplex', alt: 'SB 9 modern duplex' },
+      { src: `${D}/sb9-05-aerial-lot-split.jpg`, cat: 'Lot Split', label: 'Aerial Lot Split', alt: 'SB 9 aerial lot split' },
+      { src: `${D}/sb9-03-spanish-two-unit.jpg`, cat: 'Two-Unit', label: 'Spanish-Style Two-Unit', alt: 'SB 9 Spanish-style two-unit' },
+      { src: `${D}/sb9-06-primary-guest.jpg`, cat: 'Primary + ADU', label: 'Primary + Guest House', alt: 'SB 9 primary home + guest house' },
+      { src: `${D}/sb9-02-two-homes.jpg`, cat: 'Lot Split', label: 'Two Homes, One Lot', alt: 'SB 9 two homes on one lot' },
+      { src: `${D}/sb9-07-twin-facade.jpg`, cat: 'Two-Unit', label: 'Twin Residence', alt: 'SB 9 twin residence façade' },
+      { src: `${D}/sb9-10-courtyard.jpg`, cat: 'Two-Unit', label: 'Two-Unit Courtyard', alt: 'SB 9 two-unit courtyard' },
+      { src: `${D}/sb9-08-duplex-garden.jpg`, cat: 'Two-Unit', label: 'Duplex + Garden', alt: 'SB 9 duplex with garden' },
+      { src: `${D}/sb9-09-infill.jpg`, cat: 'Lot Split', label: 'Infill Residential', alt: 'SB 9 infill residential' },
+      { src: `${D}/sb9-04-paired-homes.jpg`, cat: 'Two-Unit', label: 'Paired Homes', alt: 'SB 9 modern paired homes' },
+    ],
+    process: [
+      { t: 'Feasibility', d: 'Property + zoning review.' },
+      { t: 'Concept Planning', d: 'Two-unit concepts and residential strategy.' },
+      { t: 'Site Planning', d: 'Urban lot split, access, and utilities.' },
+      { t: 'Residential Coordination', d: 'Primary home + ADU strategies.' },
+      { t: 'Permitting', d: 'Permit coordination and project support.' },
+    ],
+    ctaHeadline: "See what your property may allow.",
+    cta: 'Start an SB 9 Review',
   },
 ];
 

@@ -64,6 +64,7 @@ const CSS = `
 .nrd-h1{font-size:clamp(32px,5vw,58px);line-height:1.04;font-weight:600;letter-spacing:-.02em;text-transform:uppercase;margin:0}
 .nrd-sub{color:var(--gold);font-size:clamp(15px,1.7vw,21px);font-weight:500;margin:18px 0 0;letter-spacing:.01em}
 .nrd-intro{color:#453f39;font-size:clamp(14.5px,1.2vw,16.5px);line-height:1.62;margin:22px 0 0;max-width:34em}
+.nrd-note{margin:18px 0 0;max-width:34em;font-size:12px;line-height:1.5;color:var(--soft);border-left:2px solid var(--line);padding-left:14px}
 .nrd-hero-img{aspect-ratio:4/3;border-radius:0;overflow:hidden;background:#e7e0d5}
 .nrd-hero-img img{width:100%;height:100%;object-fit:cover;display:block}
 /* section scaffolding */
@@ -209,6 +210,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
             <h1 className="nrd-h1">{svc.title}</h1>
             {svc.subtitle ? <p className="nrd-sub">{svc.subtitle}</p> : null}
             <p className="nrd-intro">{svc.intro}</p>
+            {svc.note ? <p className="nrd-note">{svc.note}</p> : null}
           </div>
           <div className="nrd-hero-img">
             <img src={svc.hero} alt={svc.title} />

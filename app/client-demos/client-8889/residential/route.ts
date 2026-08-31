@@ -67,13 +67,14 @@ const SERVICES = [
   { n: '02', t: 'Additions &amp; Major Remodels', c: 'Seamlessly expand and transform your home with careful planning and detail.', img: '/client-8889/residential/svc-02-additions-remodels.jpg', slug: 'additions-remodels' },
   { n: '04', t: 'Multifamily / Townhomes / Condos', c: 'Well-designed residences that balance livability, efficiency, and community.', img: '/client-8889/residential/svc-04-multifamily.jpg', slug: 'multifamily' },
   { n: '05', t: 'Engineering &amp; Approvals', c: 'Structural, MEP + Title 24, permitting, and plan-check support — coordinated with your design.', img: '/client-8889/residential/detail/eng-01-structural-frame.jpg', slug: 'engineering-approvals' },
+  { n: '06', t: 'SB 9 Development', c: 'Feasibility, zoning review, two-unit concepts, urban lot split planning, and coordinated permit support for qualifying properties.', img: '/client-8889/residential/detail/sb9-01-modern-duplex.jpg', slug: 'sb9-development' },
 ];
 const SERVICES_BASE = '/client-demos/client-8889/residential/services/';
 const SERVICES_STYLE = `
   #nguyen-residential-services{display:block;background:transparent;padding:clamp(56px,8vw,120px) 0;font-family:"Inter Display","Inter",system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#4f4742}
-  #nguyen-residential-services .nrs-shell{width:min(1320px,100%);margin:0 auto;padding:0 clamp(20px,4vw,60px);box-sizing:border-box}
+  #nguyen-residential-services .nrs-shell{width:min(1460px,100%);margin:0 auto;padding:0 clamp(20px,4vw,60px);box-sizing:border-box}
   #nguyen-residential-services .nrs-eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.2em;font-weight:600;color:#736b62;margin:0 0 clamp(32px,4vw,54px)}
-  #nguyen-residential-services .nrs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:clamp(20px,2vw,32px)}
+  #nguyen-residential-services .nrs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:clamp(20px,2vw,30px)}
   #nguyen-residential-services .nrs-card{display:flex;flex-direction:column;color:inherit;text-decoration:none;cursor:pointer}
   #nguyen-residential-services .nrs-img{aspect-ratio:3/4;overflow:hidden;background:#e7e0d5;border-radius:0}
   #nguyen-residential-services .nrs-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease}
