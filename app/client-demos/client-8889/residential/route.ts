@@ -65,7 +65,6 @@ function removeNonVisualTelemetry(html: string) {
 const SERVICES = [
   { n: '01', t: 'Custom Homes', c: 'Bespoke homes designed around your lifestyle, site, and long-term goals.', img: '/client-8889/residential/svc-01-custom-homes.jpg', slug: 'custom-homes' },
   { n: '02', t: 'Additions &amp; Major Remodels', c: 'Seamlessly expand and transform your home with careful planning and detail.', img: '/client-8889/residential/svc-02-additions-remodels.jpg', slug: 'additions-remodels' },
-  { n: '03', t: 'ADUs', c: 'Beautiful, functional accessory dwelling units for family, rental income, or office use.', img: '/client-8889/residential/svc-03-adus.jpg', slug: 'adus' },
   { n: '04', t: 'Multifamily / Townhomes / Condos', c: 'Well-designed residences that balance livability, efficiency, and community.', img: '/client-8889/residential/svc-04-multifamily.jpg', slug: 'multifamily' },
   { n: '05', t: 'Engineering &amp; Approvals', c: 'Structural, MEP + Title 24, permitting, and plan-check support — coordinated with your design.', img: '/client-8889/residential/detail/eng-01-structural-frame.jpg', slug: 'engineering-approvals' },
 ];
