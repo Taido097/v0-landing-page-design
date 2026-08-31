@@ -244,7 +244,7 @@ export const SERVICE_DETAILS: ServiceDetail[] = [
     hero: `${D}/cx-09-building.jpg`,
     heroBanner: true,
     bannerLabel: 'Commercial',
-    heroCaption: ['Commercial Design', 'Retail + Office', 'Southern California'],
+    heroCaption: ['Commercial', 'Commercial Architecture', 'Los Angeles'],
     offer: [
       { t: 'Architectural Design', d: 'Commercial architecture shaped around brand, function, and code.', icon: 'LayoutTemplate' },
       { t: 'Structural Engineering', d: 'Structural design and coordination for new and existing buildings.', icon: 'Ruler' },

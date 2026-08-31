@@ -68,12 +68,12 @@ const CSS = `
 .nrd-hero-img{aspect-ratio:4/3;border-radius:0;overflow:hidden;background:#e7e0d5}
 .nrd-hero-img img{width:100%;height:100%;object-fit:cover;display:block}
 /* full-width banner hero */
-.nrd-banner{position:relative;width:100vw;margin-left:calc(50% - 50vw);height:clamp(360px,50vw,600px);margin-top:clamp(18px,2vw,28px);overflow:hidden;background:#e7e0d5}
+.nrd-banner{position:relative;width:100vw;margin-left:calc(50% - 50vw);height:clamp(460px,62vw,780px);margin-top:clamp(16px,1.6vw,24px);overflow:hidden;background:#e7e0d5}
 .nrd-banner img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.nrd-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,17,14,.04),rgba(20,17,14,.5) 76%,rgba(20,17,14,.72))}
-.nrd-banner-body{position:absolute;left:0;right:0;bottom:clamp(54px,7vw,92px);z-index:1;width:min(1200px,100%);margin:0 auto;padding:0 clamp(20px,4vw,56px)}
-.nrd-banner-h1{font-size:clamp(30px,5vw,58px);font-weight:600;letter-spacing:-.02em;line-height:1;color:#f3f0e9;margin:0}
-.nrd-banner-cap{position:absolute;left:0;right:0;bottom:0;z-index:1;display:flex;justify-content:space-between;gap:14px;width:min(1200px,100%);margin:0 auto;padding:16px clamp(20px,4vw,56px);border-top:1px solid rgba(243,240,233,.28);color:#e7e1d6;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase}
+.nrd-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,17,14,.03),rgba(20,17,14,.02) 55%,rgba(20,17,14,.45) 86%,rgba(20,17,14,.6))}
+.nrd-banner-body{position:absolute;left:0;right:0;bottom:clamp(60px,7vw,104px);z-index:1;width:min(1280px,100%);margin:0 auto;padding:0 clamp(20px,4vw,56px)}
+.nrd-banner-h1{font-size:clamp(34px,5.6vw,68px);font-weight:400;letter-spacing:-.015em;line-height:1;color:#f5f2ec;margin:0}
+.nrd-banner-cap{position:absolute;left:0;right:0;bottom:0;z-index:1;display:flex;justify-content:space-between;gap:14px;width:min(1280px,100%);margin:0 auto;padding:18px clamp(20px,4vw,56px);border-top:1px solid rgba(245,242,236,.35);color:#eee9df;font-size:13px;letter-spacing:.01em}
 .nrd-lead{margin-top:clamp(40px,5vw,72px)}
 .nrd-lead-h{font-size:clamp(24px,3.4vw,42px);font-weight:500;line-height:1.14;letter-spacing:-.01em;color:var(--ink);margin:0;max-width:20em}
 .nrd-lead-p{margin:22px 0 0;max-width:44em;font-size:clamp(14.5px,1.2vw,16.5px);line-height:1.62;color:#453f39}
