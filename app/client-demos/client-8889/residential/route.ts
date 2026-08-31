@@ -202,12 +202,14 @@ const CLIENT_REBRAND = `
         }
       }
     }
-    // Retarget the reference's "Other Projects" cards to NGUYEN's service pages.
+    // Retarget the reference's "Other Projects" cards (in DOM order: ADU, Land
+    // Development, Commercial, Engineering) to NGUYEN's service pages. Position-based
+    // so residual reference category text (e.g. "Commercial Interior") can't mis-route.
     var SERVICE_CARDS = [
-      { m: 'land development', href: '/client-demos/client-8889/residential/services/land-development', img: '/client-8889/residential/svc-04-multifamily.jpg' },
-      { m: 'commercial', href: '/client-demos/client-8889/residential/services/commercial', img: '/client-8889/residential/detail/cm-01-multifamily-exterior.jpg' },
-      { m: 'engineering', href: '/client-demos/client-8889/residential/services/engineering-approvals', img: '/client-8889/residential/detail/eng-01-structural-frame.jpg' },
-      { m: 'adu', href: '/client-demos/client-8889/residential/services/adus', img: '/client-8889/residential/svc-03-adus.jpg' }
+      { href: '/client-demos/client-8889/residential/services/adus', img: '/client-8889/residential/svc-03-adus.jpg' },
+      { href: '/client-demos/client-8889/residential/services/land-development', img: '/client-8889/residential/svc-04-multifamily.jpg' },
+      { href: '/client-demos/client-8889/residential/services/commercial', img: '/client-8889/residential/detail/cm-01-multifamily-exterior.jpg' },
+      { href: '/client-demos/client-8889/residential/services/engineering-approvals', img: '/client-8889/residential/detail/eng-01-structural-frame.jpg' }
     ];
     function routeServices(){
       var sec = document.querySelector('[data-framer-name="More-Projects"]');
@@ -216,18 +218,13 @@ const CLIENT_REBRAND = `
         for (var i = 0; i < heads.length; i++) { if (/our services|other project/i.test(heads[i].textContent || '')) { sec = heads[i].closest('section') || heads[i].parentElement; break; } }
       }
       if (!sec) return false;
-      var links = sec.querySelectorAll('a');
-      links.forEach(function (a) {
-        var t = (a.textContent || '').toLowerCase();
-        for (var i = 0; i < SERVICE_CARDS.length; i++) {
-          if (t.indexOf(SERVICE_CARDS[i].m) >= 0) {
-            a.setAttribute('href', window.location.origin + SERVICE_CARDS[i].href);
-            a.removeAttribute('target'); a.removeAttribute('rel');
-            var img = a.querySelector('img');
-            if (img) { img.removeAttribute('srcset'); img.setAttribute('src', window.location.origin + SERVICE_CARDS[i].img); }
-            break;
-          }
-        }
+      var cards = Array.prototype.slice.call(sec.querySelectorAll('a')).filter(function (a) { return a.querySelector('img'); });
+      cards.forEach(function (a, i) {
+        if (i >= SERVICE_CARDS.length) return;
+        a.setAttribute('href', window.location.origin + SERVICE_CARDS[i].href);
+        a.removeAttribute('target'); a.removeAttribute('rel');
+        var img = a.querySelector('img');
+        if (img) { img.removeAttribute('srcset'); img.setAttribute('src', window.location.origin + SERVICE_CARDS[i].img); }
       });
       return true;
     }
