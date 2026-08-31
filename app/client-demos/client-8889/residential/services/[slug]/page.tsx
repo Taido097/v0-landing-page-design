@@ -67,6 +67,17 @@ const CSS = `
 .nrd-note{margin:18px 0 0;max-width:34em;font-size:12px;line-height:1.5;color:var(--soft);border-left:2px solid var(--line);padding-left:14px}
 .nrd-hero-img{aspect-ratio:4/3;border-radius:0;overflow:hidden;background:#e7e0d5}
 .nrd-hero-img img{width:100%;height:100%;object-fit:cover;display:block}
+/* full-width banner hero */
+.nrd-banner{position:relative;width:100vw;margin-left:calc(50% - 50vw);height:clamp(360px,50vw,600px);margin-top:clamp(18px,2vw,28px);overflow:hidden;background:#e7e0d5}
+.nrd-banner img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.nrd-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,17,14,.04),rgba(20,17,14,.5) 76%,rgba(20,17,14,.72))}
+.nrd-banner-body{position:absolute;left:0;right:0;bottom:clamp(54px,7vw,92px);z-index:1;width:min(1200px,100%);margin:0 auto;padding:0 clamp(20px,4vw,56px)}
+.nrd-banner-h1{font-size:clamp(30px,5vw,58px);font-weight:600;letter-spacing:-.02em;line-height:1;color:#f3f0e9;margin:0}
+.nrd-banner-cap{position:absolute;left:0;right:0;bottom:0;z-index:1;display:flex;justify-content:space-between;gap:14px;width:min(1200px,100%);margin:0 auto;padding:16px clamp(20px,4vw,56px);border-top:1px solid rgba(243,240,233,.28);color:#e7e1d6;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase}
+.nrd-lead{margin-top:clamp(40px,5vw,72px)}
+.nrd-lead-h{font-size:clamp(24px,3.4vw,42px);font-weight:500;line-height:1.14;letter-spacing:-.01em;color:var(--ink);margin:0;max-width:20em}
+.nrd-lead-p{margin:22px 0 0;max-width:44em;font-size:clamp(14.5px,1.2vw,16.5px);line-height:1.62;color:#453f39}
+@media(max-width:600px){.nrd-banner-cap span:nth-child(2){display:none}}
 /* section scaffolding */
 .nrd-section{margin-top:clamp(56px,7vw,104px)}
 .nrd-sechead{text-align:center;max-width:660px;margin:0 auto clamp(32px,4vw,50px)}
@@ -204,18 +215,39 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
       <div className="nrd-shell">
         <a href={RESIDENTIAL_HREF} className="nrd-back">← Back to Residential</a>
 
-        <section className="nrd-hero">
-          <div>
-            <p className="nrd-eyebrow">{svc.kicker ?? `Residential Service · ${svc.num}`}</p>
-            <h1 className="nrd-h1">{svc.title}</h1>
-            {svc.subtitle ? <p className="nrd-sub">{svc.subtitle}</p> : null}
-            <p className="nrd-intro">{svc.intro}</p>
-            {svc.note ? <p className="nrd-note">{svc.note}</p> : null}
-          </div>
-          <div className="nrd-hero-img">
-            <img src={svc.hero} alt={svc.title} />
-          </div>
-        </section>
+        {svc.heroBanner ? (
+          <>
+            <section className="nrd-banner">
+              <img src={svc.hero} alt={svc.title} />
+              <div className="nrd-banner-body">
+                <h1 className="nrd-banner-h1">{svc.bannerLabel ?? svc.title}</h1>
+              </div>
+              {svc.heroCaption ? (
+                <div className="nrd-banner-cap">
+                  {svc.heroCaption.map((c) => <span key={c}>{c}</span>)}
+                </div>
+              ) : null}
+            </section>
+            <div className="nrd-lead">
+              {svc.subtitle ? <h2 className="nrd-lead-h">{svc.subtitle}</h2> : null}
+              <p className="nrd-lead-p">{svc.intro}</p>
+              {svc.note ? <p className="nrd-note">{svc.note}</p> : null}
+            </div>
+          </>
+        ) : (
+          <section className="nrd-hero">
+            <div>
+              <p className="nrd-eyebrow">{svc.kicker ?? `Residential Service · ${svc.num}`}</p>
+              <h1 className="nrd-h1">{svc.title}</h1>
+              {svc.subtitle ? <p className="nrd-sub">{svc.subtitle}</p> : null}
+              <p className="nrd-intro">{svc.intro}</p>
+              {svc.note ? <p className="nrd-note">{svc.note}</p> : null}
+            </div>
+            <div className="nrd-hero-img">
+              <img src={svc.hero} alt={svc.title} />
+            </div>
+          </section>
+        )}
 
         {svc.approach ? (
           <section className="nrd-section">
