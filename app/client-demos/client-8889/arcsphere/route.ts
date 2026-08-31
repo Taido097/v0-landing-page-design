@@ -232,19 +232,22 @@ const CLIENT_PATCH = `
       sourceDescription: 'Creating refined interiors through thoughtful materials, lighting, and spatial composition.',
       sourceTitles: ['Interior Design'],
       title: 'COMMERCIAL',
-      description: 'Architecture and engineering for offices, retail, restaurants, tenant improvements, and other commercial projects.'
+      description: 'Architecture and engineering for offices, retail, restaurants, tenant improvements, and other commercial projects.',
+      href: '/client-demos/client-8889/residential/services/commercial'
     },
     {
       sourceDescription: 'Transforming outdated spaces into modern and carefully designed environments',
       sourceTitles: ['Renovation & Remodeling', 'Commercial Remodel & Renovation & Remodeling'],
       title: 'ADU',
-      description: 'ADU design, engineering, Title 24, permit documentation, and city coordination from concept through approval.'
+      description: 'ADU design, engineering, Title 24, permit documentation, and city coordination from concept through approval.',
+      href: '/client-demos/client-8889/residential/services/adus'
     },
     {
       sourceDescription: 'High-quality visualizations that help clients clearly understand the design before construction begins.',
       sourceTitles: ['3D Visualization', 'Permit Drawing Documentation'],
       title: 'LAND DEVELOPMENT',
-      description: 'Site planning, entitlement support, grading and utility coordination, and development documentation for residential and commercial sites.'
+      description: 'Site planning, entitlement support, grading and utility coordination, and development documentation for residential and commercial sites.',
+      href: '/client-demos/client-8889/residential/services/land-development'
     }
   ];
   const extraServiceDescriptions = [
