@@ -128,6 +128,16 @@ const CSS = `
 .nrd-col ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:13px}
 .nrd-col li{display:flex;align-items:flex-start;gap:10px;font-size:13.5px;line-height:1.4;color:#453f39}
 .nrd-col li svg{margin-top:1px}
+/* ADU Option 1 — clean two-column Scope of Services body only */
+.nrd-adu-scope{max-width:920px;margin-left:auto;margin-right:auto}
+.nrd-adu-scope .nrd-sechead{margin-bottom:clamp(34px,4vw,48px)}
+.nrd-adu-scope .nrd-sechead::after{content:"";display:block;width:32px;height:1px;background:var(--gold);margin:18px auto 0}
+.nrd-adu-scope .nrd-cols.n2{grid-template-columns:1fr 1fr;gap:0;max-width:760px;margin:0 auto}
+.nrd-adu-scope .nrd-col{border-top:0;padding:4px 44px 0}
+.nrd-adu-scope .nrd-col:first-child{padding-left:0;border-right:1px solid var(--line)}
+.nrd-adu-scope .nrd-col:last-child{padding-right:0}
+.nrd-adu-scope .nrd-col-h{margin-bottom:22px}
+.nrd-adu-scope .nrd-col ul{gap:15px}
 /* gallery cards */
 .nrd-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:0 0 clamp(26px,3vw,38px)}
 .nrd-chip{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:4px;padding:9px 18px;cursor:pointer;transition:all .2s}
@@ -208,6 +218,9 @@ const CSS = `
   .nrd-nav-left{display:none}
   .nrd-approach-grid,.nrd-offer,.nrd-cols.n1,.nrd-cols.n2,.nrd-cols.n3,.nrd-cols.n4,.nrd-gallery{grid-template-columns:1fr}
   .nrd-off p{padding-left:0}
+  .nrd-adu-scope .nrd-cols.n2{grid-template-columns:1fr;max-width:520px}
+  .nrd-adu-scope .nrd-col{padding:0}
+  .nrd-adu-scope .nrd-col:first-child{border-right:0;border-bottom:1px solid var(--line);padding-bottom:28px;margin-bottom:28px}
 }
 /* Commercial "Built For Business" image-mosaic body */
 .cx-body{padding-top:clamp(36px,4.5vw,64px)}
@@ -400,7 +413,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
         ) : null}
 
         {svc.columns ? (
-          <section className="nrd-section">
+          <section className={`nrd-section${slug === 'adus' ? ' nrd-adu-scope' : ''}`}>
             <SectionHead title="Scope of Services" sub="Coordinated across architecture, engineering, and permitting." />
             <div className={`nrd-cols n${Math.min(svc.columns.length, 4)}`}>
               {svc.columns.map((c) => (
