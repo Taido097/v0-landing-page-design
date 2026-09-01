@@ -72,7 +72,7 @@ const CSS = `
 .nrd-hero-img{aspect-ratio:4/3;border-radius:0;overflow:hidden;background:#e7e0d5}
 .nrd-hero-img img{width:100%;height:100%;object-fit:cover;display:block}
 /* full-width banner hero */
-.nrd-banner{position:relative;margin:0 12px;border-radius:12px;height:97vh;max-height:1000px;overflow:hidden;background:#1a1712}
+.nrd-banner{position:relative;margin:0;border-radius:0;height:97vh;max-height:1000px;overflow:hidden;background:#1a1712}
 .nrd-banner img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .nrd-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(#00000036 0%,#000000c9 100%)}
 .nrd-banner-inner{position:absolute;left:50%;bottom:40px;z-index:1;width:94%;transform:translateX(-50%)}
