@@ -259,8 +259,31 @@ const CSS = `
   .cx-bottom{grid-template-columns:1fr}
   .cx-steps{grid-template-columns:1fr}
 }
+/* ADU page: "Three ADU Types" panel (detached left, attached upper-right, garage lower-right) */
+.adu-head{text-align:center;margin:0 auto clamp(28px,3.6vw,48px)}
+.adu-head .adu-rule{display:block;width:38px;height:2px;background:var(--gold);margin:0 auto 22px}
+.adu-head h2{font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:clamp(30px,4.4vw,52px);line-height:1.05;letter-spacing:-.01em;font-weight:600;color:#4f4742;margin:0}
+.adu-head p{margin:14px 0 0;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--soft);line-height:1.7}
+.adu-grid{display:grid;grid-template-columns:1.05fr 1fr;grid-template-rows:auto auto;gap:16px}
+.adu-panel{position:relative;overflow:hidden;background:#e7e0d5;border-radius:0}
+.adu-panel img{width:100%;height:100%;object-fit:cover;display:block}
+.adu-panel::before{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(244,241,235,.55) 0%,rgba(244,241,235,0) 36%);pointer-events:none;z-index:1}
+.adu-cap{position:absolute;left:clamp(20px,2vw,32px);top:clamp(20px,2.2vw,32px);z-index:2;max-width:74%}
+.adu-cap .adu-line{display:block;width:34px;height:2px;background:var(--gold);margin:0 0 14px}
+.adu-cap h3{font-size:clamp(17px,1.5vw,21px);letter-spacing:.02em;text-transform:uppercase;font-weight:600;color:#4f4742;margin:0}
+.adu-cap p{margin:10px 0 0;font-size:13.5px;line-height:1.5;font-weight:400;color:#6f675e;max-width:22ch}
+.adu-detached{grid-column:1;grid-row:1/3}
+.adu-attached{grid-column:2;grid-row:1;aspect-ratio:536/421}
+.adu-garage{grid-column:2;grid-row:2;aspect-ratio:536/380}
+@media(max-width:820px){
+  .adu-grid{grid-template-columns:1fr}
+  .adu-detached{grid-column:1;grid-row:auto;aspect-ratio:520/640}
+  .adu-attached,.adu-garage{grid-column:1}
+}
 `;
 
+// Base path for the local detail images (commercial mosaic + ADU panels).
+const CX = '/client-8889/residential/detail';
 // Icon per gallery category so the mosaic labels stay honest to the existing content.
 const CX_CAT_ICON: Record<string, typeof Home> = {
   'Cafés': Coffee,
@@ -282,6 +305,36 @@ function CxCell({ shot, cls }: { shot: GalleryShot; cls?: string }) {
       <img src={shot.src} alt={shot.alt} />
       <figcaption className="cx-label"><Ico size={17} strokeWidth={1.6} />{shot.label ?? shot.cat}</figcaption>
     </figure>
+  );
+}
+
+const ADU_TYPES = [
+  { src: `${CX}/detached_adu.png`, cls: 'adu-detached', t: 'Detached ADU', d: 'A private, standalone space with endless possibilities.' },
+  { src: `${CX}/attached_adu.png`, cls: 'adu-attached', t: 'Attached ADU', d: 'Seamlessly connected. Perfectly integrated.' },
+  { src: `${CX}/garage_conversion.png`, cls: 'adu-garage', t: 'Garage Conversion', d: 'Transform your garage into livable space.' },
+];
+
+function AduTypes() {
+  return (
+    <section className="nrd-section adu-types" aria-label="Three ADU Types">
+      <div className="adu-head">
+        <span className="adu-rule" aria-hidden="true" />
+        <h2>Three ADU Types</h2>
+        <p>Flexible Solutions. Designed Around You.</p>
+      </div>
+      <div className="adu-grid">
+        {ADU_TYPES.map((a) => (
+          <figure className={`adu-panel ${a.cls}`} key={a.src}>
+            <img src={a.src} alt={a.t} />
+            <figcaption className="adu-cap">
+              <span className="adu-line" aria-hidden="true" />
+              <h3>{a.t}</h3>
+              <p>{a.d}</p>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -377,6 +430,8 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
           </section>
         )}
 
+        {slug === 'adus' ? <AduTypes /> : null}
+
         {svc.approach ? (
           <section className="nrd-section">
             <SectionHead title="Our Approach" sub="How we plan, design, and coordinate." />
@@ -412,8 +467,8 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
           </section>
         ) : null}
 
-        {svc.columns ? (
-          <section className={`nrd-section${slug === 'adus' ? ' nrd-adu-scope' : ''}`}>
+        {svc.columns && slug !== 'adus' ? (
+          <section className="nrd-section">
             <SectionHead title="Scope of Services" sub="Coordinated across architecture, engineering, and permitting." />
             <div className={`nrd-cols n${Math.min(svc.columns.length, 4)}`}>
               {svc.columns.map((c) => (
