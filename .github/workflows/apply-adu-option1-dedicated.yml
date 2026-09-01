@@ -1,0 +1,163 @@
+name: Apply dedicated ADU Option 1 layout
+
+on:
+  push:
+    branches:
+      - claude/client-demo-8889-concept-1-bh1mpv
+    paths:
+      - '.github/workflows/apply-adu-option1-dedicated.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/client-demo-8889-concept-1-bh1mpv
+      - name: Replace subtle ADU override with dedicated Option 1 component
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('app/client-demos/client-8889/residential/services/[slug]/page.tsx')
+          text = p.read_text()
+
+          old_css = '''/* ADU Option 1 — clean two-column Scope of Services body only */
+.nrd-adu-scope{max-width:920px;margin-left:auto;margin-right:auto}
+.nrd-adu-scope .nrd-sechead{margin-bottom:clamp(34px,4vw,48px)}
+.nrd-adu-scope .nrd-sechead::after{content:"";display:block;width:32px;height:1px;background:var(--gold);margin:18px auto 0}
+.nrd-adu-scope .nrd-cols.n2{grid-template-columns:1fr 1fr;gap:0;max-width:760px;margin:0 auto}
+.nrd-adu-scope .nrd-col{border-top:0;padding:4px 44px 0}
+.nrd-adu-scope .nrd-col:first-child{padding-left:0;border-right:1px solid var(--line)}
+.nrd-adu-scope .nrd-col:last-child{padding-right:0}
+.nrd-adu-scope .nrd-col-h{margin-bottom:22px}
+.nrd-adu-scope .nrd-col ul{gap:15px}
+'''
+          new_css = '''/* ADU Option 1 — dedicated clean two-column body, following Claude's custom-body pattern */
+.adu-o1{margin-top:clamp(56px,7vw,104px)}
+.adu-o1-panel{background:var(--surface);border:1px solid var(--line);padding:clamp(48px,5vw,72px) clamp(32px,5vw,68px)}
+.adu-o1-head{text-align:center;max-width:720px;margin:0 auto clamp(42px,5vw,62px)}
+.adu-o1-head h2{margin:0;font-size:clamp(26px,3.6vw,42px);line-height:1.05;font-weight:600;letter-spacing:.005em;text-transform:uppercase;color:var(--ink)}
+.adu-o1-head p{margin:16px 0 0;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);line-height:1.7}
+.adu-o1-accent{display:block;width:34px;height:1px;background:var(--gold);margin:20px auto 0}
+.adu-o1-grid{display:grid;grid-template-columns:.85fr 1.15fr;max-width:820px;margin:0 auto}
+.adu-o1-col{min-width:0;padding:0 clamp(28px,4vw,54px)}
+.adu-o1-col:first-child{padding-left:0;border-right:1px solid var(--line)}
+.adu-o1-col:last-child{padding-right:0}
+.adu-o1-title{margin:0 0 28px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--ink)}
+.adu-o1-title::after{content:"";display:block;width:28px;height:1px;background:var(--gold);margin-top:14px}
+.adu-o1-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:16px}
+.adu-o1-list li{display:flex;align-items:flex-start;gap:11px;font-size:13.5px;line-height:1.45;color:#453f39}
+.adu-o1-list svg{margin-top:1px;flex:none;color:var(--gold)}
+'''
+          if old_css not in text:
+              raise SystemExit('Expected previous ADU Option 1 CSS block not found')
+          text = text.replace(old_css, new_css, 1)
+
+          old_mobile = '''  .nrd-adu-scope .nrd-cols.n2{grid-template-columns:1fr;max-width:520px}
+  .nrd-adu-scope .nrd-col{padding:0}
+  .nrd-adu-scope .nrd-col:first-child{border-right:0;border-bottom:1px solid var(--line);padding-bottom:28px;margin-bottom:28px}
+'''
+          new_mobile = '''  .adu-o1-panel{padding:40px 24px}
+  .adu-o1-grid{grid-template-columns:1fr}
+  .adu-o1-col{padding:0}
+  .adu-o1-col:first-child{border-right:0;border-bottom:1px solid var(--line);padding-bottom:32px;margin-bottom:32px}
+'''
+          if old_mobile not in text:
+              raise SystemExit('Expected previous ADU mobile scope block not found')
+          text = text.replace(old_mobile, new_mobile, 1)
+
+          component_anchor = '''function CommercialBody({ shots }: { shots: GalleryShot[] }) {'''
+          component = '''function AduScopeOptionOne({ columns }: { columns: { label: string; items: string[] }[] }) {
+  return (
+    <section className="adu-o1">
+      <div className="adu-o1-panel">
+        <div className="adu-o1-head">
+          <h2>Scope of Services</h2>
+          <p>Coordinated across architecture, engineering, and permitting.</p>
+          <span className="adu-o1-accent" aria-hidden="true" />
+        </div>
+        <div className="adu-o1-grid">
+          {columns.map((c) => (
+            <div className="adu-o1-col" key={c.label}>
+              <p className="adu-o1-title">{c.label}</p>
+              <ul className="adu-o1-list">
+                {c.items.map((it) => (
+                  <li key={it}><Check size={16} strokeWidth={2} />{it}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+'''
+          if 'function AduScopeOptionOne' in text:
+              raise SystemExit('Dedicated ADU component already exists')
+          if component_anchor not in text:
+              raise SystemExit('Claude custom-body component anchor not found')
+          text = text.replace(component_anchor, component + component_anchor, 1)
+
+          old_markup = '''        {svc.columns ? (
+          <section className={`nrd-section${slug === 'adus' ? ' nrd-adu-scope' : ''}`}>
+            <SectionHead title="Scope of Services" sub="Coordinated across architecture, engineering, and permitting." />
+            <div className={`nrd-cols n${Math.min(svc.columns.length, 4)}`}>
+              {svc.columns.map((c) => (
+                <div className="nrd-col" key={c.label}>
+                  <p className="nrd-col-h">{c.label}</p>
+                  <ul>
+                    {c.items.map((it) => (
+                      <li key={it}><Check className="nrd-ico" size={16} strokeWidth={2} />{it}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}'''
+          new_markup = '''        {svc.columns ? (
+          slug === 'adus' ? <AduScopeOptionOne columns={svc.columns} /> : (
+            <section className="nrd-section">
+              <SectionHead title="Scope of Services" sub="Coordinated across architecture, engineering, and permitting." />
+              <div className={`nrd-cols n${Math.min(svc.columns.length, 4)}`}>
+                {svc.columns.map((c) => (
+                  <div className="nrd-col" key={c.label}>
+                    <p className="nrd-col-h">{c.label}</p>
+                    <ul>
+                      {c.items.map((it) => (
+                        <li key={it}><Check className="nrd-ico" size={16} strokeWidth={2} />{it}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )
+        ) : null}'''
+          if old_markup not in text:
+              raise SystemExit('Expected current scope markup not found')
+          text = text.replace(old_markup, new_markup, 1)
+
+          p.write_text(text)
+          PY
+      - name: Verify body-only change
+        run: |
+          git diff -- app/client-demos/client-8889/residential/services/[slug]/page.tsx
+          git diff -- app/client-demos/client-8889/residential/services/[slug]/page.tsx | grep -q 'function AduScopeOptionOne'
+          git diff -- app/client-demos/client-8889/residential/services/[slug]/page.tsx | grep -q 'adu-o1-panel'
+          if git diff -- app/client-demos/client-8889/residential/services/[slug]/page.tsx | grep -E '^[+-].*(\.nrd-banner\{|\.nrd-foot\{|<HeroBanner|<footer)'; then
+            echo 'Hero or footer changed unexpectedly'
+            exit 1
+          fi
+      - name: Commit dedicated body layout
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/client-demos/client-8889/residential/services/[slug]/page.tsx
+          git commit -m "Use dedicated Option 1 body on ADU page"
+          git push origin HEAD:claude/client-demo-8889-concept-1-bh1mpv
