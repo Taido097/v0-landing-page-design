@@ -509,7 +509,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
           </div>
         </div>
         <div className="nrd-foot-img">
-          <img src="/client-8889/residential/svc-03-adus.jpg" alt="NGUYEN residential architecture" />
+          <img src="/client-8889/residential/footer-main-1728.jpg?v=footer-hq-20260901" alt="NGUYEN residential architecture" />
         </div>
       </footer>
     </div>

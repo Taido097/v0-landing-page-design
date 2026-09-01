@@ -8,7 +8,7 @@ import {
 import ServiceDetailPage from '../[slug]/page';
 
 // Match the footer image used by the shared Residential service-detail page.
-const FOOTER_IMAGE_SRC = '/client-8889/residential/svc-03-adus.jpg';
+const FOOTER_IMAGE_SRC = '/client-8889/residential/footer-main-1728.jpg?v=footer-hq-20260901';
 
 const OUR_SERVICES = [
   {
