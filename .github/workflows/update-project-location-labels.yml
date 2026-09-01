@@ -1,0 +1,60 @@
+name: Update project location labels
+
+on:
+  push:
+    branches:
+      - claude/client-demo-8889-concept-1-bh1mpv
+    paths:
+      - '.github/workflows/update-project-location-labels.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/client-demo-8889-concept-1-bh1mpv
+
+      - name: Update only project location labels
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('app/client-demos/client-8889/arcsphere/route.ts')
+          text = path.read_text()
+
+          replacements = [
+              ("'LOS ANGELES, 2025'", "'LOS ANGELES, CA'"),
+              ("'IRVINE, 2026'", "'IRVINE, CA'"),
+              (
+                  "[compact('RESIDENTIAL ARCHITECTURE'), 'COMMERCIAL ARCHITECTURE']\n  ]);",
+                  "[compact('RESIDENTIAL ARCHITECTURE'), 'COMMERCIAL ARCHITECTURE'],\n    [compact('LONDON, 2025'), 'SAN FRANCISCO, CA']\n  ]);",
+              ),
+          ]
+
+          for old, new in replacements:
+              if old not in text:
+                  raise SystemExit(f'Expected project-location pattern not found: {old}')
+              text = text.replace(old, new)
+
+          # Guard scope: these are the only desired new location values.
+          for expected in ["'IRVINE, CA'", "'LOS ANGELES, CA'", "'SAN FRANCISCO, CA'"]:
+              if expected not in text:
+                  raise SystemExit(f'Missing expected location label: {expected}')
+
+          path.write_text(text)
+          PY
+
+      - name: Commit location-only change
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/client-demos/client-8889/arcsphere/route.ts
+          git diff --cached --check
+          git commit -m "Update project expertise location labels"
+          git push origin HEAD:claude/client-demo-8889-concept-1-bh1mpv
