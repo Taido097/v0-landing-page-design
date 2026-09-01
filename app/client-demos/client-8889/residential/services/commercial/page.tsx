@@ -6,6 +6,16 @@ import {
   type ReactNode,
 } from 'react';
 import ServiceDetailPage from '../[slug]/page';
+import part1 from '../../../../../client-8889/main-footer-house/chunks/part1';
+import part2 from '../../../../../client-8889/main-footer-house/chunks/part2';
+import part3 from '../../../../../client-8889/main-footer-house/chunks/part3';
+import part4 from '../../../../../client-8889/main-footer-house/chunks/part4';
+import part5 from '../../../../../client-8889/main-footer-house/chunks/part5';
+import part6 from '../../../../../client-8889/main-footer-house/chunks/part6';
+import part7 from '../../../../../client-8889/main-footer-house/chunks/part7';
+import part8 from '../../../../../client-8889/main-footer-house/chunks/part8';
+
+const FOOTER_IMAGE = part1 + part2 + part3 + part4 + part5 + part6 + part7 + part8;
 
 const OUR_SERVICES = [
   {
@@ -43,9 +53,6 @@ const OUR_SERVICES_CSS = `
 @media(max-width:520px){.nrd-related-grid{grid-template-columns:1fr}.nrd-related-img{aspect-ratio:16/10}}
 `;
 
-/* Commercial renders through the native service-detail route while Residential is the
-   Framer-backed reference. Keep the native footer structure/links/contact exactly as-is,
-   but make its visual finish match the working Residential/main-page footer. */
 const FOOTER_MATCH_CSS = `
 .nrd-commercial .nrd-marquee{margin:clamp(30px,4vw,56px) 0 clamp(20px,2.6vw,34px)}
 .nrd-commercial .nrd-marquee-track span{
@@ -59,7 +66,7 @@ const FOOTER_MATCH_CSS = `
 }
 .nrd-commercial .nrd-marquee-track span::after{color:#33302b}
 .nrd-commercial .nrd-foot-img{
-  background:#e7e0d5 url('/client-8889/main-footer-house') center center/cover no-repeat;
+  background:#e7e0d5 url("data:image/webp;base64,${FOOTER_IMAGE}") center center/cover no-repeat;
 }
 .nrd-commercial .nrd-foot-img img{opacity:0}
 `;
