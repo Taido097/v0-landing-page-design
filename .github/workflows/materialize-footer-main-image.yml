@@ -1,0 +1,102 @@
+name: Materialize main footer image
+
+on:
+  push:
+    branches:
+      - claude/client-demo-8889-concept-1-bh1mpv
+    paths:
+      - '.github/workflows/materialize-footer-main-image.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/client-demo-8889-concept-1-bh1mpv
+
+      - name: Download and verify original footer image
+        env:
+          SOURCE_URL: "https://framerusercontent.com/images/3GG8FlJkc5UJfOGjTcx5PwNKKs.jpg?width=1728&height=624"
+        run: |
+          set -euo pipefail
+          mkdir -p public/client-8889/residential
+          curl --fail --location --silent --show-error "$SOURCE_URL" -o /tmp/footer-main-1728.jpg
+          test -s /tmp/footer-main-1728.jpg
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('/tmp/footer-main-1728.jpg')
+          data = path.read_bytes()
+          if not data.startswith(b'\xff\xd8'):
+              raise SystemExit('Downloaded footer asset is not a JPEG')
+
+          i = 2
+          width = height = None
+          sof = {0xC0,0xC1,0xC2,0xC3,0xC5,0xC6,0xC7,0xC9,0xCA,0xCB,0xCD,0xCE,0xCF}
+          while i < len(data):
+              if data[i] != 0xFF:
+                  i += 1
+                  continue
+              while i < len(data) and data[i] == 0xFF:
+                  i += 1
+              if i >= len(data):
+                  break
+              marker = data[i]
+              i += 1
+              if marker in {0xD8,0xD9}:
+                  continue
+              if i + 1 >= len(data):
+                  break
+              seglen = int.from_bytes(data[i:i+2], 'big')
+              if marker in sof:
+                  height = int.from_bytes(data[i+3:i+5], 'big')
+                  width = int.from_bytes(data[i+5:i+7], 'big')
+                  break
+              i += seglen
+
+          if (width, height) != (1728, 624):
+              raise SystemExit(f'Unexpected footer image dimensions: {width}x{height}')
+
+          print(f'Verified footer asset: {width}x{height}, {len(data)} bytes')
+          PY
+          mv /tmp/footer-main-1728.jpg public/client-8889/residential/footer-main-1728.jpg
+
+      - name: Point Residential and Commercial footers to high-resolution asset
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          target = '/client-8889/residential/footer-main-1728.jpg?v=footer-hq-20260901'
+
+          shared = Path('app/client-demos/client-8889/residential/services/[slug]/page.tsx')
+          s = shared.read_text()
+          old = '<img src="/client-8889/residential/svc-03-adus.jpg" alt="NGUYEN residential architecture" />'
+          new = f'<img src="{target}" alt="NGUYEN residential architecture" />'
+          if old not in s:
+              raise SystemExit('Expected shared footer image source not found; refusing unrelated edit')
+          shared.write_text(s.replace(old, new, 1))
+
+          commercial = Path('app/client-demos/client-8889/residential/services/commercial/page.tsx')
+          s = commercial.read_text()
+          old = "const FOOTER_IMAGE_SRC = '/client-8889/residential/svc-03-adus.jpg';"
+          new = f"const FOOTER_IMAGE_SRC = '{target}';"
+          if old not in s:
+              raise SystemExit('Expected Commercial footer image source not found; refusing unrelated edit')
+          commercial.write_text(s.replace(old, new, 1))
+          PY
+
+      - name: Commit exact static footer asset
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/client-8889/residential/footer-main-1728.jpg \
+            'app/client-demos/client-8889/residential/services/[slug]/page.tsx' \
+            app/client-demos/client-8889/residential/services/commercial/page.tsx
+          git commit -m "Store original high-resolution footer image"
+          git push origin HEAD:claude/client-demo-8889-concept-1-bh1mpv
