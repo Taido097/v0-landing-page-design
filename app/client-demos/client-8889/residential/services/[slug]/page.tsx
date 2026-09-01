@@ -81,10 +81,10 @@ const CSS = `
 .nrd-banner-cap span:nth-child(2){text-align:center}
 .nrd-banner-cap span:nth-child(3){text-align:right}
 /* hero entrance driven by JS (.is-in) on scroll-into-view — plays regardless of reduced-motion */
-.nrd-anim .nrd-banner-h1{opacity:0;transform:translateY(40px);transition:opacity 1s cubic-bezier(.22,1,.36,1),transform 1s cubic-bezier(.22,1,.36,1)}
-.nrd-anim .nrd-banner-cap{opacity:0;transform:translateY(26px);transition:opacity 1s cubic-bezier(.22,1,.36,1) .2s,transform 1s cubic-bezier(.22,1,.36,1) .2s}
-.nrd-anim .nrd-rule-l{transform:translateX(-100%);transition:transform 1.15s cubic-bezier(.44,0,.56,1)}
-.nrd-anim .nrd-rule-r{transform:translateX(100%);transition:transform 1.15s cubic-bezier(.44,0,.56,1)}
+.nrd-anim .nrd-banner-h1{opacity:0;transform:translateY(22px);transition:opacity .9s cubic-bezier(.22,1,.36,1) .3s,transform .9s cubic-bezier(.22,1,.36,1) .3s}
+.nrd-anim .nrd-banner-cap{opacity:0;transform:translateY(16px);transition:opacity .9s cubic-bezier(.22,1,.36,1) .45s,transform .9s cubic-bezier(.22,1,.36,1) .45s}
+.nrd-anim .nrd-rule-l{transform:translateX(-100%);transition:transform 1.15s cubic-bezier(.44,0,.56,1) .1s}
+.nrd-anim .nrd-rule-r{transform:translateX(100%);transition:transform 1.15s cubic-bezier(.44,0,.56,1) .1s}
 .nrd-anim.is-in .nrd-banner-h1,.nrd-anim.is-in .nrd-banner-cap{opacity:1;transform:translateY(0)}
 .nrd-anim.is-in .nrd-rule-l,.nrd-anim.is-in .nrd-rule-r{transform:translateX(0)}
 @media(max-width:600px){.nrd-banner-cap{grid-template-columns:1fr}.nrd-banner-cap span:nth-child(2),.nrd-banner-cap span:nth-child(3){display:none}}
