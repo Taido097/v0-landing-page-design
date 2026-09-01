@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import {
   Home, Gem, Hammer, Ruler, Zap, FileCheck, Map, LayoutTemplate, ShieldCheck, Wrench,
   Check, ArrowRight, Mail, Phone, MapPin,
+  Coffee, UtensilsCrossed, Monitor, Building2, ShoppingBag, Stethoscope,
+  Search, PencilRuler, FileText, HardHat,
 } from 'lucide-react';
 import { SERVICE_DETAILS, getServiceDetail } from '../services-data';
 import Gallery from './gallery';
@@ -207,7 +209,101 @@ const CSS = `
   .nrd-approach-grid,.nrd-offer,.nrd-cols.n1,.nrd-cols.n2,.nrd-cols.n3,.nrd-cols.n4,.nrd-gallery{grid-template-columns:1fr}
   .nrd-off p{padding-left:0}
 }
+/* Commercial "Built For Business" image-mosaic body */
+.cx-body{padding-top:clamp(36px,4.5vw,64px)}
+.cx-intro{max-width:660px;margin:0 0 clamp(26px,3.4vw,44px)}
+.cx-intro h2{font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:clamp(30px,4.6vw,54px);line-height:1.04;letter-spacing:-.02em;font-weight:500;color:var(--ink);margin:0}
+.cx-intro p{margin:16px 0 0;max-width:33em;font-size:clamp(14.5px,1.2vw,16.5px);line-height:1.6;color:var(--muted)}
+.cx-top{display:grid;grid-template-columns:1.12fr 1fr;grid-template-rows:auto auto;gap:16px}
+.cx-cell{position:relative;border-radius:12px;overflow:hidden;background:#e7e0d5}
+.cx-cell img{width:100%;height:100%;object-fit:cover;display:block}
+.cx-cell::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(20,17,14,.52) 0%,rgba(20,17,14,0) 40%);pointer-events:none}
+.cx-label{position:absolute;left:16px;bottom:14px;z-index:1;display:flex;align-items:center;gap:9px;color:#f3f0e9;font-size:14px;font-weight:500;letter-spacing:.01em}
+.cx-label svg{flex:none;opacity:.9}
+.cx-cafe{grid-column:1;grid-row:1/3}
+.cx-restaurant{grid-column:2;grid-row:1}
+.cx-office{grid-column:2;grid-row:2}
+.cx-restaurant,.cx-office{aspect-ratio:3/2}
+.cx-bottom{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+.cx-bottom .cx-cell{aspect-ratio:16/10}
+.cx-proc{margin-top:clamp(48px,6vw,88px);border-top:1px solid var(--line);padding-top:clamp(32px,4vw,56px);display:grid;grid-template-columns:.85fr 2.5fr;gap:clamp(28px,5vw,80px);align-items:start}
+.cx-proc-h{font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:clamp(24px,3vw,40px);line-height:1.08;letter-spacing:-.01em;font-weight:500;color:var(--ink);margin:0}
+.cx-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(20px,2.6vw,40px)}
+.cx-step svg{color:var(--ink);opacity:.85}
+.cx-step h4{margin:16px 0 8px;font-size:12px;letter-spacing:.09em;text-transform:uppercase;font-weight:600;color:var(--ink)}
+.cx-step p{margin:0;font-size:13px;line-height:1.55;color:var(--muted);max-width:22ch}
+@media(max-width:820px){
+  .cx-top{grid-template-columns:1fr}
+  .cx-cafe{grid-column:1;grid-row:auto;aspect-ratio:4/3}
+  .cx-restaurant,.cx-office{grid-column:1}
+  .cx-proc{grid-template-columns:1fr}
+  .cx-steps{grid-template-columns:1fr 1fr}
+}
+@media(max-width:560px){
+  .cx-bottom{grid-template-columns:1fr}
+  .cx-steps{grid-template-columns:1fr}
+}
 `;
+
+const CX = '/client-8889/residential/detail';
+const COMMERCIAL_MOSAIC = [
+  { src: `${CX}/cx-01-cafe.jpg`, label: 'Café Interior', Icon: Coffee, cls: 'cx-cafe' },
+  { src: `${CX}/cx-02-restaurant.jpg`, label: 'Restaurant Build-Out', Icon: UtensilsCrossed, cls: 'cx-restaurant' },
+  { src: `${CX}/cx-03-office.jpg`, label: 'Modern Office Suite', Icon: Monitor, cls: 'cx-office' },
+];
+const COMMERCIAL_BOTTOM = [
+  { src: `${CX}/cx-09-building.jpg`, label: 'Commercial Exterior', Icon: Building2 },
+  { src: `${CX}/cx-04-retail.jpg`, label: 'Retail Showroom', Icon: ShoppingBag },
+  { src: `${CX}/cx-06-office-lounge.jpg`, label: 'Medical Office', Icon: Stethoscope },
+];
+const COMMERCIAL_STEPS = [
+  { n: '1', t: 'Discover', d: 'We learn about your goals, site, and vision.', Icon: Search },
+  { n: '2', t: 'Design', d: 'We create solutions that align function and brand.', Icon: PencilRuler },
+  { n: '3', t: 'Permit', d: 'We handle approvals and documentation.', Icon: FileText },
+  { n: '4', t: 'Build Support', d: 'We support you through construction and beyond.', Icon: HardHat },
+];
+
+function CommercialBody() {
+  return (
+    <div className="cx-body">
+      <div className="cx-intro">
+        <h2>Built For Business.<br />Designed To Perform.</h2>
+        <p>Commercial environments designed with purpose—where form, function, and growth come together.</p>
+      </div>
+
+      <div className="cx-top">
+        {COMMERCIAL_MOSAIC.map((m) => (
+          <figure className={`cx-cell ${m.cls}`} key={m.src}>
+            <img src={m.src} alt={m.label} />
+            <figcaption className="cx-label"><m.Icon size={17} strokeWidth={1.6} />{m.label}</figcaption>
+          </figure>
+        ))}
+      </div>
+
+      <div className="cx-bottom">
+        {COMMERCIAL_BOTTOM.map((m) => (
+          <figure className="cx-cell" key={m.src}>
+            <img src={m.src} alt={m.label} />
+            <figcaption className="cx-label"><m.Icon size={17} strokeWidth={1.6} />{m.label}</figcaption>
+          </figure>
+        ))}
+      </div>
+
+      <div className="cx-proc">
+        <h2 className="cx-proc-h">A Clear Process.<br />Proven Results.</h2>
+        <div className="cx-steps">
+          {COMMERCIAL_STEPS.map((s) => (
+            <div className="cx-step" key={s.n}>
+              <s.Icon size={26} strokeWidth={1.4} />
+              <h4>{s.n}. {s.t}</h4>
+              <p>{s.d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default async function ServiceDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -238,6 +334,10 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
       )}
 
       <div className="nrd-shell">
+        {slug === 'commercial' ? (
+          <CommercialBody />
+        ) : (
+        <>
         {svc.heroBanner ? (
           <div className="nrd-lead">
             <a href={RESIDENTIAL_HREF} className="nrd-back nrd-back-lead">← Back to Residential</a>
@@ -355,6 +455,8 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
             ))}
           </div>
         </nav>
+        </>
+        )}
       </div>
 
       <footer className="nrd-foot">
