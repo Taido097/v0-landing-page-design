@@ -3,10 +3,10 @@ import { notFound } from 'next/navigation';
 import {
   Home, Gem, Hammer, Ruler, Zap, FileCheck, Map, LayoutTemplate, ShieldCheck, Wrench,
   Check, ArrowRight, Mail, Phone, MapPin,
-  Coffee, UtensilsCrossed, Monitor, Building2, ShoppingBag, Stethoscope,
+  Coffee, UtensilsCrossed, Monitor, Building2, ShoppingBag,
   Search, PencilRuler, FileText, HardHat,
 } from 'lucide-react';
-import { SERVICE_DETAILS, getServiceDetail } from '../services-data';
+import { SERVICE_DETAILS, getServiceDetail, type GalleryShot } from '../services-data';
 import Gallery from './gallery';
 import HeroBanner from './hero-banner';
 import Navbar from '../navbar';
@@ -245,17 +245,13 @@ const CSS = `
 }
 `;
 
-const CX = '/client-8889/residential/detail';
-const COMMERCIAL_MOSAIC = [
-  { src: `${CX}/cx-01-cafe.jpg`, label: 'Café Interior', Icon: Coffee, cls: 'cx-cafe' },
-  { src: `${CX}/cx-02-restaurant.jpg`, label: 'Restaurant Build-Out', Icon: UtensilsCrossed, cls: 'cx-restaurant' },
-  { src: `${CX}/cx-03-office.jpg`, label: 'Modern Office Suite', Icon: Monitor, cls: 'cx-office' },
-];
-const COMMERCIAL_BOTTOM = [
-  { src: `${CX}/cx-09-building.jpg`, label: 'Commercial Exterior', Icon: Building2 },
-  { src: `${CX}/cx-04-retail.jpg`, label: 'Retail Showroom', Icon: ShoppingBag },
-  { src: `${CX}/cx-06-office-lounge.jpg`, label: 'Medical Office', Icon: Stethoscope },
-];
+// Icon per gallery category so the mosaic labels stay honest to the existing content.
+const CX_CAT_ICON: Record<string, typeof Home> = {
+  'Cafés': Coffee,
+  Restaurants: UtensilsCrossed,
+  Office: Monitor,
+  Retail: ShoppingBag,
+};
 const COMMERCIAL_STEPS = [
   { n: '1', t: 'Discover', d: 'We learn about your goals, site, and vision.', Icon: Search },
   { n: '2', t: 'Design', d: 'We create solutions that align function and brand.', Icon: PencilRuler },
@@ -263,7 +259,20 @@ const COMMERCIAL_STEPS = [
   { n: '4', t: 'Build Support', d: 'We support you through construction and beyond.', Icon: HardHat },
 ];
 
-function CommercialBody() {
+function CxCell({ shot, cls }: { shot: GalleryShot; cls?: string }) {
+  const Ico = CX_CAT_ICON[shot.cat] ?? Building2;
+  return (
+    <figure className={`cx-cell${cls ? ` ${cls}` : ''}`}>
+      <img src={shot.src} alt={shot.alt} />
+      <figcaption className="cx-label"><Ico size={17} strokeWidth={1.6} />{shot.label ?? shot.cat}</figcaption>
+    </figure>
+  );
+}
+
+function CommercialBody({ shots }: { shots: GalleryShot[] }) {
+  const top = shots.slice(0, 3); // large left + two stacked right (the target composition)
+  const rest = shots.slice(3); // remaining gallery images, three across
+  const topCls = ['cx-cafe', 'cx-restaurant', 'cx-office'];
   return (
     <div className="cx-body">
       <div className="cx-intro">
@@ -272,22 +281,14 @@ function CommercialBody() {
       </div>
 
       <div className="cx-top">
-        {COMMERCIAL_MOSAIC.map((m) => (
-          <figure className={`cx-cell ${m.cls}`} key={m.src}>
-            <img src={m.src} alt={m.label} />
-            <figcaption className="cx-label"><m.Icon size={17} strokeWidth={1.6} />{m.label}</figcaption>
-          </figure>
-        ))}
+        {top.map((s, i) => <CxCell key={s.src} shot={s} cls={topCls[i]} />)}
       </div>
 
-      <div className="cx-bottom">
-        {COMMERCIAL_BOTTOM.map((m) => (
-          <figure className="cx-cell" key={m.src}>
-            <img src={m.src} alt={m.label} />
-            <figcaption className="cx-label"><m.Icon size={17} strokeWidth={1.6} />{m.label}</figcaption>
-          </figure>
-        ))}
-      </div>
+      {rest.length ? (
+        <div className="cx-bottom">
+          {rest.map((s) => <CxCell key={s.src} shot={s} />)}
+        </div>
+      ) : null}
 
       <div className="cx-proc">
         <h2 className="cx-proc-h">A Clear Process.<br />Proven Results.</h2>
@@ -335,7 +336,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
 
       <div className="nrd-shell">
         {slug === 'commercial' ? (
-          <CommercialBody />
+          <CommercialBody shots={svc.gallery ?? []} />
         ) : (
         <>
         {svc.heroBanner ? (
