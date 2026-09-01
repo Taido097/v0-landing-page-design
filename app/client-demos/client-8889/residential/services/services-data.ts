@@ -125,6 +125,7 @@ export const SERVICE_DETAILS: ServiceDetail[] = [
     intro:
       'NGUYEN provides coordinated ADU design from early site study through engineering and permitting — a practical path to added space, flexibility, and value.',
     hero: `${D}/adu-04-golden-hour.jpg`,
+    heroBanner: true,
     columns: [
       { label: 'ADU Types', items: ['Detached ADUs', 'Attached ADUs', 'Garage Conversions'] },
       { label: "What's Included", items: ['Site Evaluation + Feasibility', 'Concept Design + Floor Plans', 'Architectural Design', 'Structural Engineering', 'MEP Design', 'Title 24 Compliance', 'Permit Submittal + Plan Check'] },
