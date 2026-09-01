@@ -1,0 +1,24 @@
+name: Test ADU Option 1 scope
+
+on:
+  push:
+    branches:
+      - claude/client-demo-8889-concept-1-bh1mpv
+    paths:
+      - '.github/workflows/test-adu-option1-scope.yml'
+      - 'app/client-demos/client-8889/residential/services/[slug]/page.tsx'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify ADU body uses Option 1 scope layout only
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('app/client-demos/client-8889/residential/services/[slug]/page.tsx').read_text()
+          assert "nrd-adu-scope" in text, 'ADU-specific Option 1 scope class is missing'
+          assert ".nrd-adu-scope .nrd-cols.n2" in text, 'Option 1 two-column scope styling is missing'
+          assert "slug === 'adus' ? ' nrd-adu-scope' : ''" in text, 'Option 1 is not scoped to ADU body only'
+          PY
