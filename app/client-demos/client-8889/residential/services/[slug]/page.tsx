@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { SERVICE_DETAILS, getServiceDetail } from '../services-data';
 import Gallery from './gallery';
+import HeroBanner from './hero-banner';
 
 const RESIDENTIAL_HREF = '/client-demos/client-8889/residential';
 const HOME_HREF = '/client-demos/client-8889/arcsphere-socal';
@@ -73,24 +74,19 @@ const CSS = `
 .nrd-banner img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .nrd-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,17,14,.06) 0%,rgba(20,17,14,0) 26%,rgba(20,17,14,0) 58%,rgba(20,17,14,.34) 100%)}
 .nrd-banner-inner{position:absolute;left:0;right:0;bottom:clamp(30px,4vw,54px);z-index:1;width:100%;padding:0 clamp(24px,5vw,80px)}
-.nrd-banner-h1{font-size:clamp(38px,5.4vw,66px);font-weight:400;letter-spacing:-.012em;line-height:1;color:#f7f4ee;margin:0 0 clamp(22px,3vw,38px);animation:nrd-hero-rise 1s cubic-bezier(.22,1,.36,1) .35s both}
+.nrd-banner-h1{font-size:clamp(38px,5.4vw,66px);font-weight:400;letter-spacing:-.012em;line-height:1;color:#f7f4ee;margin:0 0 clamp(22px,3vw,38px)}
 .nrd-banner-rule{display:flex;height:1px;margin:0 0 18px;overflow:hidden}
 .nrd-rule-h{flex:1 1 50%;height:1px;background:rgba(247,244,238,.42)}
-.nrd-rule-l{animation:nrd-slide-l 1.1s cubic-bezier(.44,0,.56,1) .25s both}
-.nrd-rule-r{animation:nrd-slide-r 1.1s cubic-bezier(.44,0,.56,1) .25s both}
-.nrd-banner-cap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;color:#eee9df;font-size:clamp(12px,1vw,14px);letter-spacing:.01em;animation:nrd-hero-rise 1s cubic-bezier(.22,1,.36,1) .55s both}
+.nrd-banner-cap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;color:#eee9df;font-size:clamp(12px,1vw,14px);letter-spacing:.01em}
 .nrd-banner-cap span:nth-child(2){text-align:center}
 .nrd-banner-cap span:nth-child(3){text-align:right}
-/* pure-CSS hero entrance: title + caption rise & fade in, divider draws in from both edges */
-@keyframes nrd-hero-rise{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-@keyframes nrd-slide-l{from{transform:translateX(-600px)}to{transform:translateX(0)}}
-@keyframes nrd-slide-r{from{transform:translateX(600px)}to{transform:translateX(0)}}
-@keyframes nrd-hero-fade{from{opacity:0}to{opacity:1}}
-@media(prefers-reduced-motion:reduce){
-  .nrd-banner-h1{animation:nrd-hero-fade .6s ease .2s both;transform:none}
-  .nrd-banner-cap{animation:nrd-hero-fade .6s ease .35s both;transform:none}
-  .nrd-rule-l,.nrd-rule-r{animation:none;transform:none}
-}
+/* hero entrance driven by JS (.is-in) on scroll-into-view — plays regardless of reduced-motion */
+.nrd-anim .nrd-banner-h1{opacity:0;transform:translateY(40px);transition:opacity 1s cubic-bezier(.22,1,.36,1),transform 1s cubic-bezier(.22,1,.36,1)}
+.nrd-anim .nrd-banner-cap{opacity:0;transform:translateY(26px);transition:opacity 1s cubic-bezier(.22,1,.36,1) .2s,transform 1s cubic-bezier(.22,1,.36,1) .2s}
+.nrd-anim .nrd-rule-l{transform:translateX(-100%);transition:transform 1.15s cubic-bezier(.44,0,.56,1)}
+.nrd-anim .nrd-rule-r{transform:translateX(100%);transition:transform 1.15s cubic-bezier(.44,0,.56,1)}
+.nrd-anim.is-in .nrd-banner-h1,.nrd-anim.is-in .nrd-banner-cap{opacity:1;transform:translateY(0)}
+.nrd-anim.is-in .nrd-rule-l,.nrd-anim.is-in .nrd-rule-r{transform:translateX(0)}
 @media(max-width:600px){.nrd-banner-cap{grid-template-columns:1fr}.nrd-banner-cap span:nth-child(2),.nrd-banner-cap span:nth-child(3){display:none}}
 .nrd-lead{margin-top:clamp(40px,5vw,72px)}
 .nrd-lead-h{font-size:clamp(24px,3.4vw,42px);font-weight:500;line-height:1.14;letter-spacing:-.01em;color:var(--ink);margin:0;max-width:20em}
@@ -231,21 +227,12 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
       </nav>
 
       {svc.heroBanner ? (
-        <section className="nrd-banner">
-          <img src={svc.hero} alt={svc.title} />
-          <div className="nrd-banner-inner">
-            <h1 className="nrd-banner-h1">{svc.bannerLabel ?? svc.title}</h1>
-            <div className="nrd-banner-rule" aria-hidden="true">
-              <span className="nrd-rule-h nrd-rule-l" />
-              <span className="nrd-rule-h nrd-rule-r" />
-            </div>
-            {svc.heroCaption ? (
-              <div className="nrd-banner-cap">
-                {svc.heroCaption.map((c) => <span key={c}>{c}</span>)}
-              </div>
-            ) : null}
-          </div>
-        </section>
+        <HeroBanner
+          hero={svc.hero}
+          title={svc.title}
+          label={svc.bannerLabel ?? svc.title}
+          caption={svc.heroCaption}
+        />
       ) : (
         <div className="nrd-shell">
           <a href={RESIDENTIAL_HREF} className="nrd-back">← Back to Residential</a>
