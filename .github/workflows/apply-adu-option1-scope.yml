@@ -1,0 +1,72 @@
+name: Apply ADU Option 1 scope
+
+on:
+  push:
+    branches:
+      - claude/client-demo-8889-concept-1-bh1mpv
+    paths:
+      - '.github/workflows/apply-adu-option1-scope.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/client-demo-8889-concept-1-bh1mpv
+      - name: Apply Option 1 to ADU Scope of Services only
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('app/client-demos/client-8889/residential/services/[slug]/page.tsx')
+          text = p.read_text()
+
+          css_anchor = '.nrd-col li svg{margin-top:1px}\n'
+          css_add = '''/* ADU Option 1 — clean two-column Scope of Services body only */
+.nrd-adu-scope{max-width:920px;margin-left:auto;margin-right:auto}
+.nrd-adu-scope .nrd-sechead{margin-bottom:clamp(34px,4vw,48px)}
+.nrd-adu-scope .nrd-sechead::after{content:"";display:block;width:32px;height:1px;background:var(--gold);margin:18px auto 0}
+.nrd-adu-scope .nrd-cols.n2{grid-template-columns:1fr 1fr;gap:0;max-width:760px;margin:0 auto}
+.nrd-adu-scope .nrd-col{border-top:0;padding:4px 44px 0}
+.nrd-adu-scope .nrd-col:first-child{padding-left:0;border-right:1px solid var(--line)}
+.nrd-adu-scope .nrd-col:last-child{padding-right:0}
+.nrd-adu-scope .nrd-col-h{margin-bottom:22px}
+.nrd-adu-scope .nrd-col ul{gap:15px}
+'''
+          if 'nrd-adu-scope' in text:
+              raise SystemExit('ADU Option 1 markers already present; refusing duplicate edit')
+          if css_anchor not in text:
+              raise SystemExit('Expected scope CSS anchor not found')
+          text = text.replace(css_anchor, css_anchor + css_add, 1)
+
+          old_scope = '''        {svc.columns ? (\n          <section className="nrd-section">\n            <SectionHead title="Scope of Services" sub="Coordinated across architecture, engineering, and permitting." />'''
+          new_scope = '''        {svc.columns ? (\n          <section className={`nrd-section${slug === 'adus' ? ' nrd-adu-scope' : ''}`}>\n            <SectionHead title="Scope of Services" sub="Coordinated across architecture, engineering, and permitting." />'''
+          if old_scope not in text:
+              raise SystemExit('Expected Scope of Services markup not found')
+          text = text.replace(old_scope, new_scope, 1)
+
+          mobile_anchor = '''@media(max-width:560px){\n  .nrd-nav-left{display:none}\n  .nrd-approach-grid,.nrd-offer,.nrd-cols.n1,.nrd-cols.n2,.nrd-cols.n3,.nrd-cols.n4,.nrd-gallery{grid-template-columns:1fr}\n  .nrd-off p{padding-left:0}\n}'''
+          mobile_new = '''@media(max-width:560px){\n  .nrd-nav-left{display:none}\n  .nrd-approach-grid,.nrd-offer,.nrd-cols.n1,.nrd-cols.n2,.nrd-cols.n3,.nrd-cols.n4,.nrd-gallery{grid-template-columns:1fr}\n  .nrd-off p{padding-left:0}\n  .nrd-adu-scope .nrd-cols.n2{grid-template-columns:1fr;max-width:520px}\n  .nrd-adu-scope .nrd-col{padding:0}\n  .nrd-adu-scope .nrd-col:first-child{border-right:0;border-bottom:1px solid var(--line);padding-bottom:28px;margin-bottom:28px}\n}'''
+          if mobile_anchor not in text:
+              raise SystemExit('Expected mobile CSS anchor not found')
+          text = text.replace(mobile_anchor, mobile_new, 1)
+          p.write_text(text)
+          PY
+      - name: Verify hero and footer are untouched by this patch
+        run: |
+          git diff -- app/client-demos/client-8889/residential/services/[slug]/page.tsx
+          git diff -- app/client-demos/client-8889/residential/services/[slug]/page.tsx | grep -q 'nrd-adu-scope'
+          if git diff -- app/client-demos/client-8889/residential/services/[slug]/page.tsx | grep -E '^[+-].*(nrd-banner|nrd-foot)'; then
+            echo 'Hero or footer changed unexpectedly'
+            exit 1
+          fi
+      - name: Commit body-only layout change
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/client-demos/client-8889/residential/services/[slug]/page.tsx
+          git commit -m "Apply Option 1 layout to ADU scope body"
+          git push origin HEAD:claude/client-demo-8889-concept-1-bh1mpv
