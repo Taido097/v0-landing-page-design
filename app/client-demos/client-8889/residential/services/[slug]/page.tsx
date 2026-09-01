@@ -83,18 +83,21 @@ const CSS = `
 .nrd-banner-cap span{font-size:clamp(13px,1.1vw,16px);letter-spacing:.01em;line-height:1.3;color:rgba(239,237,233,.85);font-weight:400}
 .nrd-banner-cap span:nth-child(2){text-align:center}
 .nrd-banner-cap span:nth-child(3){text-align:right}
-/* hero entrance — copied verbatim from the NGUYEN Framer residential hero appear
-   animation: the dark overlay fades in (opacity .001->1, delay .5s, dur .4s) and the
-   two rule halves slide in from x:-600px / x:+600px while fading (delay .3s, dur 1s,
-   cubic-bezier(.44,0,.56,1)); image, title and caption have no appear animation in the
-   source, so they stay static. .is-in is added by hero-banner.tsx; the :not(.is-in)
-   fallbacks reveal the animated parts if JS is disabled. */
+/* hero entrance — copied verbatim from the NGUYEN Framer residential hero:
+   the hero image reveals with a top-to-bottom clip-path wipe (inset(0% 0% 100%)->inset(0%));
+   the dark overlay fades in (opacity .001->1, delay .5s, dur .4s); and the two rule halves
+   slide in from x:-600px / x:+600px while fading (delay .3s, dur 1s, cubic-bezier(.44,0,.56,1)).
+   .is-in is added by hero-banner.tsx; the :not(.is-in) fallbacks reveal everything if JS is off. */
 @keyframes nrd-unhide{to{opacity:1;transform:none}}
+@keyframes nrd-imgreveal{to{clip-path:inset(0%)}}
+.nrd-anim img{clip-path:inset(0% 0% 100%);transition:clip-path 1.2s cubic-bezier(.44,0,.56,1) .1s}
+.nrd-anim.is-in img{clip-path:inset(0%)}
 .nrd-anim::after{opacity:.001;transition:opacity .4s ease-out .5s}
 .nrd-anim.is-in::after{opacity:1}
 .nrd-anim .nrd-rule-l{transform:translateX(-600px);opacity:.001;transition:transform 1s cubic-bezier(.44,0,.56,1) .3s,opacity 1s cubic-bezier(.44,0,.56,1) .3s}
 .nrd-anim .nrd-rule-r{transform:translateX(600px);opacity:.001;transition:transform 1s cubic-bezier(.44,0,.56,1) .3s,opacity 1s cubic-bezier(.44,0,.56,1) .3s}
 .nrd-anim.is-in .nrd-rule-l,.nrd-anim.is-in .nrd-rule-r{transform:translateX(0);opacity:1}
+.nrd-anim:not(.is-in) img{animation:nrd-imgreveal 1.2s cubic-bezier(.44,0,.56,1) 1.9s both}
 .nrd-anim:not(.is-in)::after{animation:nrd-unhide .5s ease-out 2s both}
 .nrd-anim:not(.is-in) .nrd-rule-l,.nrd-anim:not(.is-in) .nrd-rule-r{animation:nrd-unhide .9s cubic-bezier(.44,0,.56,1) 2.2s both}
 @media(max-width:600px){.nrd-banner-cap{grid-template-columns:1fr}.nrd-banner-cap span:nth-child(2),.nrd-banner-cap span:nth-child(3){display:none}}
