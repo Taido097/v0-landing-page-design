@@ -55,7 +55,7 @@ const CSS = `
 .nrd-nav-link:hover{opacity:.6}
 .nrd a.nrd-nav-link.is-active{opacity:.6}
 .nrd-brand{font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:24px;letter-spacing:-.4px;line-height:110%;font-weight:400;color:#4f4742;white-space:nowrap;text-align:center;text-transform:uppercase}
-.nrd a.nrd-contact{font-family:"Inter Display","Inter Display Placeholder",sans-serif;display:inline-flex;align-items:center;justify-content:center;background:#4f4742;color:#f0ebe6;border-radius:4px;padding:8px 18px;font-size:12px;letter-spacing:.08em;line-height:120%;text-transform:uppercase;font-weight:500;transition:opacity .2s;white-space:nowrap}
+.nrd a.nrd-contact{font-family:"Inter Display","Inter Display Placeholder",sans-serif;display:inline-flex;align-items:center;justify-content:center;background:#4f4742;color:#f0ebe6;border-radius:100px;padding:10px 22px;font-size:13px;letter-spacing:.06em;line-height:120%;text-transform:uppercase;font-weight:500;transition:opacity .2s;white-space:nowrap}
 .nrd a.nrd-contact:hover{opacity:.8}
 .nrd-back{display:inline-flex;align-items:center;gap:8px;margin:clamp(20px,2.4vw,32px) 0 0;font-size:12.5px;letter-spacing:.05em;color:var(--muted);transition:color .2s}
 .nrd-back-lead{margin:0 0 clamp(18px,2.2vw,26px)}
@@ -222,9 +222,9 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
       <nav className="nrd-nav">
         <div className="nrd-shell nrd-nav-in">
           <div className="nrd-nav-left">
-            <a href={HOME_HREF} className="nrd-nav-link">Home</a>
-            <a href={RESIDENTIAL_HREF} className="nrd-nav-link is-active">Services</a>
-            <a href={RESIDENTIAL_HREF} className="nrd-nav-link">Residential</a>
+            <a href={RESIDENTIAL_HREF} className="nrd-nav-link">Design Process</a>
+            <a href={RESIDENTIAL_HREF} className="nrd-nav-link">Projects</a>
+            <a href={RESIDENTIAL_HREF} className="nrd-nav-link">Services</a>
           </div>
           <a href={RESIDENTIAL_HREF} className="nrd-brand">NGUYEN Architecture &amp; Engineering</a>
           <a href={CONTACT} className="nrd-contact">Contact Us</a>
