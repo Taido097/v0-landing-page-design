@@ -7,10 +7,9 @@ import {
 } from 'react';
 import ServiceDetailPage from '../[slug]/page';
 
-// Match Claude's working Residential implementation exactly: use the Framer image
-// as a normal <img src> rather than a base64 payload, route, or CSS background.
-const FOOTER_IMAGE_SRC =
-  'https://framerusercontent.com/images/NPECM2ziENhHhdNoAT3unXgBhD0.jpg?height=1600&width=2400';
+// Use the saved house image already bundled with the project. This avoids relying on
+// the old Framer URL, which now resolves to a different office/team photograph.
+const FOOTER_IMAGE_SRC = '/client-8889/main-footer-house';
 
 const OUR_SERVICES = [
   {
