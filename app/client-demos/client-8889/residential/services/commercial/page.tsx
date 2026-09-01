@@ -16,6 +16,7 @@ import part7 from '../../../../../client-8889/main-footer-house/chunks/part7';
 import part8 from '../../../../../client-8889/main-footer-house/chunks/part8';
 
 const FOOTER_IMAGE = part1 + part2 + part3 + part4 + part5 + part6 + part7 + part8;
+const FOOTER_IMAGE_SRC = `data:image/webp;base64,${FOOTER_IMAGE}`;
 
 const OUR_SERVICES = [
   {
@@ -65,11 +66,34 @@ const FOOTER_MATCH_CSS = `
   color:#33302b;
 }
 .nrd-commercial .nrd-marquee-track span::after{color:#33302b}
-.nrd-commercial .nrd-foot-img{
-  background:#e7e0d5 url("data:image/webp;base64,${FOOTER_IMAGE}") center center/cover no-repeat;
-}
-.nrd-commercial .nrd-foot-img img{opacity:0}
+.nrd-commercial .nrd-foot-img{background:#e7e0d5}
+.nrd-commercial .nrd-foot-img img{opacity:1;visibility:visible;display:block;width:100%;height:100%;object-fit:cover}
 `;
+
+type FooterNodeProps = {
+  children?: ReactNode;
+  src?: string;
+  alt?: string;
+  [key: string]: unknown;
+};
+
+function replaceFooterImage(node: ReactNode): ReactNode {
+  if (!isValidElement(node)) return node;
+
+  const element = node as ReactElement<FooterNodeProps>;
+  if (element.type === 'img') {
+    return cloneElement(element, {
+      src: FOOTER_IMAGE_SRC,
+      alt: 'NGUYEN architecture',
+    });
+  }
+
+  if (element.props.children === undefined) return element;
+
+  return cloneElement(element, {
+    children: Children.map(element.props.children, replaceFooterImage),
+  });
+}
 
 function OurServicesSection() {
   return (
@@ -121,7 +145,8 @@ export default async function CommercialPage() {
           ...children.slice(0, footerIndex),
           <OurServicesSection key="commercial-our-services" />,
           footerStyle,
-          ...children.slice(footerIndex),
+          replaceFooterImage(children[footerIndex]),
+          ...children.slice(footerIndex + 1),
         ]
       : [
           ...children,
