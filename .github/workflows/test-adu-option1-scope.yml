@@ -22,3 +22,5 @@ jobs:
           assert ".nrd-adu-scope .nrd-cols.n2" in text, 'Option 1 two-column scope styling is missing'
           assert "slug === 'adus' ? ' nrd-adu-scope' : ''" in text, 'Option 1 is not scoped to ADU body only'
           PY
+
+# green rerun after implementation
