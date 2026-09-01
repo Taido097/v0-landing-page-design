@@ -236,19 +236,12 @@ export const SERVICE_DETAILS: ServiceDetail[] = [
   {
     slug: 'commercial',
     num: '06',
-    kicker: 'NGUYEN · Commercial',
+    kicker: 'Commercial Service · 06',
     title: 'Commercial Design & Permit Solutions',
     subtitle: 'From concept to completion, we design commercial spaces that support business success.',
     intro:
       'Full-service design, engineering, permitting, and project support for commercial spaces. NGUYEN coordinates architecture, engineering, code requirements, permitting, and construction support as one team.',
     hero: `${D}/cx-09-building.jpg`,
-    heroBanner: true,
-    bannerLabel: 'Commercial',
-    heroCaption: [
-      { label: 'Sector', value: 'Commercial' },
-      { label: 'Services', value: 'Commercial Architecture' },
-      { label: 'Region', value: 'Los Angeles' },
-    ],
     offer: [
       { t: 'Architectural Design', d: 'Commercial architecture shaped around brand, function, and code.', icon: 'LayoutTemplate' },
       { t: 'Structural Engineering', d: 'Structural design and coordination for new and existing buildings.', icon: 'Ruler' },
