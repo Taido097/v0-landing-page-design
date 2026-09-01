@@ -51,12 +51,12 @@ const CSS = `
 .nrd-nav{position:sticky;top:0;z-index:20;background:rgba(239,236,229,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 .nrd-nav-in{display:flex;align-items:center;justify-content:space-between;gap:20px;height:clamp(58px,6vw,74px)}
 .nrd-nav-left{display:flex;align-items:center;gap:clamp(16px,2vw,30px)}
-.nrd-nav-link{font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);transition:color .2s}
-.nrd-nav-link:hover,.nrd a.nrd-nav-link.is-active{color:var(--ink)}
+.nrd-nav-link{font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink);transition:color .2s}
+.nrd-nav-link:hover,.nrd a.nrd-nav-link.is-active{color:#000}
 .nrd a.nrd-nav-link.is-active{font-weight:600}
 .nrd-brand{position:absolute;left:50%;transform:translateX(-50%);font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--ink);white-space:nowrap}
-.nrd a.nrd-contact{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--ink);border:1px solid var(--ink);border-radius:999px;padding:11px 20px;transition:background .2s,color .2s}
-.nrd a.nrd-contact:hover{background:var(--ink);color:#f3f0e9}
+.nrd a.nrd-contact{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:#f3f0e9;background:var(--ink);border:1px solid var(--ink);border-radius:999px;padding:11px 22px;transition:background .2s,color .2s}
+.nrd a.nrd-contact:hover{background:#000;color:#fff}
 .nrd-back{display:inline-flex;align-items:center;gap:8px;margin:clamp(20px,2.4vw,32px) 0 0;font-size:12.5px;letter-spacing:.05em;color:var(--muted);transition:color .2s}
 .nrd-back-lead{margin:0 0 clamp(18px,2.2vw,26px)}
 .nrd a.nrd-back:hover{color:var(--ink)}
