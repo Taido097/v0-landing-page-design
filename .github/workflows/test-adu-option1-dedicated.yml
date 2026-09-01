@@ -1,0 +1,24 @@
+name: Test dedicated ADU Option 1 layout
+
+on:
+  push:
+    branches:
+      - claude/client-demo-8889-concept-1-bh1mpv
+    paths:
+      - '.github/workflows/test-adu-option1-dedicated.yml'
+      - 'app/client-demos/client-8889/residential/services/[slug]/page.tsx'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify ADU uses dedicated Option 1 body component
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('app/client-demos/client-8889/residential/services/[slug]/page.tsx').read_text()
+          assert 'function AduScopeOptionOne' in text, 'Dedicated ADU Option 1 component is missing'
+          assert 'adu-o1-panel' in text, 'Dedicated Option 1 panel markup/styles are missing'
+          assert "slug === 'adus' ? <AduScopeOptionOne" in text, 'ADU is not rendering the dedicated Option 1 component'
+          PY
