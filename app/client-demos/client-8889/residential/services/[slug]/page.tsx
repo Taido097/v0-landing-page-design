@@ -70,14 +70,14 @@ const CSS = `
 .nrd-hero-img img{width:100%;height:100%;object-fit:cover;display:block}
 /* full-width banner hero */
 .nrd-banner{position:relative;width:100%;height:clamp(560px,90vh,1000px);overflow:hidden;background:#e7e0d5}
-.nrd-banner img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.04);animation:nrd-kenburns 20s ease-out both}
+.nrd-banner img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform-origin:center 40%;animation:nrd-kenburns 26s ease-in-out infinite alternate both}
 .nrd-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,17,14,.06) 0%,rgba(20,17,14,0) 26%,rgba(20,17,14,0) 58%,rgba(20,17,14,.34) 100%)}
 .nrd-banner-inner{position:absolute;left:0;right:0;bottom:clamp(30px,4vw,54px);z-index:1;width:100%;padding:0 clamp(24px,5vw,80px)}
 .nrd-banner-h1{font-size:clamp(38px,5.4vw,66px);font-weight:400;letter-spacing:-.012em;line-height:1;color:#f7f4ee;margin:0 0 clamp(22px,3vw,38px);animation:nrd-rise 1.1s cubic-bezier(.22,1,.36,1) .15s both}
 .nrd-banner-cap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;padding-top:18px;border-top:1px solid rgba(247,244,238,.4);color:#eee9df;font-size:clamp(12px,1vw,14px);letter-spacing:.01em;animation:nrd-rise 1.1s cubic-bezier(.22,1,.36,1) .35s both}
 .nrd-banner-cap span:nth-child(2){text-align:center}
 .nrd-banner-cap span:nth-child(3){text-align:right}
-@keyframes nrd-kenburns{from{transform:scale(1.14)}to{transform:scale(1.01)}}
+@keyframes nrd-kenburns{from{transform:scale(1.02) translate3d(0,0,0)}to{transform:scale(1.14) translate3d(-2.2%,-1.6%,0)}}
 @keyframes nrd-rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){.nrd-banner img,.nrd-banner-h1,.nrd-banner-cap{animation:none;transform:none}}
 @media(max-width:600px){.nrd-banner-cap{grid-template-columns:1fr}.nrd-banner-cap span:nth-child(2),.nrd-banner-cap span:nth-child(3){display:none}}
