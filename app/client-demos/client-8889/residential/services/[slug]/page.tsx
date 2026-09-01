@@ -81,14 +81,19 @@ const CSS = `
 .nrd-banner-cap span{font-size:clamp(13px,1.1vw,16px);letter-spacing:.01em;line-height:1.3;color:rgba(239,237,233,.85);font-weight:400}
 .nrd-banner-cap span:nth-child(2){text-align:center}
 .nrd-banner-cap span:nth-child(3){text-align:right}
-/* hero entrance driven by JS (.is-in) on scroll-into-view — plays regardless of reduced-motion */
+/* hero entrance — JS adds .is-in after mount; fallback reveals after 2.5s if JS stalls */
+@keyframes nrd-unhide{to{opacity:1;transform:none}}
+.nrd-anim img{transform:scale(1.06);transition:transform 1.8s cubic-bezier(.22,1,.36,1)}
+.nrd-anim.is-in img{transform:scale(1)}
 .nrd-anim .nrd-banner-h1{opacity:0;transform:translateY(22px);transition:opacity .9s cubic-bezier(.22,1,.36,1) .3s,transform .9s cubic-bezier(.22,1,.36,1) .3s}
 .nrd-anim .nrd-banner-cap{opacity:0;transform:translateY(16px);transition:opacity .9s cubic-bezier(.22,1,.36,1) .45s,transform .9s cubic-bezier(.22,1,.36,1) .45s}
 .nrd-anim .nrd-rule-l{transform:translateX(-100%);transition:transform 1.15s cubic-bezier(.44,0,.56,1) .1s}
 .nrd-anim .nrd-rule-r{transform:translateX(100%);transition:transform 1.15s cubic-bezier(.44,0,.56,1) .1s}
 .nrd-anim.is-in .nrd-banner-h1,.nrd-anim.is-in .nrd-banner-cap{opacity:1;transform:translateY(0)}
 .nrd-anim.is-in .nrd-rule-l,.nrd-anim.is-in .nrd-rule-r{transform:translateX(0)}
-@media(max-width:600px){.nrd-banner-cap{grid-template-columns:1fr}.nrd-banner-cap .nrd-cap-col:nth-child(2),.nrd-banner-cap .nrd-cap-col:nth-child(3){display:none}}
+.nrd-anim:not(.is-in) .nrd-banner-h1{animation:nrd-unhide .6s cubic-bezier(.22,1,.36,1) 2.5s both}
+.nrd-anim:not(.is-in) .nrd-banner-cap{animation:nrd-unhide .6s cubic-bezier(.22,1,.36,1) 2.65s both}
+@media(max-width:600px){.nrd-banner-cap{grid-template-columns:1fr}.nrd-banner-cap span:nth-child(2),.nrd-banner-cap span:nth-child(3){display:none}}
 .nrd-lead{margin-top:clamp(40px,5vw,72px)}
 .nrd-lead-h{font-size:clamp(24px,3.4vw,42px);font-weight:500;line-height:1.14;letter-spacing:-.01em;color:var(--ink);margin:0;max-width:20em}
 .nrd-lead-p{margin:22px 0 0;max-width:44em;font-size:clamp(14.5px,1.2vw,16.5px);line-height:1.62;color:#453f39}
