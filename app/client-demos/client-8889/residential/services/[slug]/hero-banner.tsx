@@ -12,7 +12,7 @@ export default function HeroBanner({
   hero: string;
   title: string;
   label: string;
-  caption?: string[];
+  caption?: { label: string; value: string }[];
 }) {
   const ref = useRef<HTMLElement | null>(null);
   const [shown, setShown] = useState(false);
@@ -67,7 +67,10 @@ export default function HeroBanner({
         {caption ? (
           <div className="nrd-banner-cap">
             {caption.map((c) => (
-              <span key={c}>{c}</span>
+              <span key={c.value} className="nrd-cap-col">
+                <span className="nrd-cap-label">{c.label}</span>
+                <span className="nrd-cap-val">{c.value}</span>
+              </span>
             ))}
           </div>
         ) : null}

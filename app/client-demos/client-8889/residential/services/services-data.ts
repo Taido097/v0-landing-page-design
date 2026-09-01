@@ -32,7 +32,7 @@ export interface ServiceDetail {
   hero: string;
   heroBanner?: boolean; // full-width overlay hero band (like the residential page hero)
   bannerLabel?: string; // big overlaid title on the banner
-  heroCaption?: string[]; // caption row under the banner
+  heroCaption?: { label: string; value: string }[]; // caption row under the banner
   approach?: DetailItem[]; // "Our Approach" icon columns
   offer?: DetailItem[]; // "What We Offer" icon grid
   columns?: DetailColumn[]; // checklist columns
@@ -244,7 +244,11 @@ export const SERVICE_DETAILS: ServiceDetail[] = [
     hero: `${D}/cx-09-building.jpg`,
     heroBanner: true,
     bannerLabel: 'Commercial',
-    heroCaption: ['Commercial', 'Commercial Architecture', 'Los Angeles'],
+    heroCaption: [
+      { label: 'Sector', value: 'Commercial' },
+      { label: 'Services', value: 'Commercial Architecture' },
+      { label: 'Region', value: 'Los Angeles' },
+    ],
     offer: [
       { t: 'Architectural Design', d: 'Commercial architecture shaped around brand, function, and code.', icon: 'LayoutTemplate' },
       { t: 'Structural Engineering', d: 'Structural design and coordination for new and existing buildings.', icon: 'Ruler' },

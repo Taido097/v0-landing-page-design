@@ -72,14 +72,17 @@ const CSS = `
 /* full-width banner hero */
 .nrd-banner{position:relative;width:100%;height:clamp(560px,90vh,1000px);overflow:hidden;background:#e7e0d5}
 .nrd-banner img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.nrd-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,17,14,.06) 0%,rgba(20,17,14,0) 26%,rgba(20,17,14,0) 58%,rgba(20,17,14,.34) 100%)}
-.nrd-banner-inner{position:absolute;left:0;right:0;bottom:clamp(30px,4vw,54px);z-index:1;width:100%;padding:0 clamp(24px,5vw,80px)}
-.nrd-banner-h1{font-size:clamp(38px,5.4vw,66px);font-weight:400;letter-spacing:-.012em;line-height:1;color:#f7f4ee;margin:0 0 clamp(22px,3vw,38px)}
-.nrd-banner-rule{display:flex;height:1px;margin:0 0 18px;overflow:hidden}
-.nrd-rule-h{flex:1 1 50%;height:1px;background:rgba(247,244,238,.42)}
-.nrd-banner-cap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;color:#eee9df;font-size:clamp(12px,1vw,14px);letter-spacing:.01em}
-.nrd-banner-cap span:nth-child(2){text-align:center}
-.nrd-banner-cap span:nth-child(3){text-align:right}
+.nrd-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,17,14,.06) 0%,rgba(20,17,14,0) 26%,rgba(20,17,14,0) 58%,rgba(20,17,14,.42) 100%)}
+.nrd-banner-inner{position:absolute;left:50%;bottom:40px;z-index:1;width:94%;transform:translateX(-50%)}
+.nrd-banner-h1{font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:clamp(32px,3.9vw,56px);font-weight:400;letter-spacing:-.02em;line-height:1.1;color:#efede9;margin:0 0 clamp(32px,3.9vw,56px)}
+.nrd-banner-rule{display:flex;height:1px;margin:0 0 20px;overflow:hidden}
+.nrd-rule-h{flex:1 1 50%;height:1px;background:rgba(247,244,238,.38)}
+.nrd-banner-cap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.nrd-cap-col{display:flex;flex-direction:column;gap:7px}
+.nrd-cap-label{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:rgba(239,237,233,.5)}
+.nrd-cap-val{font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:clamp(14px,1.4vw,20px);letter-spacing:.005em;line-height:1.25;color:#efede9}
+.nrd-banner-cap .nrd-cap-col:nth-child(2){text-align:center;align-items:center}
+.nrd-banner-cap .nrd-cap-col:nth-child(3){text-align:right;align-items:flex-end}
 /* hero entrance driven by JS (.is-in) on scroll-into-view — plays regardless of reduced-motion */
 .nrd-anim .nrd-banner-h1{opacity:0;transform:translateY(22px);transition:opacity .9s cubic-bezier(.22,1,.36,1) .3s,transform .9s cubic-bezier(.22,1,.36,1) .3s}
 .nrd-anim .nrd-banner-cap{opacity:0;transform:translateY(16px);transition:opacity .9s cubic-bezier(.22,1,.36,1) .45s,transform .9s cubic-bezier(.22,1,.36,1) .45s}
@@ -87,11 +90,10 @@ const CSS = `
 .nrd-anim .nrd-rule-r{transform:translateX(100%);transition:transform 1.15s cubic-bezier(.44,0,.56,1) .1s}
 .nrd-anim.is-in .nrd-banner-h1,.nrd-anim.is-in .nrd-banner-cap{opacity:1;transform:translateY(0)}
 .nrd-anim.is-in .nrd-rule-l,.nrd-anim.is-in .nrd-rule-r{transform:translateX(0)}
-@media(max-width:600px){.nrd-banner-cap{grid-template-columns:1fr}.nrd-banner-cap span:nth-child(2),.nrd-banner-cap span:nth-child(3){display:none}}
+@media(max-width:600px){.nrd-banner-cap{grid-template-columns:1fr}.nrd-banner-cap .nrd-cap-col:nth-child(2),.nrd-banner-cap .nrd-cap-col:nth-child(3){display:none}}
 .nrd-lead{margin-top:clamp(40px,5vw,72px)}
 .nrd-lead-h{font-size:clamp(24px,3.4vw,42px);font-weight:500;line-height:1.14;letter-spacing:-.01em;color:var(--ink);margin:0;max-width:20em}
 .nrd-lead-p{margin:22px 0 0;max-width:44em;font-size:clamp(14.5px,1.2vw,16.5px);line-height:1.62;color:#453f39}
-@media(max-width:600px){.nrd-banner-cap span:nth-child(2){display:none}}
 /* section scaffolding */
 .nrd-section{margin-top:clamp(56px,7vw,104px)}
 .nrd-sechead{text-align:center;max-width:660px;margin:0 auto clamp(32px,4vw,50px)}
