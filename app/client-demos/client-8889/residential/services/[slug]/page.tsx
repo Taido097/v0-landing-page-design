@@ -83,21 +83,23 @@ const CSS = `
 .nrd-banner-cap span{font-size:clamp(13px,1.1vw,16px);letter-spacing:.01em;line-height:1.3;color:rgba(239,237,233,.85);font-weight:400}
 .nrd-banner-cap span:nth-child(2){text-align:center}
 .nrd-banner-cap span:nth-child(3){text-align:right}
-/* hero entrance — copied verbatim from the NGUYEN Framer residential hero:
-   the hero image reveals with a top-to-bottom clip-path wipe (inset(0% 0% 100%)->inset(0%));
-   the dark overlay fades in (opacity .001->1, delay .5s, dur .4s); and the two rule halves
-   slide in from x:-600px / x:+600px while fading (delay .3s, dur 1s, cubic-bezier(.44,0,.56,1)).
-   .is-in is added by hero-banner.tsx; the :not(.is-in) fallbacks reveal everything if JS is off. */
+/* hero entrance — copied verbatim from the NGUYEN Framer residential hero (values read
+   from the Framer JS bundle): the hero image reveals with a top-to-bottom clip-path wipe
+   (inset(0% 0% 100% 0%)->inset(0% 0% 0% 0%)) + opacity 0->1 on a spring (stiffness 400,
+   damping 80, mass 1 -> the linear() curve below); the dark overlay fades in (delay .5s,
+   dur .4s); the two rule halves slide in from x:-600px / x:+600px while fading (delay .3s,
+   dur 1s, cubic-bezier(.44,0,.56,1)). .is-in is added by hero-banner.tsx; :not(.is-in)
+   fallbacks reveal everything if JS is off. */
 @keyframes nrd-unhide{to{opacity:1;transform:none}}
-@keyframes nrd-imgreveal{to{clip-path:inset(0%)}}
-.nrd-anim img{clip-path:inset(0% 0% 100%);transition:clip-path 1.2s cubic-bezier(.44,0,.56,1) .1s}
-.nrd-anim.is-in img{clip-path:inset(0%)}
+@keyframes nrd-imgreveal{to{clip-path:inset(0% 0% 0% 0%);opacity:1}}
+.nrd-anim img{clip-path:inset(0% 0% 100% 0%);opacity:0;transition:clip-path 1.3s cubic-bezier(.22,1,.36,1),opacity 1.3s cubic-bezier(.22,1,.36,1);transition-timing-function:linear(0,0.1956,0.3976,0.5496,0.6633,0.7484,0.8120,0.8597,0.8953,0.9219,0.9418,0.9568,0.9679,0.9762,0.9825,0.9872,0.9906,0.9933,0.9952,0.9967,0.9978,0.9986,0.9992,0.9997,1)}
+.nrd-anim.is-in img{clip-path:inset(0% 0% 0% 0%);opacity:1}
 .nrd-anim::after{opacity:.001;transition:opacity .4s ease-out .5s}
 .nrd-anim.is-in::after{opacity:1}
 .nrd-anim .nrd-rule-l{transform:translateX(-600px);opacity:.001;transition:transform 1s cubic-bezier(.44,0,.56,1) .3s,opacity 1s cubic-bezier(.44,0,.56,1) .3s}
 .nrd-anim .nrd-rule-r{transform:translateX(600px);opacity:.001;transition:transform 1s cubic-bezier(.44,0,.56,1) .3s,opacity 1s cubic-bezier(.44,0,.56,1) .3s}
 .nrd-anim.is-in .nrd-rule-l,.nrd-anim.is-in .nrd-rule-r{transform:translateX(0);opacity:1}
-.nrd-anim:not(.is-in) img{animation:nrd-imgreveal 1.2s cubic-bezier(.44,0,.56,1) 1.9s both}
+.nrd-anim:not(.is-in) img{animation:nrd-imgreveal 1.3s cubic-bezier(.22,1,.36,1) 1.9s both}
 .nrd-anim:not(.is-in)::after{animation:nrd-unhide .5s ease-out 2s both}
 .nrd-anim:not(.is-in) .nrd-rule-l,.nrd-anim:not(.is-in) .nrd-rule-r{animation:nrd-unhide .9s cubic-bezier(.44,0,.56,1) 2.2s both}
 @media(max-width:600px){.nrd-banner-cap{grid-template-columns:1fr}.nrd-banner-cap span:nth-child(2),.nrd-banner-cap span:nth-child(3){display:none}}
