@@ -120,7 +120,7 @@ const CSS = `
 .nrd-col li svg{margin-top:1px}
 /* gallery cards */
 .nrd-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:0 0 clamp(26px,3vw,38px)}
-.nrd-chip{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:999px;padding:9px 18px;cursor:pointer;transition:all .2s}
+.nrd-chip{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:4px;padding:9px 18px;cursor:pointer;transition:all .2s}
 .nrd-chip:hover{border-color:#c9bda9;color:var(--ink)}
 .nrd-chip.is-active{background:var(--ink);border-color:var(--ink);color:#f3f0e9}
 .nrd-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,2.4vw,34px)}
