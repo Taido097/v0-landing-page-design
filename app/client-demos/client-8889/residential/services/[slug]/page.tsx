@@ -193,8 +193,8 @@ const CSS = `
 .nrd-foot-copy{font-size:11.5px;color:var(--soft);letter-spacing:.02em;margin:0}
 .nrd-marquee{overflow:hidden;white-space:nowrap;margin:clamp(30px,4vw,56px) 0 clamp(24px,3vw,40px)}
 .nrd-marquee-track{display:inline-flex;align-items:center;animation:nrd-scroll 40s linear infinite;will-change:transform}
-.nrd-marquee-track span{flex:none;white-space:nowrap;font-size:clamp(56px,18vw,240px);line-height:.9;font-weight:800;letter-spacing:-.04em;text-transform:uppercase;color:#33302b}
-.nrd-marquee-track span::after{content:"·";padding:0 .3em;color:#33302b}
+.nrd-marquee-track span{flex:none;white-space:nowrap;font-size:clamp(64px,23vw,340px);line-height:.9;font-weight:800;letter-spacing:-.04em;text-transform:uppercase;color:#4f4742}
+.nrd-marquee-track span::after{content:"·";padding:0 .3em;color:#4f4742}
 @keyframes nrd-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @media(prefers-reduced-motion:reduce){.nrd-marquee-track{animation:none}}
 .nrd-foot-img{width:100%;aspect-ratio:16/6;overflow:hidden;background:#e7e0d5}
