@@ -12,7 +12,7 @@ export default function HeroBanner({
   hero: string;
   title: string;
   label: string;
-  caption?: { label: string; value: string }[];
+  caption?: string[];
 }) {
   const ref = useRef<HTMLElement | null>(null);
   const [shown, setShown] = useState(false);
@@ -21,12 +21,10 @@ export default function HeroBanner({
     const el = ref.current;
     if (!el) return;
 
-    // Fallback: reveal no matter what, so the hero can never get stuck hidden.
     const fallback = window.setTimeout(() => setShown(true), 1400);
 
     const reveal = () => {
       window.clearTimeout(fallback);
-      // rAF so the browser paints the hidden state first, guaranteeing a transition.
       requestAnimationFrame(() => requestAnimationFrame(() => setShown(true)));
     };
 
@@ -67,10 +65,7 @@ export default function HeroBanner({
         {caption ? (
           <div className="nrd-banner-cap">
             {caption.map((c) => (
-              <span key={c.value} className="nrd-cap-col">
-                <span className="nrd-cap-label">{c.label}</span>
-                <span className="nrd-cap-val">{c.value}</span>
-              </span>
+              <span key={c}>{c}</span>
             ))}
           </div>
         ) : null}

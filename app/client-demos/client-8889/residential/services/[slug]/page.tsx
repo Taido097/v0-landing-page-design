@@ -78,11 +78,9 @@ const CSS = `
 .nrd-banner-rule{display:flex;height:1px;margin:0 0 20px;overflow:hidden}
 .nrd-rule-h{flex:1 1 50%;height:1px;background:rgba(247,244,238,.38)}
 .nrd-banner-cap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-.nrd-cap-col{display:flex;flex-direction:column;gap:7px}
-.nrd-cap-label{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:rgba(239,237,233,.5)}
-.nrd-cap-val{font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:clamp(14px,1.4vw,20px);letter-spacing:.005em;line-height:1.25;color:#efede9}
-.nrd-banner-cap .nrd-cap-col:nth-child(2){text-align:center;align-items:center}
-.nrd-banner-cap .nrd-cap-col:nth-child(3){text-align:right;align-items:flex-end}
+.nrd-banner-cap span{font-size:clamp(13px,1.1vw,16px);letter-spacing:.01em;line-height:1.3;color:rgba(239,237,233,.85);font-weight:400}
+.nrd-banner-cap span:nth-child(2){text-align:center}
+.nrd-banner-cap span:nth-child(3){text-align:right}
 /* hero entrance driven by JS (.is-in) on scroll-into-view — plays regardless of reduced-motion */
 .nrd-anim .nrd-banner-h1{opacity:0;transform:translateY(22px);transition:opacity .9s cubic-bezier(.22,1,.36,1) .3s,transform .9s cubic-bezier(.22,1,.36,1) .3s}
 .nrd-anim .nrd-banner-cap{opacity:0;transform:translateY(16px);transition:opacity .9s cubic-bezier(.22,1,.36,1) .45s,transform .9s cubic-bezier(.22,1,.36,1) .45s}
