@@ -52,7 +52,7 @@ const CSS = `
 .nrd-nav{position:sticky;top:0;z-index:20;background:rgba(240,235,230,.95);backdrop-filter:blur(3px)}
 .nrd-nav-in{display:flex;align-items:center;gap:20px;padding-top:13px;padding-bottom:13px;position:relative}
 .nrd-nav-left{flex:1 0 0;display:flex;align-items:center;justify-content:flex-start;gap:32px}
-.nrd-nav-link{font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:14px;font-weight:500;letter-spacing:-.4px;line-height:110%;text-transform:uppercase;color:#4f4742;transition:opacity .2s}
+.nrd-nav-link{font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:14px;font-weight:500;letter-spacing:-.4px;line-height:110%;text-transform:uppercase;color:#4f4742;white-space:nowrap;transition:opacity .2s}
 .nrd-nav-link:hover{opacity:.6}
 .nrd a.nrd-nav-link.is-active{opacity:.6}
 .nrd-brand{flex:none;font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:24px;letter-spacing:-.4px;line-height:110%;font-weight:400;color:#4f4742;white-space:nowrap;text-transform:uppercase}
