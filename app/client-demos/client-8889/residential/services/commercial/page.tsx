@@ -7,9 +7,9 @@ import {
 } from 'react';
 import ServiceDetailPage from '../[slug]/page';
 
-// Use the saved house image already bundled with the project. This avoids relying on
-// the old Framer URL, which now resolves to a different office/team photograph.
-const FOOTER_IMAGE_SRC = '/client-8889/main-footer-house';
+// Match Claude's working Residential footer exactly: use the existing static WebP
+// directly from public/ instead of a dynamic route or remote Framer asset.
+const FOOTER_IMAGE_SRC = '/client-8889/residential/house-1.webp';
 
 const OUR_SERVICES = [
   {
