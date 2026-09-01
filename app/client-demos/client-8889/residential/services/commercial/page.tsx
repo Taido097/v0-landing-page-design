@@ -6,17 +6,11 @@ import {
   type ReactNode,
 } from 'react';
 import ServiceDetailPage from '../[slug]/page';
-import part1 from '../../../../../client-8889/main-footer-house/chunks/part1';
-import part2 from '../../../../../client-8889/main-footer-house/chunks/part2';
-import part3 from '../../../../../client-8889/main-footer-house/chunks/part3';
-import part4 from '../../../../../client-8889/main-footer-house/chunks/part4';
-import part5 from '../../../../../client-8889/main-footer-house/chunks/part5';
-import part6 from '../../../../../client-8889/main-footer-house/chunks/part6';
-import part7 from '../../../../../client-8889/main-footer-house/chunks/part7';
-import part8 from '../../../../../client-8889/main-footer-house/chunks/part8';
 
-const FOOTER_IMAGE = part1 + part2 + part3 + part4 + part5 + part6 + part7 + part8;
-const FOOTER_IMAGE_SRC = `data:image/webp;base64,${FOOTER_IMAGE}`;
+// Match Claude's working Residential implementation exactly: use the Framer image
+// as a normal <img src> rather than a base64 payload, route, or CSS background.
+const FOOTER_IMAGE_SRC =
+  'https://framerusercontent.com/images/NPECM2ziENhHhdNoAT3unXgBhD0.jpg?height=1600&width=2400';
 
 const OUR_SERVICES = [
   {
@@ -66,8 +60,8 @@ const FOOTER_MATCH_CSS = `
   color:#33302b;
 }
 .nrd-commercial .nrd-marquee-track span::after{color:#33302b}
-.nrd-commercial .nrd-foot-img{background:#e7e0d5}
-.nrd-commercial .nrd-foot-img img{opacity:1;visibility:visible;display:block;width:100%;height:100%;object-fit:cover}
+.nrd-commercial .nrd-foot-img{background:#e7e0d5;overflow:hidden}
+.nrd-commercial .nrd-foot-img img{width:100%;height:100%;object-fit:cover;display:block;opacity:1;visibility:visible}
 `;
 
 type FooterNodeProps = {
@@ -84,7 +78,7 @@ function replaceFooterImage(node: ReactNode): ReactNode {
   if (element.type === 'img') {
     return cloneElement(element, {
       src: FOOTER_IMAGE_SRC,
-      alt: 'NGUYEN architecture',
+      alt: 'NGUYEN residential architecture',
     });
   }
 
