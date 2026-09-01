@@ -7,6 +7,7 @@ import {
 import { SERVICE_DETAILS, getServiceDetail } from '../services-data';
 import Gallery from './gallery';
 import HeroBanner from './hero-banner';
+import Navbar from '../navbar';
 
 const RESIDENTIAL_HREF = '/client-demos/client-8889/residential';
 const HOME_HREF = '/client-demos/client-8889/arcsphere-socal';
@@ -219,17 +220,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
 
-      <nav className="nrd-nav">
-        <div className="nrd-shell nrd-nav-in">
-          <div className="nrd-nav-left">
-            <a href={RESIDENTIAL_HREF} className="nrd-nav-link">Design Process</a>
-            <a href={RESIDENTIAL_HREF} className="nrd-nav-link">Projects</a>
-            <a href={RESIDENTIAL_HREF} className="nrd-nav-link">Services</a>
-          </div>
-          <a href={RESIDENTIAL_HREF} className="nrd-brand">NGUYEN Architecture &amp; Engineering</a>
-          <a href={CONTACT} className="nrd-contact">Contact Us</a>
-        </div>
-      </nav>
+      <Navbar />
 
       {svc.heroBanner ? (
         <HeroBanner
