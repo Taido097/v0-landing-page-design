@@ -212,10 +212,13 @@ const CSS = `
 /* Commercial "Built For Business" image-mosaic body */
 .cx-body{padding-top:clamp(36px,4.5vw,64px)}
 .cx-intro{max-width:660px;margin:0 0 clamp(26px,3.4vw,44px)}
-.cx-intro h2{font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:clamp(30px,4.6vw,54px);line-height:1.04;letter-spacing:-.02em;font-weight:500;color:var(--ink);margin:0}
-.cx-intro p{margin:16px 0 0;max-width:33em;font-size:clamp(14.5px,1.2vw,16.5px);line-height:1.6;color:var(--muted)}
+.cx-intro h2{font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:clamp(30px,4.6vw,54px);line-height:1.04;letter-spacing:-.02em;font-weight:600;color:#4f4742;margin:0}
+.cx-intro p{margin:16px 0 0;max-width:33em;font-size:clamp(14.5px,1.2vw,16.5px);line-height:1.6;font-weight:400;color:#6f675e}
 .cx-top{display:grid;grid-template-columns:1.12fr 1fr;grid-template-rows:auto auto;gap:16px}
-.cx-cell{position:relative;border-radius:12px;overflow:hidden;background:#e7e0d5}
+.cx-cell{position:relative;border-radius:0;overflow:hidden;background:#e7e0d5}
+/* Commercial page: square (90°) corners on every image, incl. the shared hero banner */
+.nrd-commercial .nrd-banner{border-radius:0}
+.nrd-commercial .nrd-banner img,.nrd-commercial .cx-cell img{border-radius:0}
 .cx-cell img{width:100%;height:100%;object-fit:cover;display:block}
 .cx-cell::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(20,17,14,.52) 0%,rgba(20,17,14,0) 40%);pointer-events:none}
 .cx-label{position:absolute;left:16px;bottom:14px;z-index:1;display:flex;align-items:center;gap:9px;color:#f3f0e9;font-size:14px;font-weight:500;letter-spacing:.01em}
@@ -227,11 +230,11 @@ const CSS = `
 .cx-bottom{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
 .cx-bottom .cx-cell{aspect-ratio:16/10}
 .cx-proc{margin-top:clamp(48px,6vw,88px);border-top:1px solid var(--line);padding-top:clamp(32px,4vw,56px);display:grid;grid-template-columns:.85fr 2.5fr;gap:clamp(28px,5vw,80px);align-items:start}
-.cx-proc-h{font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:clamp(24px,3vw,40px);line-height:1.08;letter-spacing:-.01em;font-weight:500;color:var(--ink);margin:0}
+.cx-proc-h{font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:clamp(24px,3vw,40px);line-height:1.08;letter-spacing:-.01em;font-weight:600;color:#4f4742;margin:0}
 .cx-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(20px,2.6vw,40px)}
-.cx-step svg{color:var(--ink);opacity:.85}
-.cx-step h4{margin:16px 0 8px;font-size:12px;letter-spacing:.09em;text-transform:uppercase;font-weight:600;color:var(--ink)}
-.cx-step p{margin:0;font-size:13px;line-height:1.55;color:var(--muted);max-width:22ch}
+.cx-step svg{color:#4f4742;opacity:.9}
+.cx-step h4{margin:16px 0 8px;font-size:12px;letter-spacing:.09em;text-transform:uppercase;font-weight:600;color:#4f4742}
+.cx-step p{margin:0;font-size:13px;line-height:1.55;font-weight:400;color:#6f675e;max-width:22ch}
 @media(max-width:820px){
   .cx-top{grid-template-columns:1fr}
   .cx-cafe{grid-column:1;grid-row:auto;aspect-ratio:4/3}
@@ -312,7 +315,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
   if (!svc) notFound();
 
   return (
-    <div className="nrd">
+    <div className={`nrd${slug === 'commercial' ? ' nrd-commercial' : ''}`}>
       {/* eslint-disable-next-line @next/next/no-page-custom-font */}
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
