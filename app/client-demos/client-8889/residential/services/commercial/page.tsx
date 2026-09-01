@@ -7,9 +7,8 @@ import {
 } from 'react';
 import ServiceDetailPage from '../[slug]/page';
 
-// Match Claude's working Residential footer exactly: use the existing static WebP
-// directly from public/ instead of a dynamic route or remote Framer asset.
-const FOOTER_IMAGE_SRC = '/client-8889/residential/house-1.webp';
+// Match the footer image used by the shared Residential service-detail page.
+const FOOTER_IMAGE_SRC = '/client-8889/residential/svc-03-adus.jpg';
 
 const OUR_SERVICES = [
   {
