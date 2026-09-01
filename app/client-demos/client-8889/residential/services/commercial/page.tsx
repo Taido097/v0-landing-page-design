@@ -43,6 +43,27 @@ const OUR_SERVICES_CSS = `
 @media(max-width:520px){.nrd-related-grid{grid-template-columns:1fr}.nrd-related-img{aspect-ratio:16/10}}
 `;
 
+/* Commercial renders through the native service-detail route while Residential is the
+   Framer-backed reference. Keep the native footer structure/links/contact exactly as-is,
+   but make its visual finish match the working Residential/main-page footer. */
+const FOOTER_MATCH_CSS = `
+.nrd-commercial .nrd-marquee{margin:clamp(30px,4vw,56px) 0 clamp(20px,2.6vw,34px)}
+.nrd-commercial .nrd-marquee-track span{
+  font-family:"Inter Display","Inter Display Placeholder","Inter",sans-serif;
+  font-size:clamp(64px,18vw,260px);
+  line-height:.82;
+  font-weight:800;
+  letter-spacing:-.055em;
+  text-transform:uppercase;
+  color:#33302b;
+}
+.nrd-commercial .nrd-marquee-track span::after{color:#33302b}
+.nrd-commercial .nrd-foot-img{
+  background:#e7e0d5 url('/client-8889/main-footer-house') center center/cover no-repeat;
+}
+.nrd-commercial .nrd-foot-img img{opacity:0}
+`;
+
 function OurServicesSection() {
   return (
     <section className="nrd-shell nrd-related-services" aria-labelledby="commercial-our-services-title">
@@ -80,14 +101,26 @@ export default async function CommercialPage() {
     (child) => isValidElement(child) && child.type === 'footer',
   );
 
+  const footerStyle = (
+    <style
+      key="commercial-footer-match"
+      dangerouslySetInnerHTML={{ __html: FOOTER_MATCH_CSS }}
+    />
+  );
+
   const nextChildren =
     footerIndex >= 0
       ? [
           ...children.slice(0, footerIndex),
           <OurServicesSection key="commercial-our-services" />,
+          footerStyle,
           ...children.slice(footerIndex),
         ]
-      : [...children, <OurServicesSection key="commercial-our-services" />];
+      : [
+          ...children,
+          <OurServicesSection key="commercial-our-services" />,
+          footerStyle,
+        ];
 
   return cloneElement(root, { children: nextChildren });
 }
