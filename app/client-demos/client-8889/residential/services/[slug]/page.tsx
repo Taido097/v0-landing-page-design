@@ -48,15 +48,16 @@ const CSS = `
 .nrd *{box-sizing:border-box}
 .nrd a{color:inherit;text-decoration:none}
 .nrd-shell{width:min(1200px,100%);margin:0 auto;padding:0 clamp(20px,4vw,56px)}
-/* header */
-.nrd-nav{position:sticky;top:0;z-index:20;background:rgba(239,236,229,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-.nrd-nav-in{display:flex;align-items:center;justify-content:space-between;gap:20px;height:clamp(58px,6vw,74px);position:relative}
-.nrd-nav-left{display:flex;align-items:center;gap:clamp(16px,2vw,30px)}
-.nrd-nav-link{font-size:12px;letter-spacing:.13em;text-transform:uppercase;font-weight:500;color:var(--ink);transition:opacity .2s}
+/* header — exact specs from NGUYEN Framer residential nav (three-section flex: links | logo | button) */
+.nrd-nav{position:sticky;top:0;z-index:20;background:rgba(240,235,230,.95);backdrop-filter:blur(3px)}
+.nrd-nav-in{display:flex;align-items:center;gap:20px;padding-top:13px;padding-bottom:13px;position:relative}
+.nrd-nav-left{flex:1 0 0;display:flex;align-items:center;justify-content:flex-start;gap:32px}
+.nrd-nav-link{font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:14px;font-weight:500;letter-spacing:-.4px;line-height:110%;text-transform:uppercase;color:#4f4742;transition:opacity .2s}
 .nrd-nav-link:hover{opacity:.6}
 .nrd a.nrd-nav-link.is-active{opacity:.6}
-.nrd-brand{position:absolute;left:50%;transform:translateX(-50%);font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--ink);white-space:nowrap}
-.nrd a.nrd-contact{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:#f0ebe6;background:#4f4742;border-radius:999px;padding:11px 22px;transition:opacity .2s;white-space:nowrap}
+.nrd-brand{flex:none;font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:24px;letter-spacing:-.4px;line-height:110%;font-weight:400;color:#4f4742;white-space:nowrap;text-transform:uppercase}
+.nrd-nav-right{flex:1 0 0;display:flex;align-items:center;justify-content:flex-end;gap:10px}
+.nrd a.nrd-contact{font-family:"Inter Display","Inter Display Placeholder",sans-serif;display:inline-flex;align-items:center;justify-content:center;background:#4f4742;color:#f0ebe6;border-radius:100px;padding:10px 22px;font-size:14px;font-weight:500;letter-spacing:-.2px;line-height:120%;text-transform:uppercase;transition:opacity .2s;white-space:nowrap;backdrop-filter:blur(5px)}
 .nrd a.nrd-contact:hover{opacity:.8}
 .nrd-back{display:inline-flex;align-items:center;gap:8px;margin:clamp(20px,2.4vw,32px) 0 0;font-size:12.5px;letter-spacing:.05em;color:var(--muted);transition:color .2s}
 .nrd-back-lead{margin:0 0 clamp(18px,2.2vw,26px)}

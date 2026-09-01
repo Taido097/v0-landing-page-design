@@ -11,7 +11,9 @@ export default function Navbar() {
           <a href={RESIDENTIAL_HREF} className="nrd-nav-link">Services</a>
         </div>
         <a href={RESIDENTIAL_HREF} className="nrd-brand">NGUYEN Architecture &amp; Engineering</a>
-        <a href={CONTACT} className="nrd-contact">Contact Us</a>
+        <div className="nrd-nav-right">
+          <a href={CONTACT} className="nrd-contact">Contact Us</a>
+        </div>
       </div>
     </nav>
   );
