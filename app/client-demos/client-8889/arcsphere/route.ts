@@ -36,7 +36,7 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/150\+ PROJECTS COMPLETED/gi, '500+ SUCCESSFUL PROJECTS'],
   [/250\+ PROJECTS WORLDWIDE/gi, '500+ SUCCESSFUL PROJECTS'],
   [/SERENITY VILLA/gi, 'CUSTOM HOME'],
-  [/DUBAI, 2025/gi, 'LOS ANGELES, 2025'],
+  [/DUBAI, 2025/gi, 'LOS ANGELES, CA'],
   [/VIEW PROJECTS/gi, 'VIEW PROJECT TYPES'],
   [/BOOK CONSULTATION/gi, 'START A PROJECT'],
   [/DESIGN PROCESS/gi, 'PROJECT PROCESS'],
@@ -169,7 +169,7 @@ const CLIENT_PATCH = `
     ['We offer a complete range of architecture and interior design services tailored to create spaces.', 'ARCHITECTURE, ENGINEERING & PERMITTING FOR RESIDENTIAL AND COMMERCIAL PROJECTS.'],
     ['A selection of our recent architecture and interior design work.', 'A SELECTION OF OUR RECENT RESIDENTIAL, COMMERCIAL & DEVELOPMENT PROJECTS.'],
     ['12+ YEARS EXPERIENCE', '15+ YEARS EXPERIENCE'], ['150+ PROJECTS COMPLETED', '500+ SUCCESSFUL PROJECTS'], ['250+ PROJECTS WORLDWIDE', '500+ SUCCESSFUL PROJECTS'],
-    ['SERENITY VILLA', 'CUSTOM HOME'], ['DUBAI, 2025', 'LOS ANGELES, 2025'],
+    ['SERENITY VILLA', 'CUSTOM HOME'], ['DUBAI, 2025', 'LOS ANGELES, CA'],
     ['VIEW PROJECTS', 'VIEW PROJECT TYPES'], ['BOOK CONSULTATION', 'START A PROJECT'], ['DESIGN PROCESS', 'PROJECT PROCESS'],
     ['Residential Interior', 'Architectural Design & Tenant Improvement (TI)'], ['Commercial Interior', 'Commercial Architecture'],
     ['Space Planning', 'Existing-Condition Survey & Business Layout'], ['Design Consultation', 'Zoning, Occupancy & Local Requirements'],
@@ -204,19 +204,20 @@ const CLIENT_PATCH = `
   const officeCardReplacements = new Map([
     [compact('CORPORATE OFFICE SPACE'), 'OFFICE BUILD-OUT'],
     [compact('COMMERCIAL ARCHITECTURE'), 'COMMERCIAL ARCHITECTURE'],
-    [compact('NEW YORK, 2026'), 'IRVINE, 2026']
+    [compact('NEW YORK, 2026'), 'IRVINE, CA']
   ]);
   const officeCardKeys = Array.from(officeCardReplacements.keys());
   const customHomeCardReplacements = new Map([
     [compact('SERENITY VILLA'), 'CUSTOM HOME'],
     [compact('RESIDENTIAL ARCHITECTURE'), 'RESIDENTIAL ARCHITECTURE'],
-    [compact('DUBAI, 2025'), 'LOS ANGELES, 2025']
+    [compact('DUBAI, 2025'), 'LOS ANGELES, CA']
   ]);
   const customHomeCardKeys = Array.from(customHomeCardReplacements.keys());
   const thirdCardTextReplacements = new Map([
     [compact('MINIMALIST APPARTMENT INTERIOR'), 'COMMERCIAL BUILDING'],
     [compact('MINIMALIST APARTMENT INTERIOR'), 'COMMERCIAL BUILDING'],
-    [compact('RESIDENTIAL ARCHITECTURE'), 'COMMERCIAL ARCHITECTURE']
+    [compact('RESIDENTIAL ARCHITECTURE'), 'COMMERCIAL ARCHITECTURE'],
+    [compact('LONDON, 2025'), 'SAN FRANCISCO, CA']
   ]);
   const thirdCardImage = window.location.origin + '/nguyen-commercial-building.svg?v=office-exact-20260825';
   const thirdCardLabels = [compact('MINIMALIST APPARTMENT INTERIOR'), compact('MINIMALIST APARTMENT INTERIOR'), compact('COMMERCIAL BUILDING')];
