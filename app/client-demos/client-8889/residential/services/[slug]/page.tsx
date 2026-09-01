@@ -48,15 +48,15 @@ const CSS = `
 .nrd *{box-sizing:border-box}
 .nrd a{color:inherit;text-decoration:none}
 .nrd-shell{width:min(1200px,100%);margin:0 auto;padding:0 clamp(20px,4vw,56px)}
-/* header — matching Framer residential nav exactly */
-.nrd-nav{position:sticky;top:0;z-index:20;background:rgba(239,236,229,.95);backdrop-filter:blur(3px)}
-.nrd-nav-in{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:20px;height:64px;padding:0 12px}
-.nrd-nav-left{display:flex;align-items:center;gap:32px}
-.nrd-nav-link{font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:14px;letter-spacing:-.4px;line-height:110%;text-transform:uppercase;font-weight:500;color:#4f4742;transition:opacity .2s}
+/* header */
+.nrd-nav{position:sticky;top:0;z-index:20;background:rgba(239,236,229,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.nrd-nav-in{display:flex;align-items:center;justify-content:space-between;gap:20px;height:clamp(58px,6vw,74px);position:relative}
+.nrd-nav-left{display:flex;align-items:center;gap:clamp(16px,2vw,30px)}
+.nrd-nav-link{font-size:12px;letter-spacing:.13em;text-transform:uppercase;font-weight:500;color:var(--ink);transition:opacity .2s}
 .nrd-nav-link:hover{opacity:.6}
 .nrd a.nrd-nav-link.is-active{opacity:.6}
-.nrd-brand{font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:24px;letter-spacing:-.4px;line-height:110%;font-weight:400;color:#4f4742;white-space:nowrap;text-align:center;text-transform:uppercase}
-.nrd a.nrd-contact{font-family:"Inter Display","Inter Display Placeholder",sans-serif;display:inline-flex;align-items:center;justify-content:center;justify-self:end;background:#4f4742;color:#f0ebe6;border-radius:100px;padding:10px 22px;font-size:13px;letter-spacing:.06em;line-height:120%;text-transform:uppercase;font-weight:500;transition:opacity .2s;white-space:nowrap}
+.nrd-brand{position:absolute;left:50%;transform:translateX(-50%);font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--ink);white-space:nowrap}
+.nrd a.nrd-contact{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:#f0ebe6;background:#4f4742;border-radius:999px;padding:11px 22px;transition:opacity .2s;white-space:nowrap}
 .nrd a.nrd-contact:hover{opacity:.8}
 .nrd-back{display:inline-flex;align-items:center;gap:8px;margin:clamp(20px,2.4vw,32px) 0 0;font-size:12.5px;letter-spacing:.05em;color:var(--muted);transition:color .2s}
 .nrd-back-lead{margin:0 0 clamp(18px,2.2vw,26px)}
