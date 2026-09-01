@@ -57,6 +57,7 @@ const CSS = `
 .nrd a.nrd-contact{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--ink);border:1px solid var(--ink);border-radius:999px;padding:11px 20px;transition:background .2s,color .2s}
 .nrd a.nrd-contact:hover{background:var(--ink);color:#f3f0e9}
 .nrd-back{display:inline-flex;align-items:center;gap:8px;margin:clamp(20px,2.4vw,32px) 0 0;font-size:12.5px;letter-spacing:.05em;color:var(--muted);transition:color .2s}
+.nrd-back-lead{margin:0 0 clamp(18px,2.2vw,26px)}
 .nrd a.nrd-back:hover{color:var(--ink)}
 /* hero */
 .nrd-hero{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,4vw,56px);align-items:center;margin-top:clamp(22px,2.6vw,34px)}
@@ -68,15 +69,18 @@ const CSS = `
 .nrd-hero-img{aspect-ratio:4/3;border-radius:0;overflow:hidden;background:#e7e0d5}
 .nrd-hero-img img{width:100%;height:100%;object-fit:cover;display:block}
 /* full-width banner hero */
-.nrd-banner{position:relative;width:100%;height:clamp(460px,62vw,780px);margin-top:clamp(16px,1.6vw,24px);overflow:hidden;background:#e7e0d5}
-.nrd-banner img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.06);animation:nrd-kenburns 18s ease-out both}
-.nrd-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,17,14,.03),rgba(20,17,14,.02) 55%,rgba(20,17,14,.45) 86%,rgba(20,17,14,.6))}
-.nrd-banner-body{position:absolute;left:0;right:0;bottom:clamp(60px,7vw,104px);z-index:1;width:min(1280px,100%);margin:0 auto;padding:0 clamp(20px,4vw,56px)}
-.nrd-banner-h1{font-size:clamp(34px,5.6vw,68px);font-weight:400;letter-spacing:-.015em;line-height:1;color:#f5f2ec;margin:0;animation:nrd-rise 1s cubic-bezier(.22,1,.36,1) .15s both}
-.nrd-banner-cap{position:absolute;left:0;right:0;bottom:0;z-index:1;display:flex;justify-content:space-between;gap:14px;width:min(1280px,100%);margin:0 auto;padding:18px clamp(20px,4vw,56px);border-top:1px solid rgba(245,242,236,.35);color:#eee9df;font-size:13px;letter-spacing:.01em;animation:nrd-rise 1s cubic-bezier(.22,1,.36,1) .35s both}
-@keyframes nrd-kenburns{from{transform:scale(1.16)}to{transform:scale(1.02)}}
+.nrd-banner{position:relative;width:100%;height:clamp(560px,90vh,1000px);overflow:hidden;background:#e7e0d5}
+.nrd-banner img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.04);animation:nrd-kenburns 20s ease-out both}
+.nrd-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,17,14,.06) 0%,rgba(20,17,14,0) 26%,rgba(20,17,14,0) 58%,rgba(20,17,14,.34) 100%)}
+.nrd-banner-inner{position:absolute;left:0;right:0;bottom:clamp(30px,4vw,54px);z-index:1;width:100%;padding:0 clamp(24px,5vw,80px)}
+.nrd-banner-h1{font-size:clamp(38px,5.4vw,66px);font-weight:400;letter-spacing:-.012em;line-height:1;color:#f7f4ee;margin:0 0 clamp(22px,3vw,38px);animation:nrd-rise 1.1s cubic-bezier(.22,1,.36,1) .15s both}
+.nrd-banner-cap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;padding-top:18px;border-top:1px solid rgba(247,244,238,.4);color:#eee9df;font-size:clamp(12px,1vw,14px);letter-spacing:.01em;animation:nrd-rise 1.1s cubic-bezier(.22,1,.36,1) .35s both}
+.nrd-banner-cap span:nth-child(2){text-align:center}
+.nrd-banner-cap span:nth-child(3){text-align:right}
+@keyframes nrd-kenburns{from{transform:scale(1.14)}to{transform:scale(1.01)}}
 @keyframes nrd-rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){.nrd-banner img,.nrd-banner-h1,.nrd-banner-cap{animation:none;transform:none}}
+@media(max-width:600px){.nrd-banner-cap{grid-template-columns:1fr}.nrd-banner-cap span:nth-child(2),.nrd-banner-cap span:nth-child(3){display:none}}
 .nrd-lead{margin-top:clamp(40px,5vw,72px)}
 .nrd-lead-h{font-size:clamp(24px,3.4vw,42px);font-weight:500;line-height:1.14;letter-spacing:-.01em;color:var(--ink);margin:0;max-width:20em}
 .nrd-lead-p{margin:22px 0 0;max-width:44em;font-size:clamp(14.5px,1.2vw,16.5px);line-height:1.62;color:#453f39}
@@ -215,27 +219,28 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
         </div>
       </nav>
 
-      <div className="nrd-shell">
-        <a href={RESIDENTIAL_HREF} className="nrd-back">← Back to Residential</a>
-      </div>
-
       {svc.heroBanner ? (
         <section className="nrd-banner">
           <img src={svc.hero} alt={svc.title} />
-          <div className="nrd-banner-body">
+          <div className="nrd-banner-inner">
             <h1 className="nrd-banner-h1">{svc.bannerLabel ?? svc.title}</h1>
+            {svc.heroCaption ? (
+              <div className="nrd-banner-cap">
+                {svc.heroCaption.map((c) => <span key={c}>{c}</span>)}
+              </div>
+            ) : null}
           </div>
-          {svc.heroCaption ? (
-            <div className="nrd-banner-cap">
-              {svc.heroCaption.map((c) => <span key={c}>{c}</span>)}
-            </div>
-          ) : null}
         </section>
-      ) : null}
+      ) : (
+        <div className="nrd-shell">
+          <a href={RESIDENTIAL_HREF} className="nrd-back">← Back to Residential</a>
+        </div>
+      )}
 
       <div className="nrd-shell">
         {svc.heroBanner ? (
           <div className="nrd-lead">
+            <a href={RESIDENTIAL_HREF} className="nrd-back nrd-back-lead">← Back to Residential</a>
             {svc.subtitle ? <h2 className="nrd-lead-h">{svc.subtitle}</h2> : null}
             <p className="nrd-lead-p">{svc.intro}</p>
             {svc.note ? <p className="nrd-note">{svc.note}</p> : null}
