@@ -29,9 +29,9 @@ const OUR_SERVICES = [
     image: '/client-8889/residential/svc-04-multifamily.jpg',
   },
   {
-    title: 'Commercial',
-    href: '/client-demos/client-8889/residential/services/commercial',
-    image: '/client-8889/residential/detail/cx-09-building.jpg',
+    title: 'Residential',
+    href: '/client-demos/client-8889/residential',
+    image: '/client-8889/residential/hero-home.png',
   },
   {
     title: 'Engineering',
