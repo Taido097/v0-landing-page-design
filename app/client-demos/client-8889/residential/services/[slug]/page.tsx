@@ -288,7 +288,7 @@ const CSS = `
 .svc-os-h{font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:clamp(30px,4.4vw,52px);line-height:1.04;letter-spacing:-.01em;font-weight:500;color:#4f4742;margin:0 0 clamp(26px,3.4vw,44px)}
 .svc-os-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(16px,1.7vw,26px)}
 .svc-os-card{display:flex;flex-direction:column;color:inherit;text-decoration:none}
-.svc-os-img{aspect-ratio:4/3;overflow:hidden;background:#e7e0d5}
+.svc-os-img{aspect-ratio:16/9;overflow:hidden;background:#e7e0d5}
 .svc-os-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s cubic-bezier(.22,1,.36,1)}
 .svc-os-card:hover .svc-os-img img{transform:scale(1.04)}
 .svc-os-label{margin:15px 0 0;font-size:clamp(15px,1.2vw,17px);font-weight:500;letter-spacing:.01em;color:#3a352f}
@@ -331,7 +331,7 @@ const ADU_TYPES = [
 const OUR_SERVICES = [
   { href: `${RESIDENTIAL_HREF}/services/adus`, img: `${CX}/hero-custom-homes.jpg`, label: 'ADU' },
   { href: `${RESIDENTIAL_HREF}/services/land-development`, img: '/client-8889/residential/svc-04-multifamily.jpg', label: 'Land Development' },
-  { href: RESIDENTIAL_HREF, img: '/client-8889/residential/hero-home.png', label: 'Residential' },
+  { href: `${RESIDENTIAL_HREF}/services/commercial`, img: `${CX}/cm-01-multifamily-exterior.jpg`, label: 'Commercial' },
   { href: `${RESIDENTIAL_HREF}/services/engineering-approvals`, img: '/client-8889/residential/svc-05-structural.jpg', label: 'Engineering' },
 ];
 
@@ -408,6 +408,8 @@ function CommercialBody({ shots }: { shots: GalleryShot[] }) {
           ))}
         </div>
       </div>
+
+      <OurServices />
     </div>
   );
 }
