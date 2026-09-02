@@ -284,6 +284,16 @@ const CSS = `
   .adu-detached .adu-img{flex:none;aspect-ratio:520/560}
   .adu-attached,.adu-garage{grid-column:1}
 }
+/* "Our Services" cards (replaces the Explore Other Services chips) */
+.svc-os-h{font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:clamp(30px,4.4vw,52px);line-height:1.04;letter-spacing:-.01em;font-weight:500;color:#4f4742;margin:0 0 clamp(26px,3.4vw,44px)}
+.svc-os-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(16px,1.7vw,26px)}
+.svc-os-card{display:flex;flex-direction:column;color:inherit;text-decoration:none}
+.svc-os-img{aspect-ratio:4/3;overflow:hidden;background:#e7e0d5}
+.svc-os-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s cubic-bezier(.22,1,.36,1)}
+.svc-os-card:hover .svc-os-img img{transform:scale(1.04)}
+.svc-os-label{margin:15px 0 0;font-size:clamp(15px,1.2vw,17px);font-weight:500;letter-spacing:.01em;color:#3a352f}
+@media(max-width:820px){.svc-os-grid{grid-template-columns:1fr 1fr;gap:20px}}
+@media(max-width:520px){.svc-os-grid{grid-template-columns:1fr}}
 `;
 
 // Base path for the local detail images (commercial mosaic + ADU panels).
@@ -317,6 +327,29 @@ const ADU_TYPES = [
   { src: `${CX}/attached_adu.png`, cls: 'adu-attached', t: 'Attached ADU', d: 'Seamlessly connected. Perfectly integrated.' },
   { src: `${CX}/garage_conversion.png`, cls: 'adu-garage', t: 'Garage Conversion', d: 'Transform your garage into livable space.' },
 ];
+
+const OUR_SERVICES = [
+  { href: `${RESIDENTIAL_HREF}/services/adus`, img: `${CX}/hero-custom-homes.jpg`, label: 'ADU' },
+  { href: `${RESIDENTIAL_HREF}/services/land-development`, img: '/client-8889/residential/svc-04-multifamily.jpg', label: 'Land Development' },
+  { href: RESIDENTIAL_HREF, img: '/client-8889/residential/hero-home.png', label: 'Residential' },
+  { href: `${RESIDENTIAL_HREF}/services/engineering-approvals`, img: '/client-8889/residential/svc-05-structural.jpg', label: 'Engineering' },
+];
+
+function OurServices() {
+  return (
+    <section className="nrd-section svc-os" aria-label="Our Services">
+      <h2 className="svc-os-h">Our Services</h2>
+      <div className="svc-os-grid">
+        {OUR_SERVICES.map((s) => (
+          <a className="svc-os-card" href={s.href} key={s.label}>
+            <div className="svc-os-img"><img src={s.img} alt={s.label} /></div>
+            <span className="svc-os-label">{s.label}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 function AduTypes() {
   return (
@@ -517,20 +550,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
           <a className="nrd-btn" href={CONTACT}>{svc.cta} <ArrowRight size={16} strokeWidth={2} /></a>
         </section>
 
-        <nav className="nrd-section" aria-label="Other residential services">
-          <SectionHead title="Explore Other Services" />
-          <div className="nrd-chips">
-            {SERVICE_DETAILS.map((o) => (
-              <a
-                key={o.slug}
-                className={`nrd-chip${o.slug === svc.slug ? ' is-active' : ''}`}
-                href={`${RESIDENTIAL_HREF}/services/${o.slug}`}
-              >
-                {o.title}
-              </a>
-            ))}
-          </div>
-        </nav>
+        <OurServices />
         </>
         )}
       </div>
