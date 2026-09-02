@@ -10,5 +10,19 @@ export const metadata = {
 // Kept as a thin, dedicated route for its metadata; no tree rewriting (that previously
 // injected a duplicate "Our Services" section).
 export default async function CommercialPage() {
-  return ServiceDetailPage({ params: Promise.resolve({ slug: 'commercial' }) });
+  const page = await ServiceDetailPage({ params: Promise.resolve({ slug: 'commercial' }) });
+
+  return (
+    <>
+      {page}
+      <style>{`
+        .nrd .svc-os{
+          width:calc(100vw - 48px)!important;
+          max-width:none!important;
+          margin-left:calc(50% - 50vw + 24px)!important;
+          transform:none!important;
+        }
+      `}</style>
+    </>
+  );
 }
