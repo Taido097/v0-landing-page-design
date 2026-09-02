@@ -287,7 +287,7 @@ const CSS = `
 /* "Our Services" cards (replaces the Explore Other Services chips).
    Breaks out of the 1200px content column to a wide, viewport-centered container
    (matching the residential page); capped so it never causes horizontal scroll. */
-.svc-os{width:min(1680px,calc(100vw - 48px));margin-left:50%;transform:translateX(-50%)}
+.svc-os{width:min(1760px,calc(100vw - 2 * clamp(20px,4vw,56px)));margin-left:50%;transform:translateX(-50%)}
 .svc-os-h{font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:clamp(30px,4.4vw,52px);line-height:1.04;letter-spacing:-.01em;font-weight:500;color:#4f4742;margin:0 0 clamp(26px,3.4vw,44px)}
 .svc-os-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(16px,1.7vw,26px)}
 .svc-os-card{display:flex;flex-direction:column;color:inherit;text-decoration:none}
@@ -331,19 +331,24 @@ const ADU_TYPES = [
   { src: `${CX}/garage_conversion.png`, cls: 'adu-garage', t: 'Garage Conversion', d: 'Transform your garage into livable space.' },
 ];
 
-const OUR_SERVICES = [
-  { href: `${RESIDENTIAL_HREF}/services/adus`, img: `${CX}/hero-custom-homes.jpg`, label: 'ADU' },
-  { href: `${RESIDENTIAL_HREF}/services/land-development`, img: '/client-8889/residential/svc-04-multifamily.jpg', label: 'Land Development' },
-  { href: `${RESIDENTIAL_HREF}/services/commercial`, img: `${CX}/cm-01-multifamily-exterior.jpg`, label: 'Commercial' },
-  { href: `${RESIDENTIAL_HREF}/services/engineering-approvals`, img: '/client-8889/residential/svc-05-structural.jpg', label: 'Engineering' },
-];
-
-function OurServices() {
+// Card 3 shows Commercial everywhere except the Commercial page, where it shows
+// Residential instead (so the current page isn't listed among the cards).
+function OurServices({ currentSlug }: { currentSlug: string }) {
+  const card3 =
+    currentSlug === 'commercial'
+      ? { href: RESIDENTIAL_HREF, img: '/client-8889/residential/hero-home.png', label: 'Residential' }
+      : { href: `${RESIDENTIAL_HREF}/services/commercial`, img: `${CX}/cm-01-multifamily-exterior.jpg`, label: 'Commercial' };
+  const cards = [
+    { href: `${RESIDENTIAL_HREF}/services/adus`, img: `${CX}/hero-custom-homes.jpg`, label: 'ADU' },
+    { href: `${RESIDENTIAL_HREF}/services/land-development`, img: '/client-8889/residential/svc-04-multifamily.jpg', label: 'Land Development' },
+    card3,
+    { href: `${RESIDENTIAL_HREF}/services/engineering-approvals`, img: '/client-8889/residential/svc-05-structural.jpg', label: 'Engineering' },
+  ];
   return (
     <section className="nrd-section svc-os" aria-label="Our Services">
       <h2 className="svc-os-h">Our Services</h2>
       <div className="svc-os-grid">
-        {OUR_SERVICES.map((s) => (
+        {cards.map((s) => (
           <a className="svc-os-card" href={s.href} key={s.label}>
             <div className="svc-os-img"><img src={s.img} alt={s.label} /></div>
             <span className="svc-os-label">{s.label}</span>
@@ -411,8 +416,6 @@ function CommercialBody({ shots }: { shots: GalleryShot[] }) {
           ))}
         </div>
       </div>
-
-      <OurServices />
     </div>
   );
 }
@@ -554,10 +557,10 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
           </div>
           <a className="nrd-btn" href={CONTACT}>{svc.cta} <ArrowRight size={16} strokeWidth={2} /></a>
         </section>
-
-        <OurServices />
         </>
         )}
+
+        <OurServices currentSlug={slug} />
       </div>
 
       <footer className="nrd-foot">
