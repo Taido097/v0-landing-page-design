@@ -264,20 +264,24 @@ const CSS = `
 .adu-head .adu-rule{display:block;width:38px;height:2px;background:var(--gold);margin:0 auto 22px}
 .adu-head h2{font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:clamp(30px,4.4vw,52px);line-height:1.05;letter-spacing:-.01em;font-weight:600;color:#4f4742;margin:0}
 .adu-head p{margin:14px 0 0;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--soft);line-height:1.7}
-.adu-grid{display:grid;grid-template-columns:1.05fr 1fr;grid-template-rows:auto auto;gap:16px}
-.adu-panel{position:relative;overflow:hidden;background:#e7e0d5;border-radius:0}
-.adu-panel img{width:100%;height:100%;object-fit:cover;display:block}
-.adu-panel::before{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(245,242,237,.8) 0%,rgba(245,242,237,.5) 12%,rgba(245,242,237,.16) 24%,rgba(245,242,237,0) 32%);pointer-events:none;z-index:1}
-.adu-cap{position:absolute;left:clamp(20px,2vw,32px);top:clamp(20px,2.2vw,32px);right:clamp(20px,2vw,32px);z-index:2}
+.adu-grid{display:grid;grid-template-columns:1.05fr 1fr;grid-template-rows:auto auto;gap:clamp(20px,2.4vw,32px)}
+.adu-panel{display:flex;flex-direction:column;min-width:0}
+.adu-cap{padding:0 2px 16px}
 .adu-cap .adu-line{display:block;width:34px;height:2px;background:var(--gold);margin:0 0 14px}
 .adu-cap h3{font-size:clamp(17px,1.5vw,21px);letter-spacing:.02em;text-transform:uppercase;font-weight:700;color:#1c1a17;margin:0}
-.adu-cap p{margin:9px 0 0;font-size:13.5px;line-height:1.5;font-weight:500;color:#3a352f;max-width:24ch}
+.adu-cap p{margin:8px 0 0;font-size:13.5px;line-height:1.5;font-weight:500;color:#3a352f;max-width:34ch}
+.adu-img{overflow:hidden;background:#e7e0d5}
+.adu-img img{width:100%;height:100%;object-fit:cover;display:block}
 .adu-detached{grid-column:1;grid-row:1/3}
-.adu-attached{grid-column:2;grid-row:1;aspect-ratio:536/421}
-.adu-garage{grid-column:2;grid-row:2;aspect-ratio:536/380}
+.adu-detached .adu-img{flex:1;min-height:0}
+.adu-attached{grid-column:2;grid-row:1}
+.adu-attached .adu-img{aspect-ratio:536/421}
+.adu-garage{grid-column:2;grid-row:2}
+.adu-garage .adu-img{aspect-ratio:536/380}
 @media(max-width:820px){
   .adu-grid{grid-template-columns:1fr}
-  .adu-detached{grid-column:1;grid-row:auto;aspect-ratio:520/640}
+  .adu-detached{grid-column:1;grid-row:auto}
+  .adu-detached .adu-img{flex:none;aspect-ratio:520/560}
   .adu-attached,.adu-garage{grid-column:1}
 }
 `;
@@ -325,12 +329,12 @@ function AduTypes() {
       <div className="adu-grid">
         {ADU_TYPES.map((a) => (
           <figure className={`adu-panel ${a.cls}`} key={a.src}>
-            <img src={a.src} alt={a.t} />
             <figcaption className="adu-cap">
               <span className="adu-line" aria-hidden="true" />
               <h3>{a.t}</h3>
               <p>{a.d}</p>
             </figcaption>
+            <div className="adu-img"><img src={a.src} alt={a.t} /></div>
           </figure>
         ))}
       </div>
