@@ -277,7 +277,7 @@ const CSS = `
 .adu-attached{grid-column:2;grid-row:1}
 .adu-attached .adu-img{aspect-ratio:536/421}
 .adu-garage{grid-column:2;grid-row:2}
-.adu-garage .adu-img{aspect-ratio:536/380}
+.adu-garage .adu-img{aspect-ratio:536/332}
 @media(max-width:820px){
   .adu-grid{grid-template-columns:1fr}
   .adu-detached{grid-column:1;grid-row:auto}
