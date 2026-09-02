@@ -56,6 +56,39 @@ const benefits = [
   { number: '04', title: 'Built for Local Businesses', description: 'The goal is not just a pretty site. The goal is to help customers trust you, call you, and request your service.' },
 ];
 
+function useScrollReveal<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+  const [revealed, setRevealed] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    if (typeof IntersectionObserver === 'undefined') {
+      setRevealed(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setRevealed(true);
+            observer.disconnect();
+            break;
+          }
+        }
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -10% 0px' },
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return { ref, revealed };
+}
+
 function DemoCard({ demo, index }: { demo: ShowcaseDemo; index: number }) {
   return (
     <>
@@ -128,13 +161,12 @@ function MobileDemoScene({
 }
 
 export function HowWeWorkSection() {
-  const [isVisible, setIsVisible] = useState(false);
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
   const stackRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const sceneRefs = useRef<Array<HTMLDivElement | null>>([]);
-
-  useEffect(() => setIsVisible(true), []);
+  const headerReveal = useScrollReveal<HTMLDivElement>();
+  const benefitsReveal = useScrollReveal<HTMLDivElement>();
 
   useEffect(() => {
     const media = window.matchMedia('(max-width: 560px)');
@@ -304,7 +336,12 @@ export function HowWeWorkSection() {
 
       <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div className="border-t border-black/10 pt-7 sm:pt-8">
-          <div className="mb-8 flex items-end justify-between gap-6 sm:mb-10">
+          <div
+            ref={headerReveal.ref}
+            className={`mb-8 flex items-end justify-between gap-6 transition-all duration-700 [transition-timing-function:cubic-bezier(.22,1,.36,1)] sm:mb-10 ${
+              headerReveal.revealed ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
+            }`}
+          >
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.13em] text-black/45">Selected demos</p>
               <h2 className="mt-3 max-w-[850px] text-[clamp(2.7rem,5.5vw,5rem)] font-medium leading-[.92] tracking-[-0.055em]">Websites built for different businesses</h2>
@@ -367,9 +404,9 @@ export function HowWeWorkSection() {
             <h3 className="max-w-[1000px] text-[clamp(3rem,6vw,5.5rem)] font-medium leading-[.92] tracking-[-0.06em]">Why Choose DesignedbyTD Studio?</h3>
             <p className="mt-6 max-w-[520px] text-base font-light leading-[1.45] tracking-[-0.02em] text-black/70">A focused website process built for local businesses that want to look professional and make it easier for customers to take action.</p>
           </div>
-          <div className="mt-12 grid gap-3 md:grid-cols-2 lg:mt-14">
+          <div ref={benefitsReveal.ref} className="mt-12 grid gap-3 md:grid-cols-2 lg:mt-14">
             {benefits.map((benefit, index) => (
-              <article key={benefit.number} className={`group min-h-[235px] rounded-xl border border-black/10 bg-white p-6 transition-all duration-700 [transition-timing-function:cubic-bezier(.22,1,.36,1)] hover:-translate-y-1 hover:border-black/20 hover:shadow-[0_14px_38px_rgba(0,0,0,.06)] ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`} style={{ transitionDelay: `${240 + index * 80}ms` }}>
+              <article key={benefit.number} className={`group min-h-[235px] rounded-xl border border-black/10 bg-white p-6 transition-all duration-700 [transition-timing-function:cubic-bezier(.22,1,.36,1)] hover:-translate-y-1 hover:border-black/20 hover:shadow-[0_14px_38px_rgba(0,0,0,.06)] ${benefitsReveal.revealed ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`} style={{ transitionDelay: `${benefitsReveal.revealed ? 120 + index * 80 : 0}ms` }}>
                 <div className="flex items-start justify-between gap-4">
                   <span className="grid h-[38px] w-[38px] place-items-center rounded-full bg-[#121212] text-base font-semibold text-white transition-transform duration-500 [transition-timing-function:cubic-bezier(.22,1.2,.36,1)] group-hover:-rotate-[8deg] group-hover:scale-110">✓</span>
                   <span className="text-[11px] uppercase tracking-[0.14em] text-black/35">{benefit.number}</span>
