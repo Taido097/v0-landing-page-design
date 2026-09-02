@@ -267,11 +267,11 @@ const CSS = `
 .adu-grid{display:grid;grid-template-columns:1.05fr 1fr;grid-template-rows:auto auto;gap:16px}
 .adu-panel{position:relative;overflow:hidden;background:#e7e0d5;border-radius:0}
 .adu-panel img{width:100%;height:100%;object-fit:cover;display:block}
-.adu-panel::before{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(244,241,235,.55) 0%,rgba(244,241,235,0) 36%);pointer-events:none;z-index:1}
-.adu-cap{position:absolute;left:clamp(20px,2vw,32px);top:clamp(20px,2.2vw,32px);z-index:2;max-width:74%}
+.adu-panel::before{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(245,242,237,.92) 0%,rgba(245,242,237,.78) 16%,rgba(245,242,237,.4) 34%,rgba(245,242,237,0) 50%);pointer-events:none;z-index:1}
+.adu-cap{position:absolute;left:clamp(20px,2vw,32px);top:clamp(20px,2.2vw,32px);right:clamp(20px,2vw,32px);z-index:2}
 .adu-cap .adu-line{display:block;width:34px;height:2px;background:var(--gold);margin:0 0 14px}
-.adu-cap h3{font-size:clamp(17px,1.5vw,21px);letter-spacing:.02em;text-transform:uppercase;font-weight:600;color:#4f4742;margin:0}
-.adu-cap p{margin:10px 0 0;font-size:13.5px;line-height:1.5;font-weight:400;color:#6f675e;max-width:22ch}
+.adu-cap h3{font-size:clamp(17px,1.5vw,21px);letter-spacing:.02em;text-transform:uppercase;font-weight:700;color:#1c1a17;margin:0}
+.adu-cap p{margin:9px 0 0;font-size:13.5px;line-height:1.5;font-weight:500;color:#3a352f;max-width:24ch}
 .adu-detached{grid-column:1;grid-row:1/3}
 .adu-attached{grid-column:2;grid-row:1;aspect-ratio:536/421}
 .adu-garage{grid-column:2;grid-row:2;aspect-ratio:536/380}
