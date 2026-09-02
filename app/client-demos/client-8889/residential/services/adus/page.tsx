@@ -13,7 +13,7 @@ export default async function AduPage() {
 
   return (
     <>
-      <style>{`.nrd .svc-os{width:min(1760px,calc(100vw - 48px))}`}</style>
+      <style>{`.nrd .svc-os{width:calc(100vw - 48px)}`}</style>
       {page}
     </>
   );
