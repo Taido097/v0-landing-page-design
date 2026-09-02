@@ -267,7 +267,7 @@ const CSS = `
 .adu-grid{display:grid;grid-template-columns:1.05fr 1fr;grid-template-rows:auto auto;gap:16px}
 .adu-panel{position:relative;overflow:hidden;background:#e7e0d5;border-radius:0}
 .adu-panel img{width:100%;height:100%;object-fit:cover;display:block}
-.adu-panel::before{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(245,242,237,.92) 0%,rgba(245,242,237,.78) 16%,rgba(245,242,237,.4) 34%,rgba(245,242,237,0) 50%);pointer-events:none;z-index:1}
+.adu-panel::before{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(245,242,237,.8) 0%,rgba(245,242,237,.5) 12%,rgba(245,242,237,.16) 24%,rgba(245,242,237,0) 32%);pointer-events:none;z-index:1}
 .adu-cap{position:absolute;left:clamp(20px,2vw,32px);top:clamp(20px,2.2vw,32px);right:clamp(20px,2vw,32px);z-index:2}
 .adu-cap .adu-line{display:block;width:34px;height:2px;background:var(--gold);margin:0 0 14px}
 .adu-cap h3{font-size:clamp(17px,1.5vw,21px);letter-spacing:.02em;text-transform:uppercase;font-weight:700;color:#1c1a17;margin:0}
