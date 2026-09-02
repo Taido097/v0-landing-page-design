@@ -123,13 +123,89 @@ const SQUARE_IMAGES_PATCH = `
 })();
 </script>`
 
+const ENGINEERING_SERVICE_PATCH = `
+<script id="nguyen-socal-engineering-service-patch">
+(() => {
+  const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim();
+  const compact = (value) => normalize(value).replace(/\\s+/g, '').toLowerCase();
+  const sourceDescription = compact('Optimizing layouts to improve functionality, circulation, and spatial flow.');
+  const targetDescription = 'Structural engineering, MEP, Title 24, permitting, and plan-check support coordinated from design through approval.';
+  const targetDescriptionKey = compact(targetDescription);
+  const titleKeys = new Set([
+    compact('Space Planning'),
+    compact('Existing-Condition Survey & Business Layout'),
+    compact('ENGINEERING')
+  ]);
+  const targetUrl = window.location.origin + '/client-demos/client-8889/residential/services/engineering-approvals';
+
+  function findEngineeringCard() {
+    const existing = document.querySelector('[data-nguyen-engineering-service="true"]');
+    if (existing) return existing;
+
+    const candidates = Array.from(document.querySelectorAll('*'));
+    for (const candidate of candidates) {
+      const key = compact(candidate.textContent);
+      if (key !== sourceDescription && key !== targetDescriptionKey) continue;
+      let card = candidate;
+      for (let depth = 0; card && depth < 10; depth += 1, card = card.parentElement) {
+        if (!card.querySelector?.('img')) continue;
+        const text = compact(card.textContent);
+        if (!text.includes(sourceDescription) && !text.includes(targetDescriptionKey)) continue;
+        return card;
+      }
+    }
+    return null;
+  }
+
+  function replaceLeafText(card, keys, replacement) {
+    const candidates = [card, ...card.querySelectorAll('*')];
+    for (const candidate of candidates) {
+      const key = compact(candidate.textContent);
+      if (!keys.has(key)) continue;
+      const hasSameTextChild = Array.from(candidate.children).some((child) => compact(child.textContent) === key);
+      if (hasSameTextChild) continue;
+      if (normalize(candidate.textContent) !== replacement) candidate.textContent = replacement;
+      candidate.style.setProperty('white-space', 'normal', 'important');
+      candidate.style.setProperty('word-break', 'normal', 'important');
+      candidate.style.setProperty('overflow-wrap', 'normal', 'important');
+      return true;
+    }
+    return false;
+  }
+
+  function patchEngineering() {
+    const card = findEngineeringCard();
+    if (!card) return false;
+
+    // Change the description first so the base service patch no longer classifies this
+    // existing fifth card as one of the extras that should be hidden.
+    replaceLeafText(card, new Set([sourceDescription, targetDescriptionKey]), targetDescription);
+    replaceLeafText(card, titleKeys, 'ENGINEERING');
+
+    card.setAttribute('data-nguyen-engineering-service', 'true');
+    card.setAttribute('data-nguyen-link', targetUrl);
+    card.style.removeProperty('display');
+    card.style.setProperty('cursor', 'pointer', 'important');
+    return true;
+  }
+
+  patchEngineering();
+  window.addEventListener('load', patchEngineering, { once: true });
+  [250, 750, 1500, 3000, 6200].forEach((delay) => setTimeout(patchEngineering, delay));
+
+  const observer = new MutationObserver(() => patchEngineering());
+  observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+  setTimeout(() => observer.disconnect(), 7000);
+})();
+</script>`
+
 export async function GET() {
   const response = await getConcept()
   if (!response.ok) return response
 
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${ENGINEERING_SERVICE_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')
