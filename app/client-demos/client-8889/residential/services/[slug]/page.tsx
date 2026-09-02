@@ -411,8 +411,8 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
         {svc.heroBanner ? (
           <div className="nrd-lead">
             <a href={RESIDENTIAL_HREF} className="nrd-back nrd-back-lead">← Back to Residential</a>
-            {svc.subtitle ? <h2 className="nrd-lead-h">{svc.subtitle}</h2> : null}
-            <p className="nrd-lead-p">{svc.intro}</p>
+            {svc.subtitle && slug !== 'adus' ? <h2 className="nrd-lead-h">{svc.subtitle}</h2> : null}
+            {slug !== 'adus' ? <p className="nrd-lead-p">{svc.intro}</p> : null}
             {svc.note ? <p className="nrd-note">{svc.note}</p> : null}
           </div>
         ) : (
