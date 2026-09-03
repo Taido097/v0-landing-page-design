@@ -607,13 +607,19 @@ const FOOTER_PATCH = `
   const OLD_PHONE = compact('+62 812 3456 7890');
   const NEW_PHONE = '209-233-8888   714-707-8889';
 
+  const OLD_ADDR = compact('Dubai-Based Architecture And Interior Design Studio');
+  const NEW_ADDR = '7171 Warner Ave., Ste. B, Huntington Beach, CA 92647';
+
   function patchFooter() {
-    // Fix phone number
+    // Fix phone number and address
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     let node;
     while ((node = walker.nextNode())) {
-      if (compact(node.nodeValue) === OLD_PHONE) {
+      const key = compact(node.nodeValue);
+      if (key === OLD_PHONE) {
         node.nodeValue = NEW_PHONE;
+      } else if (key === OLD_ADDR) {
+        node.nodeValue = NEW_ADDR;
       }
     }
 
