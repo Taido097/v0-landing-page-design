@@ -61,7 +61,7 @@ const BRAND_PATCH = `
 <script id="nguyen-socal-brand-patch">
 (() => {
   const TARGET_TEXT = 'NGUYEN ARCHITECTURE & ENGINEERING';
-  const TARGET_URL = 'https://nguyen-studio.framer.website/';
+  const TARGET_URL = window.location.origin + '/client-demos/client-8889/arcsphere-socal';
   const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim();
 
   function patchBrand() {
@@ -97,7 +97,6 @@ const BRAND_PATCH = `
 const SQUARE_IMAGES_PATCH = `
 <script id="nguyen-socal-square-cards">
 (() => {
-  // Square every image/card corner across the page; keep round arrow buttons and circular avatars round.
   function squareImages() {
     var imgs = document.querySelectorAll('img');
     for (var i = 0; i < imgs.length; i++) {
@@ -110,7 +109,6 @@ const SQUARE_IMAGES_PATCH = `
         var cs = window.getComputedStyle(el);
         var br = parseFloat(cs.borderTopLeftRadius) || 0;
         var w = el.getBoundingClientRect().width || 0;
-        // square rounded rectangles, but never touch circles/pills (radius ~ half the width)
         if (br > 0 && br < w / 2) el.style.setProperty('border-radius', '0', 'important');
         el = el.parentElement; depth++;
       }
@@ -120,6 +118,30 @@ const SQUARE_IMAGES_PATCH = `
   squareImages();
   window.addEventListener('load', squareImages, { once: true });
   [400, 1000, 2000, 3500, 5500].forEach(function (t) { setTimeout(squareImages, t); });
+})();
+</script>`
+
+const SERVICES_ANCHOR_PATCH = `
+<script id="nguyen-socal-services-anchor">
+(() => {
+  const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim().toLowerCase();
+  function markServices() {
+    if (document.getElementById('services')) return true;
+    const headings = document.querySelectorAll('h1,h2,h3,h4,p');
+    for (const heading of headings) {
+      const text = normalize(heading.textContent);
+      if (text !== 'our services' && text !== 'services') continue;
+      const section = heading.closest('section') || heading.closest('[data-framer-name]') || heading.parentElement;
+      if (!section) continue;
+      section.id = 'services';
+      section.style.scrollMarginTop = '90px';
+      return true;
+    }
+    return false;
+  }
+  markServices();
+  window.addEventListener('load', markServices, { once: true });
+  [250, 750, 1500, 3000, 6000].forEach((delay) => setTimeout(markServices, delay));
 })();
 </script>`
 
@@ -177,8 +199,6 @@ const ENGINEERING_SERVICE_PATCH = `
     const card = findEngineeringCard();
     if (!card) return false;
 
-    // Change the description first so the base service patch no longer classifies this
-    // existing fifth card as one of the extras that should be hidden.
     replaceLeafText(card, new Set([sourceDescription, targetDescriptionKey]), targetDescription);
     replaceLeafText(card, titleKeys, 'ENGINEERING');
 
@@ -205,7 +225,7 @@ export async function GET() {
 
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${ENGINEERING_SERVICE_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${ENGINEERING_SERVICE_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')
