@@ -287,7 +287,7 @@ const CSS = `
 /* "Our Services" cards (replaces the Explore Other Services chips).
    Breaks out of the 1200px content column to a wide, viewport-centered container
    (matching the residential page); capped so it never causes horizontal scroll. */
-.svc-os{width:min(1760px,calc(100vw - 2 * clamp(20px,4vw,56px)));margin-left:50%;transform:translateX(-50%)}
+.svc-os{width:calc(100vw - 2 * clamp(20px,4vw,56px));margin-left:50%;transform:translateX(-50%)}
 .svc-os-h{font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:clamp(30px,4.4vw,52px);line-height:1.04;letter-spacing:-.01em;font-weight:500;color:#4f4742;margin:0 0 clamp(26px,3.4vw,44px)}
 .svc-os-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(16px,1.7vw,26px)}
 .svc-os-card{display:flex;flex-direction:column;color:inherit;text-decoration:none}

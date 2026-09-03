@@ -288,7 +288,12 @@ export const SERVICE_DETAILS: ServiceDetail[] = [
     subtitle: 'Feasibility, site planning & entitlement support.',
     intro:
       'NGUYEN supports land development with feasibility, site planning, and entitlement coordination — aligning zoning, access, and engineering early so projects can move toward approval.',
-    hero: `${S}/svc-04-multifamily.jpg`,
+    hero: `${D}/ld-01-golden-meadow.png`,
+    gallery: [
+      { src: `${D}/ld-01-golden-meadow.png`, cat: 'Sites', label: 'Golden Meadow', alt: 'Golden meadow land development site' },
+      { src: `${D}/ld-02-aerial-construction.png`, cat: 'Construction', label: 'Aerial Construction', alt: 'Aerial view of suburban construction site' },
+      { src: `${D}/ld-03-subdivision-plan.png`, cat: 'Planning', label: 'Subdivision Plan', alt: 'Residential subdivision master plan' },
+    ],
     columns: [
       { label: 'Scope', items: ['Feasibility Studies', 'Zoning / Entitlement Review', 'Site Planning', 'Density + Yield Studies'] },
       { label: 'Coordination', items: ['Civil / Grading', 'Access & Parking', 'Utilities', 'Permitting'] },
