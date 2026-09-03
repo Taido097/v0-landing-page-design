@@ -268,8 +268,9 @@ export const TESTIMONIAL_PATCH = `
   }
 
   function buildLogoGrid() {
+    var origin = window.location.origin;
     return LOGOS.map(function(pair) {
-      return '<div class="ng-client-logo-cell"><img class="ng-client-logo-img" src="' + pair[0] + '" alt="' + pair[1].replace(/&/g, '&amp;') + '" decoding="async" loading="lazy"></div>';
+      return '<div class="ng-client-logo-cell"><img class="ng-client-logo-img" src="' + origin + pair[0] + '" alt="' + pair[1].replace(/&/g, '&amp;') + '" decoding="async" loading="lazy"></div>';
     }).join('');
   }
 
