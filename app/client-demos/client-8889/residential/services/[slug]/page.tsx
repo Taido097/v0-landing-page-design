@@ -301,6 +301,7 @@ const CSS = `
 
 // Base path for the local detail images (commercial mosaic + ADU panels).
 const CX = '/client-8889/residential/detail';
+const SVC = '/client-8889/residential';
 // Icon per gallery category so the mosaic labels stay honest to the existing content.
 const CX_CAT_ICON: Record<string, typeof Home> = {
   'Cafés': Coffee,
@@ -334,14 +335,14 @@ const ADU_TYPES = [
 // Card 3 shows Commercial everywhere except the Commercial page, where it shows
 // Residential instead (so the current page isn't listed among the cards).
 const ALL_SERVICES = [
-  { slug: 'adus',               href: `${RESIDENTIAL_HREF}/services/adus`,                img: `${CX}/hero-custom-homes.jpg`,                   label: 'ADU' },
-  { slug: 'commercial',         href: `${RESIDENTIAL_HREF}/services/commercial`,           img: `${CX}/cx-09-building.jpg`,                      label: 'Commercial' },
-  { slug: 'land-development',   href: `${RESIDENTIAL_HREF}/services/land-development`,    img: `${CX}/ld-01-golden-meadow.png`,                  label: 'Land Development' },
-  { slug: 'engineering-approvals', href: `${RESIDENTIAL_HREF}/services/engineering-approvals`, img: '/client-8889/residential/svc-05-structural.jpg', label: 'Engineering' },
-  { slug: 'custom-homes',       href: `${RESIDENTIAL_HREF}/services/custom-homes`,        img: '/client-8889/residential/svc-01-custom-homes.jpg', label: 'Custom Homes' },
-  { slug: 'additions-remodels', href: `${RESIDENTIAL_HREF}/services/additions-remodels`,  img: '/client-8889/residential/svc-02-additions-remodels.jpg', label: 'Additions & Remodels' },
-  { slug: 'multifamily',        href: `${RESIDENTIAL_HREF}/services/multifamily`,         img: `${CX}/hero-townhomes.jpg`,                       label: 'Townhomes + Condos' },
-  { slug: 'sb9-development',    href: `${RESIDENTIAL_HREF}/services/sb9-development`,     img: `${CX}/sb9-01-modern-duplex.jpg`,                 label: 'SB 9 Development' },
+  { slug: 'adus',                  href: `${RESIDENTIAL_HREF}/services/adus`,                  img: `${SVC}/svc-03-adus.jpg`,               label: 'ADU' },
+  { slug: 'commercial',            href: `${RESIDENTIAL_HREF}/services/commercial`,             img: `${CX}/cx-09-building.jpg`,             label: 'Commercial' },
+  { slug: 'land-development',      href: `${RESIDENTIAL_HREF}/services/land-development`,      img: `${CX}/ld-01-golden-meadow.png`,        label: 'Land Development' },
+  { slug: 'engineering-approvals', href: `${RESIDENTIAL_HREF}/services/engineering-approvals`, img: `${SVC}/svc-05-structural.jpg`,         label: 'Engineering' },
+  { slug: 'custom-homes',          href: `${RESIDENTIAL_HREF}/services/custom-homes`,          img: `${SVC}/svc-01-custom-homes.jpg`,       label: 'Custom Homes' },
+  { slug: 'additions-remodels',    href: `${RESIDENTIAL_HREF}/services/additions-remodels`,    img: `${SVC}/svc-02-additions-remodels.jpg`, label: 'Additions & Remodels' },
+  { slug: 'multifamily',           href: `${RESIDENTIAL_HREF}/services/multifamily`,           img: `${SVC}/svc-04-multifamily.jpg`,        label: 'Townhomes + Condos' },
+  { slug: 'sb9-development',       href: `${RESIDENTIAL_HREF}/services/sb9-development`,       img: `${CX}/sb9-01-modern-duplex.jpg`,       label: 'SB 9 Development' },
 ];
 
 function OurServices({ currentSlug }: { currentSlug: string }) {
