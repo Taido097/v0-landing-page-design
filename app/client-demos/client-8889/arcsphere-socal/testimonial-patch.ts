@@ -132,6 +132,10 @@ export const TESTIMONIAL_PATCH = `
   }
   #nguyen-client-testimonial .ng-client-art-wrap {
     margin: auto calc(clamp(28px,5vw,68px) * -1) 0;
+    min-height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
     border-top: 1px solid var(--ng-line);
     background: var(--ng-panel);
@@ -188,18 +192,20 @@ export const TESTIMONIAL_PATCH = `
     #nguyen-client-testimonial .ng-testimonial-content { padding: 34px 24px 0; }
     #nguyen-client-testimonial .ng-testimonial-title { font-size: clamp(30px,9vw,42px); }
     #nguyen-client-testimonial .ng-quote { margin-top: 22px; padding: 0 18px; }
-    #nguyen-client-testimonial .ng-client-art-wrap { margin-left: -24px; margin-right: -24px; }
+    #nguyen-client-testimonial .ng-client-art-wrap { margin-left: -24px; margin-right: -24px; min-height: 220px; }
     #nguyen-client-testimonial .ng-client-art { max-height: none; }
   }
   @media (max-width: 480px) {
     #nguyen-client-testimonial .ng-section-heading h2 { font-size: 35px; }
     #nguyen-client-testimonial .ng-section-heading p { font-size: 13px; line-height: 1.5; }
     #nguyen-client-testimonial .ng-testimonial-media { min-height: 270px; }
+    #nguyen-client-testimonial .ng-client-art-wrap { min-height: 190px; }
   }
 </style>
 <script id="nguyen-client-testimonial-patch">
 (() => {
   const SECTION_ID = 'nguyen-client-testimonial';
+  const LOGO_ASSET = '/client-8889/testimonial-client-logos.svg';
   const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim();
 
   function copySiteTypography() {
@@ -232,12 +238,33 @@ export const TESTIMONIAL_PATCH = `
           '<div class="ng-divider" aria-hidden="true"></div>',
           '<p class="ng-caption">Client Testimonial</p>',
           '<div class="ng-client-art-wrap ng-reveal" aria-label="Selected clients">',
-            '<img class="ng-client-art" src="/client-8889/testimonial-client-logos.svg" alt="Boba &amp; Brew, The Loop Nail Bar, Phoenix Restaurant, Sage Coffee Co., Urban Cutz Barbershop, Luxe Boutique, Crumbl Cookies, Vitality Wellness, and District Eatery">',
+            '<img class="ng-client-art" alt="Boba &amp; Brew, The Loop Nail Bar, Phoenix Restaurant, Sage Coffee Co., Urban Cutz Barbershop, Luxe Boutique, Crumbl Cookies, Vitality Wellness, and District Eatery">',
           '</div>',
         '</div>',
       '</div>'
     ].join('');
     return section;
+  }
+
+  function hydrateClientLogo(section) {
+    const image = section.querySelector('.ng-client-art');
+    if (!image || image.dataset.loaded === 'true' || image.dataset.loading === 'true') return;
+    image.dataset.loading = 'true';
+    fetch(LOGO_ASSET, { cache: 'force-cache' })
+      .then((response) => {
+        if (!response.ok) throw new Error('Client logo asset failed to load');
+        return response.text();
+      })
+      .then((source) => {
+        const match = source.match(/href="(data:image\\/webp;base64,[^"]+)"/i);
+        if (!match) throw new Error('Embedded client logo image was not found');
+        image.src = match[1];
+        image.dataset.loaded = 'true';
+        delete image.dataset.loading;
+      })
+      .catch(() => {
+        delete image.dataset.loading;
+      });
   }
 
   function setupAnimations(section) {
@@ -300,6 +327,7 @@ export const TESTIMONIAL_PATCH = `
     const existingInstalled = document.getElementById(SECTION_ID);
     if (existingInstalled) {
       copySiteTypography();
+      hydrateClientLogo(existingInstalled);
       setupAnimations(existingInstalled);
       return true;
     }
@@ -313,6 +341,7 @@ export const TESTIMONIAL_PATCH = `
       if (point.before) point.parent.insertBefore(section, point.before);
       else point.parent.appendChild(section);
     }
+    hydrateClientLogo(section);
     setupAnimations(section);
     return true;
   }
