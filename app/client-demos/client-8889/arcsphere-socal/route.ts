@@ -378,13 +378,126 @@ const ENGINEERING_SERVICE_PATCH = `
 })();
 </script>`
 
+const PROJECT_CARDS_PATCH = `
+<script id="nguyen-socal-project-cards-patch">
+(() => {
+  const base = window.location.origin + '/client-demos/client-8889/residential/services';
+  const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
+
+  const CATEGORY_MAP = [
+    { key: 'commercialarchitecture', url: base + '/commercial' },
+    { key: 'residentialarchitecture', url: base + '/custom-homes' },
+    { key: 'customhome', url: base + '/custom-homes' },
+    { key: 'multifamily', url: base + '/multifamily' },
+    { key: 'adu', url: base + '/adus' },
+    { key: 'addition', url: base + '/additions-remodels' },
+    { key: 'remodel', url: base + '/additions-remodels' },
+    { key: 'landdevelopment', url: base + '/land-development' },
+  ];
+
+  function resolveUrl(card) {
+    const text = compact(card.textContent);
+    for (const entry of CATEGORY_MAP) {
+      if (text.includes(entry.key)) return entry.url;
+    }
+    return null;
+  }
+
+  function findCards() {
+    // Cards are elements that contain a category label + an arrow button
+    const arrows = Array.from(document.querySelectorAll('a, button, [role="button"]')).filter((el) => {
+      const t = compact(el.textContent);
+      return t === '' || t === '→' || t === '↗' || t === '›';
+    });
+
+    const cards = [];
+    arrows.forEach((arrow) => {
+      let cursor = arrow.parentElement;
+      for (let i = 0; i < 8 && cursor && cursor !== document.body; i++, cursor = cursor.parentElement) {
+        const text = compact(cursor.textContent);
+        const hasCategory = CATEGORY_MAP.some((e) => text.includes(e.key));
+        if (!hasCategory) continue;
+        const r = cursor.getBoundingClientRect();
+        if (r.width > 200 && r.height > 200) { cards.push(cursor); break; }
+      }
+    });
+
+    // Fallback: find by category text directly
+    if (!cards.length) {
+      const all = Array.from(document.querySelectorAll('div, article, section, li'));
+      all.forEach((el) => {
+        const text = compact(el.textContent);
+        const hasCategory = CATEGORY_MAP.some((e) => text.includes(e.key));
+        if (!hasCategory) return;
+        const r = el.getBoundingClientRect();
+        if (r.width < 200 || r.height < 200) return;
+        // Ensure it's not a parent of another already found card
+        if (cards.some((c) => el.contains(c) || c.contains(el))) return;
+        cards.push(el);
+      });
+    }
+    return cards;
+  }
+
+  const patched = new WeakSet();
+
+  function patchCards() {
+    const cards = findCards();
+    cards.forEach((card) => {
+      if (patched.has(card)) return;
+      const url = resolveUrl(card);
+      if (!url) return;
+      patched.add(card);
+      card.style.setProperty('cursor', 'pointer', 'important');
+      card.setAttribute('data-nguyen-card-url', url);
+
+      // Patch any anchor/button inside the card that looks like an arrow CTA
+      card.querySelectorAll('a, button, [role="button"]').forEach((el) => {
+        const t = compact(el.textContent);
+        if (t === '' || t === '→' || t === '↗' || t === '›' || el.querySelector('svg')) {
+          if (el.tagName === 'A') {
+            el.setAttribute('href', url);
+            el.removeAttribute('target');
+            el.removeAttribute('rel');
+          }
+          el.setAttribute('data-nguyen-card-url', url);
+        }
+      });
+    });
+  }
+
+  if (!window.__nguyenCardRouting) {
+    window.__nguyenCardRouting = true;
+    document.addEventListener('click', (e) => {
+      const start = e.target && e.target.nodeType === Node.TEXT_NODE ? e.target.parentElement : e.target;
+      const card = start && start.closest ? start.closest('[data-nguyen-card-url]') : null;
+      if (!card) return;
+      const url = card.getAttribute('data-nguyen-card-url');
+      if (!url) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      window.location.href = url;
+    }, true);
+  }
+
+  patchCards();
+  window.addEventListener('load', patchCards, { once: true });
+  [500, 1200, 2500, 4500].forEach((t) => setTimeout(patchCards, t));
+
+  const obs = new MutationObserver(patchCards);
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true });
+  setTimeout(() => obs.disconnect(), 8000);
+})();
+</script>`
+
 export async function GET() {
   const response = await getConcept()
   if (!response.ok) return response
 
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${TESTIMONIAL_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${TESTIMONIAL_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')
