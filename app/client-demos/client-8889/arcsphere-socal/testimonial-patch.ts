@@ -7,7 +7,7 @@ export const TESTIMONIAL_PATCH = `
     --ng-line: rgba(79, 71, 66, 0.15);
     width: 100%;
     margin: 0;
-    padding: clamp(72px, 8vw, 118px) 24px clamp(76px, 8vw, 118px);
+    padding: clamp(16px, 2vw, 28px) 24px clamp(76px, 8vw, 118px);
     background: var(--ng-bg);
     color: var(--ng-ink);
     font-family: var(--nguyen-testimonial-font, Arial, Helvetica, sans-serif);
@@ -194,7 +194,7 @@ export const TESTIMONIAL_PATCH = `
   }
 
   @media (max-width: 809.98px) {
-    #nguyen-client-testimonial { padding: 62px 14px 72px; }
+    #nguyen-client-testimonial { padding: 16px 14px 72px; }
     #nguyen-client-testimonial .ng-section-heading { margin-bottom: 40px; padding: 0 12px; }
     #nguyen-client-testimonial .ng-section-heading h2 { font-size: clamp(34px, 10.2vw, 48px); }
     #nguyen-client-testimonial .ng-section-heading p { margin-top: 17px; font-size: 14px; }
@@ -243,10 +243,6 @@ export const TESTIMONIAL_PATCH = `
     section.id = SECTION_ID;
     section.setAttribute('aria-label', 'What our clients say');
     section.innerHTML = [
-      '<div class="ng-section-heading ng-reveal">',
-        '<h2>WHAT OUR CLIENTS SAY</h2>',
-        '<p>REAL EXPERIENCES FROM CLIENTS WHO TRUSTED US<br>WITH THEIR SPACES.</p>',
-      '</div>',
       '<div class="ng-testimonial-card">',
         '<div class="ng-testimonial-media ng-reveal" role="img" aria-label="Architecture project interior"></div>',
         '<div class="ng-testimonial-content ng-reveal">',
