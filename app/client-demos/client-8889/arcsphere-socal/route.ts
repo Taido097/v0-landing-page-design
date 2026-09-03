@@ -1,4 +1,5 @@
 import { GET as getConcept } from "../arcsphere-fixed/route"
+import { TESTIMONIAL_PATCH } from "./testimonial-patch"
 
 const OLD_COPY = 'Based in Orange County, we provide commercial architecture, engineering and permit support from existing-condition survey and business layout through plan check and approval.'
 const NEW_COPY = 'Based in Southern California, we provide residential and commercial architecture, engineering, and permit support from concept through approval.'
@@ -313,7 +314,7 @@ export async function GET() {
 
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
-  html = html.replace('</body>', `${MOBILE_RENDER_FAILSAFE}${SPLIT_TEXT_PATCH}${BRAND_PATCH}${TARGET_IMAGE_PATCH}${RESIDENTIAL_NAV_PATCH}</body>`)
+  html = html.replace('</body>', `${MOBILE_RENDER_FAILSAFE}${SPLIT_TEXT_PATCH}${BRAND_PATCH}${TARGET_IMAGE_PATCH}${RESIDENTIAL_NAV_PATCH}${TESTIMONIAL_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')
