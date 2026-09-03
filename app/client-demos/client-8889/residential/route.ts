@@ -141,7 +141,11 @@ const CLIENT_REBRAND = `
       anchor.parentNode.insertBefore(sec, anchor);
       sec.querySelectorAll('[data-nsrc]').forEach(function (img) { img.setAttribute('src', window.location.origin + img.getAttribute('data-nsrc')); });
       // The page <base href> points at the Framer origin, so resolve card links against the real origin.
-      sec.querySelectorAll('[data-nhref]').forEach(function (a) { a.setAttribute('href', window.location.origin + a.getAttribute('data-nhref')); });
+      sec.querySelectorAll('[data-nhref]').forEach(function (a) {
+        var href = window.location.origin + a.getAttribute('data-nhref');
+        a.setAttribute('href', href);
+        a.addEventListener('click', function(e) { e.preventDefault(); e.stopImmediatePropagation(); window.location.href = href; }, true);
+      });
       if (gallery) gallery.style.setProperty('display', 'none', 'important');
       return true;
     }
@@ -207,7 +211,7 @@ const CLIENT_REBRAND = `
     // so residual reference category text (e.g. "Commercial Interior") can't mis-route.
     var SERVICE_CARDS = [
       { href: '/client-demos/client-8889/residential/services/adus', img: '/client-8889/residential/svc-03-adus.jpg' },
-      { href: '/client-demos/client-8889/residential/services/land-development', img: '/client-8889/residential/svc-04-multifamily.jpg' },
+      { href: '/client-demos/client-8889/residential/services/land-development', img: '/client-8889/residential/detail/ld-01-golden-meadow.png' },
       { href: '/client-demos/client-8889/residential/services/commercial', img: '/client-8889/residential/detail/cm-01-multifamily-exterior.jpg' },
       { href: '/client-demos/client-8889/residential/services/engineering-approvals', img: '/client-8889/residential/detail/eng-01-structural-frame.jpg' }
     ];
@@ -221,8 +225,13 @@ const CLIENT_REBRAND = `
       var cards = Array.prototype.slice.call(sec.querySelectorAll('a')).filter(function (a) { return a.querySelector('img'); });
       cards.forEach(function (a, i) {
         if (i >= SERVICE_CARDS.length) return;
-        a.setAttribute('href', window.location.origin + SERVICE_CARDS[i].href);
+        var target = window.location.origin + SERVICE_CARDS[i].href;
+        a.setAttribute('href', target);
         a.removeAttribute('target'); a.removeAttribute('rel');
+        if (!a.dataset.nrouted) {
+          a.dataset.nrouted = '1';
+          a.addEventListener('click', function(e) { e.preventDefault(); e.stopImmediatePropagation(); window.location.href = target; }, true);
+        }
         var img = a.querySelector('img');
         if (img) { img.removeAttribute('srcset'); img.setAttribute('src', window.location.origin + SERVICE_CARDS[i].img); }
       });
