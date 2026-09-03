@@ -107,8 +107,6 @@ const CLIENT_REBRAND = `
     var rules = ${RULES_JSON}.map(function (r) { return [new RegExp(r[0], r[1]), r[2]]; });
     var done = new WeakSet();
     var SERVICES_HTML = ${JSON.stringify(SERVICES_HTML)};
-    // The reference's interior gallery sits directly before the "Project Details" section:
-    // it's the block holding multiple images and no <h1> (the intro block has the hero <h1>).
     function findGallery(){
       var details = document.querySelector('section[data-framer-name="Details"]');
       if (!details) return null;
@@ -128,7 +126,6 @@ const CLIENT_REBRAND = `
     }
     function injectServices(){
       if (document.getElementById('nguyen-residential-services')) { hideGallery(); return true; }
-      // Prefer the gallery's spot so the cards move up into it; fall back to before Project Details.
       var gallery = findGallery();
       var anchor = gallery || document.querySelector('[data-framer-name="Details"]');
       if (!anchor) {
@@ -141,7 +138,6 @@ const CLIENT_REBRAND = `
       sec.innerHTML = SERVICES_HTML;
       anchor.parentNode.insertBefore(sec, anchor);
       sec.querySelectorAll('[data-nsrc]').forEach(function (img) { img.setAttribute('src', window.location.origin + img.getAttribute('data-nsrc')); });
-      // The page <base href> points at the Framer origin, so resolve card links against the real origin.
       sec.querySelectorAll('[data-nhref]').forEach(function (a) {
         var href = window.location.origin + a.getAttribute('data-nhref');
         a.setAttribute('href', href);
@@ -207,9 +203,6 @@ const CLIENT_REBRAND = `
         }
       }
     }
-    // Retarget the reference's "Other Projects" cards (in DOM order: ADU, Land
-    // Development, Commercial, Engineering) to NGUYEN's service pages. Position-based
-    // so residual reference category text (e.g. "Commercial Interior") can't mis-route.
     var SERVICE_CARDS = [
       { href: '/client-demos/client-8889/residential/services/adus', img: '/client-8889/residential/svc-03-adus.jpg' },
       { href: '/client-demos/client-8889/residential/services/land-development', img: '/client-8889/residential/detail/ld-01-golden-meadow.png' },
@@ -252,24 +245,36 @@ const CLIENT_REBRAND = `
     if (isMobile) { setTimeout(start, 1800); setTimeout(function () { reveal(); }, 4500); }
     else { start(); }
     function fixNav(){
-      var home = window.location.origin + '/client-demos/client-8889/residential';
+      var home = window.location.origin + '/client-demos/client-8889/arcsphere-socal';
+      var services = home + '#services';
+      var contact = 'mailto:info@nguyen-ae.com';
       var navLinks = document.querySelectorAll('nav a, [data-framer-name="nav"] a');
       navLinks.forEach(function(a){
         var text = (a.textContent || '').trim().toLowerCase().replace(/\\s+/g,' ');
-        if (text === 'projects' || text === 'projectsprojects') {
+        var compact = text.replace(/\\s+/g,'');
+        if (compact === 'projects' || compact === 'projectsprojects') {
           var wrap = a.closest('[class*="container"]');
           if (wrap) wrap.style.setProperty('display','none','important');
           return;
         }
-        if (!a.querySelector('img') && !a.dataset.nnav) {
-          a.dataset.nnav = '1';
-          a.setAttribute('href', home);
-          a.addEventListener('click', function(e){ e.preventDefault(); e.stopImmediatePropagation(); window.location.href = home; }, true);
+        var target = null;
+        if (compact === 'home' || compact === 'homehome') target = home;
+        else if (compact === 'services' || compact === 'servicesservices') target = services;
+        else if (compact.indexOf('nguyenarchitecture&engineering') !== -1) target = home;
+        else if (compact === 'contactus' || compact === 'contactuscontactus') {
+          a.setAttribute('href', contact);
+          return;
+        }
+        if (!target) return;
+        a.setAttribute('href', target);
+        a.removeAttribute('target');
+        a.removeAttribute('rel');
+        if (a.dataset.nnav !== target) {
+          a.dataset.nnav = target;
+          a.addEventListener('click', function(e){ e.preventDefault(); e.stopImmediatePropagation(); window.location.href = target; }, true);
         }
       });
     }
-    // Insert the services section after Framer has hydrated so it is not reconciled away; retry until it
-    // lands, and keep the reference's interior gallery hidden across any re-render.
     [1600, 2600, 4000, 6000].forEach(function (t) { setTimeout(function () { injectServices(); hideGallery(); squareImages(); routeServices(); fixNav(); }, t); });
     [800, 5000, 8000].forEach(function (t) { setTimeout(function () { squareImages(); routeServices(); fixNav(); if (looksBlank()) reveal(); }, t); });
   } catch (e) {}
@@ -300,8 +305,6 @@ export async function GET() {
     const mobile = isMobileUserAgent(userAgent);
 
     if (!mobile) {
-      // Desktop: rebrand the served HTML directly. On mobile the served DOM stays identical to
-      // Framer's so hydration matches (CLIENT_REBRAND does the rebrand after hydration instead).
       for (const [pattern, replacement] of REPLACEMENTS) html = html.replace(pattern, replacement);
       html = html.replace(/<base\b[^>]*>/i, `<base href="${BASE_URL}">`);
       html = html.replace(/info@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/gi, 'info@nguyenarchitecture.com');
