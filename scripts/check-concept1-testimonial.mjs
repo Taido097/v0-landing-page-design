@@ -14,7 +14,7 @@ const requirements = [
   [patch.includes('WHAT OUR CLIENTS SAY') && patch.includes('REAL EXPERIENCES FROM CLIENTS WHO TRUSTED US'), 'requested testimonial heading is present'],
   [patch.includes('Game-Changing Experience'), 'requested testimonial headline is present'],
   [patch.includes('Client Testimonial'), 'testimonial label is present'],
-  [patch.includes('/client-8889/testimonial-client-logos.svg') && logos.includes('Boba &amp; Brew') && logos.includes('District Eatery'), 'supplied real client logo artwork is present'],
+  [patch.includes("const LOGO_ASSET = '/client-8889/testimonial-client-logos.svg'") && patch.includes('hydrateClientLogo') && logos.includes('data:image/webp;base64,'), 'supplied real client logo artwork is present'],
   [patch.includes('IntersectionObserver') && patch.includes('ng-reveal'), 'load-in animation is present'],
   [patch.includes('@media (max-width: 809.98px)'), 'section has a mobile layout'],
   [patch.includes('--nguyen-display-font') && patch.includes('--nguyen-body-font'), 'section inherits the site typography'],
