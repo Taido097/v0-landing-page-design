@@ -47,8 +47,9 @@ export const TESTIMONIAL_PATCH = `
   #nguyen-client-testimonial .ng-testimonial-card {
     width: min(1180px, 100%);
     margin: 0 auto;
-    display: grid;
-    grid-template-columns: minmax(320px, .82fr) minmax(0, 1.18fr);
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
     overflow: hidden;
     background: var(--ng-bg);
     border: 1px solid var(--ng-line);
@@ -56,7 +57,10 @@ export const TESTIMONIAL_PATCH = `
   }
 
   #nguyen-client-testimonial .ng-testimonial-media {
+    flex: 0 0 41%;
+    min-width: 320px;
     min-height: 570px;
+    align-self: stretch;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -65,6 +69,7 @@ export const TESTIMONIAL_PATCH = `
   }
 
   #nguyen-client-testimonial .ng-testimonial-content {
+    flex: 1 1 0;
     min-width: 0;
     padding: clamp(38px, 4.8vw, 68px) clamp(30px, 4.7vw, 66px) 0;
     display: flex;
@@ -217,7 +222,7 @@ export const TESTIMONIAL_PATCH = `
     #nguyen-client-testimonial .ng-section-heading { margin-bottom: 40px; padding: 0 12px; }
     #nguyen-client-testimonial .ng-section-heading h2 { font-size: clamp(34px, 10.2vw, 48px); }
     #nguyen-client-testimonial .ng-section-heading p { margin-top: 17px; font-size: 14px; }
-    #nguyen-client-testimonial .ng-testimonial-card { width: min(100%, 680px); grid-template-columns: 1fr; border-radius: 6px; }
+    #nguyen-client-testimonial .ng-testimonial-card { width: min(100%, 680px); flex-direction: column; border-radius: 6px; }
     #nguyen-client-testimonial .ng-testimonial-media { min-height: 320px; aspect-ratio: 4 / 3; }
     #nguyen-client-testimonial .ng-testimonial-content { padding: 34px 24px 0; }
     #nguyen-client-testimonial .ng-testimonial-title { font-size: clamp(30px, 9vw, 42px); }
