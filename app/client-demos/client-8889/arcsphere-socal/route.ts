@@ -617,7 +617,14 @@ const FOOTER_PATCH = `
     while ((node = walker.nextNode())) {
       const key = compact(node.nodeValue);
       if (key === OLD_PHONE) {
-        node.nodeValue = NEW_PHONE;
+        // Split into two lines with a <br>
+        const parent = node.parentElement;
+        if (parent) {
+          parent.innerHTML = '';
+          parent.appendChild(document.createTextNode('209-233-8888'));
+          parent.appendChild(document.createElement('br'));
+          parent.appendChild(document.createTextNode('714-707-8889'));
+        }
       } else if (key === OLD_ADDR) {
         node.nodeValue = NEW_ADDR;
       }
