@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/check-concept1-platform-render.mjs && next build",
+    "build": "node scripts/check-concept1-platform-render.mjs && node scripts/check-concept1-testimonial.mjs && next build",
     "start": "next start",
     "lint": "eslint .",
     "check:concept1-residential": "node scripts/check-concept1-residential.mjs",
-    "check:concept1-platforms": "node scripts/check-concept1-platform-render.mjs"
+    "check:concept1-platforms": "node scripts/check-concept1-platform-render.mjs",
+    "check:concept1-testimonial": "node scripts/check-concept1-testimonial.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
