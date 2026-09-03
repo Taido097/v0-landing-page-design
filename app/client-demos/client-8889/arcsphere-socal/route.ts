@@ -502,47 +502,43 @@ const DESIGN_PANELS_PATCH = `
     { key: 'residentialdesign', url: base + '/custom-homes' },
   ];
 
-  function fixCount(root) {
-    // Walk all text nodes looking for "20+" and replace with "200+"
+  // Always-on count fixer — runs on any subtree, no WeakSet guard
+  function fixCounts(root) {
+    if (!root || root.nodeType === Node.TEXT_NODE) {
+      const node = root;
+      if (node && node.nodeValue && node.nodeValue.includes('20+')) {
+        node.nodeValue = node.nodeValue.replace(/20\\+/g, '200+');
+      }
+      return;
+    }
+    if (root.nodeType !== Node.ELEMENT_NODE && root.nodeType !== Node.DOCUMENT_FRAGMENT_NODE) return;
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
     let node;
-    let changed = false;
     while ((node = walker.nextNode())) {
-      if (node.nodeValue && (node.nodeValue.includes('20+') || node.nodeValue.trim() === '20+')) {
+      if (node.nodeValue && node.nodeValue.includes('20+')) {
         node.nodeValue = node.nodeValue.replace(/20\\+/g, '200+');
-        changed = true;
       }
     }
-    return changed;
   }
 
-  const patched = new WeakSet();
+  const patchedLinks = new WeakSet();
 
-  function patchPanels() {
+  function patchPanelLinks() {
     if (!document.body) return;
-
-    // Find panels that contain "COMMERCIAL DESIGN" or "RESIDENTIAL DESIGN"
     const candidates = Array.from(document.querySelectorAll('div, section, article'));
     candidates.forEach((el) => {
-      if (patched.has(el)) return;
+      if (patchedLinks.has(el)) return;
       const text = compact(el.textContent);
       const match = PANELS.find((p) => text.includes(p.key));
       if (!match) return;
       const r = el.getBoundingClientRect();
-      // Must be a reasonably large panel
       if (r.width < 300 || r.height < 200) return;
-      // Skip if it wraps both panels (contains both keys)
       if (PANELS.every((p) => text.includes(p.key))) return;
-      patched.add(el);
+      patchedLinks.add(el);
 
-      // Fix "20+" → "200+" inside this panel
-      fixCount(el);
-
-      // Wire up click to correct service page
       el.style.setProperty('cursor', 'pointer', 'important');
       el.setAttribute('data-nguyen-panel-url', match.url);
 
-      // Also fix any anchor inside that looks like a CTA
       el.querySelectorAll('a').forEach((a) => {
         const aText = compact(a.textContent);
         if (aText.includes('view') || aText.includes('projects') || aText.includes('explore') || aText === '') {
@@ -570,13 +566,25 @@ const DESIGN_PANELS_PATCH = `
     }, true);
   }
 
-  patchPanels();
-  window.addEventListener('load', patchPanels, { once: true });
-  [300, 800, 1800, 3500, 6000].forEach((t) => setTimeout(patchPanels, t));
+  // MutationObserver watches ALL DOM changes — catches hover-injected nodes and characterData updates
+  const obs = new MutationObserver((mutations) => {
+    for (const m of mutations) {
+      if (m.type === 'characterData') {
+        fixCounts(m.target);
+      } else if (m.type === 'childList') {
+        m.addedNodes.forEach((n) => fixCounts(n));
+      }
+    }
+    patchPanelLinks();
+  });
 
-  const obs = new MutationObserver(patchPanels);
-  if (document.body) obs.observe(document.body, { childList: true, subtree: true });
-  setTimeout(() => obs.disconnect(), 9000);
+  fixCounts(document.body);
+  patchPanelLinks();
+  window.addEventListener('load', () => { fixCounts(document.body); patchPanelLinks(); }, { once: true });
+  [300, 800, 1800, 3500, 6000].forEach((t) => setTimeout(() => { fixCounts(document.body); patchPanelLinks(); }, t));
+
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true, characterData: true });
+  setTimeout(() => obs.disconnect(), 12000);
 })();
 </script>`
 
