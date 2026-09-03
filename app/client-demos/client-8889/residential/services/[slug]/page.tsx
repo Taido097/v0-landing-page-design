@@ -333,23 +333,25 @@ const ADU_TYPES = [
 
 // Card 3 shows Commercial everywhere except the Commercial page, where it shows
 // Residential instead (so the current page isn't listed among the cards).
+const ALL_SERVICES = [
+  { slug: 'adus',               href: `${RESIDENTIAL_HREF}/services/adus`,                img: `${CX}/hero-custom-homes.jpg`,                   label: 'ADU' },
+  { slug: 'commercial',         href: `${RESIDENTIAL_HREF}/services/commercial`,           img: `${CX}/cx-09-building.jpg`,                      label: 'Commercial' },
+  { slug: 'land-development',   href: `${RESIDENTIAL_HREF}/services/land-development`,    img: `${CX}/ld-01-golden-meadow.png`,                  label: 'Land Development' },
+  { slug: 'engineering-approvals', href: `${RESIDENTIAL_HREF}/services/engineering-approvals`, img: '/client-8889/residential/svc-05-structural.jpg', label: 'Engineering' },
+  { slug: 'custom-homes',       href: `${RESIDENTIAL_HREF}/services/custom-homes`,        img: '/client-8889/residential/svc-01-custom-homes.jpg', label: 'Custom Homes' },
+  { slug: 'additions-remodels', href: `${RESIDENTIAL_HREF}/services/additions-remodels`,  img: '/client-8889/residential/svc-02-additions-remodels.jpg', label: 'Additions & Remodels' },
+  { slug: 'multifamily',        href: `${RESIDENTIAL_HREF}/services/multifamily`,         img: `${CX}/hero-townhomes.jpg`,                       label: 'Townhomes + Condos' },
+  { slug: 'sb9-development',    href: `${RESIDENTIAL_HREF}/services/sb9-development`,     img: `${CX}/sb9-01-modern-duplex.jpg`,                 label: 'SB 9 Development' },
+];
+
 function OurServices({ currentSlug }: { currentSlug: string }) {
-  const card3 =
-    currentSlug === 'commercial'
-      ? { href: RESIDENTIAL_HREF, img: '/client-8889/residential/hero-home.png', label: 'Residential' }
-      : { href: `${RESIDENTIAL_HREF}/services/commercial`, img: `${CX}/cm-01-multifamily-exterior.jpg`, label: 'Commercial' };
-  const cards = [
-    { href: `${RESIDENTIAL_HREF}/services/adus`, img: `${CX}/hero-custom-homes.jpg`, label: 'ADU' },
-    { href: `${RESIDENTIAL_HREF}/services/land-development`, img: '/client-8889/residential/svc-04-multifamily.jpg', label: 'Land Development' },
-    card3,
-    { href: `${RESIDENTIAL_HREF}/services/engineering-approvals`, img: '/client-8889/residential/svc-05-structural.jpg', label: 'Engineering' },
-  ];
+  const cards = ALL_SERVICES.filter((s) => s.slug !== currentSlug).slice(0, 4);
   return (
     <section className="nrd-section svc-os" aria-label="Our Services">
       <h2 className="svc-os-h">Our Services</h2>
       <div className="svc-os-grid">
         {cards.map((s) => (
-          <a className="svc-os-card" href={s.href} key={s.label}>
+          <a className="svc-os-card" href={s.href} key={s.slug}>
             <div className="svc-os-img"><img src={s.img} alt={s.label} /></div>
             <span className="svc-os-label">{s.label}</span>
           </a>
