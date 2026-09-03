@@ -599,13 +599,48 @@ const DESIGN_PANELS_PATCH = `
 })();
 </script>`
 
+const FOOTER_PATCH = `
+<script id="nguyen-socal-footer-patch">
+(() => {
+  const normalize = (v) => (v || '').replace(/\\s+/g, ' ').trim();
+  const compact = (v) => normalize(v).replace(/\\s+/g, '').toLowerCase();
+  const OLD_PHONE = compact('+62 812 3456 7890');
+  const NEW_PHONE = '209-233-8888   714-707-8889';
+
+  function patchFooter() {
+    // Fix phone number
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+      if (compact(node.nodeValue) === OLD_PHONE) {
+        node.nodeValue = NEW_PHONE;
+      }
+    }
+
+    // Fix email link color — match surrounding text color
+    document.querySelectorAll('a[href^="mailto:"]').forEach((a) => {
+      a.style.setProperty('color', 'inherit', 'important');
+      a.style.setProperty('text-decoration', 'none', 'important');
+    });
+  }
+
+  patchFooter();
+  window.addEventListener('load', patchFooter, { once: true });
+  [300, 800, 1800, 3500].forEach((t) => setTimeout(patchFooter, t));
+
+  const obs = new MutationObserver(patchFooter);
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true, characterData: true });
+  setTimeout(() => obs.disconnect(), 8000);
+})();
+</script>`
+
 export async function GET() {
   const response = await getConcept()
   if (!response.ok) return response
 
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${TESTIMONIAL_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${FOOTER_PATCH}${TESTIMONIAL_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')
