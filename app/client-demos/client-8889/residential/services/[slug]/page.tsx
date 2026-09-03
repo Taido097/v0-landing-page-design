@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
   Home, Gem, Hammer, Ruler, Zap, FileCheck, Map, LayoutTemplate, ShieldCheck, Wrench,
@@ -352,10 +353,10 @@ function OurServices({ currentSlug }: { currentSlug: string }) {
       <h2 className="svc-os-h">Our Services</h2>
       <div className="svc-os-grid">
         {cards.map((s) => (
-          <a className="svc-os-card" href={s.href} key={s.slug}>
+          <Link className="svc-os-card" href={s.href} key={s.slug}>
             <div className="svc-os-img"><img src={s.img} alt={s.label} /></div>
             <span className="svc-os-label">{s.label}</span>
-          </a>
+          </Link>
         ))}
       </div>
     </section>
