@@ -1,18 +1,19 @@
 export const TESTIMONIAL_PATCH = `
 <style id="nguyen-client-testimonial-style">
   #nguyen-client-testimonial {
-    --ng-bg: #eee9e2;
-    --ng-panel: #f4efe8;
-    --ng-ink: #514b46;
-    --ng-dark: #26221f;
-    --ng-muted: #5f5954;
-    --ng-line: rgba(76, 66, 58, 0.16);
-    --ng-accent: #9c7047;
+    --ng-bg: #f0ebe6;
+    --ng-panel: #f0ebe6;
+    --ng-ink: #4e4945;
+    --ng-dark: #4e4945;
+    --ng-muted: #918980;
+    --ng-line: rgba(78, 73, 69, 0.14);
+    --ng-accent: #4e4945;
     width: 100%;
     margin: 0;
     padding: clamp(72px, 9vw, 126px) 24px clamp(76px, 9vw, 126px);
     background: var(--ng-bg);
     color: var(--ng-dark);
+    font-family: var(--nguyen-body-font, Arial, Helvetica, sans-serif);
     box-sizing: border-box;
   }
   #nguyen-client-testimonial * { box-sizing: border-box; }
@@ -53,11 +54,11 @@ export const TESTIMONIAL_PATCH = `
     background: var(--ng-panel);
     border: 1px solid var(--ng-line);
     border-radius: 8px;
-    box-shadow: 0 18px 50px rgba(50, 39, 31, .035);
+    box-shadow: none;
   }
   #nguyen-client-testimonial .ng-testimonial-media {
     min-height: 570px;
-    background-image: linear-gradient(180deg, rgba(25,18,12,.02), rgba(25,18,12,.10)), url('/client-8889/projects/card-3-office.webp');
+    background-image: linear-gradient(180deg, rgba(25,18,12,.01), rgba(25,18,12,.06)), url('/client-8889/projects/card-3-office.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -72,19 +73,20 @@ export const TESTIMONIAL_PATCH = `
   #nguyen-client-testimonial .ng-stars {
     margin: 0 0 18px;
     color: var(--ng-accent);
-    font-family: Arial, sans-serif;
-    font-size: 13px;
+    font-family: var(--nguyen-body-font, Arial, Helvetica, sans-serif);
+    font-size: 14px;
+    font-weight: 500;
     line-height: 1;
-    letter-spacing: 4px;
+    letter-spacing: 5px;
   }
   #nguyen-client-testimonial .ng-testimonial-title {
     margin: 0;
     color: var(--ng-dark);
-    font-family: var(--nguyen-display-font, Georgia, 'Times New Roman', serif);
-    font-size: clamp(31px,3.3vw,48px);
+    font-family: var(--nguyen-body-font, Arial, Helvetica, sans-serif);
+    font-size: clamp(32px,3.3vw,48px);
     font-weight: 400;
-    line-height: 1.05;
-    letter-spacing: -0.025em;
+    line-height: 1.08;
+    letter-spacing: -0.045em;
   }
   #nguyen-client-testimonial .ng-quote {
     position: relative;
@@ -94,10 +96,11 @@ export const TESTIMONIAL_PATCH = `
   #nguyen-client-testimonial .ng-quote-mark {
     position: absolute;
     color: var(--ng-accent);
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 40px;
+    font-family: var(--nguyen-body-font, Arial, Helvetica, sans-serif);
+    font-size: 38px;
+    font-weight: 500;
     line-height: 1;
-    opacity: .9;
+    opacity: .82;
   }
   #nguyen-client-testimonial .ng-quote-open { left: 0; top: -4px; }
   #nguyen-client-testimonial .ng-quote-close { right: 0; bottom: -13px; }
@@ -106,14 +109,15 @@ export const TESTIMONIAL_PATCH = `
     margin: 0;
     color: var(--ng-muted);
     font-family: var(--nguyen-body-font, Arial, Helvetica, sans-serif);
-    font-size: clamp(14px,1.35vw,17px);
+    font-size: clamp(15px,1.45vw,18px);
     font-weight: 400;
-    line-height: 1.58;
+    line-height: 1.55;
+    letter-spacing: -0.02em;
   }
   #nguyen-client-testimonial .ng-quote strong {
     color: var(--ng-dark);
     font-weight: 500;
-    letter-spacing: .01em;
+    letter-spacing: -0.015em;
   }
   #nguyen-client-testimonial .ng-divider {
     width: 100%;
@@ -123,12 +127,12 @@ export const TESTIMONIAL_PATCH = `
   }
   #nguyen-client-testimonial .ng-caption {
     margin: 0 0 18px;
-    color: var(--ng-muted);
+    color: var(--ng-dark);
     font-family: var(--nguyen-body-font, Arial, Helvetica, sans-serif);
     font-size: 10px;
     font-weight: 500;
     line-height: 1.2;
-    letter-spacing: .03em;
+    letter-spacing: .01em;
   }
   #nguyen-client-testimonial .ng-client-art-wrap {
     margin: auto calc(clamp(28px,5vw,68px) * -1) 0;
@@ -203,6 +207,11 @@ export const TESTIMONIAL_PATCH = `
 (() => {
   const SECTION_ID = 'nguyen-client-testimonial';
   const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim();
+  const SOURCE_TESTIMONIAL_MARKERS = [
+    'working with claryo brought clarity to decisions',
+    'michael turner',
+    'founder & business consultant'
+  ];
 
   function copySiteTypography() {
     const bodyHeading = Array.from(document.querySelectorAll('h1,h2')).find((el) => !el.closest('#' + SECTION_ID));
@@ -266,6 +275,34 @@ export const TESTIMONIAL_PATCH = `
     items.forEach((item) => observer.observe(item));
   }
 
+  function isSourceTestimonial(element) {
+    if (!element || element.id === SECTION_ID) return false;
+    const installed = document.getElementById(SECTION_ID);
+    if (installed && element.contains(installed)) return false;
+    const text = normalize(element.textContent).toLowerCase();
+    if (!text.includes('game-changing experience')) return false;
+    return SOURCE_TESTIMONIAL_MARKERS.some((marker) => text.includes(marker));
+  }
+
+  function removeSourceTestimonial() {
+    const structural = Array.from(document.querySelectorAll('section, [data-framer-name]'))
+      .filter(isSourceTestimonial)
+      .sort((a, b) => normalize(a.textContent).length - normalize(b.textContent).length);
+    if (structural.length && structural[0].parentElement) {
+      structural[0].remove();
+      return true;
+    }
+
+    const fallback = Array.from(document.querySelectorAll('div, article'))
+      .filter(isSourceTestimonial)
+      .sort((a, b) => normalize(a.textContent).length - normalize(b.textContent).length);
+    if (fallback.length && fallback[0].parentElement) {
+      fallback[0].remove();
+      return true;
+    }
+    return false;
+  }
+
   function scoreCandidate(element) {
     if (!element || element.id === SECTION_ID) return -1;
     const text = normalize(element.textContent).toLowerCase();
@@ -278,6 +315,9 @@ export const TESTIMONIAL_PATCH = `
     if (text.includes('trusted by')) score += 7;
     if (text.includes('our clients')) score += 7;
     if (text.includes('review')) score += 4;
+    if (text.includes('game-changing experience')) score += 12;
+    if (text.includes('working with claryo brought clarity to decisions')) score += 12;
+    if (text.includes('michael turner')) score += 10;
     if (element.querySelector('blockquote')) score += 5;
     if ((text.match(/★/g) || []).length >= 3) score += 4;
     return score;
@@ -309,6 +349,7 @@ export const TESTIMONIAL_PATCH = `
     if (!document.body) return false;
     const existingInstalled = document.getElementById(SECTION_ID);
     if (existingInstalled) {
+      removeSourceTestimonial();
       copySiteTypography();
       ensureClientLogo(existingInstalled);
       setupAnimations(existingInstalled);
@@ -324,6 +365,7 @@ export const TESTIMONIAL_PATCH = `
       if (point.before) point.parent.insertBefore(section, point.before);
       else point.parent.appendChild(section);
     }
+    removeSourceTestimonial();
     ensureClientLogo(section);
     setupAnimations(section);
     return true;
