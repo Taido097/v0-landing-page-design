@@ -265,14 +265,35 @@ const CLIENT_PATCH = `
     });
   }
 
+  function fixNav() {
+    var home = window.location.origin + window.location.pathname;
+    var navLinks = document.querySelectorAll('nav a, [data-framer-name] a, header a');
+    navLinks.forEach(function (a) {
+      var text = (a.textContent || '').trim().toLowerCase().replace(/\s+/g, ' ');
+      if (/project/i.test(text)) {
+        var wrap = a.closest('[class*="container"]') || a.closest('li') || a.parentElement;
+        if (wrap) wrap.style.setProperty('display', 'none', 'important');
+        return;
+      }
+      if (!a.querySelector('img') && !a.dataset.nnav && !a.matches('[href^="mailto:"], [href^="tel:"]')) {
+        a.dataset.nnav = '1';
+        a.setAttribute('href', home);
+        a.addEventListener('click', function (e) { e.preventDefault(); e.stopImmediatePropagation(); window.location.href = home; }, true);
+      }
+    });
+  }
+
   patchText();
-  document.addEventListener('DOMContentLoaded', patchText, { once: true });
+  fixNav();
+  document.addEventListener('DOMContentLoaded', function () { patchText(); fixNav(); }, { once: true });
   let runs = 0;
   const timer = setInterval(() => {
     patchText();
+    if (runs < 8) fixNav();
     runs += 1;
     if (runs >= 32) clearInterval(timer);
   }, 250);
+  [800, 1600, 3000, 5000].forEach(function (t) { setTimeout(fixNav, t); });
 })();
 </script>`;
 

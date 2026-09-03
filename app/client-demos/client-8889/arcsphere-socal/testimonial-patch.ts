@@ -57,7 +57,6 @@ export const TESTIMONIAL_PATCH = `
 
   #nguyen-client-testimonial .ng-testimonial-media {
     min-height: 570px;
-    background-image: linear-gradient(180deg, rgba(35,26,20,.01), rgba(35,26,20,.05)), url('/client-8889/projects/card-3-office.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -139,20 +138,37 @@ export const TESTIMONIAL_PATCH = `
 
   #nguyen-client-testimonial .ng-client-art-wrap {
     margin: auto calc(clamp(30px, 4.7vw, 66px) * -1) 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     overflow: hidden;
     border-top: 1px solid var(--ng-line);
     background: var(--ng-bg);
   }
 
-  #nguyen-client-testimonial .ng-client-art {
+  #nguyen-client-testimonial .ng-client-logo-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 10px;
+    border-right: 1px solid var(--ng-line);
+    border-bottom: 1px solid var(--ng-line);
+  }
+
+  #nguyen-client-testimonial .ng-client-logo-cell:nth-child(3n) {
+    border-right: none;
+  }
+
+  #nguyen-client-testimonial .ng-client-logo-cell:nth-last-child(-n+3) {
+    border-bottom: none;
+  }
+
+  #nguyen-client-testimonial .ng-client-logo-img {
     display: block;
-    width: 100%;
+    max-width: 100%;
+    max-height: 44px;
+    width: auto;
     height: auto;
     object-fit: contain;
-    object-position: center;
     mix-blend-mode: multiply;
   }
 
@@ -210,13 +226,26 @@ export const TESTIMONIAL_PATCH = `
     #nguyen-client-testimonial .ng-section-heading h2 { font-size: 35px; }
     #nguyen-client-testimonial .ng-section-heading p { font-size: 13px; }
     #nguyen-client-testimonial .ng-testimonial-media { min-height: 270px; }
+    #nguyen-client-testimonial .ng-client-logo-cell { padding: 10px 6px; }
+    #nguyen-client-testimonial .ng-client-logo-img { max-height: 36px; }
   }
 </style>
 <script id="nguyen-client-testimonial-patch">
 (() => {
   const SECTION_ID = 'nguyen-client-testimonial';
-  const LOGO_URL = 'https://raw.githubusercontent.com/Taido097/v0-landing-page-design/e36b6172bcddecf9ecca1a61ccb1798b24b5d295/public/client-8889/testimonial-client-logos.svg';
   const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim();
+
+  const LOGOS = [
+    ['/nguyen-testimonial/boba_and_brew.png', 'Boba & Brew'],
+    ['/nguyen-testimonial/the_loop_nail_bar.png', 'The Loop Nail Bar'],
+    ['/nguyen-testimonial/phoenix_restaurant.png', 'Phoenix Restaurant'],
+    ['/nguyen-testimonial/sage_coffee_co.png', 'Sage Coffee Co.'],
+    ['/nguyen-testimonial/urban_cutz_barbershop.png', 'Urban Cutz Barbershop'],
+    ['/nguyen-testimonial/luxe_boutique.png', 'Luxe Boutique'],
+    ['/nguyen-testimonial/crumbl_cookies.png', 'Crumbl Cookies'],
+    ['/nguyen-testimonial/vitality_wellness.png', 'Vitality Wellness'],
+    ['/nguyen-testimonial/district_eatery.png', 'District Eatery']
+  ];
 
   function findSourceTestimonial() {
     const all = Array.from(document.querySelectorAll('section, [data-framer-name], div, article'));
@@ -238,29 +267,46 @@ export const TESTIMONIAL_PATCH = `
     if (sample) document.documentElement.style.setProperty('--nguyen-testimonial-font', window.getComputedStyle(sample).fontFamily);
   }
 
+  function buildLogoGrid() {
+    return LOGOS.map(function(pair) {
+      return '<div class="ng-client-logo-cell"><img class="ng-client-logo-img" src="' + pair[0] + '" alt="' + pair[1].replace(/&/g, '&amp;') + '" decoding="async" loading="lazy"></div>';
+    }).join('');
+  }
+
   function createSection() {
+    const origin = window.location.origin;
+    const mediaImg = origin + '/nguyen-testimonial/restaurant_image.png';
     const section = document.createElement('section');
     section.id = SECTION_ID;
     section.setAttribute('aria-label', 'What our clients say');
     section.innerHTML = [
       '<div class="ng-testimonial-card">',
-        '<div class="ng-testimonial-media ng-reveal" role="img" aria-label="Architecture project interior"></div>',
+        '<div class="ng-testimonial-media ng-reveal" role="img" aria-label="Restaurant interior"></div>',
         '<div class="ng-testimonial-content ng-reveal">',
           '<div class="ng-stars" aria-label="5 out of 5 stars">★★★★★</div>',
           '<h3 class="ng-testimonial-title">Game-Changing Experience</h3>',
           '<blockquote class="ng-quote">',
-            '<span class="ng-quote-mark ng-quote-open" aria-hidden="true">“</span>',
+            '<span class="ng-quote-mark ng-quote-open" aria-hidden="true">"</span>',
             '<p><strong>NGUYEN ARCHITECTURE &amp; ENGINEERING</strong> delivered exceptional service, great communication, and a final result that exceeded our expectations.</p>',
-            '<span class="ng-quote-mark ng-quote-close" aria-hidden="true">”</span>',
+            '<span class="ng-quote-mark ng-quote-close" aria-hidden="true">"</span>',
           '</blockquote>',
           '<div class="ng-divider" aria-hidden="true"></div>',
           '<p class="ng-caption">Client Testimonial</p>',
           '<div class="ng-client-art-wrap ng-reveal" aria-label="Selected clients">',
-            '<img class="ng-client-art" src="' + LOGO_URL + '" alt="Boba &amp; Brew, The Loop Nail Bar, Phoenix Restaurant, Sage Coffee Co., Urban Cutz Barbershop, Luxe Boutique, Crumbl Cookies, Vitality Wellness, and District Eatery" decoding="async">',
+            buildLogoGrid(),
           '</div>',
         '</div>',
       '</div>'
     ].join('');
+
+    const media = section.querySelector('.ng-testimonial-media');
+    if (media) {
+      media.style.backgroundImage = 'linear-gradient(180deg, rgba(35,26,20,.01), rgba(35,26,20,.05)), url("' + mediaImg + '")';
+      media.style.backgroundSize = 'cover';
+      media.style.backgroundPosition = 'center';
+      media.style.backgroundRepeat = 'no-repeat';
+    }
+
     return section;
   }
 

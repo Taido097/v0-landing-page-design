@@ -395,6 +395,24 @@ const CLIENT_PATCH = String.raw`
     });
   }
 
+  function fixNav() {
+    var home = window.location.origin + window.location.pathname;
+    var navLinks = document.querySelectorAll('nav a, header a, [data-framer-name] a');
+    navLinks.forEach(function (a) {
+      var text = (a.textContent || '').trim().toLowerCase().replace(/\s+/g, ' ');
+      if (/^(projects?|project types?|commercial projects?|view projects?)$/.test(text)) {
+        var wrap = a.closest('[class*="container"]') || a.closest('li') || a.parentElement;
+        if (wrap && wrap !== document.body) wrap.style.setProperty('display', 'none', 'important');
+        return;
+      }
+      if (!a.querySelector('img') && !a.dataset.nnav && !a.matches('[href^="mailto:"], [href^="tel:"], [href^="#"]')) {
+        a.dataset.nnav = '1';
+        a.setAttribute('href', home);
+        a.addEventListener('click', function (e) { e.preventDefault(); e.stopImmediatePropagation(); window.location.href = home; }, true);
+      }
+    });
+  }
+
   function patchAll() {
     setIds();
     patchMap(document, TARGETS.hero);
@@ -412,6 +430,7 @@ const CLIENT_PATCH = String.raw`
     patchFaqs();
     patchInputs();
     patchLinks();
+    fixNav();
     activateForms();
     document.title = 'NGUYEN Architecture & Engineering — Concept 04';
   }

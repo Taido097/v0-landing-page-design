@@ -39,7 +39,7 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/DUBAI, 2025/gi, 'LOS ANGELES, CA'],
   [/VIEW PROJECTS/gi, 'VIEW PROJECT TYPES'],
   [/BOOK CONSULTATION/gi, 'START A PROJECT'],
-  [/DESIGN PROCESS/gi, 'PROJECT PROCESS'],
+  [/DESIGN PROCESS/gi, 'HOME'],
   [/Residential Interior/gi, 'Architectural Design & Tenant Improvement (TI)'],
   [/Commercial Interior/gi, 'Commercial Architecture'],
   [/Space Planning/gi, 'Existing-Condition Survey & Business Layout'],
@@ -170,7 +170,7 @@ const CLIENT_PATCH = `
     ['A selection of our recent architecture and interior design work.', 'A SELECTION OF OUR RECENT RESIDENTIAL, COMMERCIAL & DEVELOPMENT PROJECTS.'],
     ['12+ YEARS EXPERIENCE', '15+ YEARS EXPERIENCE'], ['150+ PROJECTS COMPLETED', '500+ SUCCESSFUL PROJECTS'], ['250+ PROJECTS WORLDWIDE', '500+ SUCCESSFUL PROJECTS'],
     ['SERENITY VILLA', 'CUSTOM HOME'], ['DUBAI, 2025', 'LOS ANGELES, CA'],
-    ['VIEW PROJECTS', 'VIEW PROJECT TYPES'], ['BOOK CONSULTATION', 'START A PROJECT'], ['DESIGN PROCESS', 'PROJECT PROCESS'],
+    ['VIEW PROJECTS', 'VIEW PROJECT TYPES'], ['BOOK CONSULTATION', 'START A PROJECT'], ['DESIGN PROCESS', 'HOME'],
     ['Residential Interior', 'Architectural Design & Tenant Improvement (TI)'], ['Commercial Interior', 'Commercial Architecture'],
     ['Space Planning', 'Existing-Condition Survey & Business Layout'], ['Design Consultation', 'Zoning, Occupancy & Local Requirements'],
     ['Project Management', 'Building Permit, Plan Check & Corrections'], ['Architecture Design', 'Architectural, Structural & MEP'],
@@ -467,11 +467,29 @@ const CLIENT_PATCH = `
       if (href) window.location.href = href;
     }, true);
   }
+  function fixNav(){
+    var home = window.location.origin + window.location.pathname;
+    var navLinks = document.querySelectorAll('nav a, [data-framer-name] a');
+    navLinks.forEach(function(a){
+      var text = (a.textContent || '').trim().toLowerCase().replace(/\s+/g,' ');
+      if (/^projects?$|^view project/i.test(text) || text === 'projectsprojects' || text === 'view project typesview project types') {
+        var wrap = a.closest('[class*="container"]') || a.parentElement;
+        if (wrap) wrap.style.setProperty('display','none','important');
+        return;
+      }
+      if (!a.querySelector('img') && !a.dataset.nnav && !a.matches('[href^="mailto:"], [href^="tel:"]')) {
+        a.dataset.nnav = '1';
+        a.setAttribute('href', home);
+        a.addEventListener('click', function(e){ e.preventDefault(); e.stopImmediatePropagation(); window.location.href = home; }, true);
+      }
+    });
+  }
   installServiceLinkInterceptor();
   patchRoot(document.body);
   window.addEventListener('load', () => { patchThirdProjectImage(document.body); patchServicesSection(document.body); }, { once: true });
   const observer = new MutationObserver((mutations) => { for (const mutation of mutations) { if (mutation.type === 'characterData') { patchTextNode(mutation.target); const paragraph = mutation.target.parentElement?.closest('p'); if (paragraph) patchSplitParagraph(paragraph); const parent = mutation.target.parentElement; if (parent) { patchCounters(parent); patchOfficeCard(parent); patchCustomHomeCard(parent); patchThirdProjectImage(parent); patchServicesSection(parent); keepResidentialLabelOnOneLine(parent); } continue; } if (mutation.type === 'childList') mutation.addedNodes.forEach(patchRoot); } });
   observer.observe(document.body, { childList: true, subtree: true, characterData: true }); setTimeout(() => observer.disconnect(), 6000);
+  [800, 1600, 3000, 5000].forEach(function(t){ setTimeout(fixNav, t); });
 })();
 </script>`;
 
