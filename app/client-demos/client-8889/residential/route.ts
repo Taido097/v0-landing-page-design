@@ -52,6 +52,7 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/United Arab Emirates/gi, 'California'],
   [/Your Architecture Studio/gi, 'NGUYEN Architecture & Engineering'],
   [/Get in touch/gi, 'Start a Project'],
+  [/\bDesign Process\b/gi, 'Home'],
 ];
 
 function removeNonVisualTelemetry(html: string) {
@@ -250,10 +251,27 @@ const CLIENT_REBRAND = `
     }
     if (isMobile) { setTimeout(start, 1800); setTimeout(function () { reveal(); }, 4500); }
     else { start(); }
+    function fixNav(){
+      var home = window.location.origin + '/client-demos/client-8889/residential';
+      var navLinks = document.querySelectorAll('nav a, [data-framer-name="nav"] a');
+      navLinks.forEach(function(a){
+        var text = (a.textContent || '').trim().toLowerCase().replace(/\\s+/g,' ');
+        if (text === 'projects' || text === 'projectsprojects') {
+          var wrap = a.closest('[class*="container"]');
+          if (wrap) wrap.style.setProperty('display','none','important');
+          return;
+        }
+        if (!a.querySelector('img') && !a.dataset.nnav) {
+          a.dataset.nnav = '1';
+          a.setAttribute('href', home);
+          a.addEventListener('click', function(e){ e.preventDefault(); e.stopImmediatePropagation(); window.location.href = home; }, true);
+        }
+      });
+    }
     // Insert the services section after Framer has hydrated so it is not reconciled away; retry until it
     // lands, and keep the reference's interior gallery hidden across any re-render.
-    [1600, 2600, 4000, 6000].forEach(function (t) { setTimeout(function () { injectServices(); hideGallery(); squareImages(); routeServices(); }, t); });
-    [800, 5000, 8000].forEach(function (t) { setTimeout(function () { squareImages(); routeServices(); if (looksBlank()) reveal(); }, t); });
+    [1600, 2600, 4000, 6000].forEach(function (t) { setTimeout(function () { injectServices(); hideGallery(); squareImages(); routeServices(); fixNav(); }, t); });
+    [800, 5000, 8000].forEach(function (t) { setTimeout(function () { squareImages(); routeServices(); fixNav(); if (looksBlank()) reveal(); }, t); });
   } catch (e) {}
 })();
 </script>`;
