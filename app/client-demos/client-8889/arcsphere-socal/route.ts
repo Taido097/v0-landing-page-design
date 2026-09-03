@@ -491,13 +491,102 @@ const PROJECT_CARDS_PATCH = `
 })();
 </script>`
 
+const DESIGN_PANELS_PATCH = `
+<script id="nguyen-socal-design-panels-patch">
+(() => {
+  const base = window.location.origin + '/client-demos/client-8889/residential/services';
+  const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
+
+  const PANELS = [
+    { key: 'commercialdesign', url: base + '/commercial' },
+    { key: 'residentialdesign', url: base + '/custom-homes' },
+  ];
+
+  function fixCount(root) {
+    // Walk all text nodes looking for "20+" and replace with "200+"
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    let node;
+    let changed = false;
+    while ((node = walker.nextNode())) {
+      if (node.nodeValue && (node.nodeValue.includes('20+') || node.nodeValue.trim() === '20+')) {
+        node.nodeValue = node.nodeValue.replace(/20\\+/g, '200+');
+        changed = true;
+      }
+    }
+    return changed;
+  }
+
+  const patched = new WeakSet();
+
+  function patchPanels() {
+    if (!document.body) return;
+
+    // Find panels that contain "COMMERCIAL DESIGN" or "RESIDENTIAL DESIGN"
+    const candidates = Array.from(document.querySelectorAll('div, section, article'));
+    candidates.forEach((el) => {
+      if (patched.has(el)) return;
+      const text = compact(el.textContent);
+      const match = PANELS.find((p) => text.includes(p.key));
+      if (!match) return;
+      const r = el.getBoundingClientRect();
+      // Must be a reasonably large panel
+      if (r.width < 300 || r.height < 200) return;
+      // Skip if it wraps both panels (contains both keys)
+      if (PANELS.every((p) => text.includes(p.key))) return;
+      patched.add(el);
+
+      // Fix "20+" → "200+" inside this panel
+      fixCount(el);
+
+      // Wire up click to correct service page
+      el.style.setProperty('cursor', 'pointer', 'important');
+      el.setAttribute('data-nguyen-panel-url', match.url);
+
+      // Also fix any anchor inside that looks like a CTA
+      el.querySelectorAll('a').forEach((a) => {
+        const aText = compact(a.textContent);
+        if (aText.includes('view') || aText.includes('projects') || aText.includes('explore') || aText === '') {
+          a.setAttribute('href', match.url);
+          a.removeAttribute('target');
+          a.removeAttribute('rel');
+          a.setAttribute('data-nguyen-panel-url', match.url);
+        }
+      });
+    });
+  }
+
+  if (!window.__nguyenPanelRouting) {
+    window.__nguyenPanelRouting = true;
+    document.addEventListener('click', (e) => {
+      const start = e.target && e.target.nodeType === Node.TEXT_NODE ? e.target.parentElement : e.target;
+      const panel = start && start.closest ? start.closest('[data-nguyen-panel-url]') : null;
+      if (!panel) return;
+      const url = panel.getAttribute('data-nguyen-panel-url');
+      if (!url) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      window.location.href = url;
+    }, true);
+  }
+
+  patchPanels();
+  window.addEventListener('load', patchPanels, { once: true });
+  [300, 800, 1800, 3500, 6000].forEach((t) => setTimeout(patchPanels, t));
+
+  const obs = new MutationObserver(patchPanels);
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true });
+  setTimeout(() => obs.disconnect(), 9000);
+})();
+</script>`
+
 export async function GET() {
   const response = await getConcept()
   if (!response.ok) return response
 
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${TESTIMONIAL_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${TESTIMONIAL_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')
