@@ -60,6 +60,8 @@ export const TESTIMONIAL_PATCH = `
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    image-rendering: -webkit-optimize-contrast;
+    filter: none !important;
   }
 
   #nguyen-client-testimonial .ng-testimonial-content {
@@ -149,7 +151,8 @@ export const TESTIMONIAL_PATCH = `
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 14px 10px;
+    min-height: 88px;
+    padding: 16px 14px;
     border-right: 1px solid var(--ng-line);
     border-bottom: 1px solid var(--ng-line);
   }
@@ -164,8 +167,8 @@ export const TESTIMONIAL_PATCH = `
 
   #nguyen-client-testimonial .ng-client-logo-img {
     display: block;
-    max-width: 100%;
-    max-height: 44px;
+    max-width: 88%;
+    max-height: 68px;
     width: auto;
     height: auto;
     object-fit: contain;
@@ -226,8 +229,8 @@ export const TESTIMONIAL_PATCH = `
     #nguyen-client-testimonial .ng-section-heading h2 { font-size: 35px; }
     #nguyen-client-testimonial .ng-section-heading p { font-size: 13px; }
     #nguyen-client-testimonial .ng-testimonial-media { min-height: 270px; }
-    #nguyen-client-testimonial .ng-client-logo-cell { padding: 10px 6px; }
-    #nguyen-client-testimonial .ng-client-logo-img { max-height: 36px; }
+    #nguyen-client-testimonial .ng-client-logo-cell { min-height: 72px; padding: 12px 8px; }
+    #nguyen-client-testimonial .ng-client-logo-img { max-height: 52px; }
   }
 </style>
 <script id="nguyen-client-testimonial-patch">
