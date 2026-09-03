@@ -21,6 +21,10 @@ const requirements = [
   [patch.includes('IntersectionObserver') && patch.includes('ng-reveal'), 'load-in animation is present'],
   [patch.includes('@media (max-width: 809.98px)'), 'section has a mobile layout'],
   [patch.includes('--nguyen-display-font') && patch.includes('--nguyen-body-font'), 'section inherits the site typography'],
+  [patch.includes('--ng-bg: #f0ebe6') && patch.includes('--ng-panel: #f0ebe6'), 'testimonial uses the warm reference background'],
+  [patch.includes('--ng-dark: #4e4945') && patch.includes('--ng-muted: #918980') && patch.includes('--ng-accent: #4e4945'), 'testimonial uses the reference charcoal and taupe palette'],
+  [patch.includes('.ng-testimonial-title') && patch.includes('font-family: var(--nguyen-body-font, Arial, Helvetica, sans-serif);'), 'testimonial headline uses the rounded sans-serif site font'],
+  [patch.includes('function removeSourceTestimonial') && patch.includes('working with claryo brought clarity to decisions') && patch.includes('michael turner'), 'old duplicate source testimonial is explicitly removed'],
 ]
 
 const failed = requirements.filter(([ok]) => !ok).map(([, label]) => label)
