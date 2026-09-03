@@ -5,7 +5,7 @@ import {
   type ReactElement,
   type ReactNode,
 } from 'react';
-import { ArrowUpRight, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import ServiceDetailPage from '../[slug]/page';
 
 const LD_CARDS = [
@@ -91,12 +91,7 @@ function LandDevelopmentShowcase() {
             </div>
             <figcaption className="ld-card-cap">
               <span className="ld-num">{card.n}</span>
-              <div className="ld-card-top">
-                <h2>{card.title}</h2>
-                <span className="ld-card-arrow" aria-hidden="true">
-                  <ArrowUpRight size={15} strokeWidth={1.7} />
-                </span>
-              </div>
+              <h2>{card.title}</h2>
               <span className="ld-card-line" aria-hidden="true" />
               <p>{card.description}</p>
             </figcaption>
