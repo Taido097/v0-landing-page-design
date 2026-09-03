@@ -8,7 +8,7 @@ const patch = fs.existsSync(patchPath) ? fs.readFileSync(patchPath, 'utf8') : ''
 
 const requirements = [
   [route.includes('TESTIMONIAL_PATCH'), 'route imports and injects TESTIMONIAL_PATCH'],
-  [patch.includes('id="nguyen-client-testimonial"'), 'working testimonial section has a stable id'],
+  [patch.includes("const SECTION_ID = 'nguyen-client-testimonial'") && patch.includes('section.id = SECTION_ID'), 'working testimonial section has a stable id'],
   [patch.includes('Game-Changing Experience'), 'requested testimonial headline is present'],
   [patch.includes('Client Testimonial'), 'testimonial label is present'],
   [patch.includes('BOBA &amp; BREW') && patch.includes('DISTRICT'), 'client grid content is present'],
