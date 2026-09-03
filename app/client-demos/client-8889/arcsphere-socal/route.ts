@@ -502,22 +502,21 @@ const DESIGN_PANELS_PATCH = `
     { key: 'residentialdesign', url: base + '/custom-homes' },
   ];
 
-  // Always-on count fixer — runs on any subtree, no WeakSet guard
+  // Replace the real hover counts (16+, 35+) with 200+
+  const COUNT_RE = /\\b(16|35)\\+/g;
   function fixCounts(root) {
-    if (!root || root.nodeType === Node.TEXT_NODE) {
-      const node = root;
-      if (node && node.nodeValue && node.nodeValue.includes('20+')) {
-        node.nodeValue = node.nodeValue.replace(/20\\+/g, '200+');
-      }
+    if (!root) return;
+    if (root.nodeType === Node.TEXT_NODE) {
+      if (COUNT_RE.test(root.nodeValue)) root.nodeValue = root.nodeValue.replace(COUNT_RE, '200+');
+      COUNT_RE.lastIndex = 0;
       return;
     }
     if (root.nodeType !== Node.ELEMENT_NODE && root.nodeType !== Node.DOCUMENT_FRAGMENT_NODE) return;
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
     let node;
     while ((node = walker.nextNode())) {
-      if (node.nodeValue && node.nodeValue.includes('20+')) {
-        node.nodeValue = node.nodeValue.replace(/20\\+/g, '200+');
-      }
+      if (COUNT_RE.test(node.nodeValue)) node.nodeValue = node.nodeValue.replace(COUNT_RE, '200+');
+      COUNT_RE.lastIndex = 0;
     }
   }
 
@@ -573,7 +572,7 @@ const DESIGN_PANELS_PATCH = `
     document.addEventListener('mouseover', (e) => {
       let el = e.target;
       for (let i = 0; i < 10 && el && el !== document.body; i++, el = el.parentElement) {
-        if (el.textContent && el.textContent.includes('20+')) fixCounts(el);
+        if (el.textContent && /\\b(16|35)\\+/.test(el.textContent)) { fixCounts(el); break; }
       }
     }, true);
   }
