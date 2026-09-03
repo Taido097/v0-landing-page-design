@@ -145,6 +145,164 @@ const SERVICES_ANCHOR_PATCH = `
 })();
 </script>`
 
+const MAIN_NAV_PATCH = `
+<script id="nguyen-socal-main-nav-patch">
+(() => {
+  const home = window.location.origin + '/client-demos/client-8889/arcsphere-socal';
+  const services = home + '#services';
+  const contact = 'mailto:info@nguyen-ae.com';
+  const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim();
+  const compact = (value) => normalize(value).replace(/\\s+/g, '').toLowerCase();
+  const linkFont = '"Inter Display","Inter",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif';
+
+  function setStyle(el, name, value) {
+    if (el) el.style.setProperty(name, value, 'important');
+  }
+
+  function replaceNavText(anchor, keys, label) {
+    const walker = document.createTreeWalker(anchor, NodeFilter.SHOW_TEXT);
+    let node;
+    let changed = false;
+    while ((node = walker.nextNode())) {
+      if (!keys.has(compact(node.nodeValue))) continue;
+      if (normalize(node.nodeValue) !== label) node.nodeValue = label;
+      changed = true;
+    }
+    if (!changed && keys.has(compact(anchor.textContent))) anchor.textContent = label;
+  }
+
+  function isNearTop(anchor) {
+    const rect = anchor.getBoundingClientRect();
+    return rect.top < 150 && rect.bottom > -30;
+  }
+
+  function hideProjects(anchor) {
+    let item = anchor;
+    for (let depth = 0; depth < 4 && item.parentElement; depth += 1) {
+      const parent = item.parentElement;
+      const key = compact(parent.textContent);
+      if (parent.querySelectorAll('a').length !== 1) break;
+      if (!key || key.replace(/projects/g, '') !== '') break;
+      item = parent;
+    }
+    setStyle(item, 'display', 'none');
+  }
+
+  function styleStandardLink(anchor) {
+    setStyle(anchor, 'font-family', linkFont);
+    setStyle(anchor, 'font-size', '14px');
+    setStyle(anchor, 'font-weight', '500');
+    setStyle(anchor, 'letter-spacing', '-.4px');
+    setStyle(anchor, 'line-height', '110%');
+    setStyle(anchor, 'text-transform', 'uppercase');
+    setStyle(anchor, 'white-space', 'nowrap');
+    setStyle(anchor, 'color', '#4f4742');
+    setStyle(anchor, 'visibility', 'visible');
+    setStyle(anchor, 'opacity', '1');
+  }
+
+  function styleBrand(anchor) {
+    setStyle(anchor, 'font-family', linkFont);
+    setStyle(anchor, 'font-size', '24px');
+    setStyle(anchor, 'font-weight', '400');
+    setStyle(anchor, 'letter-spacing', '-.4px');
+    setStyle(anchor, 'line-height', '110%');
+    setStyle(anchor, 'text-transform', 'uppercase');
+    setStyle(anchor, 'white-space', 'nowrap');
+    setStyle(anchor, 'color', '#4f4742');
+    setStyle(anchor, 'visibility', 'visible');
+    setStyle(anchor, 'opacity', '1');
+  }
+
+  function styleContact(anchor) {
+    setStyle(anchor, 'font-family', linkFont);
+    setStyle(anchor, 'display', 'inline-flex');
+    setStyle(anchor, 'align-items', 'center');
+    setStyle(anchor, 'justify-content', 'center');
+    setStyle(anchor, 'background', '#4f4742');
+    setStyle(anchor, 'color', '#f0ebe6');
+    setStyle(anchor, 'border-radius', '999px');
+    setStyle(anchor, 'padding', window.innerWidth <= 560 ? '9px 13px' : '11px 22px');
+    setStyle(anchor, 'font-size', window.innerWidth <= 560 ? '11px' : '14px');
+    setStyle(anchor, 'font-weight', '500');
+    setStyle(anchor, 'letter-spacing', '-.2px');
+    setStyle(anchor, 'line-height', '120%');
+    setStyle(anchor, 'text-transform', 'uppercase');
+    setStyle(anchor, 'white-space', 'nowrap');
+    setStyle(anchor, 'visibility', 'visible');
+    setStyle(anchor, 'opacity', '1');
+    setStyle(anchor, 'flex', 'none');
+    setStyle(anchor, 'z-index', '5');
+  }
+
+  function patchNav() {
+    if (!document.body) return false;
+    const anchors = Array.from(document.querySelectorAll('a'));
+    let matched = false;
+
+    anchors.forEach((anchor) => {
+      if (!isNearTop(anchor)) return;
+      const key = compact(anchor.textContent);
+      let target = null;
+
+      if (key === 'designprocess' || key === 'designprocessdesignprocess' || key === 'projectprocess' || key === 'projectprocessprojectprocess' || key === 'home' || key === 'homehome') {
+        replaceNavText(anchor, new Set(['designprocess', 'projectprocess', 'home']), 'HOME');
+        target = home;
+        styleStandardLink(anchor);
+      } else if (key === 'projects' || key === 'projectsprojects') {
+        hideProjects(anchor);
+        return;
+      } else if (key === 'services' || key === 'servicesservices') {
+        replaceNavText(anchor, new Set(['services']), 'SERVICES');
+        target = services;
+        styleStandardLink(anchor);
+      } else if (key === 'contact' || key === 'contactcontact' || key === 'contactus' || key === 'contactuscontactus') {
+        replaceNavText(anchor, new Set(['contact', 'contactus']), 'CONTACT US');
+        target = contact;
+        styleContact(anchor);
+      } else if (key.includes('nguyenarchitecture&engineering')) {
+        target = home;
+        styleBrand(anchor);
+      } else {
+        return;
+      }
+
+      matched = true;
+      anchor.setAttribute('href', target);
+      anchor.setAttribute('data-nguyen-main-nav-target', target);
+      anchor.removeAttribute('target');
+      anchor.removeAttribute('rel');
+    });
+
+    return matched;
+  }
+
+  if (!window.__nguyenMainNavRouting) {
+    window.__nguyenMainNavRouting = true;
+    document.addEventListener('click', (event) => {
+      const start = event.target && event.target.nodeType === Node.TEXT_NODE ? event.target.parentElement : event.target;
+      const anchor = start && start.closest ? start.closest('a[data-nguyen-main-nav-target]') : null;
+      if (!anchor) return;
+      const target = anchor.getAttribute('data-nguyen-main-nav-target');
+      if (!target) return;
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+      window.location.href = target;
+    }, true);
+  }
+
+  patchNav();
+  window.addEventListener('load', patchNav, { once: true });
+  window.addEventListener('resize', patchNav);
+  [250, 750, 1500, 3000, 5000, 7500].forEach((delay) => setTimeout(patchNav, delay));
+
+  const observer = new MutationObserver(() => patchNav());
+  observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+  setTimeout(() => { patchNav(); observer.disconnect(); }, 8000);
+})();
+</script>`
+
 const ENGINEERING_SERVICE_PATCH = `
 <script id="nguyen-socal-engineering-service-patch">
 (() => {
@@ -225,7 +383,7 @@ export async function GET() {
 
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${ENGINEERING_SERVICE_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')
