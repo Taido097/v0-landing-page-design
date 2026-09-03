@@ -12,22 +12,22 @@ const LD_CARDS = [
   {
     n: '01',
     title: 'Feasibility',
-    src: '/client-8889/residential/detail/ld-feasibility.jpg',
-    alt: 'Undeveloped land evaluated for feasibility',
+    src: '/client-8889/residential/detail/ld-01-golden-meadow.png',
+    alt: 'Golden meadow land development site',
     description: 'Assess opportunities and constraints to confirm the highest and best use.',
   },
   {
     n: '02',
     title: 'Site Planning',
-    src: '/client-8889/residential/detail/ld-site-planning.jpg',
-    alt: 'Conceptual land development site plan',
+    src: '/client-8889/residential/detail/ld-02-aerial-construction.png',
+    alt: 'Aerial view of suburban construction site',
     description: 'Design thoughtful, efficient layouts that respond to the land and market.',
   },
   {
     n: '03',
     title: 'Entitlements + Civil',
-    src: '/client-8889/residential/detail/ld-entitlements-civil.jpg',
-    alt: 'Land grading and civil development work',
+    src: '/client-8889/residential/detail/ld-03-subdivision-plan.png',
+    alt: 'Residential subdivision master plan',
     description: 'Navigate approvals and deliver the infrastructure to move projects forward.',
   },
 ];
