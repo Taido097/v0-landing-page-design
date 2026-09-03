@@ -566,7 +566,19 @@ const DESIGN_PANELS_PATCH = `
     }, true);
   }
 
-  // MutationObserver watches ALL DOM changes — catches hover-injected nodes and characterData updates
+  // On every mouseover, scan the hovered element upward for "20+" and fix immediately.
+  // This catches hover-state overlays that Framer reveals purely via CSS (no DOM mutation).
+  if (!window.__nguyenCountHoverFix) {
+    window.__nguyenCountHoverFix = true;
+    document.addEventListener('mouseover', (e) => {
+      let el = e.target;
+      for (let i = 0; i < 10 && el && el !== document.body; i++, el = el.parentElement) {
+        if (el.textContent && el.textContent.includes('20+')) fixCounts(el);
+      }
+    }, true);
+  }
+
+  // MutationObserver catches React/Framer state-driven renders of hover content
   const obs = new MutationObserver((mutations) => {
     for (const m of mutations) {
       if (m.type === 'characterData') {
