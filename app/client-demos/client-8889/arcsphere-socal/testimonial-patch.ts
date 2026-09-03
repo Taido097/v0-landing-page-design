@@ -116,7 +116,10 @@ export const TESTIMONIAL_PATCH = `
     letter-spacing: .01em;
   }
   #nguyen-client-testimonial .ng-divider {
-    width: 100%; height: 1px; margin: 0 0 16px; background: var(--ng-line);
+    width: 100%;
+    height: 1px;
+    margin: 0 0 16px;
+    background: var(--ng-line);
   }
   #nguyen-client-testimonial .ng-caption {
     margin: 0 0 18px;
@@ -127,31 +130,21 @@ export const TESTIMONIAL_PATCH = `
     line-height: 1.2;
     letter-spacing: .03em;
   }
-  #nguyen-client-testimonial .ng-client-grid {
+  #nguyen-client-testimonial .ng-client-art-wrap {
     margin: auto calc(clamp(28px,5vw,68px) * -1) 0;
-    display: grid;
-    grid-template-columns: repeat(3,1fr);
-    border-top: 1px solid var(--ng-line);
-  }
-  #nguyen-client-testimonial .ng-client {
-    min-height: 92px;
-    padding: 12px 9px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    border-right: 1px solid var(--ng-line);
-    border-bottom: 1px solid var(--ng-line);
-    color: var(--ng-dark);
     overflow: hidden;
+    border-top: 1px solid var(--ng-line);
+    background: var(--ng-panel);
   }
-  #nguyen-client-testimonial .ng-client:nth-child(3n) { border-right: 0; }
-  #nguyen-client-testimonial .ng-client:nth-last-child(-n + 3) { border-bottom: 0; }
-  #nguyen-client-testimonial .ng-client svg { width: min(100%, 118px); height: 48px; overflow: visible; }
-  #nguyen-client-testimonial .ng-client text { font-family: Arial, Helvetica, sans-serif; fill: #23211f; }
-  #nguyen-client-testimonial .ng-logo-green { fill: #4a845f; }
-  #nguyen-client-testimonial .ng-logo-red { fill: #a61f25; }
-  #nguyen-client-testimonial .ng-logo-gold { fill: #b88a57; }
+  #nguyen-client-testimonial .ng-client-art {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 350px;
+    object-fit: cover;
+    object-position: center;
+    mix-blend-mode: multiply;
+  }
 
   #nguyen-client-testimonial .ng-reveal {
     opacity: 0;
@@ -159,14 +152,30 @@ export const TESTIMONIAL_PATCH = `
     transition: opacity .8s cubic-bezier(.22,.61,.36,1), transform .8s cubic-bezier(.22,.61,.36,1);
     will-change: opacity, transform;
   }
-  #nguyen-client-testimonial .ng-reveal.ng-visible { opacity: 1; transform: translateY(0); }
-  #nguyen-client-testimonial .ng-testimonial-media.ng-reveal { transform: translateY(0) scale(1.025); }
-  #nguyen-client-testimonial .ng-testimonial-media.ng-reveal.ng-visible { transform: translateY(0) scale(1); }
-  #nguyen-client-testimonial .ng-client.ng-reveal { transform: translateY(12px); }
-  #nguyen-client-testimonial .ng-client.ng-reveal.ng-visible { transform: translateY(0); }
+  #nguyen-client-testimonial .ng-reveal.ng-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  #nguyen-client-testimonial .ng-testimonial-media.ng-reveal {
+    transform: translateY(0) scale(1.025);
+  }
+  #nguyen-client-testimonial .ng-testimonial-media.ng-reveal.ng-visible {
+    transform: translateY(0) scale(1);
+  }
+  #nguyen-client-testimonial .ng-client-art-wrap.ng-reveal {
+    transform: translateY(14px);
+    transition-delay: 140ms;
+  }
+  #nguyen-client-testimonial .ng-client-art-wrap.ng-reveal.ng-visible {
+    transform: translateY(0);
+  }
 
   @media (prefers-reduced-motion: reduce) {
-    #nguyen-client-testimonial .ng-reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+    #nguyen-client-testimonial .ng-reveal {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
   }
 
   @media (max-width: 809.98px) {
@@ -179,16 +188,13 @@ export const TESTIMONIAL_PATCH = `
     #nguyen-client-testimonial .ng-testimonial-content { padding: 34px 24px 0; }
     #nguyen-client-testimonial .ng-testimonial-title { font-size: clamp(30px,9vw,42px); }
     #nguyen-client-testimonial .ng-quote { margin-top: 22px; padding: 0 18px; }
-    #nguyen-client-testimonial .ng-client-grid { margin-left: -24px; margin-right: -24px; grid-template-columns: repeat(3,1fr); }
-    #nguyen-client-testimonial .ng-client { min-height: 82px; padding: 9px 5px; }
-    #nguyen-client-testimonial .ng-client svg { width: min(100%, 105px); height: 43px; }
+    #nguyen-client-testimonial .ng-client-art-wrap { margin-left: -24px; margin-right: -24px; }
+    #nguyen-client-testimonial .ng-client-art { max-height: none; }
   }
   @media (max-width: 480px) {
     #nguyen-client-testimonial .ng-section-heading h2 { font-size: 35px; }
     #nguyen-client-testimonial .ng-section-heading p { font-size: 13px; line-height: 1.5; }
     #nguyen-client-testimonial .ng-testimonial-media { min-height: 270px; }
-    #nguyen-client-testimonial .ng-client { min-height: 76px; }
-    #nguyen-client-testimonial .ng-client svg { width: min(100%, 92px); }
   }
 </style>
 <script id="nguyen-client-testimonial-patch">
@@ -203,18 +209,6 @@ export const TESTIMONIAL_PATCH = `
     if (bodyHeading) root.style.setProperty('--nguyen-display-font', window.getComputedStyle(bodyHeading).fontFamily);
     if (bodyCopy) root.style.setProperty('--nguyen-body-font', window.getComputedStyle(bodyCopy).fontFamily);
   }
-
-  const logos = [
-    '<svg viewBox="0 0 120 50" aria-label="Boba and Brew logo"><circle cx="35" cy="10" r="3" fill="#252321"/><path d="M32 15h6l2 7h-10z" fill="#252321"/><text x="60" y="29" text-anchor="middle" font-size="11" font-weight="700">BOBA &amp; BREW</text><text x="60" y="39" text-anchor="middle" font-size="5.5" letter-spacing="1">TEA · COFFEE</text></svg>',
-    '<svg viewBox="0 0 120 50" aria-label="The Loop logo"><text x="60" y="25" text-anchor="middle" font-size="15" letter-spacing=".6">THE LOOP</text><text x="60" y="36" text-anchor="middle" font-size="5.5" letter-spacing="1">MALL · BAR</text></svg>',
-    '<svg viewBox="0 0 120 50" aria-label="Phoenix Restaurant logo"><path class="ng-logo-red" d="M23 28c-8-7-9-14-8-20 4 6 7 8 12 10-2-5-1-9 1-13 2 7 6 11 11 14 4-2 8-6 11-12 1 6 0 12-7 19-6 6-14 8-20 2z"/><text x="77" y="25" text-anchor="middle" font-size="9" font-weight="700">PHOENIX</text><text x="77" y="35" text-anchor="middle" font-size="5.5">RESTAURANT</text></svg>',
-    '<svg viewBox="0 0 120 50" aria-label="Sage Coffee Company logo"><path class="ng-logo-green" d="M22 33c-5-9-4-17 2-25 3 7 3 13-2 25zm7-2c0-9 4-16 11-20 0 8-4 14-11 20zm-12 0c-5-6-6-12-3-18 5 5 6 11 3 18z"/><text x="72" y="24" text-anchor="middle" font-size="13" letter-spacing="1.2" class="ng-logo-green">SAGE</text><text x="72" y="35" text-anchor="middle" font-size="5.5" letter-spacing=".6">COFFEE CO.</text></svg>',
-    '<svg viewBox="0 0 120 50" aria-label="Urban Cutz Barbershop logo"><path d="M21 13h78l7 12-7 12H21l-7-12z" fill="none" stroke="#252321" stroke-width="1.5"/><text x="60" y="25" text-anchor="middle" font-size="10" font-weight="700">URBAN CUTZ</text><text x="60" y="33" text-anchor="middle" font-size="5.5">BARBERSHOP</text></svg>',
-    '<svg viewBox="0 0 120 50" aria-label="Luxe Boutique logo"><circle cx="25" cy="25" r="14" fill="none" stroke="#b88a57" stroke-width="1.4"/><text x="25" y="29" text-anchor="middle" font-size="12" class="ng-logo-gold" font-family="Georgia,serif">LB</text><text x="72" y="24" text-anchor="middle" font-size="14" letter-spacing="2" class="ng-logo-gold" font-family="Georgia,serif">LUXE</text><text x="72" y="35" text-anchor="middle" font-size="5.5" letter-spacing="1">BOUTIQUE</text></svg>',
-    '<svg viewBox="0 0 120 50" aria-label="Crumbl Cookies logo"><circle cx="25" cy="22" r="10" fill="none" stroke="#252321" stroke-width="1.4"/><circle cx="21" cy="19" r="1.2"/><circle cx="28" cy="18" r="1.1"/><circle cx="26" cy="25" r="1.1"/><path d="M17 11c2-6 12-6 15 0" fill="none" stroke="#252321" stroke-width="1.2"/><text x="72" y="24" text-anchor="middle" font-size="14" font-weight="700">crumbl</text><text x="72" y="35" text-anchor="middle" font-size="5.5" letter-spacing="1">COOKIES</text></svg>',
-    '<svg viewBox="0 0 120 50" aria-label="Vitality Wellness logo"><path class="ng-logo-green" d="M21 35C17 24 19 14 26 6c2 9 0 19-5 29zm8-1c1-11 6-19 15-23-1 10-6 18-15 23z"/><text x="75" y="24" text-anchor="middle" font-size="9" font-weight="700" class="ng-logo-green">VITALITY</text><text x="75" y="34" text-anchor="middle" font-size="5.5">WELLNESS</text></svg>',
-    '<svg viewBox="0 0 120 50" aria-label="District Eatery logo"><rect x="17" y="12" width="86" height="26" rx="1" fill="none" stroke="#252321" stroke-width="1.2"/><text x="60" y="26" text-anchor="middle" font-size="10" letter-spacing="1.2">DISTRICT</text><text x="60" y="34" text-anchor="middle" font-size="5.5" letter-spacing="1">EATERY</text></svg>'
-  ];
 
   function createSection() {
     const section = document.createElement('section');
@@ -237,7 +231,9 @@ export const TESTIMONIAL_PATCH = `
           '</blockquote>',
           '<div class="ng-divider" aria-hidden="true"></div>',
           '<p class="ng-caption">Client Testimonial</p>',
-          '<div class="ng-client-grid" aria-label="Selected clients">' + logos.map((logo, i) => '<div class="ng-client ng-reveal" style="transition-delay:' + (80 + i * 55) + 'ms">' + logo + '</div>').join('') + '</div>',
+          '<div class="ng-client-art-wrap ng-reveal" aria-label="Selected clients">',
+            '<img class="ng-client-art" src="/client-8889/testimonial-client-logos.svg" alt="Boba &amp; Brew, The Loop Nail Bar, Phoenix Restaurant, Sage Coffee Co., Urban Cutz Barbershop, Luxe Boutique, Crumbl Cookies, Vitality Wellness, and District Eatery">',
+          '</div>',
         '</div>',
       '</div>'
     ].join('');
