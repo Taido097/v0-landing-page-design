@@ -340,7 +340,7 @@ const ALL_SERVICES = [
   { slug: 'commercial',            href: `${RESIDENTIAL_HREF}/services/commercial`,             img: `${CX}/cx-09-building.jpg`,             label: 'Commercial' },
   { slug: 'land-development',      href: `${RESIDENTIAL_HREF}/services/land-development`,      img: `${CX}/ld-01-golden-meadow.png`,        label: 'Land Development' },
   { slug: 'engineering-approvals', href: `${RESIDENTIAL_HREF}/services/engineering-approvals`, img: `${SVC}/svc-05-structural.jpg`,         label: 'Engineering' },
-  { slug: 'custom-homes',          href: `${RESIDENTIAL_HREF}/services/custom-homes`,          img: `${SVC}/svc-01-custom-homes.jpg`,       label: 'Custom Homes' },
+  { slug: 'residential',            href: RESIDENTIAL_HREF,                                      img: `${SVC}/svc-01-custom-homes.jpg`,       label: 'Residential' },
   { slug: 'additions-remodels',    href: `${RESIDENTIAL_HREF}/services/additions-remodels`,    img: `${SVC}/svc-02-additions-remodels.jpg`, label: 'Additions & Remodels' },
   { slug: 'multifamily',           href: `${RESIDENTIAL_HREF}/services/multifamily`,           img: `${SVC}/svc-04-multifamily.jpg`,        label: 'Townhomes + Condos' },
   { slug: 'sb9-development',       href: `${RESIDENTIAL_HREF}/services/sb9-development`,       img: `${CX}/sb9-01-modern-duplex.jpg`,       label: 'SB 9 Development' },
