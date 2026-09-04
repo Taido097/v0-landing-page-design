@@ -640,7 +640,7 @@ const DESIGN_PANELS_PATCH = `
 const RESIDENTIAL_ROW_IMAGE_PATCH = `
 <script id="nguyen-socal-residential-row-image">
 (() => {
-  var src = window.location.origin + '/client-8889/residential/hero-home.png';
+  var src = window.location.origin + '/client-8889/residential/residential_house.png';
   var patched = false;
 
   function patchResidentialRow() {
