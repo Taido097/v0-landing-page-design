@@ -1,5 +1,3 @@
-import { GET as getBaseConcept } from "../arcsphere/route"
+import { GET } from "../arcsphere-socal/route"
 
-export async function GET() {
-  return getBaseConcept()
-}
+export { GET }
