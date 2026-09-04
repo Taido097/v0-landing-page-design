@@ -28,7 +28,7 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/A tranquil residential sanctuary blending natural beauty with luxury\.?/gi, 'From land to building.'],
   [/Dubai['’]s Serenity Villa emphasizes calm, minimalist living\. Open interiors, light-filled rooms, and natural textures create a serene home that perfectly aligns with the owners['’] vision of peaceful luxury\.?/gi, 'One coordinated team for planning, architecture, engineering, permitting, and project support.'],
   [/Serenity Villa, completed in 2025 in Dubai, is a tranquil residential project that highlights minimalism and natural harmony — designed to create a peaceful and elegant living atmosphere\.?/gi, 'NGUYEN provides full-service residential architecture, engineering, Title 24 and permitting — from custom homes and additions to ADUs and multifamily — coordinated from first conversation through approval.'],
-  [/ArcSphere Studio/gi, 'NGUYEN ARCHITECTURE & ENGINEERING'],
+  [/ArcSphere Studio/gi, 'NGUYEN ARCHITECTURE'],
   [/ArcSphere/gi, 'NGUYEN'],
   [/Serenity Villa/gi, 'Residential'],
   [/\bSerenity\b/gi, 'Residential'],
@@ -260,7 +260,7 @@ const CLIENT_REBRAND = `
         var target = null;
         if (compact === 'home' || compact === 'homehome') target = home;
         else if (compact === 'services' || compact === 'servicesservices') target = services;
-        else if (compact.indexOf('nguyenarchitecture&engineering') !== -1) target = home;
+        else if (compact.indexOf('nguyenarchitecture') !== -1) target = home;
         else if (compact === 'contactus' || compact === 'contactuscontactus') {
           a.setAttribute('href', contact);
           return;
@@ -299,7 +299,7 @@ export async function GET() {
     let html = await getSource();
     html = removeNonVisualTelemetry(html);
     html = html.replace(/<head([^>]*)>/i, `<head$1><base href="${BASE_URL}"><meta name="robots" content="noindex,nofollow,noarchive">${CLEANUP}`);
-    html = html.replace(/<title>[^<]*<\/title>/i, '<title>NGUYEN Architecture & Engineering — Residential</title>');
+    html = html.replace(/<title>[^<]*<\/title>/i, '<title>NGUYEN Architecture — Residential</title>');
 
     const userAgent = (await headers()).get('user-agent') || '';
     const mobile = isMobileUserAgent(userAgent);

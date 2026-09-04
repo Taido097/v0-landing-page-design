@@ -29,7 +29,7 @@ export default function Navbar() {
               <a className="rnav-link" href={HOME_HREF}>Home</a>
               <a className="rnav-link" href={SERVICES_HREF}>Services</a>
             </div>
-            <a className="rnav-brand" href={HOME_HREF}>NGUYEN Architecture &amp; Engineering</a>
+            <a className="rnav-brand" href={HOME_HREF}>NGUYEN Architecture</a>
             <div className="rnav-right">
               <a className="rnav-contact" href={CONTACT_HREF}>Contact Us</a>
             </div>

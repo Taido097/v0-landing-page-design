@@ -149,7 +149,7 @@ function replaceLandDevelopmentBody(node: ReactNode): ReactNode {
 }
 
 export const metadata = {
-  title: 'Land Development — NGUYEN Architecture & Engineering',
+  title: 'Land Development — NGUYEN Architecture',
   robots: { index: false, follow: false },
 };
 

@@ -1,7 +1,7 @@
 import ServiceDetailPage from '../[slug]/page';
 
 export const metadata = {
-  title: 'Commercial Design & Permit Solutions — NGUYEN Architecture & Engineering',
+  title: 'Commercial Design & Permit Solutions — NGUYEN Architecture',
   robots: { index: false, follow: false },
 };
 

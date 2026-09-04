@@ -1,7 +1,7 @@
 import ServiceDetailPage from '../[slug]/page';
 
 export const metadata = {
-  title: 'Accessory Dwelling Units — NGUYEN Architecture & Engineering',
+  title: 'Accessory Dwelling Units — NGUYEN Architecture',
   robots: { index: false, follow: false },
 };
 

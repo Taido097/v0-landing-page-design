@@ -1,7 +1,7 @@
 import ServiceDetailPage from '../[slug]/page';
 
 export const metadata = {
-  title: 'Engineering & Approvals — NGUYEN Architecture & Engineering',
+  title: 'Engineering & Approvals — NGUYEN Architecture',
   robots: { index: false, follow: false },
 };
 

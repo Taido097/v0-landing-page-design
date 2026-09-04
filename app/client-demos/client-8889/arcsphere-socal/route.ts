@@ -62,7 +62,7 @@ const SPLIT_TEXT_PATCH = `
 const BRAND_PATCH = `
 <script id="nguyen-socal-brand-patch">
 (() => {
-  const TARGET_TEXT = 'NGUYEN ARCHITECTURE & ENGINEERING';
+  const TARGET_TEXT = 'NGUYEN ARCHITECTURE';
   const TARGET_URL = window.location.origin + '/client-demos/client-8889/arcsphere-socal';
   const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim();
 
@@ -281,7 +281,7 @@ const MAIN_NAV_PATCH = `
         replaceNavText(anchor, new Set(['contact', 'contactus']), 'CONTACT US');
         target = contact;
         styleContact(anchor);
-      } else if (key.includes('nguyenarchitecture&engineering')) {
+      } else if (key.includes('nguyenarchitecture')) {
         target = home;
         styleBrand(anchor);
       } else {
