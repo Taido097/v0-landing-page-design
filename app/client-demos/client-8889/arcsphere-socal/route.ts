@@ -735,6 +735,71 @@ const ICON_BAR_PATCH = `
 })();
 </script>`
 
+// Aggressive cleanup for the "Professional guidance during construction..." extra service card.
+// The base layer sets display:none on the first img-bearing ancestor of the description text, but
+// that ancestor can be an INNER element (e.g., the image container), leaving the outer card frame
+// still in the flex layout as an empty box — creating the visible blank gap on mobile. This patch
+// walks up to find the outermost SINGLE-card container and collapses it with both display:none AND
+// layout-collapsing CSS (height:0, overflow:hidden, etc.) so no gap remains on any breakpoint.
+const EXTRA_CARD_CLEANUP_PATCH = `
+<script id="nguyen-socal-extra-card-cleanup">
+(() => {
+  const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
+  const EXTRA_DESC = compact('Professional guidance during construction to ensure the design vision is executed correctly.');
+
+  function hide(el) {
+    if (!el || !el.isConnected || el.getAttribute('data-nex') === '1') return;
+    el.setAttribute('data-nex', '1');
+    el.style.setProperty('display', 'none', 'important');
+    el.style.setProperty('height', '0', 'important');
+    el.style.setProperty('min-height', '0', 'important');
+    el.style.setProperty('max-height', '0', 'important');
+    el.style.setProperty('overflow', 'hidden', 'important');
+    el.style.setProperty('margin', '0', 'important');
+    el.style.setProperty('padding', '0', 'important');
+    el.style.setProperty('border', 'none', 'important');
+    el.style.setProperty('visibility', 'hidden', 'important');
+    el.style.setProperty('pointer-events', 'none', 'important');
+  }
+
+  function cleanup() {
+    if (!document.body) return;
+    const vw = window.innerWidth || 375;
+    document.querySelectorAll('*').forEach((el) => {
+      if (el.getAttribute('data-nex') === '1') return;
+      if (compact(el.textContent) !== EXTRA_DESC) return;
+      // Skip wrapper elements that just contain a child with the same text
+      if (Array.from(el.children).some((c) => compact(c.textContent) === EXTRA_DESC)) return;
+
+      // Walk up to find the card (first img-bearing ancestor of the description leaf)
+      let card = el;
+      for (let d = 0; card.parentElement && d < 10; d++, card = card.parentElement) {
+        if (card.parentElement.querySelector?.('img')) { card = card.parentElement; break; }
+      }
+
+      // Walk up further to find the outermost single-card container.
+      // Stop when the parent is the section container (has >1 img = multiple cards, or is full-width).
+      for (let d = 0; card.parentElement && d < 8; d++) {
+        const p = card.parentElement;
+        if ((p.querySelectorAll?.('img') || []).length > 1) break;
+        const pw = p.getBoundingClientRect().width;
+        if (pw > 0 && pw >= vw * 0.9) break;
+        card = p;
+      }
+
+      hide(card);
+    });
+  }
+
+  cleanup();
+  window.addEventListener('load', cleanup, { once: true });
+  [300, 800, 1800, 3500, 6000].forEach((t) => setTimeout(cleanup, t));
+  const obs = new MutationObserver(() => cleanup());
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true });
+  setTimeout(() => obs.disconnect(), 10000);
+})();
+</script>`
+
 // Universal card routing. The project cards and design panels are Framer <a href="./projects..."> links
 // that resolve to the Framer site via the <base> tag. Per-card detection (size gates, breakpoint copies)
 // kept missing on mobile, so instead map EVERY Framer project link to the correct internal page by its
@@ -808,7 +873,7 @@ export async function GET() {
 
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${CARD_ROUTING_PATCH}${FOOTER_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')
