@@ -637,6 +637,46 @@ const DESIGN_PANELS_PATCH = `
 })();
 </script>`
 
+const RESIDENTIAL_ROW_IMAGE_PATCH = `
+<script id="nguyen-socal-residential-row-image">
+(() => {
+  var src = window.location.origin + '/client-8889/residential/hero-home.png';
+  var patched = false;
+
+  function patchResidentialRow() {
+    if (patched) return;
+    var panels = document.querySelectorAll('[data-nguyen-panel-url]');
+    for (var i = 0; i < panels.length; i++) {
+      var panel = panels[i];
+      var url = panel.getAttribute('data-nguyen-panel-url') || '';
+      if (!url.endsWith('/custom-homes')) continue;
+      var img = panel.querySelector('img');
+      if (!img) continue;
+      if (img.getAttribute('data-nguyen-row-img') === src) { patched = true; return; }
+      img.setAttribute('src', src);
+      img.removeAttribute('srcset');
+      img.removeAttribute('sizes');
+      img.style.setProperty('object-fit', 'cover', 'important');
+      img.style.setProperty('object-position', 'center', 'important');
+      img.setAttribute('data-nguyen-row-img', src);
+      var picture = img.closest('picture');
+      if (picture) picture.querySelectorAll('source').forEach(function(s) { s.setAttribute('srcset', src); s.removeAttribute('sizes'); });
+      patched = true;
+      return;
+    }
+  }
+
+  patchResidentialRow();
+  window.addEventListener('load', patchResidentialRow, { once: true });
+  [400, 1000, 2200, 4000, 7000].forEach(function(t) { setTimeout(patchResidentialRow, t); });
+
+  var timer;
+  var obs = new MutationObserver(function() { clearTimeout(timer); timer = setTimeout(patchResidentialRow, 150); });
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-nguyen-panel-url'] });
+  setTimeout(function() { obs.disconnect(); }, 12000);
+})();
+</script>`
+
 // Replace the Framer background images in the two Project Expertise (design) panels with the
 // client-supplied blueprint images. Uses object-fit:contain so the full blueprint is visible
 // without cropping. No overlay — a direct src swap keeps the panel text (RESIDENTIAL DESIGN /
@@ -930,7 +970,7 @@ export async function GET() {
 
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${BLUEPRINT_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')
