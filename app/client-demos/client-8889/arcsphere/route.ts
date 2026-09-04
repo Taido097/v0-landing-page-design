@@ -490,6 +490,47 @@ function forceDesktopViewport(input: string) {
   return input.replace(/<head([^>]*)>/i, `<head$1>${desktopViewport}`);
 }
 
+// Settle Framer's entrance animations on phones. The desktop layout uses split-text (each letter is a
+// span at opacity:0.001 with a blur filter) and block reveals that start shifted by translateX(±600px)
+// / translateY(20px) / rotateY(90deg). Scaled down to a phone those animations don't play cleanly —
+// letters stay blurred/invisible and blocks stay flung off-position ("all over the place"). We pin every
+// entrance element to its FINAL state (opacity 1, no transform, no blur) so the page renders fully-formed
+// and stable, and disable Framer's appear optimization so it doesn't fight us. Injected in <head> (CSS +
+// flag before first paint) and reinforced with a bounded JS sweep for anything the runtime re-touches.
+const MOBILE_SETTLE_HEAD = `
+<script>window.__framer_disable_appear_effects_optimization__=true;</script>
+<style id="nguyen-mobile-settle-style">
+  [style*="opacity:0.001"],[style*="opacity: 0.001"],[style*="opacity:0;"],[style*="opacity: 0;"],[data-framer-appear-id]{opacity:1 !important;transform:none !important;filter:none !important;}
+</style>`;
+
+const MOBILE_SETTLE_SCRIPT = `
+<script id="nguyen-mobile-settle">
+(function(){
+  try {
+    function settle(){
+      var root = document.getElementById('main') || document.body; if (!root) return;
+      var els = root.querySelectorAll('*');
+      for (var i = 0; i < els.length; i++) {
+        var el = els[i], cs = window.getComputedStyle(el);
+        if (cs.display === 'none') continue;
+        var op = parseFloat(cs.opacity);
+        var blurred = cs.filter && cs.filter.indexOf('blur') !== -1;
+        var shifted = cs.transform && cs.transform !== 'none';
+        if (op < 0.99 || blurred || shifted) {
+          if (op < 0.99) el.style.setProperty('opacity', '1', 'important');
+          if (blurred) el.style.setProperty('filter', 'none', 'important');
+          if (shifted && op < 0.99) el.style.setProperty('transform', 'none', 'important');
+        }
+      }
+    }
+    settle();
+    document.addEventListener('DOMContentLoaded', settle);
+    window.addEventListener('load', settle);
+    [150, 400, 800, 1500, 2500, 4000].forEach(function (t) { setTimeout(settle, t); });
+  } catch (e) {}
+})();
+</script>`;
+
 async function getSource() {
   let lastError: unknown = null;
   for (let attempt = 0; attempt < 3; attempt += 1) {
@@ -524,10 +565,13 @@ export async function GET() {
     html = html.replace(/<a([^>]*href=["']tel:[^"']+["'][^>]*)>([\s\S]*?)<\/a>/gi, (_match, attrs, body) => { const phone = phoneReplacements[Math.min(phoneIndex, phoneReplacements.length - 1)]; phoneIndex += 1; const nextAttrs = attrs.replace(/href=["']tel:[^"']+["']/i, `href="tel:${phone.replace(/[^+\d]/g, '')}"`); const nextBody = body.replace(/>\s*[+()\d .-]{7,}\s*</g, `>${phone}<`); return `<a${nextAttrs}>${nextBody}</a>`; });
 
     if (mobile) {
-      // Serve phones the identical desktop build, just with the viewport forced to a desktop width so
-      // Framer renders its desktop breakpoint (its mobile breakpoint is a different, diverged layout).
-      // Everything else — content, runtime, animations, the client patches below — is exactly desktop.
+      // Serve phones the identical desktop build, with the viewport forced to a desktop width so Framer
+      // renders its desktop breakpoint (its mobile breakpoint is a different, diverged layout), and with
+      // entrance animations settled to their final state so the scaled-down page renders fully-formed and
+      // stable instead of the letters/blocks animating in janky ("all over the place", broken hero load-in).
       html = forceDesktopViewport(html);
+      html = html.replace(/<head([^>]*)>/i, `<head$1>${MOBILE_SETTLE_HEAD}`);
+      html = html.replace('</body>', `${MOBILE_SETTLE_SCRIPT}</body>`);
     }
     html = html.replace('</body>', `${CLIENT_PATCH}${DESKTOP_SAFETYNET_SCRIPT}</body>`);
     return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'private, no-store' } });
