@@ -638,9 +638,9 @@ const DESIGN_PANELS_PATCH = `
 </script>`
 
 // Replace the Framer background images in the two Project Expertise (design) panels with the
-// client-supplied blueprint images. Matches each panel by its label text, then swaps the img
-// src and layers an overlay image on top (same technique as patchThirdProjectImage) so the
-// blueprint always wins over Framer's lazy-loaded original.
+// client-supplied blueprint images. Uses object-fit:contain so the full blueprint is visible
+// without cropping. No overlay — a direct src swap keeps the panel text (RESIDENTIAL DESIGN /
+// COMMERCIAL DESIGN labels and button) visible above the image as Framer intended.
 const BLUEPRINT_IMAGE_PATCH = `
 <script id="nguyen-socal-blueprint-images">
 (() => {
@@ -651,53 +651,42 @@ const BLUEPRINT_IMAGE_PATCH = `
     { key: 'commercialdesign',  src: origin + '/client-8889/projects/commercial_blueprint.png' },
   ];
 
-  function replaceImg(img, src) {
-    if (img.getAttribute('data-nguyen-bp') === src) return;
-    img.setAttribute('data-nguyen-bp', src);
+  function swapImg(img, src) {
+    // Re-apply on every call so Framer lazy-loading cannot revert it.
     img.setAttribute('src', src);
     img.removeAttribute('srcset');
     img.removeAttribute('sizes');
-    img.style.setProperty('object-fit', 'cover', 'important');
+    // contain: show the full blueprint without cropping; dark navy background fills any gap.
+    img.style.setProperty('object-fit', 'contain', 'important');
     img.style.setProperty('object-position', 'center', 'important');
+    img.style.setProperty('background-color', '#0b1930', 'important');
     img.style.setProperty('filter', 'none', 'important');
     img.style.setProperty('opacity', '1', 'important');
     img.style.setProperty('visibility', 'visible', 'important');
+    img.setAttribute('data-nguyen-bp', src);
     const picture = img.closest('picture');
     if (picture) picture.querySelectorAll('source').forEach((s) => { s.setAttribute('srcset', src); s.removeAttribute('sizes'); });
-    // Overlay that always wins over Framer's lazy-loaded original
-    const mediaParent = img.parentElement;
-    if (!mediaParent) return;
-    let overlay = mediaParent.querySelector('[data-nguyen-bp-overlay]');
-    if (!overlay) {
-      overlay = document.createElement('img');
-      overlay.setAttribute('data-nguyen-bp-overlay', '1');
-      overlay.setAttribute('alt', '');
-      overlay.setAttribute('decoding', 'async');
-      if (window.getComputedStyle(mediaParent).position === 'static') mediaParent.style.setProperty('position', 'relative', 'important');
-      overlay.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:none;opacity:1;visibility:visible;z-index:2;pointer-events:none;border-radius:0;';
-      mediaParent.appendChild(overlay);
-    }
-    if (overlay.getAttribute('src') !== src) overlay.setAttribute('src', src);
   }
 
   function patchBlueprints() {
     if (!document.body) return;
-    const candidates = Array.from(document.querySelectorAll('div,section,article'));
-    candidates.forEach((el) => {
+    document.querySelectorAll('div,section,article').forEach((el) => {
       const text = compact(el.textContent);
       const match = PANEL_MAP.find((p) => text.includes(p.key));
       if (!match) return;
-      if (PANEL_MAP.every((p) => text.includes(p.key))) return; // skip parent containing both panels
+      if (PANEL_MAP.every((p) => text.includes(p.key))) return; // skip container holding both panels
       const img = el.querySelector('img');
-      if (img) replaceImg(img, match.src);
+      if (img) swapImg(img, match.src);
     });
   }
 
   patchBlueprints();
   window.addEventListener('load', patchBlueprints, { once: true });
   [300, 800, 1800, 3500, 6000].forEach((t) => setTimeout(patchBlueprints, t));
-  const obs = new MutationObserver(() => patchBlueprints());
-  if (document.body) obs.observe(document.body, { childList: true, subtree: true });
+
+  // Re-apply any time Framer mutates the DOM (covers lazy-load src reverts)
+  const obs = new MutationObserver(patchBlueprints);
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['src', 'srcset'] });
   setTimeout(() => obs.disconnect(), 12000);
 })();
 </script>`
