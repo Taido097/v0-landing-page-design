@@ -294,22 +294,34 @@ const CLIENT_PATCH = `
     }
     return false;
   }
-  function findServiceCardByDescription(root, description) {
-    if (!root || root.nodeType !== Node.ELEMENT_NODE) return null;
+  function findServiceCardsByDescription(root, description) {
+    // Framer ships a separate DOM copy of every section per breakpoint (desktop / tablet / phone), so a
+    // service card's description text appears three times. Return ALL matching cards — not just the first
+    // — otherwise only the desktop card gets patched and the phone card keeps the original extra card,
+    // unreplaced text and unwired link. An img-bearing ancestor is the card; if none is found we fall back
+    // to a compact ancestor that still wraps the description so mobile layouts without a direct img match.
+    if (!root || root.nodeType !== Node.ELEMENT_NODE) return [];
     const target = compact(description);
     const element = root;
     const candidates = [element, ...element.querySelectorAll('*')];
+    const cards = [];
     for (const candidate of candidates) {
       if (compact(candidate.textContent) !== target) continue;
+      let picked = null;
       let card = candidate;
       for (let depth = 0; card && depth < 8; depth += 1, card = card.parentElement) {
         if (!card.querySelector?.('img')) continue;
-        const text = compact(card.textContent);
-        if (!text.includes(target)) continue;
-        return card;
+        if (!compact(card.textContent).includes(target)) continue;
+        picked = card;
+        break;
       }
+      if (!picked) {
+        // No image ancestor (some mobile card layouts) — take the grandparent that still wraps the text.
+        picked = candidate.parentElement?.parentElement || candidate.parentElement || candidate;
+      }
+      if (picked && cards.indexOf(picked) === -1) cards.push(picked);
     }
-    return null;
+    return cards;
   }
   function patchServiceCard(card, spec) {
     const sourceTitleKeys = new Set(spec.sourceTitles.map(compact));
@@ -340,12 +352,10 @@ const CLIENT_PATCH = `
   function patchServicesSection(root) {
     if (!root || root.nodeType !== Node.ELEMENT_NODE) return;
     serviceSpecs.forEach((spec) => {
-      const card = findServiceCardByDescription(root, spec.sourceDescription);
-      if (card) patchServiceCard(card, spec);
+      findServiceCardsByDescription(root, spec.sourceDescription).forEach((card) => patchServiceCard(card, spec));
     });
     extraServiceDescriptions.forEach((description) => {
-      const card = findServiceCardByDescription(root, description);
-      if (card) card.style.setProperty('display', 'none', 'important');
+      findServiceCardsByDescription(root, description).forEach((card) => card.style.setProperty('display', 'none', 'important'));
     });
   }
   function keepResidentialLabelOnOneLine(root) {
