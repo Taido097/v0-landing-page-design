@@ -74,11 +74,11 @@ const BRAND_PATCH = `
     while (walker.nextNode()) {
       const node = walker.currentNode;
       const text = normalize(node.nodeValue);
-      if (text === 'ArcSphere' || text === 'ArcSphere Studio') matches.push(node);
+      if (text === 'ArcSphere' || text === 'ArcSphere Studio' || text === 'NGUYEN ARCHITECTURE & ENGINEERING') matches.push(node);
     }
 
     matches.forEach((node) => {
-      if (normalize(node.nodeValue) !== 'ArcSphere' && normalize(node.nodeValue) !== 'ArcSphere Studio') return;
+      if (normalize(node.nodeValue) !== 'ArcSphere' && normalize(node.nodeValue) !== 'ArcSphere Studio' && normalize(node.nodeValue) !== 'NGUYEN ARCHITECTURE & ENGINEERING') return;
       node.nodeValue = TARGET_TEXT;
 
       const anchor = node.parentElement?.closest('a');
@@ -99,12 +99,12 @@ const BRAND_PATCH = `
     for (const m of mutations) {
       if (m.type === 'characterData') {
         const t = normalize(m.target.nodeValue);
-        if (t === 'ArcSphere' || t === 'ArcSphere Studio') { patchBrand(); break; }
+        if (t === 'ArcSphere' || t === 'ArcSphere Studio' || t === 'NGUYEN ARCHITECTURE & ENGINEERING') { patchBrand(); break; }
       } else if (m.type === 'childList') {
         for (const nd of m.addedNodes) {
           if (nd.nodeType === Node.TEXT_NODE) {
             const t = normalize(nd.nodeValue);
-            if (t === 'ArcSphere' || t === 'ArcSphere Studio') { patchBrand(); break; }
+            if (t === 'ArcSphere' || t === 'ArcSphere Studio' || t === 'NGUYEN ARCHITECTURE & ENGINEERING') { patchBrand(); break; }
           }
         }
       }
