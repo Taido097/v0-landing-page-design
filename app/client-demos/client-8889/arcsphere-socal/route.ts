@@ -677,6 +677,16 @@ const RESIDENTIAL_ROW_IMAGE_PATCH = `
         if (compact(el.textContent) !== key) continue;
         // Must be a leaf heading: no child has the same compact text
         if (Array.from(el.children).some(function(c) { return compact(c.textContent) === key; })) continue;
+        // Skip if a close ancestor's compact text contains both the key AND "design"
+        // in a short string — that means this "COMMERCIAL" span is part of "COMMERCIAL DESIGN"
+        // (the Project Expertise panel heading), not the service-accordion row.
+        var inDesignPanel = false;
+        for (var chk = el.parentElement; chk && chk !== document.body; chk = chk.parentElement) {
+          var ct = compact(chk.textContent);
+          if (ct.length > 200) break; // too far up — stop
+          if (ct.length < 60 && ct.includes(key) && ct.includes('design')) { inDesignPanel = true; break; }
+        }
+        if (inDesignPanel) continue;
         // Walk up to find the row container — stop at the first ancestor that has an img
         // but bail if we reach a container with >2 imgs (the whole service section)
         var node = el.parentElement;
