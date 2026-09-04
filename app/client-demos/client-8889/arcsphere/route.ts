@@ -98,11 +98,13 @@ const MOBILE_ENHANCE_SCRIPT = `
     var substringRules = ${MOBILE_SUBSTRING_RULES}.map(function (r) { return [new RegExp(r[0], r[1]), r[2]]; });
     var exactRules = new Map(${MOBILE_EXACT_RULES}.map(function (r) { return [r[0].replace(/\\s+/g, ' ').trim(), r[1]]; }));
     var done = new WeakSet();
-    function rebrandNode(node) {
+    // force=true bypasses the done-cache so characterData reverts (React reconciliation
+    // resetting a text node to the original brand name) are always re-patched.
+    function rebrandNode(node, force) {
       var raw = node.nodeValue; if (!raw || !raw.trim()) return;
       var exact = exactRules.get(raw.replace(/\\s+/g, ' ').trim());
       if (exact !== undefined) { if (node.nodeValue !== exact) node.nodeValue = exact; return; }
-      if (done.has(node)) return;
+      if (!force && done.has(node)) return;
       done.add(node);
       var next = raw;
       for (var i = 0; i < substringRules.length; i++) next = next.replace(substringRules[i][0], substringRules[i][1]);
@@ -131,12 +133,16 @@ const MOBILE_ENHANCE_SCRIPT = `
       rebrand(document.body);
       var observer = new MutationObserver(function (muts) {
         muts.forEach(function (m) {
-          if (m.type === 'characterData') { rebrandNode(m.target); return; }
+          // Pass force=true: a characterData event means the node value just changed
+          // (React reconciliation reverted it), so always re-apply regardless of done cache.
+          if (m.type === 'characterData') { rebrandNode(m.target, true); return; }
           m.addedNodes.forEach(function (nd) { if (nd.nodeType === 3) rebrandNode(nd); else if (nd.querySelectorAll) rebrand(nd); });
         });
       });
       observer.observe(document.body, { childList: true, subtree: true, characterData: true });
-      setTimeout(function () { observer.disconnect(); }, 9000);
+      // Keep watching for 30s — Framer lazy-loads sections well past the initial render.
+      [15000, 25000].forEach(function (t) { setTimeout(function () { rebrand(document.body); }, t); });
+      setTimeout(function () { observer.disconnect(); }, 30000);
     }
     setTimeout(start, 1800);
     setTimeout(rescue, 4500);
