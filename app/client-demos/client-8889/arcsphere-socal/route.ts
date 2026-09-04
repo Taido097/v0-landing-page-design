@@ -638,60 +638,57 @@ const DESIGN_PANELS_PATCH = `
 </script>`
 
 // Replace thumbnail images in the RESIDENTIAL, COMMERCIAL, and ADU service-accordion rows.
-// Each row is identified by a phrase unique to its description text. The marker attribute
-// data-nguyen-service-row tells BLUEPRINT_IMAGE_PATCH to skip these images.
+// Strategy: find the leaf heading element for each row by its exact title text, then walk UP
+// the DOM to find a parent that contains exactly one <img> (the thumbnail). This avoids
+// matching ancestor containers that hold all three rows' images.
+// The data-nguyen-service-row marker tells BLUEPRINT_IMAGE_PATCH to skip these images.
 const RESIDENTIAL_ROW_IMAGE_PATCH = `
 <script id="nguyen-socal-service-row-images">
 (() => {
   var origin = window.location.origin;
   var MARKER = 'data-nguyen-service-row';
 
-  // Each row: unique compact-text key in its description + replacement image src.
-  // Keys chosen to appear in exactly one service row description.
   var ROWS = [
-    {
-      key: 'coordinatedengineering',
-      src: origin + '/client-8889/residential/residential_house.png',
-      fit: 'cover'
-    },
-    {
-      key: 'hospitality',
-      src: origin + '/client-8889/residential/detail/cx-09-building.jpg',
-      fit: 'cover'
-    },
-    {
-      key: 'firstconversation',
-      src: origin + '/client-8889/residential/detail/adu-04-golden-hour.jpg',
-      fit: 'cover'
-    }
+    { heading: 'RESIDENTIAL', src: origin + '/client-8889/residential/residential_house.png' },
+    { heading: 'COMMERCIAL',  src: origin + '/client-8889/residential/detail/cx-09-building.jpg' },
+    { heading: 'ADU',         src: origin + '/client-8889/residential/detail/adu-04-golden-hour.jpg' }
   ];
 
   function compact(v) { return (v || '').replace(/\\s+/g, '').toLowerCase(); }
 
-  function swapImg(img, row) {
-    img.setAttribute('src', row.src);
+  function swapImg(img, src) {
+    img.setAttribute('src', src);
     img.removeAttribute('srcset');
     img.removeAttribute('sizes');
-    img.style.setProperty('object-fit', row.fit, 'important');
+    img.style.setProperty('object-fit', 'cover', 'important');
     img.style.setProperty('object-position', 'center', 'important');
     img.setAttribute(MARKER, '1');
     var pic = img.closest('picture');
-    if (pic) pic.querySelectorAll('source').forEach(function(s) { s.setAttribute('srcset', row.src); s.removeAttribute('sizes'); });
+    if (pic) pic.querySelectorAll('source').forEach(function(s) { s.setAttribute('srcset', src); s.removeAttribute('sizes'); });
   }
 
   function patch() {
     if (!document.body) return;
-    var candidates = document.querySelectorAll('div, section, article, li');
+    var all = document.querySelectorAll('*');
     ROWS.forEach(function(row) {
-      for (var i = 0; i < candidates.length; i++) {
-        var el = candidates[i];
-        var text = compact(el.textContent);
-        if (!text.includes(row.key)) continue;
-        var img = el.querySelector('img');
-        if (!img) continue;
-        if (img.getAttribute(MARKER) === '1' && img.getAttribute('src') === row.src) continue;
-        swapImg(img, row);
-        break;
+      var key = compact(row.heading);
+      for (var i = 0; i < all.length; i++) {
+        var el = all[i];
+        if (compact(el.textContent) !== key) continue;
+        // Must be a leaf heading: no child has the same compact text
+        if (Array.from(el.children).some(function(c) { return compact(c.textContent) === key; })) continue;
+        // Walk up to find the row container — stop at the first ancestor that has an img
+        // but bail if we reach a container with >2 imgs (the whole service section)
+        var node = el.parentElement;
+        for (var depth = 0; depth < 10 && node && node !== document.body; depth++, node = node.parentElement) {
+          var imgs = node.querySelectorAll('img');
+          if (imgs.length === 0) continue;
+          if (imgs.length > 2) break; // parent section with all rows — stop
+          var img = imgs[0];
+          if (img.getAttribute(MARKER) === '1' && img.getAttribute('src') === row.src) break;
+          swapImg(img, row.src);
+          break;
+        }
       }
     });
   }
