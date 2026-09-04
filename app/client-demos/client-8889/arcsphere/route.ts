@@ -176,7 +176,8 @@ const CLIENT_PATCH = `
     }
   ];
   const extraServiceDescriptions = [
-    'Optimizing layouts to improve functionality, circulation, and spatial flow.',
+    // 'Optimizing layouts...' is intentionally NOT hidden here — the socal layer converts that card into
+    // the Engineering card. Hiding it on all breakpoints left the phone Engineering card missing.
     'Professional guidance during construction to ensure the design vision is executed correctly.'
   ];
   const phones = ['(209) 233-8888', '(714) 707-8889'];
