@@ -565,16 +565,19 @@ const DESIGN_PANELS_PATCH = `
     }, true);
   }
 
-  // On every mouseover, scan the hovered element upward for "20+" and fix immediately.
+  // On every pointer interaction (mouse hover or touch), scan upward and fix counts immediately.
   // This catches hover-state overlays that Framer reveals purely via CSS (no DOM mutation).
   if (!window.__nguyenCountHoverFix) {
     window.__nguyenCountHoverFix = true;
-    document.addEventListener('mouseover', (e) => {
+    const countScan = (e) => {
       let el = e.target;
       for (let i = 0; i < 10 && el && el !== document.body; i++, el = el.parentElement) {
         if (el.textContent && /\\b(16|35)\\+/.test(el.textContent)) { fixCounts(el); break; }
       }
-    }, true);
+    };
+    document.addEventListener('mouseover', countScan, true);
+    document.addEventListener('touchstart', countScan, { capture: true, passive: true });
+    document.addEventListener('pointerover', countScan, true);
   }
 
   // MutationObserver catches React/Framer state-driven renders of hover content
@@ -639,11 +642,11 @@ const FOOTER_PATCH = `
 
   patchFooter();
   window.addEventListener('load', patchFooter, { once: true });
-  [300, 800, 1800, 3500].forEach((t) => setTimeout(patchFooter, t));
+  [300, 800, 1800, 3500, 6000, 10000].forEach((t) => setTimeout(patchFooter, t));
 
   const obs = new MutationObserver(patchFooter);
   if (document.body) obs.observe(document.body, { childList: true, subtree: true, characterData: true });
-  setTimeout(() => obs.disconnect(), 8000);
+  setTimeout(() => obs.disconnect(), 12000);
 })();
 </script>`
 
@@ -665,9 +668,10 @@ const ICON_BAR_PATCH = `
       });
       if (!allIconOnly) return;
 
-      // Should be a thin horizontal strip with dividers between icons
+      // Should be a thin horizontal strip with dividers between icons.
+      // Allow up to 200px to cover taller mobile layouts where icons may stack.
       const r = el.getBoundingClientRect();
-      if (r.height > 120) return;
+      if (r.height > 200) return;
 
       el.style.setProperty('display', 'none', 'important');
     });
@@ -675,11 +679,11 @@ const ICON_BAR_PATCH = `
 
   hideIconBar();
   window.addEventListener('load', hideIconBar, { once: true });
-  [300, 800, 1800, 3500].forEach((t) => setTimeout(hideIconBar, t));
+  [300, 800, 1800, 3500, 6000, 10000].forEach((t) => setTimeout(hideIconBar, t));
 
   const obs = new MutationObserver(hideIconBar);
   if (document.body) obs.observe(document.body, { childList: true, subtree: true });
-  setTimeout(() => obs.disconnect(), 8000);
+  setTimeout(() => obs.disconnect(), 12000);
 })();
 </script>`
 
