@@ -365,7 +365,10 @@ const ENGINEERING_SERVICE_PATCH = `
   }
 
   function replaceLeafText(card, keys, replacement) {
+    // Replace EVERY matching leaf, not just the first — the mobile card copy can carry a second title
+    // element (an extra line under "ENGINEERING") that must also be converted.
     const candidates = [card, ...card.querySelectorAll('*')];
+    let any = false;
     for (const candidate of candidates) {
       const key = compact(candidate.textContent);
       if (!keys.has(key)) continue;
@@ -375,9 +378,9 @@ const ENGINEERING_SERVICE_PATCH = `
       candidate.style.setProperty('white-space', 'normal', 'important');
       candidate.style.setProperty('word-break', 'normal', 'important');
       candidate.style.setProperty('overflow-wrap', 'normal', 'important');
-      return true;
+      any = true;
     }
-    return false;
+    return any;
   }
 
   function patchEngineering() {
@@ -634,6 +637,60 @@ const DESIGN_PANELS_PATCH = `
 })();
 </script>`
 
+// Replace the Framer background images in the two Project Expertise (design) panels with the
+// client-supplied blueprint images. Uses object-fit:contain so the full blueprint is visible
+// without cropping. No overlay — a direct src swap keeps the panel text (RESIDENTIAL DESIGN /
+// COMMERCIAL DESIGN labels and button) visible above the image as Framer intended.
+const BLUEPRINT_IMAGE_PATCH = `
+<script id="nguyen-socal-blueprint-images">
+(() => {
+  const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
+  const origin = window.location.origin;
+  const PANEL_MAP = [
+    { key: 'residentialdesign', src: origin + '/client-8889/projects/residential_blueprint.png' },
+    { key: 'commercialdesign',  src: origin + '/client-8889/projects/commercial_blueprint.png' },
+  ];
+
+  function swapImg(img, src) {
+    // Re-apply on every call so Framer lazy-loading cannot revert it.
+    img.setAttribute('src', src);
+    img.removeAttribute('srcset');
+    img.removeAttribute('sizes');
+    // contain: show the full blueprint without cropping; dark navy background fills any gap.
+    img.style.setProperty('object-fit', 'contain', 'important');
+    img.style.setProperty('object-position', 'center', 'important');
+    img.style.setProperty('background-color', '#0b1930', 'important');
+    img.style.setProperty('filter', 'none', 'important');
+    img.style.setProperty('opacity', '1', 'important');
+    img.style.setProperty('visibility', 'visible', 'important');
+    img.setAttribute('data-nguyen-bp', src);
+    const picture = img.closest('picture');
+    if (picture) picture.querySelectorAll('source').forEach((s) => { s.setAttribute('srcset', src); s.removeAttribute('sizes'); });
+  }
+
+  function patchBlueprints() {
+    if (!document.body) return;
+    document.querySelectorAll('div,section,article').forEach((el) => {
+      const text = compact(el.textContent);
+      const match = PANEL_MAP.find((p) => text.includes(p.key));
+      if (!match) return;
+      if (PANEL_MAP.every((p) => text.includes(p.key))) return; // skip container holding both panels
+      const img = el.querySelector('img');
+      if (img) swapImg(img, match.src);
+    });
+  }
+
+  patchBlueprints();
+  window.addEventListener('load', patchBlueprints, { once: true });
+  [300, 800, 1800, 3500, 6000].forEach((t) => setTimeout(patchBlueprints, t));
+
+  // Re-apply any time Framer mutates the DOM (covers lazy-load src reverts)
+  const obs = new MutationObserver(patchBlueprints);
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['src', 'srcset'] });
+  setTimeout(() => obs.disconnect(), 12000);
+})();
+</script>`
+
 const FOOTER_PATCH = `
 <script id="nguyen-socal-footer-patch">
 (() => {
@@ -732,6 +789,137 @@ const ICON_BAR_PATCH = `
 })();
 </script>`
 
+// Aggressive cleanup for the "Professional guidance during construction..." extra service card.
+// The base layer sets display:none on the first img-bearing ancestor of the description text, but
+// that ancestor can be an INNER element (e.g., the image container), leaving the outer card frame
+// still in the flex layout as an empty box — creating the visible blank gap on mobile. This patch
+// walks up to find the outermost SINGLE-card container and collapses it with both display:none AND
+// layout-collapsing CSS (height:0, overflow:hidden, etc.) so no gap remains on any breakpoint.
+const EXTRA_CARD_CLEANUP_PATCH = `
+<script id="nguyen-socal-extra-card-cleanup">
+(() => {
+  const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
+  const EXTRA_DESC = compact('Professional guidance during construction to ensure the design vision is executed correctly.');
+
+  function hide(el) {
+    if (!el || !el.isConnected || el.getAttribute('data-nex') === '1') return;
+    el.setAttribute('data-nex', '1');
+    el.style.setProperty('display', 'none', 'important');
+    el.style.setProperty('height', '0', 'important');
+    el.style.setProperty('min-height', '0', 'important');
+    el.style.setProperty('max-height', '0', 'important');
+    el.style.setProperty('overflow', 'hidden', 'important');
+    el.style.setProperty('margin', '0', 'important');
+    el.style.setProperty('padding', '0', 'important');
+    el.style.setProperty('border', 'none', 'important');
+    el.style.setProperty('visibility', 'hidden', 'important');
+    el.style.setProperty('pointer-events', 'none', 'important');
+  }
+
+  function cleanup() {
+    if (!document.body) return;
+    const vw = window.innerWidth || 375;
+    document.querySelectorAll('*').forEach((el) => {
+      if (el.getAttribute('data-nex') === '1') return;
+      if (compact(el.textContent) !== EXTRA_DESC) return;
+      // Skip wrapper elements that just contain a child with the same text
+      if (Array.from(el.children).some((c) => compact(c.textContent) === EXTRA_DESC)) return;
+
+      // Walk up to find the card (first img-bearing ancestor of the description leaf)
+      let card = el;
+      for (let d = 0; card.parentElement && d < 10; d++, card = card.parentElement) {
+        if (card.parentElement.querySelector?.('img')) { card = card.parentElement; break; }
+      }
+
+      // Walk up further to find the outermost single-card container.
+      // Stop when the parent is the section container (has >1 img = multiple cards, or is full-width).
+      for (let d = 0; card.parentElement && d < 8; d++) {
+        const p = card.parentElement;
+        if ((p.querySelectorAll?.('img') || []).length > 1) break;
+        const pw = p.getBoundingClientRect().width;
+        if (pw > 0 && pw >= vw * 0.9) break;
+        card = p;
+      }
+
+      hide(card);
+    });
+  }
+
+  cleanup();
+  window.addEventListener('load', cleanup, { once: true });
+  [300, 800, 1800, 3500, 6000].forEach((t) => setTimeout(cleanup, t));
+  const obs = new MutationObserver(() => cleanup());
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true });
+  setTimeout(() => obs.disconnect(), 10000);
+})();
+</script>`
+
+// Universal card routing. The project cards and design panels are Framer <a href="./projects..."> links
+// that resolve to the Framer site via the <base> tag. Per-card detection (size gates, breakpoint copies)
+// kept missing on mobile, so instead map EVERY Framer project link to the correct internal page by its
+// href + text and rewrite the href up front (absolute origin URL, so it bypasses <base> and works with a
+// plain tap on any breakpoint). A capture-phase click handler covers anchors tapped before the rewrite runs.
+const CARD_ROUTING_PATCH = `
+<script id="nguyen-socal-card-routing">
+(() => {
+  const origin = window.location.origin;
+  const svc = origin + '/client-demos/client-8889/residential/services';
+  const home = origin + '/client-demos/client-8889/arcsphere-socal';
+  const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
+
+  function targetFor(anchor) {
+    const href = (anchor.getAttribute('href') || '').toLowerCase();
+    if (href.indexOf('/projects') === -1 && href.indexOf('./projects') === -1) return null;
+    const t = compact(anchor.textContent);
+    if (href.indexOf('serenity-villa') !== -1) return svc + '/custom-homes';
+    if (href.indexOf('corporate-office-space') !== -1) return svc + '/commercial';
+    if (href.indexOf('minimalist-apartment-interior') !== -1) return svc + '/commercial';
+    if (t.indexOf('residentialdesign') !== -1 || t.indexOf('residencial') !== -1 || t.indexOf('residentialarchitecture') !== -1 || t.indexOf('customhome') !== -1) return svc + '/custom-homes';
+    if (t.indexOf('commercialdesign') !== -1 || t.indexOf('commercialarchitecture') !== -1 || t.indexOf('commercialbuilding') !== -1) return svc + '/commercial';
+    if (t.indexOf('multifamily') !== -1) return svc + '/multifamily';
+    if (t.indexOf('adu') !== -1) return svc + '/adus';
+    if (t.indexOf('addition') !== -1 || t.indexOf('remodel') !== -1) return svc + '/additions-remodels';
+    if (t.indexOf('landdevelopment') !== -1) return svc + '/land-development';
+    if (t.indexOf('viewprojecttypes') !== -1 || t.indexOf('viewmoreprojects') !== -1 || t.indexOf('projects') !== -1) return home + '#services';
+    return null;
+  }
+
+  function rewrite() {
+    document.querySelectorAll('a[href]').forEach((a) => {
+      if (a.getAttribute('data-nguyen-routed') === '1') return;
+      const url = targetFor(a);
+      if (!url) return;
+      a.setAttribute('data-nguyen-routed', '1');
+      a.setAttribute('href', url);
+      a.removeAttribute('target');
+      a.removeAttribute('rel');
+    });
+  }
+
+  rewrite();
+  window.addEventListener('load', rewrite, { once: true });
+  [300, 800, 1800, 3500, 6000, 10000, 20000].forEach((t) => setTimeout(rewrite, t));
+  const obs = new MutationObserver(rewrite);
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true });
+  setTimeout(() => obs.disconnect(), 30000);
+
+  if (!window.__nguyenCardRoutingUniversal) {
+    window.__nguyenCardRoutingUniversal = true;
+    document.addEventListener('click', (e) => {
+      const start = e.target && e.target.nodeType === Node.TEXT_NODE ? e.target.parentElement : e.target;
+      const a = start && start.closest ? start.closest('a[href]') : null;
+      if (!a) return;
+      const url = targetFor(a);
+      if (!url) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      window.location.href = url;
+    }, true);
+  }
+})();
+</script>`
+
 
 export async function GET() {
   const response = await getConcept()
@@ -739,7 +927,7 @@ export async function GET() {
 
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${FOOTER_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${BLUEPRINT_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')
