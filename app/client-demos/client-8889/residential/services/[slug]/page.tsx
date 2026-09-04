@@ -285,6 +285,40 @@ const CSS = `
   .adu-detached .adu-img{flex:none;aspect-ratio:520/560}
   .adu-attached,.adu-garage{grid-column:1}
 }
+/* Square Footage Guide */
+.sfg{margin-top:clamp(56px,7vw,104px)}
+.sfg-header{max-width:600px;margin:0 auto clamp(40px,5vw,64px);text-align:center}
+.sfg-eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;color:var(--soft);margin:0 0 14px}
+.sfg-title{font-size:clamp(28px,3.8vw,42px);line-height:1.05;font-weight:600;letter-spacing:-.01em;text-transform:uppercase;color:var(--ink);margin:0}
+.sfg-sub{margin:14px 0 0;font-size:13.5px;line-height:1.6;color:var(--muted)}
+.sfg-main{display:grid;grid-template-columns:1.15fr 1fr;gap:clamp(14px,1.8vw,22px)}
+/* featured card */
+.sfg-feat{display:flex;flex-direction:column;border:1px solid var(--line);background:var(--surface);overflow:hidden;position:relative}
+.sfg-feat-imgwrap{position:relative;overflow:hidden;background:#e7e0d5;flex:0 0 auto}
+.sfg-feat-imgwrap img{width:100%;height:100%;object-fit:contain;display:block;background:#e7e0d5;padding:clamp(12px,2vw,24px)}
+.sfg-badge{position:absolute;top:14px;left:14px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;background:var(--gold);color:#fff;padding:6px 13px;line-height:1}
+.sfg-feat-body{padding:clamp(20px,2.5vw,30px);border-top:1px solid var(--line)}
+.sfg-sqft-label{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;font-weight:600;color:var(--soft);margin:0 0 7px}
+.sfg-plan-name{font-size:clamp(18px,1.8vw,24px);line-height:1.1;font-weight:600;text-transform:uppercase;letter-spacing:-.005em;color:var(--ink);margin:0 0 12px}
+.sfg-plan-desc{font-size:13px;line-height:1.62;color:var(--muted);margin:0 0 clamp(16px,2vw,22px)}
+.sfg-tags{display:flex;flex-wrap:wrap;gap:8px}
+.sfg-tag{font-size:11px;letter-spacing:.07em;text-transform:uppercase;font-weight:600;border:1px solid var(--line);padding:7px 14px;color:var(--muted);background:transparent}
+/* option cards */
+.sfg-options{display:flex;flex-direction:column;gap:clamp(10px,1.2vw,16px)}
+.sfg-opt{display:grid;grid-template-columns:110px 1fr;border:1px solid var(--line);background:var(--surface);overflow:hidden}
+.sfg-opt-imgwrap{overflow:hidden;background:#e7e0d5}
+.sfg-opt-imgwrap img{width:100%;height:100%;object-fit:contain;display:block;padding:clamp(8px,1.2vw,14px)}
+.sfg-opt-body{padding:clamp(14px,1.6vw,20px);border-left:1px solid var(--line)}
+.sfg-opt-sqft{font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;color:var(--soft);margin:0 0 5px}
+.sfg-opt-name{font-size:clamp(12px,1.1vw,15px);font-weight:600;text-transform:uppercase;letter-spacing:.01em;color:var(--ink);margin:0 0 8px}
+.sfg-opt-desc{font-size:12px;line-height:1.5;color:var(--muted);margin:0}
+/* highlights */
+.sfg-hl-row{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2vw,28px);margin-top:clamp(32px,4vw,52px);border-top:1px solid var(--line);padding-top:clamp(28px,3.4vw,42px)}
+.sfg-hl{text-align:center}
+.sfg-hl strong{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--ink);margin:0 0 7px}
+.sfg-hl span{font-size:12.5px;line-height:1.5;color:var(--muted)}
+@media(max-width:860px){.sfg-main{grid-template-columns:1fr}.sfg-feat-imgwrap img{max-height:320px;object-fit:contain}}
+@media(max-width:560px){.sfg-opt{grid-template-columns:86px 1fr}.sfg-hl-row{grid-template-columns:1fr}}
 /* "Our Services" cards (replaces the Explore Other Services chips).
    Breaks out of the 1200px content column to a wide, viewport-centered container
    (matching the residential page); capped so it never causes horizontal scroll. */
@@ -345,6 +379,81 @@ const ALL_SERVICES = [
   { slug: 'multifamily',           href: `${RESIDENTIAL_HREF}/services/multifamily`,           img: `${SVC}/svc-04-multifamily.jpg`,        label: 'Townhomes + Condos' },
   { slug: 'sb9-development',       href: `${RESIDENTIAL_HREF}/services/sb9-development`,       img: `${CX}/sb9-01-modern-duplex.jpg`,       label: 'SB 9 Development' },
 ];
+
+const SFG_FEATURED = {
+  src: '/client-8889/residential/detail/sfg-2500.png',
+  sqft: '2,500 SQ FT',
+  name: 'The Modern Classic',
+  desc: 'A refined balance of space, function, and beauty. The 2,500 sq ft plan offers open living, generous natural light, and a layout designed for the way you live today — and tomorrow.',
+  tags: ['4 Bedrooms', '3 Bathrooms', 'Open Living', 'Covered Outdoor Living'],
+};
+
+const SFG_OPTIONS = [
+  { src: '/client-8889/residential/detail/sfg-1400.png', sqft: '1,400 SQ FT', name: 'The Essential', desc: 'Smart, elegant, and efficient. A beautifully designed home with everything you need and nothing you don\'t.' },
+  { src: '/client-8889/residential/detail/sfg-3800.png', sqft: '3,800 SQ FT', name: 'The Expanded Life', desc: 'More room for what matters. Designed for growing families, entertaining, and a life well lived.' },
+  { src: '/client-8889/residential/detail/sfg-5000.png', sqft: '5,000 SQ FT', name: 'The Estate', desc: 'An exceptional scale for extraordinary living. Grand spaces, refined details, and endless possibilities.' },
+];
+
+const SFG_HIGHLIGHTS = [
+  { title: 'Inspired Design', body: 'Rooted in how you live' },
+  { title: 'Expert Guidance', body: 'From concept to home' },
+  { title: 'A More Considered Life', body: 'Homes that endure' },
+];
+
+function SquareFootageGuide() {
+  return (
+    <section className="nrd-section sfg" aria-label="Square Footage Guide">
+      <div className="sfg-header">
+        <p className="sfg-eyebrow">Residential Blueprints</p>
+        <h2 className="sfg-title">Square Footage Guide</h2>
+        <p className="sfg-sub">A range of thoughtfully designed floor plans to fit your lifestyle.</p>
+      </div>
+
+      <div className="sfg-main">
+        {/* Featured plan */}
+        <div className="sfg-feat">
+          <div className="sfg-feat-imgwrap">
+            <img src={SFG_FEATURED.src} alt={`${SFG_FEATURED.sqft} floor plan — ${SFG_FEATURED.name}`} />
+            <span className="sfg-badge">Featured Plan</span>
+          </div>
+          <div className="sfg-feat-body">
+            <p className="sfg-sqft-label">{SFG_FEATURED.sqft}</p>
+            <h3 className="sfg-plan-name">{SFG_FEATURED.name}</h3>
+            <p className="sfg-plan-desc">{SFG_FEATURED.desc}</p>
+            <div className="sfg-tags">
+              {SFG_FEATURED.tags.map((t) => <span className="sfg-tag" key={t}>{t}</span>)}
+            </div>
+          </div>
+        </div>
+
+        {/* Option cards */}
+        <div className="sfg-options">
+          {SFG_OPTIONS.map((opt, i) => (
+            <div className="sfg-opt" key={opt.sqft}>
+              <div className="sfg-opt-imgwrap">
+                <img src={opt.src} alt={`${opt.sqft} floor plan — ${opt.name}`} />
+              </div>
+              <div className="sfg-opt-body">
+                <p className="sfg-opt-sqft">Option {i + 1} · {opt.sqft}</p>
+                <h3 className="sfg-opt-name">{opt.name}</h3>
+                <p className="sfg-opt-desc">{opt.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="sfg-hl-row">
+        {SFG_HIGHLIGHTS.map((h) => (
+          <div className="sfg-hl" key={h.title}>
+            <strong>{h.title}</strong>
+            <span>{h.body}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 function OurServices({ currentSlug }: { currentSlug: string }) {
   const cards = ALL_SERVICES.filter((s) => s.slug !== currentSlug).slice(0, 4);
@@ -478,6 +587,8 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
             </div>
           </section>
         )}
+
+        {slug === 'custom-homes' ? <SquareFootageGuide /> : null}
 
         {slug === 'adus' ? <AduTypes /> : null}
 
