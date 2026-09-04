@@ -204,31 +204,30 @@ const CLIENT_PATCH = `
   function patchMappedCard(root, replacements, keys) {
     if (!root || root.nodeType !== Node.ELEMENT_NODE) return false;
     const element = root;
-    const candidates = [element, ...element.querySelectorAll('*')];
-    let card = null;
-    for (let i = candidates.length - 1; i >= 0; i -= 1) {
-      const candidate = candidates[i];
-      const text = compact(candidate.textContent);
-      if (!keys.every((key) => text.includes(key))) continue;
-      card = candidate;
-      break;
-    }
-    if (!card) {
+    const all = [element, ...element.querySelectorAll('*')];
+    // Framer ships one DOM copy of the card per breakpoint (desktop / tablet / phone). Collect the
+    // minimal container holding all keys in EACH copy — patching only one left the phone project card
+    // with its original label (e.g. "Serenity Villa"), which also broke click-routing that matches on
+    // the card's category text.
+    let cards = all.filter((el) => { const t = compact(el.textContent); return keys.every((k) => t.includes(k)) && el.querySelector?.('img'); });
+    cards = cards.filter((el) => !cards.some((other) => other !== el && el.contains(other)));
+    if (!cards.length) {
       let cursor = element;
       for (let depth = 0; cursor && depth < 10; depth += 1, cursor = cursor.parentElement) {
-        const text = compact(cursor.textContent);
-        if (keys.every((key) => text.includes(key))) { card = cursor; break; }
+        if (keys.every((key) => compact(cursor.textContent).includes(key))) { cards = [cursor]; break; }
       }
     }
-    if (!card) return false;
-    const cardCandidates = [card, ...card.querySelectorAll('*')];
-    cardCandidates.forEach((candidate) => {
-      const key = compact(candidate.textContent);
-      const replacement = replacements.get(key);
-      if (!replacement) return;
-      const hasSameTextChild = Array.from(candidate.children).some((child) => compact(child.textContent) === key);
-      if (hasSameTextChild) return;
-      candidate.textContent = replacement;
+    if (!cards.length) return false;
+    cards.forEach((card) => {
+      const cardCandidates = [card, ...card.querySelectorAll('*')];
+      cardCandidates.forEach((candidate) => {
+        const key = compact(candidate.textContent);
+        const replacement = replacements.get(key);
+        if (!replacement) return;
+        const hasSameTextChild = Array.from(candidate.children).some((child) => compact(child.textContent) === key);
+        if (hasSameTextChild) return;
+        candidate.textContent = replacement;
+      });
     });
     return true;
   }

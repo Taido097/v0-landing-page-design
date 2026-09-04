@@ -645,25 +645,38 @@ const FOOTER_PATCH = `
   const OLD_ADDR = compact('Dubai-Based Architecture And Interior Design Studio');
   const NEW_ADDR = '7171 Warner Ave., Ste. B, Huntington Beach, CA 92647';
 
+  const ADDR_KEY = 'basedarchitectureandinteriordesignstudio';
+  const PHONE_DIGITS = '6281234567890';
+
   function patchFooter() {
-    // Fix phone number and address
+    // Phone: the original '+62 812 3456 7890' text node -> two lines. Match on the digits so formatting
+    // or a leading '+' doesn't break it. Runs across every breakpoint copy via the tree walker.
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     let node;
     while ((node = walker.nextNode())) {
       const key = compact(node.nodeValue);
-      if (key === OLD_PHONE) {
-        // Split into two lines with a <br>
+      if (key === OLD_PHONE || key.indexOf(PHONE_DIGITS) !== -1) {
         const parent = node.parentElement;
-        if (parent) {
+        if (parent && !parent.querySelector('[data-nguyen-footer-phone]')) {
           parent.innerHTML = '';
-          parent.appendChild(document.createTextNode('209-233-8888'));
-          parent.appendChild(document.createElement('br'));
-          parent.appendChild(document.createTextNode('714-707-8889'));
+          const wrap = document.createElement('span');
+          wrap.setAttribute('data-nguyen-footer-phone', '1');
+          wrap.appendChild(document.createTextNode('209-233-8888'));
+          wrap.appendChild(document.createElement('br'));
+          wrap.appendChild(document.createTextNode('714-707-8889'));
+          parent.appendChild(wrap);
         }
-      } else if (key === OLD_ADDR) {
-        node.nodeValue = NEW_ADDR;
       }
     }
+
+    // Address: the studio tagline — the base layer already rewrote 'Dubai' -> 'Huntington Beach, CA'
+    // inside it, so match the stable tail instead of the original 'Dubai-Based...' string. Replace the
+    // tightest element that still wraps the tagline (works whether it's one text node or split letters).
+    document.querySelectorAll('div,span,p,a,h1,h2,h3,h4,h5,h6,li').forEach((el) => {
+      if (compact(el.textContent).indexOf(ADDR_KEY) === -1) return;
+      if (Array.from(el.children).some((c) => compact(c.textContent).indexOf(ADDR_KEY) !== -1)) return;
+      if (normalize(el.textContent) !== NEW_ADDR) el.textContent = NEW_ADDR;
+    });
 
     // Fix email link color — match surrounding text color
     document.querySelectorAll('a[href^="mailto:"]').forEach((a) => {
