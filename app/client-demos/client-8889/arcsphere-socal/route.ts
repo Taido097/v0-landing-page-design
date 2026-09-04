@@ -365,7 +365,10 @@ const ENGINEERING_SERVICE_PATCH = `
   }
 
   function replaceLeafText(card, keys, replacement) {
+    // Replace EVERY matching leaf, not just the first — the mobile card copy can carry a second title
+    // element (an extra line under "ENGINEERING") that must also be converted.
     const candidates = [card, ...card.querySelectorAll('*')];
+    let any = false;
     for (const candidate of candidates) {
       const key = compact(candidate.textContent);
       if (!keys.has(key)) continue;
@@ -375,9 +378,9 @@ const ENGINEERING_SERVICE_PATCH = `
       candidate.style.setProperty('white-space', 'normal', 'important');
       candidate.style.setProperty('word-break', 'normal', 'important');
       candidate.style.setProperty('overflow-wrap', 'normal', 'important');
-      return true;
+      any = true;
     }
-    return false;
+    return any;
   }
 
   function patchEngineering() {
@@ -732,6 +735,72 @@ const ICON_BAR_PATCH = `
 })();
 </script>`
 
+// Universal card routing. The project cards and design panels are Framer <a href="./projects..."> links
+// that resolve to the Framer site via the <base> tag. Per-card detection (size gates, breakpoint copies)
+// kept missing on mobile, so instead map EVERY Framer project link to the correct internal page by its
+// href + text and rewrite the href up front (absolute origin URL, so it bypasses <base> and works with a
+// plain tap on any breakpoint). A capture-phase click handler covers anchors tapped before the rewrite runs.
+const CARD_ROUTING_PATCH = `
+<script id="nguyen-socal-card-routing">
+(() => {
+  const origin = window.location.origin;
+  const svc = origin + '/client-demos/client-8889/residential/services';
+  const home = origin + '/client-demos/client-8889/arcsphere-socal';
+  const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
+
+  function targetFor(anchor) {
+    const href = (anchor.getAttribute('href') || '').toLowerCase();
+    if (href.indexOf('/projects') === -1 && href.indexOf('./projects') === -1) return null;
+    const t = compact(anchor.textContent);
+    if (href.indexOf('serenity-villa') !== -1) return svc + '/custom-homes';
+    if (href.indexOf('corporate-office-space') !== -1) return svc + '/commercial';
+    if (href.indexOf('minimalist-apartment-interior') !== -1) return svc + '/commercial';
+    if (t.indexOf('residentialdesign') !== -1 || t.indexOf('residencial') !== -1 || t.indexOf('residentialarchitecture') !== -1 || t.indexOf('customhome') !== -1) return svc + '/custom-homes';
+    if (t.indexOf('commercialdesign') !== -1 || t.indexOf('commercialarchitecture') !== -1 || t.indexOf('commercialbuilding') !== -1) return svc + '/commercial';
+    if (t.indexOf('multifamily') !== -1) return svc + '/multifamily';
+    if (t.indexOf('adu') !== -1) return svc + '/adus';
+    if (t.indexOf('addition') !== -1 || t.indexOf('remodel') !== -1) return svc + '/additions-remodels';
+    if (t.indexOf('landdevelopment') !== -1) return svc + '/land-development';
+    if (t.indexOf('viewprojecttypes') !== -1 || t.indexOf('viewmoreprojects') !== -1 || t.indexOf('projects') !== -1) return home + '#services';
+    return null;
+  }
+
+  function rewrite() {
+    document.querySelectorAll('a[href]').forEach((a) => {
+      if (a.getAttribute('data-nguyen-routed') === '1') return;
+      const url = targetFor(a);
+      if (!url) return;
+      a.setAttribute('data-nguyen-routed', '1');
+      a.setAttribute('href', url);
+      a.removeAttribute('target');
+      a.removeAttribute('rel');
+    });
+  }
+
+  rewrite();
+  window.addEventListener('load', rewrite, { once: true });
+  [300, 800, 1800, 3500, 6000, 10000, 20000].forEach((t) => setTimeout(rewrite, t));
+  const obs = new MutationObserver(rewrite);
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true });
+  setTimeout(() => obs.disconnect(), 30000);
+
+  if (!window.__nguyenCardRoutingUniversal) {
+    window.__nguyenCardRoutingUniversal = true;
+    document.addEventListener('click', (e) => {
+      const start = e.target && e.target.nodeType === Node.TEXT_NODE ? e.target.parentElement : e.target;
+      const a = start && start.closest ? start.closest('a[href]') : null;
+      if (!a) return;
+      const url = targetFor(a);
+      if (!url) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      window.location.href = url;
+    }, true);
+  }
+})();
+</script>`
+
 
 export async function GET() {
   const response = await getConcept()
@@ -739,7 +808,7 @@ export async function GET() {
 
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${FOOTER_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${CARD_ROUTING_PATCH}${FOOTER_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')
