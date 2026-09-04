@@ -658,7 +658,7 @@ const BLUEPRINT_IMAGE_PATCH = `
     img.removeAttribute('sizes');
     // contain: show the full blueprint without cropping; dark navy background fills any gap.
     img.style.setProperty('object-fit', 'contain', 'important');
-    img.style.setProperty('object-position', 'center', 'important');
+    img.style.setProperty('object-position', 'top center', 'important');
     img.style.setProperty('background-color', '#0b1930', 'important');
     img.style.setProperty('filter', 'none', 'important');
     img.style.setProperty('opacity', '1', 'important');
