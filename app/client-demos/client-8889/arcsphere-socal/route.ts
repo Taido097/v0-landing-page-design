@@ -647,13 +647,50 @@ const FOOTER_PATCH = `
 })();
 </script>`
 
+const ICON_BAR_PATCH = `
+<script id="nguyen-socal-icon-bar-patch">
+(() => {
+  function hideIconBar() {
+    const candidates = Array.from(document.querySelectorAll('div, nav, ul, section'));
+    candidates.forEach((el) => {
+      if (el.getAttribute('data-nguyen-icon-bar-checked')) return;
+      el.setAttribute('data-nguyen-icon-bar-checked', '1');
+
+      // Must have exactly 3 child links/buttons that are icon-only (SVG, no text)
+      const links = Array.from(el.querySelectorAll(':scope > * > a, :scope > a, :scope > button, :scope > * > button'));
+      if (links.length !== 3) return;
+      const allIconOnly = links.every((link) => {
+        const text = (link.textContent || '').replace(/\\s+/g, '');
+        return text === '' && link.querySelector('svg');
+      });
+      if (!allIconOnly) return;
+
+      // Should be a thin horizontal strip with dividers between icons
+      const r = el.getBoundingClientRect();
+      if (r.height > 120) return;
+
+      el.style.setProperty('display', 'none', 'important');
+    });
+  }
+
+  hideIconBar();
+  window.addEventListener('load', hideIconBar, { once: true });
+  [300, 800, 1800, 3500].forEach((t) => setTimeout(hideIconBar, t));
+
+  const obs = new MutationObserver(hideIconBar);
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true });
+  setTimeout(() => obs.disconnect(), 8000);
+})();
+</script>`
+
+
 export async function GET() {
   const response = await getConcept()
   if (!response.ok) return response
 
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${FOOTER_PATCH}${TESTIMONIAL_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${FOOTER_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')
