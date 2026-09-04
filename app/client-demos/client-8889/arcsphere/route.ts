@@ -74,82 +74,6 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/United Arab Emirates/gi, 'Orange County, CA'],
 ];
 
-// Mobile keeps Framer's client runtime so the appear animations play like desktop. The served DOM is
-// left identical to Framer's (no server-side rewrites) so hydration matches and nothing wipes/flashes.
-// After hydration this applies the SAME REPLACEMENTS as desktop (as guarded substring rules so a
-// rule whose output contains its input can't grow), plus exact service-card titles, for content
-// parity — then a one-time safety net reveals anything still hidden if the runtime ever fails.
-const MOBILE_SUBSTRING_RULES = JSON.stringify(REPLACEMENTS.map(([re, rep]) => [re.source, re.flags, rep]));
-const MOBILE_EXACT_RULES = JSON.stringify([
-  ['Architectural', 'RESIDENTIAL'],
-  ['Interior Design', 'COMMERCIAL'],
-  ['Renovation & Remodeling', 'ADU'],
-  ['3D Visualization', 'LAND DEVELOPMENT'],
-  ['Designing modern buildings that combine aesthetics, efficiency, and long-term value.', 'Custom homes, additions, remodels, and multifamily residential design with coordinated engineering and permitting.'],
-  ['Creating refined interiors through thoughtful materials, lighting, and spatial composition.', 'Architecture and engineering for offices, retail, restaurants, tenant improvements, and other commercial projects.'],
-  ['Transforming outdated spaces into modern and carefully designed environments', 'ADU design, engineering, Title 24, permit documentation, and city coordination from concept through approval.'],
-  ['High-quality visualizations that help clients clearly understand the design before construction begins.', 'Site planning, entitlement support, grading and utility coordination, and development documentation for residential and commercial sites.']
-]);
-const MOBILE_ENHANCE_SCRIPT = `
-<script id="nguyen-mobile-enhance">
-(function(){
-  try {
-    if (!window.matchMedia || !window.matchMedia('(max-width: 809.98px)').matches) return;
-    var substringRules = ${MOBILE_SUBSTRING_RULES}.map(function (r) { return [new RegExp(r[0], r[1]), r[2]]; });
-    var exactRules = new Map(${MOBILE_EXACT_RULES}.map(function (r) { return [r[0].replace(/\\s+/g, ' ').trim(), r[1]]; }));
-    var done = new WeakSet();
-    // force=true bypasses the done-cache so characterData reverts (React reconciliation
-    // resetting a text node to the original brand name) are always re-patched.
-    function rebrandNode(node, force) {
-      var raw = node.nodeValue; if (!raw || !raw.trim()) return;
-      var exact = exactRules.get(raw.replace(/\\s+/g, ' ').trim());
-      if (exact !== undefined) { if (node.nodeValue !== exact) node.nodeValue = exact; return; }
-      if (!force && done.has(node)) return;
-      done.add(node);
-      var next = raw;
-      for (var i = 0; i < substringRules.length; i++) next = next.replace(substringRules[i][0], substringRules[i][1]);
-      if (next !== raw) node.nodeValue = next;
-    }
-    function rebrand(root) {
-      if (!root) return;
-      var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); var n;
-      while ((n = walker.nextNode())) rebrandNode(n);
-      document.querySelectorAll('a[href^="mailto:"]').forEach(function (a) { a.setAttribute('href', 'mailto:info@nguyenarchitecture.com'); });
-    }
-    function rescue() {
-      var root = document.getElementById('main'); if (!root) return;
-      var els = root.querySelectorAll('*');
-      for (var i = 0; i < els.length; i++) {
-        var el = els[i], cs = window.getComputedStyle(el);
-        if (cs.display === 'none') continue;
-        if (parseFloat(cs.opacity) < 0.05) {
-          el.style.setProperty('opacity', '1', 'important');
-          if (cs.transform && cs.transform !== 'none') el.style.setProperty('transform', 'none', 'important');
-          if (cs.filter && cs.filter !== 'none') el.style.setProperty('filter', 'none', 'important');
-        }
-      }
-    }
-    function start() {
-      rebrand(document.body);
-      var observer = new MutationObserver(function (muts) {
-        muts.forEach(function (m) {
-          // Pass force=true: a characterData event means the node value just changed
-          // (React reconciliation reverted it), so always re-apply regardless of done cache.
-          if (m.type === 'characterData') { rebrandNode(m.target, true); return; }
-          m.addedNodes.forEach(function (nd) { if (nd.nodeType === 3) rebrandNode(nd); else if (nd.querySelectorAll) rebrand(nd); });
-        });
-      });
-      observer.observe(document.body, { childList: true, subtree: true, characterData: true });
-      // Keep watching for 30s — Framer lazy-loads sections well past the initial render.
-      [15000, 25000].forEach(function (t) { setTimeout(function () { rebrand(document.body); }, t); });
-      setTimeout(function () { observer.disconnect(); }, 30000);
-    }
-    setTimeout(start, 1800);
-    setTimeout(rescue, 4500);
-  } catch (e) {}
-})();
-</script>`;
-
 
 function removeNonVisualTelemetry(html: string) {
   return html
@@ -553,6 +477,46 @@ const DESKTOP_SAFETYNET_SCRIPT = `
 })();
 </script>`;
 
+// Mobile "freeze": on phones we serve the SAME server-rewritten HTML as desktop (so the content is
+// identical to the published version) but remove Framer's client runtime — the module bundle that
+// re-hydrates the DOM. That hydration is what previously crashed the mobile tree (server text
+// "NGUYEN" vs the runtime's "ArcSphere" is a mismatch) and what reverted our rebranding. With the
+// runtime gone the page is a stable static snapshot. Framer ships ~1200 elements at opacity:0 for
+// its entrance animations and relies on that runtime to reveal them, so we must reveal them here or
+// the page renders blank. Animations do not play on mobile — an accepted trade for exact content parity.
+function stripFramerRuntime(input: string) {
+  return input.replace(/<script\b[^>]*\btype=["']module["'][^>]*>\s*<\/script>/gi, '');
+}
+
+const MOBILE_FREEZE_SCRIPT = `
+<style id="nguyen-mobile-freeze-style">
+  [style*="opacity:0;"],[style*="opacity: 0;"],[style*="opacity:0.001"],[style*="opacity: 0.001"],[data-framer-appear-id]{opacity:1 !important;transform:none !important;filter:none !important;visibility:visible !important;}
+</style>
+<script id="nguyen-mobile-freeze">
+(function(){
+  try {
+    function reveal(){
+      var root = document.getElementById('main') || document.body; if (!root) return;
+      var els = root.querySelectorAll('*');
+      for (var i = 0; i < els.length; i++) {
+        var el = els[i], cs = window.getComputedStyle(el);
+        if (cs.display === 'none') continue;
+        if (cs.visibility === 'hidden') el.style.setProperty('visibility', 'visible', 'important');
+        if (parseFloat(cs.opacity) < 0.05) {
+          el.style.setProperty('opacity', '1', 'important');
+          if (cs.transform && cs.transform !== 'none') el.style.setProperty('transform', 'none', 'important');
+          if (cs.filter && cs.filter !== 'none') el.style.setProperty('filter', 'none', 'important');
+        }
+      }
+    }
+    reveal();
+    document.addEventListener('DOMContentLoaded', reveal);
+    window.addEventListener('load', reveal);
+    [200, 600, 1200, 2500].forEach(function (t) { setTimeout(reveal, t); });
+  } catch (e) {}
+})();
+</script>`;
+
 async function getSource() {
   let lastError: unknown = null;
   for (let attempt = 0; attempt < 3; attempt += 1) {
@@ -574,21 +538,27 @@ export async function GET() {
     const userAgent = (await headers()).get('user-agent') || '';
     const mobile = isMobileUserAgent(userAgent);
 
+    // Apply the server-side rebranding for BOTH mobile and desktop so mobile serves the identical
+    // published content. (Mobile previously shipped raw Framer HTML and rebranded in-browser, which
+    // produced a different, unstable version — the source of the mobile/desktop mismatch.)
+    for (const [pattern, replacement] of REPLACEMENTS) html = html.replace(pattern, replacement);
+    // The branding replacements above run over the whole document, which rewrites "arcsphere"
+    // to "NGUYEN" inside the injected <base> tag too — restore the real origin.
+    html = html.replace(/<base\b[^>]*>/i, `<base href="${SOURCE_URL}">`);
+    html = html.replace(/info@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/gi, 'info@nguyenarchitecture.com');
+    html = html.replace(/href=["']mailto:[^"']+["']/gi, 'href="mailto:info@nguyenarchitecture.com"');
+    const phoneReplacements = ['(209) 233-8888', '(714) 707-8889']; let phoneIndex = 0;
+    html = html.replace(/<a([^>]*href=["']tel:[^"']+["'][^>]*)>([\s\S]*?)<\/a>/gi, (_match, attrs, body) => { const phone = phoneReplacements[Math.min(phoneIndex, phoneReplacements.length - 1)]; phoneIndex += 1; const nextAttrs = attrs.replace(/href=["']tel:[^"']+["']/i, `href="tel:${phone.replace(/[^+\d]/g, '')}"`); const nextBody = body.replace(/>\s*[+()\d .-]{7,}\s*</g, `>${phone}<`); return `<a${nextAttrs}>${nextBody}</a>`; });
+
     if (mobile) {
-      // On phones, rewriting the server HTML makes it differ from what Framer's client renders,
-      // and that hydration mismatch crashes the mobile tree (the page flashes in, then blanks).
-      // Keep the served DOM identical to Framer's so hydration succeeds and the animations run;
-      // the rebranding is applied after hydration by MOBILE_ENHANCE_SCRIPT instead.
-      html = html.replace('</body>', `${MOBILE_ENHANCE_SCRIPT}</body>`);
+      // Freeze the rewritten DOM: remove Framer's client runtime so it can't re-hydrate (which
+      // crashed the mobile tree before) or revert the rebranding, then reveal the entrance-animation
+      // elements the runtime would otherwise have shown. Result: mobile is a static snapshot that
+      // matches desktop exactly. The client-side patches below still run and stay put with no runtime
+      // fighting them.
+      html = stripFramerRuntime(html);
+      html = html.replace('</body>', `${MOBILE_FREEZE_SCRIPT}${CLIENT_PATCH}${DESKTOP_SAFETYNET_SCRIPT}</body>`);
     } else {
-      for (const [pattern, replacement] of REPLACEMENTS) html = html.replace(pattern, replacement);
-      // The branding replacements above run over the whole document, which rewrites "arcsphere"
-      // to "NGUYEN" inside the injected <base> tag too — restore the real origin.
-      html = html.replace(/<base\b[^>]*>/i, `<base href="${SOURCE_URL}">`);
-      html = html.replace(/info@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/gi, 'info@nguyenarchitecture.com');
-      html = html.replace(/href=["']mailto:[^"']+["']/gi, 'href="mailto:info@nguyenarchitecture.com"');
-      const phoneReplacements = ['(209) 233-8888', '(714) 707-8889']; let phoneIndex = 0;
-      html = html.replace(/<a([^>]*href=["']tel:[^"']+["'][^>]*)>([\s\S]*?)<\/a>/gi, (_match, attrs, body) => { const phone = phoneReplacements[Math.min(phoneIndex, phoneReplacements.length - 1)]; phoneIndex += 1; const nextAttrs = attrs.replace(/href=["']tel:[^"']+["']/i, `href="tel:${phone.replace(/[^+\d]/g, '')}"`); const nextBody = body.replace(/>\s*[+()\d .-]{7,}\s*</g, `>${phone}<`); return `<a${nextAttrs}>${nextBody}</a>`; });
       html = html.replace('</body>', `${CLIENT_PATCH}${DESKTOP_SAFETYNET_SCRIPT}</body>`);
     }
     return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'private, no-store' } });
