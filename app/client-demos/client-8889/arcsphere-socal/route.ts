@@ -637,40 +637,47 @@ const DESIGN_PANELS_PATCH = `
 })();
 </script>`
 
+// The RESIDENTIAL service-accordion row thumbnail. We find the row by the unique word "multifamily"
+// in its description text (not present in Project Expertise panels), then replace the first <img>
+// inside it with the client-supplied house photo. The marker attribute data-nguyen-resi-row="1"
+// tells BLUEPRINT_IMAGE_PATCH to skip this image so the two patches don't fight each other.
 const RESIDENTIAL_ROW_IMAGE_PATCH = `
 <script id="nguyen-socal-residential-row-image">
 (() => {
   var newSrc = window.location.origin + '/client-8889/residential/residential_house.png';
-  // Framer CDN image ID for the RESIDENTIAL accordion thumbnail
-  var FRAMER_ID = 'ecG0oXxVciB6YeEscSE3BDzmk';
-  var done = new WeakSet();
+  var MARKER = 'data-nguyen-resi-row';
 
-  function swapEl(el) {
-    if (done.has(el)) return;
-    done.add(el);
-    if (el.tagName === 'IMG') {
-      el.setAttribute('src', newSrc);
-      el.removeAttribute('srcset');
-      el.removeAttribute('sizes');
-      el.style.setProperty('object-fit', 'cover', 'important');
-      el.style.setProperty('object-position', 'center', 'important');
-      el.setAttribute('data-nguyen-row-img', newSrc);
-      var pic = el.closest('picture');
-      if (pic) pic.querySelectorAll('source').forEach(function(s) { s.setAttribute('srcset', newSrc); s.removeAttribute('sizes'); });
-    } else {
-      el.style.setProperty('background-image', 'url("' + newSrc + '")', 'important');
-      el.style.setProperty('background-size', 'cover', 'important');
-      el.style.setProperty('background-position', 'center', 'important');
-      el.setAttribute('data-nguyen-row-img', newSrc);
-    }
+  function compact(v) { return (v || '').replace(/\\s+/g, '').toLowerCase(); }
+
+  function swapImg(img) {
+    img.setAttribute('src', newSrc);
+    img.removeAttribute('srcset');
+    img.removeAttribute('sizes');
+    img.style.setProperty('object-fit', 'cover', 'important');
+    img.style.setProperty('object-position', 'center', 'important');
+    img.setAttribute(MARKER, '1');
+    var pic = img.closest('picture');
+    if (pic) pic.querySelectorAll('source').forEach(function(s) { s.setAttribute('srcset', newSrc); s.removeAttribute('sizes'); });
   }
 
   function patch() {
     if (!document.body) return;
-    // Target by specific Framer image ID in src or srcset
-    document.querySelectorAll('img[src*="' + FRAMER_ID + '"], img[srcset*="' + FRAMER_ID + '"]').forEach(swapEl);
-    // Fallback: inline style with background-image containing the Framer ID
-    document.querySelectorAll('[style*="' + FRAMER_ID + '"]').forEach(swapEl);
+    // Find the RESIDENTIAL service-row by the unique word "multifamily" in its description.
+    // Walk up to find the smallest element containing both the heading text and the thumbnail img.
+    var candidates = document.querySelectorAll('div, section, article, li');
+    for (var i = 0; i < candidates.length; i++) {
+      var el = candidates[i];
+      var text = compact(el.textContent);
+      if (!text.includes('multifamily')) continue;
+      // Skip any large wrapper that also contains commercial content
+      if (text.includes('commercialdesign') && text.length > 400) continue;
+      var img = el.querySelector('img');
+      if (!img) continue;
+      // Already correct — skip to avoid unnecessary DOM writes
+      if (img.getAttribute(MARKER) === '1' && img.getAttribute('src') === newSrc) continue;
+      swapImg(img);
+      break;
+    }
   }
 
   patch();
@@ -679,7 +686,7 @@ const RESIDENTIAL_ROW_IMAGE_PATCH = `
 
   var timer;
   var obs = new MutationObserver(function() { clearTimeout(timer); timer = setTimeout(patch, 150); });
-  if (document.body) obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['src', 'srcset', 'style'] });
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['src', 'srcset'] });
   setTimeout(function() { obs.disconnect(); }, 12000);
 })();
 </script>`
@@ -723,7 +730,8 @@ const BLUEPRINT_IMAGE_PATCH = `
       if (!match) return;
       if (PANEL_MAP.every((p) => text.includes(p.key))) return; // skip container holding both panels
       const img = el.querySelector('img');
-      if (img && img.getAttribute('data-nguyen-bp') !== match.src) swapImg(img, match.src);
+      // Skip the RESIDENTIAL service-row thumbnail (handled by RESIDENTIAL_ROW_IMAGE_PATCH)
+      if (img && !img.hasAttribute('data-nguyen-resi-row') && img.getAttribute('data-nguyen-bp') !== match.src) swapImg(img, match.src);
     });
   }
 
