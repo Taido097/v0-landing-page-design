@@ -676,7 +676,7 @@ const BLUEPRINT_IMAGE_PATCH = `
       if (!match) return;
       if (PANEL_MAP.every((p) => text.includes(p.key))) return; // skip container holding both panels
       const img = el.querySelector('img');
-      if (img) swapImg(img, match.src);
+      if (img && img.getAttribute('data-nguyen-bp') !== match.src) swapImg(img, match.src);
     });
   }
 
@@ -684,8 +684,10 @@ const BLUEPRINT_IMAGE_PATCH = `
   window.addEventListener('load', patchBlueprints, { once: true });
   [300, 800, 1800, 3500, 6000].forEach((t) => setTimeout(patchBlueprints, t));
 
-  // Re-apply any time Framer mutates the DOM (covers lazy-load src reverts)
-  const obs = new MutationObserver(patchBlueprints);
+  // Debounced observer — fires on src/srcset changes from Framer lazy-loading but throttled to
+  // avoid hammering querySelectorAll on every individual image load.
+  let bpTimer;
+  const obs = new MutationObserver(() => { clearTimeout(bpTimer); bpTimer = setTimeout(patchBlueprints, 150); });
   if (document.body) obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['src', 'srcset'] });
   setTimeout(() => obs.disconnect(), 12000);
 })();
@@ -848,7 +850,8 @@ const EXTRA_CARD_CLEANUP_PATCH = `
   cleanup();
   window.addEventListener('load', cleanup, { once: true });
   [300, 800, 1800, 3500, 6000].forEach((t) => setTimeout(cleanup, t));
-  const obs = new MutationObserver(() => cleanup());
+  let nexTimer;
+  const obs = new MutationObserver(() => { clearTimeout(nexTimer); nexTimer = setTimeout(cleanup, 150); });
   if (document.body) obs.observe(document.body, { childList: true, subtree: true });
   setTimeout(() => obs.disconnect(), 10000);
 })();
