@@ -477,45 +477,18 @@ const DESKTOP_SAFETYNET_SCRIPT = `
 })();
 </script>`;
 
-// Mobile "freeze": on phones we serve the SAME server-rewritten HTML as desktop (so the content is
-// identical to the published version) but remove Framer's client runtime — the module bundle that
-// re-hydrates the DOM. That hydration is what previously crashed the mobile tree (server text
-// "NGUYEN" vs the runtime's "ArcSphere" is a mismatch) and what reverted our rebranding. With the
-// runtime gone the page is a stable static snapshot. Framer ships ~1200 elements at opacity:0 for
-// its entrance animations and relies on that runtime to reveal them, so we must reveal them here or
-// the page renders blank. Animations do not play on mobile — an accepted trade for exact content parity.
-function stripFramerRuntime(input: string) {
-  return input.replace(/<script\b[^>]*\btype=["']module["'][^>]*>\s*<\/script>/gi, '');
+// Render the published DESKTOP page on phones. Framer builds a separate mobile-breakpoint layout
+// (different structure and nav) that diverged from the published desktop version and re-hydrated
+// unstably. Instead we force the viewport to a desktop width so Framer renders its desktop breakpoint
+// — the exact same layout, content and runtime as the published desktop site — auto-fitted to the
+// screen. This is a guaranteed 1:1 match with production because it IS the production desktop build.
+function forceDesktopViewport(input: string) {
+  const desktopViewport = '<meta name="viewport" content="width=1440">';
+  if (/<meta[^>]*name=["']viewport["'][^>]*>/i.test(input)) {
+    return input.replace(/<meta[^>]*name=["']viewport["'][^>]*>/i, desktopViewport);
+  }
+  return input.replace(/<head([^>]*)>/i, `<head$1>${desktopViewport}`);
 }
-
-const MOBILE_FREEZE_SCRIPT = `
-<style id="nguyen-mobile-freeze-style">
-  [style*="opacity:0;"],[style*="opacity: 0;"],[style*="opacity:0.001"],[style*="opacity: 0.001"],[data-framer-appear-id]{opacity:1 !important;transform:none !important;filter:none !important;visibility:visible !important;}
-</style>
-<script id="nguyen-mobile-freeze">
-(function(){
-  try {
-    function reveal(){
-      var root = document.getElementById('main') || document.body; if (!root) return;
-      var els = root.querySelectorAll('*');
-      for (var i = 0; i < els.length; i++) {
-        var el = els[i], cs = window.getComputedStyle(el);
-        if (cs.display === 'none') continue;
-        if (cs.visibility === 'hidden') el.style.setProperty('visibility', 'visible', 'important');
-        if (parseFloat(cs.opacity) < 0.05) {
-          el.style.setProperty('opacity', '1', 'important');
-          if (cs.transform && cs.transform !== 'none') el.style.setProperty('transform', 'none', 'important');
-          if (cs.filter && cs.filter !== 'none') el.style.setProperty('filter', 'none', 'important');
-        }
-      }
-    }
-    reveal();
-    document.addEventListener('DOMContentLoaded', reveal);
-    window.addEventListener('load', reveal);
-    [200, 600, 1200, 2500].forEach(function (t) { setTimeout(reveal, t); });
-  } catch (e) {}
-})();
-</script>`;
 
 async function getSource() {
   let lastError: unknown = null;
@@ -551,16 +524,12 @@ export async function GET() {
     html = html.replace(/<a([^>]*href=["']tel:[^"']+["'][^>]*)>([\s\S]*?)<\/a>/gi, (_match, attrs, body) => { const phone = phoneReplacements[Math.min(phoneIndex, phoneReplacements.length - 1)]; phoneIndex += 1; const nextAttrs = attrs.replace(/href=["']tel:[^"']+["']/i, `href="tel:${phone.replace(/[^+\d]/g, '')}"`); const nextBody = body.replace(/>\s*[+()\d .-]{7,}\s*</g, `>${phone}<`); return `<a${nextAttrs}>${nextBody}</a>`; });
 
     if (mobile) {
-      // Freeze the rewritten DOM: remove Framer's client runtime so it can't re-hydrate (which
-      // crashed the mobile tree before) or revert the rebranding, then reveal the entrance-animation
-      // elements the runtime would otherwise have shown. Result: mobile is a static snapshot that
-      // matches desktop exactly. The client-side patches below still run and stay put with no runtime
-      // fighting them.
-      html = stripFramerRuntime(html);
-      html = html.replace('</body>', `${MOBILE_FREEZE_SCRIPT}${CLIENT_PATCH}${DESKTOP_SAFETYNET_SCRIPT}</body>`);
-    } else {
-      html = html.replace('</body>', `${CLIENT_PATCH}${DESKTOP_SAFETYNET_SCRIPT}</body>`);
+      // Serve phones the identical desktop build, just with the viewport forced to a desktop width so
+      // Framer renders its desktop breakpoint (its mobile breakpoint is a different, diverged layout).
+      // Everything else — content, runtime, animations, the client patches below — is exactly desktop.
+      html = forceDesktopViewport(html);
     }
+    html = html.replace('</body>', `${CLIENT_PATCH}${DESKTOP_SAFETYNET_SCRIPT}</body>`);
     return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'private, no-store' } });
   } catch {
     return new Response('<!doctype html><html><body style="font-family:Arial,sans-serif;padding:40px">Concept 1 is temporarily unavailable. Please refresh in a moment.</body></html>', { status: 502, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
