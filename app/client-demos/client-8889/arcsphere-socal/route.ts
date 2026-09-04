@@ -641,28 +641,57 @@ const RESIDENTIAL_ROW_IMAGE_PATCH = `
 <script id="nguyen-socal-residential-row-image">
 (() => {
   var src = window.location.origin + '/client-8889/residential/residential_house.png';
-  var patched = false;
+  var compact = function(v) { return (v || '').replace(/\\s+/g, '').toLowerCase(); };
+  var KEY = 'residentialdesign';
+  var ANTI = 'commercialdesign';
+  var patched = new WeakSet();
+
+  function swapImg(img) {
+    img.setAttribute('src', src);
+    img.removeAttribute('srcset');
+    img.removeAttribute('sizes');
+    img.style.setProperty('object-fit', 'cover', 'important');
+    img.style.setProperty('object-position', 'center', 'important');
+    img.setAttribute('data-nguyen-row-img', src);
+    var pic = img.closest('picture');
+    if (pic) pic.querySelectorAll('source').forEach(function(s) { s.setAttribute('srcset', src); s.removeAttribute('sizes'); });
+  }
 
   function patchResidentialRow() {
-    if (patched) return;
-    var panels = document.querySelectorAll('[data-nguyen-panel-url]');
-    for (var i = 0; i < panels.length; i++) {
-      var panel = panels[i];
-      var url = panel.getAttribute('data-nguyen-panel-url') || '';
-      if (!url.endsWith('/custom-homes')) continue;
-      var img = panel.querySelector('img');
-      if (!img) continue;
-      if (img.getAttribute('data-nguyen-row-img') === src) { patched = true; return; }
-      img.setAttribute('src', src);
-      img.removeAttribute('srcset');
-      img.removeAttribute('sizes');
-      img.style.setProperty('object-fit', 'cover', 'important');
-      img.style.setProperty('object-position', 'center', 'important');
-      img.setAttribute('data-nguyen-row-img', src);
-      var picture = img.closest('picture');
-      if (picture) picture.querySelectorAll('source').forEach(function(s) { s.setAttribute('srcset', src); s.removeAttribute('sizes'); });
-      patched = true;
-      return;
+    if (!document.body) return;
+    var all = document.querySelectorAll('div, section, article, li');
+    for (var i = 0; i < all.length; i++) {
+      var el = all[i];
+      if (patched.has(el)) continue;
+      var text = compact(el.textContent);
+      if (!text.includes(KEY)) continue;
+      if (text.includes(ANTI)) continue;
+      if (text.length > 2000) continue;
+
+      // Try <img> first
+      var img = el.querySelector('img');
+      if (img) {
+        if (img.getAttribute('data-nguyen-row-img') !== src) swapImg(img);
+        patched.add(el);
+        continue;
+      }
+
+      // Fallback: background-image on a child div
+      var kids = el.querySelectorAll('div, span');
+      for (var j = 0; j < kids.length; j++) {
+        var bg = kids[j].style.backgroundImage;
+        if (!bg) bg = window.getComputedStyle(kids[j]).backgroundImage;
+        if (bg && bg !== 'none' && bg.indexOf('url(') !== -1) {
+          if (kids[j].getAttribute('data-nguyen-row-img') !== src) {
+            kids[j].style.setProperty('background-image', 'url("' + src + '")', 'important');
+            kids[j].style.setProperty('background-size', 'cover', 'important');
+            kids[j].style.setProperty('background-position', 'center', 'important');
+            kids[j].setAttribute('data-nguyen-row-img', src);
+          }
+          patched.add(el);
+          break;
+        }
+      }
     }
   }
 
@@ -672,7 +701,7 @@ const RESIDENTIAL_ROW_IMAGE_PATCH = `
 
   var timer;
   var obs = new MutationObserver(function() { clearTimeout(timer); timer = setTimeout(patchResidentialRow, 150); });
-  if (document.body) obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-nguyen-panel-url'] });
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true });
   setTimeout(function() { obs.disconnect(); }, 12000);
 })();
 </script>`
