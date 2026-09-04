@@ -54,7 +54,8 @@ const SPLIT_TEXT_PATCH = `
     }
   });
   observer.observe(document.body, { childList: true, subtree: true, characterData: true });
-  setTimeout(() => { patchRoot(document.body); observer.disconnect(); }, 6000);
+  [1500, 3000, 6000, 10000, 20000, 40000].forEach((t) => setTimeout(() => patchRoot(document.body), t));
+  setTimeout(() => { patchRoot(document.body); observer.disconnect(); }, 60000);
 })();
 </script>`
 
@@ -91,7 +92,26 @@ const BRAND_PATCH = `
 
   patchBrand();
   window.addEventListener('load', patchBrand, { once: true });
-  [250, 750, 1500, 3000].forEach((delay) => setTimeout(patchBrand, delay));
+  [250, 750, 1500, 3000, 6000, 10000, 20000, 40000, 60000].forEach((delay) => setTimeout(patchBrand, delay));
+
+  // MutationObserver so React reconciliation reverts are caught and re-patched immediately.
+  const brandObs = new MutationObserver((mutations) => {
+    for (const m of mutations) {
+      if (m.type === 'characterData') {
+        const t = normalize(m.target.nodeValue);
+        if (t === 'ArcSphere' || t === 'ArcSphere Studio') { patchBrand(); break; }
+      } else if (m.type === 'childList') {
+        for (const nd of m.addedNodes) {
+          if (nd.nodeType === Node.TEXT_NODE) {
+            const t = normalize(nd.nodeValue);
+            if (t === 'ArcSphere' || t === 'ArcSphere Studio') { patchBrand(); break; }
+          }
+        }
+      }
+    }
+  });
+  if (document.body) brandObs.observe(document.body, { childList: true, subtree: true, characterData: true });
+  setTimeout(() => brandObs.disconnect(), 60000);
 })();
 </script>`
 
@@ -642,11 +662,11 @@ const FOOTER_PATCH = `
 
   patchFooter();
   window.addEventListener('load', patchFooter, { once: true });
-  [300, 800, 1800, 3500, 6000, 10000].forEach((t) => setTimeout(patchFooter, t));
+  [300, 800, 1800, 3500, 6000, 10000, 20000, 40000].forEach((t) => setTimeout(patchFooter, t));
 
   const obs = new MutationObserver(patchFooter);
   if (document.body) obs.observe(document.body, { childList: true, subtree: true, characterData: true });
-  setTimeout(() => obs.disconnect(), 12000);
+  setTimeout(() => obs.disconnect(), 60000);
 })();
 </script>`
 
@@ -679,11 +699,11 @@ const ICON_BAR_PATCH = `
 
   hideIconBar();
   window.addEventListener('load', hideIconBar, { once: true });
-  [300, 800, 1800, 3500, 6000, 10000].forEach((t) => setTimeout(hideIconBar, t));
+  [300, 800, 1800, 3500, 6000, 10000, 20000, 40000].forEach((t) => setTimeout(hideIconBar, t));
 
   const obs = new MutationObserver(hideIconBar);
   if (document.body) obs.observe(document.body, { childList: true, subtree: true });
-  setTimeout(() => obs.disconnect(), 12000);
+  setTimeout(() => obs.disconnect(), 60000);
 })();
 </script>`
 
