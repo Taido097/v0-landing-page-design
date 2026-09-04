@@ -637,6 +637,71 @@ const DESIGN_PANELS_PATCH = `
 })();
 </script>`
 
+// Replace the Framer background images in the two Project Expertise (design) panels with the
+// client-supplied blueprint images. Matches each panel by its label text, then swaps the img
+// src and layers an overlay image on top (same technique as patchThirdProjectImage) so the
+// blueprint always wins over Framer's lazy-loaded original.
+const BLUEPRINT_IMAGE_PATCH = `
+<script id="nguyen-socal-blueprint-images">
+(() => {
+  const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
+  const origin = window.location.origin;
+  const PANEL_MAP = [
+    { key: 'residentialdesign', src: origin + '/client-8889/projects/residential_blueprint.png' },
+    { key: 'commercialdesign',  src: origin + '/client-8889/projects/commercial_blueprint.png' },
+  ];
+
+  function replaceImg(img, src) {
+    if (img.getAttribute('data-nguyen-bp') === src) return;
+    img.setAttribute('data-nguyen-bp', src);
+    img.setAttribute('src', src);
+    img.removeAttribute('srcset');
+    img.removeAttribute('sizes');
+    img.style.setProperty('object-fit', 'cover', 'important');
+    img.style.setProperty('object-position', 'center', 'important');
+    img.style.setProperty('filter', 'none', 'important');
+    img.style.setProperty('opacity', '1', 'important');
+    img.style.setProperty('visibility', 'visible', 'important');
+    const picture = img.closest('picture');
+    if (picture) picture.querySelectorAll('source').forEach((s) => { s.setAttribute('srcset', src); s.removeAttribute('sizes'); });
+    // Overlay that always wins over Framer's lazy-loaded original
+    const mediaParent = img.parentElement;
+    if (!mediaParent) return;
+    let overlay = mediaParent.querySelector('[data-nguyen-bp-overlay]');
+    if (!overlay) {
+      overlay = document.createElement('img');
+      overlay.setAttribute('data-nguyen-bp-overlay', '1');
+      overlay.setAttribute('alt', '');
+      overlay.setAttribute('decoding', 'async');
+      if (window.getComputedStyle(mediaParent).position === 'static') mediaParent.style.setProperty('position', 'relative', 'important');
+      overlay.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:none;opacity:1;visibility:visible;z-index:2;pointer-events:none;border-radius:0;';
+      mediaParent.appendChild(overlay);
+    }
+    if (overlay.getAttribute('src') !== src) overlay.setAttribute('src', src);
+  }
+
+  function patchBlueprints() {
+    if (!document.body) return;
+    const candidates = Array.from(document.querySelectorAll('div,section,article'));
+    candidates.forEach((el) => {
+      const text = compact(el.textContent);
+      const match = PANEL_MAP.find((p) => text.includes(p.key));
+      if (!match) return;
+      if (PANEL_MAP.every((p) => text.includes(p.key))) return; // skip parent containing both panels
+      const img = el.querySelector('img');
+      if (img) replaceImg(img, match.src);
+    });
+  }
+
+  patchBlueprints();
+  window.addEventListener('load', patchBlueprints, { once: true });
+  [300, 800, 1800, 3500, 6000].forEach((t) => setTimeout(patchBlueprints, t));
+  const obs = new MutationObserver(() => patchBlueprints());
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true });
+  setTimeout(() => obs.disconnect(), 12000);
+})();
+</script>`
+
 const FOOTER_PATCH = `
 <script id="nguyen-socal-footer-patch">
 (() => {
@@ -873,7 +938,7 @@ export async function GET() {
 
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${BLUEPRINT_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')
