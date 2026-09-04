@@ -339,23 +339,29 @@ const ENGINEERING_SERVICE_PATCH = `
   ]);
   const targetUrl = window.location.origin + '/client-demos/client-8889/residential/services/engineering-approvals';
 
-  function findEngineeringCard() {
-    const existing = document.querySelector('[data-nguyen-engineering-service="true"]');
-    if (existing) return existing;
-
+  function findEngineeringCards() {
+    // Framer ships one DOM copy per breakpoint (desktop / tablet / phone), so return the card for EVERY
+    // copy — patching only the first left the phone Engineering card unconverted (and missing, since the
+    // base layer no longer renders it as a plain card). Falls back to a wrapping ancestor when a mobile
+    // card layout has no direct img.
+    const cards = [];
     const candidates = Array.from(document.querySelectorAll('*'));
     for (const candidate of candidates) {
       const key = compact(candidate.textContent);
       if (key !== sourceDescription && key !== targetDescriptionKey) continue;
+      let picked = null;
       let card = candidate;
       for (let depth = 0; card && depth < 10; depth += 1, card = card.parentElement) {
         if (!card.querySelector?.('img')) continue;
         const text = compact(card.textContent);
         if (!text.includes(sourceDescription) && !text.includes(targetDescriptionKey)) continue;
-        return card;
+        picked = card;
+        break;
       }
+      if (!picked) picked = candidate.parentElement?.parentElement || candidate.parentElement || candidate;
+      if (picked && cards.indexOf(picked) === -1) cards.push(picked);
     }
-    return null;
+    return cards;
   }
 
   function replaceLeafText(card, keys, replacement) {
@@ -375,16 +381,20 @@ const ENGINEERING_SERVICE_PATCH = `
   }
 
   function patchEngineering() {
-    const card = findEngineeringCard();
-    if (!card) return false;
+    const cards = findEngineeringCards();
+    if (!cards.length) return false;
 
-    replaceLeafText(card, new Set([sourceDescription, targetDescriptionKey]), targetDescription);
-    replaceLeafText(card, titleKeys, 'ENGINEERING');
+    cards.forEach((card) => {
+      replaceLeafText(card, new Set([sourceDescription, targetDescriptionKey]), targetDescription);
+      replaceLeafText(card, titleKeys, 'ENGINEERING');
 
-    card.setAttribute('data-nguyen-engineering-service', 'true');
-    card.setAttribute('data-nguyen-link', targetUrl);
-    card.style.removeProperty('display');
-    card.style.setProperty('cursor', 'pointer', 'important');
+      card.setAttribute('data-nguyen-engineering-service', 'true');
+      card.setAttribute('data-nguyen-link', targetUrl);
+      // Un-hide if any layer set display:none; the base no longer hides this card, so don't force a
+      // display value (that could break Framer's own flex/grid) — just clear an inherited none.
+      if (card.style.display === 'none') card.style.removeProperty('display');
+      card.style.setProperty('cursor', 'pointer', 'important');
+    });
     return true;
   }
 
@@ -438,7 +448,8 @@ const PROJECT_CARDS_PATCH = `
         const hasCategory = CATEGORY_MAP.some((e) => text.includes(e.key));
         if (!hasCategory) continue;
         const r = cursor.getBoundingClientRect();
-        if (r.width > 200 && r.height > 200) { cards.push(cursor); break; }
+        // Lowered from 200 so phone-width cards (Framer's mobile breakpoint) are not excluded.
+        if (r.width > 130 && r.height > 130) { cards.push(cursor); break; }
       }
     });
 
@@ -450,7 +461,7 @@ const PROJECT_CARDS_PATCH = `
         const hasCategory = CATEGORY_MAP.some((e) => text.includes(e.key));
         if (!hasCategory) return;
         const r = el.getBoundingClientRect();
-        if (r.width < 200 || r.height < 200) return;
+        if (r.width < 130 || r.height < 130) return;
         // Ensure it's not a parent of another already found card
         if (cards.some((c) => el.contains(c) || c.contains(el))) return;
         cards.push(el);
@@ -551,7 +562,8 @@ const DESIGN_PANELS_PATCH = `
       const match = PANELS.find((p) => text.includes(p.key));
       if (!match) return;
       const r = el.getBoundingClientRect();
-      if (r.width < 300 || r.height < 200) return;
+      // Lowered from 300x200 so phone-width design panels are not excluded.
+      if (r.width < 150 || r.height < 130) return;
       if (PANELS.every((p) => text.includes(p.key))) return;
       patchedLinks.add(el);
 
@@ -633,25 +645,38 @@ const FOOTER_PATCH = `
   const OLD_ADDR = compact('Dubai-Based Architecture And Interior Design Studio');
   const NEW_ADDR = '7171 Warner Ave., Ste. B, Huntington Beach, CA 92647';
 
+  const ADDR_KEY = 'basedarchitectureandinteriordesignstudio';
+  const PHONE_DIGITS = '6281234567890';
+
   function patchFooter() {
-    // Fix phone number and address
+    // Phone: the original '+62 812 3456 7890' text node -> two lines. Match on the digits so formatting
+    // or a leading '+' doesn't break it. Runs across every breakpoint copy via the tree walker.
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     let node;
     while ((node = walker.nextNode())) {
       const key = compact(node.nodeValue);
-      if (key === OLD_PHONE) {
-        // Split into two lines with a <br>
+      if (key === OLD_PHONE || key.indexOf(PHONE_DIGITS) !== -1) {
         const parent = node.parentElement;
-        if (parent) {
+        if (parent && !parent.querySelector('[data-nguyen-footer-phone]')) {
           parent.innerHTML = '';
-          parent.appendChild(document.createTextNode('209-233-8888'));
-          parent.appendChild(document.createElement('br'));
-          parent.appendChild(document.createTextNode('714-707-8889'));
+          const wrap = document.createElement('span');
+          wrap.setAttribute('data-nguyen-footer-phone', '1');
+          wrap.appendChild(document.createTextNode('209-233-8888'));
+          wrap.appendChild(document.createElement('br'));
+          wrap.appendChild(document.createTextNode('714-707-8889'));
+          parent.appendChild(wrap);
         }
-      } else if (key === OLD_ADDR) {
-        node.nodeValue = NEW_ADDR;
       }
     }
+
+    // Address: the studio tagline — the base layer already rewrote 'Dubai' -> 'Huntington Beach, CA'
+    // inside it, so match the stable tail instead of the original 'Dubai-Based...' string. Replace the
+    // tightest element that still wraps the tagline (works whether it's one text node or split letters).
+    document.querySelectorAll('div,span,p,a,h1,h2,h3,h4,h5,h6,li').forEach((el) => {
+      if (compact(el.textContent).indexOf(ADDR_KEY) === -1) return;
+      if (Array.from(el.children).some((c) => compact(c.textContent).indexOf(ADDR_KEY) !== -1)) return;
+      if (normalize(el.textContent) !== NEW_ADDR) el.textContent = NEW_ADDR;
+    });
 
     // Fix email link color — match surrounding text color
     document.querySelectorAll('a[href^="mailto:"]').forEach((a) => {

@@ -1,12 +1,6 @@
-import { headers } from 'next/headers';
-
 const SOURCE_URL = 'https://arcsphere-studio.framer.website/';
 
 export const revalidate = 3600;
-
-function isMobileUserAgent(userAgent: string) {
-  return /Android|iPhone|iPad|iPod|Mobile|IEMobile|Opera Mini/i.test(userAgent);
-}
 
 const CLEANUP = `
 <style id="designedbytd-client-demo-cleanup">
@@ -73,82 +67,6 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/Dubai/gi, 'Huntington Beach, CA'],
   [/United Arab Emirates/gi, 'Orange County, CA'],
 ];
-
-// Mobile keeps Framer's client runtime so the appear animations play like desktop. The served DOM is
-// left identical to Framer's (no server-side rewrites) so hydration matches and nothing wipes/flashes.
-// After hydration this applies the SAME REPLACEMENTS as desktop (as guarded substring rules so a
-// rule whose output contains its input can't grow), plus exact service-card titles, for content
-// parity — then a one-time safety net reveals anything still hidden if the runtime ever fails.
-const MOBILE_SUBSTRING_RULES = JSON.stringify(REPLACEMENTS.map(([re, rep]) => [re.source, re.flags, rep]));
-const MOBILE_EXACT_RULES = JSON.stringify([
-  ['Architectural', 'RESIDENTIAL'],
-  ['Interior Design', 'COMMERCIAL'],
-  ['Renovation & Remodeling', 'ADU'],
-  ['3D Visualization', 'LAND DEVELOPMENT'],
-  ['Designing modern buildings that combine aesthetics, efficiency, and long-term value.', 'Custom homes, additions, remodels, and multifamily residential design with coordinated engineering and permitting.'],
-  ['Creating refined interiors through thoughtful materials, lighting, and spatial composition.', 'Architecture and engineering for offices, retail, restaurants, tenant improvements, and other commercial projects.'],
-  ['Transforming outdated spaces into modern and carefully designed environments', 'ADU design, engineering, Title 24, permit documentation, and city coordination from concept through approval.'],
-  ['High-quality visualizations that help clients clearly understand the design before construction begins.', 'Site planning, entitlement support, grading and utility coordination, and development documentation for residential and commercial sites.']
-]);
-const MOBILE_ENHANCE_SCRIPT = `
-<script id="nguyen-mobile-enhance">
-(function(){
-  try {
-    if (!window.matchMedia || !window.matchMedia('(max-width: 809.98px)').matches) return;
-    var substringRules = ${MOBILE_SUBSTRING_RULES}.map(function (r) { return [new RegExp(r[0], r[1]), r[2]]; });
-    var exactRules = new Map(${MOBILE_EXACT_RULES}.map(function (r) { return [r[0].replace(/\\s+/g, ' ').trim(), r[1]]; }));
-    var done = new WeakSet();
-    // force=true bypasses the done-cache so characterData reverts (React reconciliation
-    // resetting a text node to the original brand name) are always re-patched.
-    function rebrandNode(node, force) {
-      var raw = node.nodeValue; if (!raw || !raw.trim()) return;
-      var exact = exactRules.get(raw.replace(/\\s+/g, ' ').trim());
-      if (exact !== undefined) { if (node.nodeValue !== exact) node.nodeValue = exact; return; }
-      if (!force && done.has(node)) return;
-      done.add(node);
-      var next = raw;
-      for (var i = 0; i < substringRules.length; i++) next = next.replace(substringRules[i][0], substringRules[i][1]);
-      if (next !== raw) node.nodeValue = next;
-    }
-    function rebrand(root) {
-      if (!root) return;
-      var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); var n;
-      while ((n = walker.nextNode())) rebrandNode(n);
-      document.querySelectorAll('a[href^="mailto:"]').forEach(function (a) { a.setAttribute('href', 'mailto:info@nguyenarchitecture.com'); });
-    }
-    function rescue() {
-      var root = document.getElementById('main'); if (!root) return;
-      var els = root.querySelectorAll('*');
-      for (var i = 0; i < els.length; i++) {
-        var el = els[i], cs = window.getComputedStyle(el);
-        if (cs.display === 'none') continue;
-        if (parseFloat(cs.opacity) < 0.05) {
-          el.style.setProperty('opacity', '1', 'important');
-          if (cs.transform && cs.transform !== 'none') el.style.setProperty('transform', 'none', 'important');
-          if (cs.filter && cs.filter !== 'none') el.style.setProperty('filter', 'none', 'important');
-        }
-      }
-    }
-    function start() {
-      rebrand(document.body);
-      var observer = new MutationObserver(function (muts) {
-        muts.forEach(function (m) {
-          // Pass force=true: a characterData event means the node value just changed
-          // (React reconciliation reverted it), so always re-apply regardless of done cache.
-          if (m.type === 'characterData') { rebrandNode(m.target, true); return; }
-          m.addedNodes.forEach(function (nd) { if (nd.nodeType === 3) rebrandNode(nd); else if (nd.querySelectorAll) rebrand(nd); });
-        });
-      });
-      observer.observe(document.body, { childList: true, subtree: true, characterData: true });
-      // Keep watching for 30s — Framer lazy-loads sections well past the initial render.
-      [15000, 25000].forEach(function (t) { setTimeout(function () { rebrand(document.body); }, t); });
-      setTimeout(function () { observer.disconnect(); }, 30000);
-    }
-    setTimeout(start, 1800);
-    setTimeout(rescue, 4500);
-  } catch (e) {}
-})();
-</script>`;
 
 
 function removeNonVisualTelemetry(html: string) {
@@ -258,7 +176,8 @@ const CLIENT_PATCH = `
     }
   ];
   const extraServiceDescriptions = [
-    'Optimizing layouts to improve functionality, circulation, and spatial flow.',
+    // 'Optimizing layouts...' is intentionally NOT hidden here — the socal layer converts that card into
+    // the Engineering card. Hiding it on all breakpoints left the phone Engineering card missing.
     'Professional guidance during construction to ensure the design vision is executed correctly.'
   ];
   const phones = ['(209) 233-8888', '(714) 707-8889'];
@@ -285,31 +204,30 @@ const CLIENT_PATCH = `
   function patchMappedCard(root, replacements, keys) {
     if (!root || root.nodeType !== Node.ELEMENT_NODE) return false;
     const element = root;
-    const candidates = [element, ...element.querySelectorAll('*')];
-    let card = null;
-    for (let i = candidates.length - 1; i >= 0; i -= 1) {
-      const candidate = candidates[i];
-      const text = compact(candidate.textContent);
-      if (!keys.every((key) => text.includes(key))) continue;
-      card = candidate;
-      break;
-    }
-    if (!card) {
+    const all = [element, ...element.querySelectorAll('*')];
+    // Framer ships one DOM copy of the card per breakpoint (desktop / tablet / phone). Collect the
+    // minimal container holding all keys in EACH copy — patching only one left the phone project card
+    // with its original label (e.g. "Serenity Villa"), which also broke click-routing that matches on
+    // the card's category text.
+    let cards = all.filter((el) => { const t = compact(el.textContent); return keys.every((k) => t.includes(k)) && el.querySelector?.('img'); });
+    cards = cards.filter((el) => !cards.some((other) => other !== el && el.contains(other)));
+    if (!cards.length) {
       let cursor = element;
       for (let depth = 0; cursor && depth < 10; depth += 1, cursor = cursor.parentElement) {
-        const text = compact(cursor.textContent);
-        if (keys.every((key) => text.includes(key))) { card = cursor; break; }
+        if (keys.every((key) => compact(cursor.textContent).includes(key))) { cards = [cursor]; break; }
       }
     }
-    if (!card) return false;
-    const cardCandidates = [card, ...card.querySelectorAll('*')];
-    cardCandidates.forEach((candidate) => {
-      const key = compact(candidate.textContent);
-      const replacement = replacements.get(key);
-      if (!replacement) return;
-      const hasSameTextChild = Array.from(candidate.children).some((child) => compact(child.textContent) === key);
-      if (hasSameTextChild) return;
-      candidate.textContent = replacement;
+    if (!cards.length) return false;
+    cards.forEach((card) => {
+      const cardCandidates = [card, ...card.querySelectorAll('*')];
+      cardCandidates.forEach((candidate) => {
+        const key = compact(candidate.textContent);
+        const replacement = replacements.get(key);
+        if (!replacement) return;
+        const hasSameTextChild = Array.from(candidate.children).some((child) => compact(child.textContent) === key);
+        if (hasSameTextChild) return;
+        candidate.textContent = replacement;
+      });
     });
     return true;
   }
@@ -376,22 +294,34 @@ const CLIENT_PATCH = `
     }
     return false;
   }
-  function findServiceCardByDescription(root, description) {
-    if (!root || root.nodeType !== Node.ELEMENT_NODE) return null;
+  function findServiceCardsByDescription(root, description) {
+    // Framer ships a separate DOM copy of every section per breakpoint (desktop / tablet / phone), so a
+    // service card's description text appears three times. Return ALL matching cards — not just the first
+    // — otherwise only the desktop card gets patched and the phone card keeps the original extra card,
+    // unreplaced text and unwired link. An img-bearing ancestor is the card; if none is found we fall back
+    // to a compact ancestor that still wraps the description so mobile layouts without a direct img match.
+    if (!root || root.nodeType !== Node.ELEMENT_NODE) return [];
     const target = compact(description);
     const element = root;
     const candidates = [element, ...element.querySelectorAll('*')];
+    const cards = [];
     for (const candidate of candidates) {
       if (compact(candidate.textContent) !== target) continue;
+      let picked = null;
       let card = candidate;
       for (let depth = 0; card && depth < 8; depth += 1, card = card.parentElement) {
         if (!card.querySelector?.('img')) continue;
-        const text = compact(card.textContent);
-        if (!text.includes(target)) continue;
-        return card;
+        if (!compact(card.textContent).includes(target)) continue;
+        picked = card;
+        break;
       }
+      if (!picked) {
+        // No image ancestor (some mobile card layouts) — take the grandparent that still wraps the text.
+        picked = candidate.parentElement?.parentElement || candidate.parentElement || candidate;
+      }
+      if (picked && cards.indexOf(picked) === -1) cards.push(picked);
     }
-    return null;
+    return cards;
   }
   function patchServiceCard(card, spec) {
     const sourceTitleKeys = new Set(spec.sourceTitles.map(compact));
@@ -422,12 +352,10 @@ const CLIENT_PATCH = `
   function patchServicesSection(root) {
     if (!root || root.nodeType !== Node.ELEMENT_NODE) return;
     serviceSpecs.forEach((spec) => {
-      const card = findServiceCardByDescription(root, spec.sourceDescription);
-      if (card) patchServiceCard(card, spec);
+      findServiceCardsByDescription(root, spec.sourceDescription).forEach((card) => patchServiceCard(card, spec));
     });
     extraServiceDescriptions.forEach((description) => {
-      const card = findServiceCardByDescription(root, description);
-      if (card) card.style.setProperty('display', 'none', 'important');
+      findServiceCardsByDescription(root, description).forEach((card) => card.style.setProperty('display', 'none', 'important'));
     });
   }
   function keepResidentialLabelOnOneLine(root) {
@@ -571,26 +499,20 @@ export async function GET() {
     html = html.replace(/<head([^>]*)>/i, `<head$1><base href="${SOURCE_URL}"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="description" content="NGUYEN ARCHITECTURE & ENGINEERING — commercial architecture, engineering, tenant improvement and building permit support in Orange County.">${CLEANUP}`);
     html = html.replace(/<title>[^<]*<\/title>/i, '<title>NGUYEN ARCHITECTURE & ENGINEERING — Website Demo</title>');
 
-    const userAgent = (await headers()).get('user-agent') || '';
-    const mobile = isMobileUserAgent(userAgent);
+    // Apply the server-side rebranding for every device. Both desktop and phones now get the same
+    // server-rewritten HTML and Framer renders its own responsive layout for each — desktop breakpoint
+    // on a computer, Framer's purpose-built phone layout on a phone — with the content already correct
+    // in the markup (no in-browser text patching to fight, no desktop layout crammed onto a phone).
+    for (const [pattern, replacement] of REPLACEMENTS) html = html.replace(pattern, replacement);
+    // The branding replacements above run over the whole document, which rewrites "arcsphere"
+    // to "NGUYEN" inside the injected <base> tag too — restore the real origin.
+    html = html.replace(/<base\b[^>]*>/i, `<base href="${SOURCE_URL}">`);
+    html = html.replace(/info@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/gi, 'info@nguyenarchitecture.com');
+    html = html.replace(/href=["']mailto:[^"']+["']/gi, 'href="mailto:info@nguyenarchitecture.com"');
+    const phoneReplacements = ['(209) 233-8888', '(714) 707-8889']; let phoneIndex = 0;
+    html = html.replace(/<a([^>]*href=["']tel:[^"']+["'][^>]*)>([\s\S]*?)<\/a>/gi, (_match, attrs, body) => { const phone = phoneReplacements[Math.min(phoneIndex, phoneReplacements.length - 1)]; phoneIndex += 1; const nextAttrs = attrs.replace(/href=["']tel:[^"']+["']/i, `href="tel:${phone.replace(/[^+\d]/g, '')}"`); const nextBody = body.replace(/>\s*[+()\d .-]{7,}\s*</g, `>${phone}<`); return `<a${nextAttrs}>${nextBody}</a>`; });
 
-    if (mobile) {
-      // On phones, rewriting the server HTML makes it differ from what Framer's client renders,
-      // and that hydration mismatch crashes the mobile tree (the page flashes in, then blanks).
-      // Keep the served DOM identical to Framer's so hydration succeeds and the animations run;
-      // the rebranding is applied after hydration by MOBILE_ENHANCE_SCRIPT instead.
-      html = html.replace('</body>', `${MOBILE_ENHANCE_SCRIPT}</body>`);
-    } else {
-      for (const [pattern, replacement] of REPLACEMENTS) html = html.replace(pattern, replacement);
-      // The branding replacements above run over the whole document, which rewrites "arcsphere"
-      // to "NGUYEN" inside the injected <base> tag too — restore the real origin.
-      html = html.replace(/<base\b[^>]*>/i, `<base href="${SOURCE_URL}">`);
-      html = html.replace(/info@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/gi, 'info@nguyenarchitecture.com');
-      html = html.replace(/href=["']mailto:[^"']+["']/gi, 'href="mailto:info@nguyenarchitecture.com"');
-      const phoneReplacements = ['(209) 233-8888', '(714) 707-8889']; let phoneIndex = 0;
-      html = html.replace(/<a([^>]*href=["']tel:[^"']+["'][^>]*)>([\s\S]*?)<\/a>/gi, (_match, attrs, body) => { const phone = phoneReplacements[Math.min(phoneIndex, phoneReplacements.length - 1)]; phoneIndex += 1; const nextAttrs = attrs.replace(/href=["']tel:[^"']+["']/i, `href="tel:${phone.replace(/[^+\d]/g, '')}"`); const nextBody = body.replace(/>\s*[+()\d .-]{7,}\s*</g, `>${phone}<`); return `<a${nextAttrs}>${nextBody}</a>`; });
-      html = html.replace('</body>', `${CLIENT_PATCH}${DESKTOP_SAFETYNET_SCRIPT}</body>`);
-    }
+    html = html.replace('</body>', `${CLIENT_PATCH}${DESKTOP_SAFETYNET_SCRIPT}</body>`);
     return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'private, no-store' } });
   } catch {
     return new Response('<!doctype html><html><body style="font-family:Arial,sans-serif;padding:40px">Concept 1 is temporarily unavailable. Please refresh in a moment.</body></html>', { status: 502, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
