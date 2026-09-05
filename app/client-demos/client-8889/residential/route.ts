@@ -419,36 +419,17 @@ const SQFT_GUIDE_PATCH = `
 
   /* ── find hero insertion point ── */
   function findAnchor() {
-    // 1. Insert BEFORE the Description section — sits right after the Framer hero
+    // 1. Before the Framer "Description" section — first section after the hero
     var desc = document.querySelector(‘[data-framer-name="Description"]’);
     if (desc && desc.parentNode) return { node: desc, before: true };
 
-    // 2. Fallback: before Details
-    var det = document.querySelector(‘[data-framer-name="Details"]’);
-    if (det && det.parentNode) return { node: det, before: true };
-
-    // 3. Fallback: after the hero — find the h1, walk up to a top-level section,
-    //    then use its next sibling as the insertion point
-    var h1 = document.querySelector(‘h1’);
-    if (h1) {
-      var el = h1;
-      // Walk up until we find an element whose parent is body or #main or a framer root
-      while (el.parentElement && el.parentElement !== document.body) {
-        var p = el.parentElement;
-        var tag = p.tagName && p.tagName.toLowerCase();
-        if (tag === ‘main’ || tag === ‘body’ || p.id === ‘main’ || (p.getAttribute && p.getAttribute(‘data-framer-name’))) {
-          // el is inside a named section or main — use el’s nextSibling
-          if (el.nextElementSibling && el.parentNode) return { node: el.nextElementSibling, before: true };
-          if (el.parentNode) return { node: el, before: false };
-          break;
-        }
-        el = p;
-      }
-    }
-
-    // 4. Last resort: before the injected services section
+    // 2. Before the injected services section (reliable — we know it works)
     var svc = document.getElementById(‘nguyen-residential-services’);
     if (svc && svc.parentNode) return { node: svc, before: true };
+
+    // 3. Before the Framer "Details" section
+    var det = document.querySelector(‘[data-framer-name="Details"]’);
+    if (det && det.parentNode) return { node: det, before: true };
 
     return null;
   }
@@ -480,7 +461,9 @@ const SQFT_GUIDE_PATCH = `
     return true;
   }
 
-  [900, 1800, 3000, 5000].forEach(function(t){ setTimeout(inject, t); });
+  // Start after 1700ms so the services section (injected at 1600ms) is already in the DOM,
+  // giving us the reliable #nguyen-residential-services anchor as fallback.
+  [1700, 2200, 3500, 6000].forEach(function(t){ setTimeout(inject, t); });
 
   var timer;
   var obs = new MutationObserver(function(){
