@@ -419,12 +419,37 @@ const SQFT_GUIDE_PATCH = `
 
   /* ── find hero insertion point ── */
   function findAnchor() {
-    // Insert BEFORE the Description section — sits right after the Framer hero
+    // 1. Insert BEFORE the Description section — sits right after the Framer hero
     var desc = document.querySelector(‘[data-framer-name="Description"]’);
     if (desc && desc.parentNode) return { node: desc, before: true };
-    // Fallback: before Details
+
+    // 2. Fallback: before Details
     var det = document.querySelector(‘[data-framer-name="Details"]’);
     if (det && det.parentNode) return { node: det, before: true };
+
+    // 3. Fallback: after the hero — find the h1, walk up to a top-level section,
+    //    then use its next sibling as the insertion point
+    var h1 = document.querySelector(‘h1’);
+    if (h1) {
+      var el = h1;
+      // Walk up until we find an element whose parent is body or #main or a framer root
+      while (el.parentElement && el.parentElement !== document.body) {
+        var p = el.parentElement;
+        var tag = p.tagName && p.tagName.toLowerCase();
+        if (tag === ‘main’ || tag === ‘body’ || p.id === ‘main’ || (p.getAttribute && p.getAttribute(‘data-framer-name’))) {
+          // el is inside a named section or main — use el’s nextSibling
+          if (el.nextElementSibling && el.parentNode) return { node: el.nextElementSibling, before: true };
+          if (el.parentNode) return { node: el, before: false };
+          break;
+        }
+        el = p;
+      }
+    }
+
+    // 4. Last resort: before the injected services section
+    var svc = document.getElementById(‘nguyen-residential-services’);
+    if (svc && svc.parentNode) return { node: svc, before: true };
+
     return null;
   }
 
