@@ -461,9 +461,9 @@ const SQFT_GUIDE_PATCH = `
     return true;
   }
 
-  // Start after 1700ms so the services section (injected at 1600ms) is already in the DOM,
-  // giving us the reliable #nguyen-residential-services anchor as fallback.
-  [1700, 2200, 3500, 6000].forEach(function(t){ setTimeout(inject, t); });
+  // Start after 1700ms so services (#nguyen-residential-services, injected at 1600ms)
+  // is in the DOM and available as the reliable fallback anchor.
+  [1700, 2400, 3800, 6500].forEach(function(t){ setTimeout(inject, t); });
 
   var timer;
   var obs = new MutationObserver(function(){
