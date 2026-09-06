@@ -422,8 +422,15 @@ const CLIENT_PATCH = `
   patchRoot(document.body);
   window.addEventListener('load', () => { patchThirdProjectImage(document.body); patchServicesSection(document.body); }, { once: true });
   const observer = new MutationObserver((mutations) => { for (const mutation of mutations) { if (mutation.type === 'characterData') { patchTextNode(mutation.target); const paragraph = mutation.target.parentElement?.closest('p'); if (paragraph) patchSplitParagraph(paragraph); const parent = mutation.target.parentElement; if (parent) { patchCounters(parent); patchOfficeCard(parent); patchCustomHomeCard(parent); patchThirdProjectImage(parent); patchServicesSection(parent); keepResidentialLabelOnOneLine(parent); } continue; } if (mutation.type === 'childList') mutation.addedNodes.forEach(patchRoot); } });
-  observer.observe(document.body, { childList: true, subtree: true, characterData: true }); setTimeout(() => observer.disconnect(), 6000);
-  [800, 1600, 3000, 5000].forEach(function(t){ setTimeout(fixNav, t); });
+  observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+  // Framer renders this page from its own external bundles, so none of the rewriting above can
+  // take effect until that render lands. Disconnecting the observer at 6s meant any content
+  // Framer finished after that was never patched and kept its original template text
+  // permanently — routinely the case on desktop, which pulls the larger images. Keep observing,
+  // and re-apply on the same schedule the socal patches already use. patchRoot re-runs every
+  // rule and each one is idempotent, so the repeats are no-ops once the page is correct.
+  [800, 1600, 3000, 5000, 8000, 12000, 20000, 40000].forEach(function(t){ setTimeout(function(){ patchRoot(document.body); fixNav(); }, t); });
+  setTimeout(function(){ patchRoot(document.body); fixNav(); observer.disconnect(); }, 60000);
 })();
 </script>`;
 
