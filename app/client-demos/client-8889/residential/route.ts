@@ -431,6 +431,21 @@ const SQFT_GUIDE_PATCH = `
     var det = document.querySelector(‘[data-framer-name="Details"]’);
     if (det && det.parentNode) return { node: det, before: true };
 
+    // 4. Pre-hydration fallback: Framer SSR puts the full section structure in server HTML.
+    //    Walk the h1 up to its direct-child-of-#main ancestor (the hero section wrapper),
+    //    then target its next sibling — positions us immediately after the hero without
+    //    depending on any Framer attributes or injected elements.
+    var h1 = document.querySelector(‘h1’);
+    if (h1) {
+      var main = document.getElementById(‘main’) || document.querySelector(‘main’);
+      if (main) {
+        var el = h1;
+        while (el.parentElement && el.parentElement !== main) el = el.parentElement;
+        var next = el.nextElementSibling;
+        if (next && next.id !== ‘nguyen-sqft-guide’) return { node: next, before: true };
+      }
+    }
+
     return null;
   }
 
@@ -461,9 +476,9 @@ const SQFT_GUIDE_PATCH = `
     return true;
   }
 
-  // Start after 1700ms so services (#nguyen-residential-services, injected at 1600ms)
-  // is in the DOM and available as the reliable fallback anchor.
-  [1700, 2400, 3800, 6500].forEach(function(t){ setTimeout(inject, t); });
+  // h1 fallback works pre-hydration (Framer SSR includes full section structure),
+  // so start early. Later attempts upgrade to a more precise anchor if available.
+  [400, 1700, 2800, 5000].forEach(function(t){ setTimeout(inject, t); });
 
   var timer;
   var obs = new MutationObserver(function(){
