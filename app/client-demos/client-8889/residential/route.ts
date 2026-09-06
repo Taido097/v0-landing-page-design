@@ -3,13 +3,12 @@ import { headers } from 'next/headers';
 const SOURCE_URL = 'https://arcsphere-studio.framer.website/projects/serenity-villa';
 const BASE_URL = 'https://arcsphere-studio.framer.website/';
 
-// Fully dynamic: the route handler must run on every request so the correct,
-// current HTML (with the sqft guide patch and per-request UA branding) is always
-// served. Without this, Next.js ISR caches the output and serves a stale version
-// on first load — only a refresh (after background revalidation) shows the correct
-// page. The upstream Framer fetch below stays cached for performance.
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// Keep ISR caching (as in the known-good 04c1901 deploy): Next.js caches one
+// server-rendered copy — the fully desktop-rebranded NGUYEN version — and serves
+// it to every visitor. This is what reliably shows the correct (rebranded) page.
+// Do NOT switch this to force-dynamic: that makes mobile requests take the
+// deferred-rebrand path and show raw Framer content on first load.
+export const revalidate = 3600;
 
 function isMobileUserAgent(userAgent: string) {
   return /Android|iPhone|iPad|iPod|Mobile|IEMobile|Opera Mini/i.test(userAgent);
@@ -527,7 +526,7 @@ export async function GET() {
     }
 
     html = html.replace('</body>', `${CLIENT_REBRAND}${SQFT_GUIDE_PATCH}</body>`);
-    return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store, max-age=0, must-revalidate' } });
+    return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'private, no-store' } });
   } catch {
     return new Response('<!doctype html><html><body style="font-family:Arial,sans-serif;padding:40px">Residential page is temporarily unavailable. Please refresh in a moment.</body></html>', { status: 502, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
   }
