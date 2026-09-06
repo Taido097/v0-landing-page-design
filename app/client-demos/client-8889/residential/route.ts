@@ -1,18 +1,18 @@
-import { headers } from 'next/headers';
-
 const SOURCE_URL = 'https://arcsphere-studio.framer.website/projects/serenity-villa';
 const BASE_URL = 'https://arcsphere-studio.framer.website/';
 
-// Keep ISR caching (as in the known-good 04c1901 deploy): Next.js caches one
-// server-rendered copy — the fully desktop-rebranded NGUYEN version — and serves
-// it to every visitor. This is what reliably shows the correct (rebranded) page.
-// Do NOT switch this to force-dynamic: that makes mobile requests take the
-// deferred-rebrand path and show raw Framer content on first load.
-export const revalidate = 3600;
-
-function isMobileUserAgent(userAgent: string) {
-  return /Android|iPhone|iPad|iPod|Mobile|IEMobile|Opera Mini/i.test(userAgent);
-}
+// Run the handler per request, as the known-good 04c1901 deploy effectively did
+// (its headers() call forced this route dynamic). Without it the route has no
+// dynamic function left, so Next.js would prerender it at build time — and if the
+// upstream Framer fetch failed during that build, the 502 fallback would be baked
+// in and served to everyone until revalidation.
+//
+// This is safe now that the response no longer varies by device: the rebranding
+// below runs for every request, so every visitor gets byte-identical HTML. (The
+// earlier flip-flop came from that per-device branch, not from running dynamically.)
+// The upstream Framer fetch keeps its own 1-hour cache, so this stays fast.
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 const CLEANUP = `
 <style id="designedbytd-client-demo-cleanup">
@@ -27,7 +27,8 @@ const CLEANUP = `
 </style>`;
 
 // Rebrand the reference (ArcSphere "Serenity Villa" project page) to NGUYEN residential content.
-// These run as substring rules server-side on desktop and, deferred, client-side on mobile.
+// These run as substring rules server-side for every device, and again client-side
+// (via the MutationObserver below) to catch anything Framer's hydration reverts.
 const REPLACEMENTS: Array<[RegExp, string]> = [
   // Full-sentence residential copy first, so it matches the original text before the word rules run.
   [/A tranquil residential sanctuary blending natural beauty with luxury\.?/gi, 'From land to building.'],
@@ -515,15 +516,18 @@ export async function GET() {
     html = html.replace(/<head([^>]*)>/i, `<head$1><base href="${BASE_URL}"><meta name="robots" content="noindex,nofollow,noarchive">${CLEANUP}`);
     html = html.replace(/<title>[^<]*<\/title>/i, '<title>NGUYEN Architecture — Residential</title>');
 
-    const userAgent = (await headers()).get('user-agent') || '';
-    const mobile = isMobileUserAgent(userAgent);
-
-    if (!mobile) {
-      for (const [pattern, replacement] of REPLACEMENTS) html = html.replace(pattern, replacement);
-      html = html.replace(/<base\b[^>]*>/i, `<base href="${BASE_URL}">`);
-      html = html.replace(/info@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/gi, 'info@nguyenarchitecture.com');
-      html = html.replace(/href=["']mailto:[^"']+["']/gi, 'href="mailto:info@nguyenarchitecture.com"');
-    }
+    // Rebrand server-side for EVERY device. Previously this was skipped for mobile
+    // user agents, so phones received the raw Framer HTML ("ArcSphere", "Serenity
+    // Villa") and only got rebranded once the deferred client script ran ~1.8s later.
+    // That produced the flip-flop: a cold load showed the old Framer version, while a
+    // refresh (warm cache, fast JS) showed the correct one. Rebranding here makes the
+    // response identical for every request, so there is no second version to flip to.
+    // The client script still runs and its MutationObserver re-applies these rules to
+    // anything Framer's hydration reverts.
+    for (const [pattern, replacement] of REPLACEMENTS) html = html.replace(pattern, replacement);
+    html = html.replace(/<base\b[^>]*>/i, `<base href="${BASE_URL}">`);
+    html = html.replace(/info@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/gi, 'info@nguyenarchitecture.com');
+    html = html.replace(/href=["']mailto:[^"']+["']/gi, 'href="mailto:info@nguyenarchitecture.com"');
 
     html = html.replace('</body>', `${CLIENT_REBRAND}${SQFT_GUIDE_PATCH}</body>`);
     return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'private, no-store' } });
