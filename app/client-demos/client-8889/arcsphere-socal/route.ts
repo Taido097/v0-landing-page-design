@@ -1002,13 +1002,73 @@ const CARD_ROUTING_PATCH = `
 </script>`
 
 
+// Every patch above rewrites the page from the browser, after Framer has rendered and
+// hydrated. That means the untouched template — original nav, cards, panels and footer —
+// is what paints first, and only then gets rewritten into the NGUYEN version. On a warm
+// cache the rewrite lands fast enough to be invisible; on a cold first load it is visible
+// as a flash of the old demo before the real page appears.
+//
+// Hold the first paint until the rewrite has settled. `opacity` (rather than `display` or
+// `visibility`) keeps full layout and lets images load, so the patches can still measure
+// computed styles and natural image sizes while the page is held.
+//
+// The keyframe is a failsafe: if the reveal script never runs — a JS error, or scripts
+// blocked entirely — the page still reveals itself on its own. It can never stay hidden.
+const CLOAK_STYLE = `
+<style id="nguyen-socal-cloak">
+  @keyframes nguyen-socal-failsafe-reveal { to { opacity: 1 } }
+  body { opacity: 0; animation: nguyen-socal-failsafe-reveal 1ms linear 3000ms forwards }
+  html[data-nguyen-socal-ready] body { opacity: 1 !important; animation: none !important }
+</style>`
+
+// Reveals the page once the DOM stops changing, i.e. Framer has hydrated and the patches
+// above have re-applied over it. Runs last so it observes the finished document.
+const REVEAL_PATCH = `
+<script id="nguyen-socal-reveal">
+(() => {
+  var HARD_CAP_MS = 2800;
+  var QUIET_MS = 200;
+  var done = false, quietTimer = null, observer = null;
+
+  function reveal() {
+    if (done) return;
+    done = true;
+    if (quietTimer) clearTimeout(quietTimer);
+    if (observer) observer.disconnect();
+    document.documentElement.setAttribute('data-nguyen-socal-ready', '');
+  }
+
+  // Each mutation restarts the timer; it only fires after QUIET_MS of stillness.
+  function bumpQuietTimer() {
+    if (quietTimer) clearTimeout(quietTimer);
+    quietTimer = setTimeout(reveal, QUIET_MS);
+  }
+
+  function start() {
+    if (!document.body) { requestAnimationFrame(start); return; }
+    // childList + characterData only: Framer animates inline styles continuously, so
+    // watching attributes would never let the document look settled.
+    observer = new MutationObserver(bumpQuietTimer);
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+    bumpQuietTimer();
+  }
+
+  start();
+  // Never hold the page longer than this, however busy the document stays.
+  setTimeout(reveal, HARD_CAP_MS);
+  // Restoring from the back/forward cache shows an already-patched document.
+  window.addEventListener('pageshow', function (event) { if (event.persisted) reveal(); });
+})();
+</script>`
+
 export async function GET() {
   const response = await getConcept()
   if (!response.ok) return response
 
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}</body>`)
+  html = html.replace(/<head([^>]*)>/i, `<head$1>${CLOAK_STYLE}`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}${REVEAL_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')
