@@ -454,10 +454,11 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
         </div>
       )}
 
+      {slug === 'commercial' ? <CommercialFloorPlanGuide /> : null}
+
       <div className="nrd-shell">
         {slug === 'commercial' ? (
           <>
-            <CommercialFloorPlanGuide />
             <CommercialBody shots={svc.gallery ?? []} />
           </>
         ) : (

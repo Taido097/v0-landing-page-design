@@ -129,17 +129,14 @@ const CSS = `
   --cfpg-muted:#6b6358;
   --cfpg-soft:#9a9188;
   --cfpg-gold:#b3894f;
-  margin-top:clamp(40px,5vw,72px);
+  width:100%;
   background:var(--cfpg-bg);
   border-top:1px solid var(--cfpg-line);
   border-bottom:1px solid var(--cfpg-line);
-  /* true full-viewport width */
-  width:100vw;
-  margin-left:50%;
-  transform:translateX(-50%);
-  padding:clamp(28px,3.6vw,52px) clamp(20px,4vw,72px) clamp(24px,3.2vw,44px);
+  padding:clamp(40px,5vw,72px) clamp(24px,4vw,80px) clamp(32px,4vw,56px);
 }
 .cfpg *{box-sizing:border-box}
+.cfpg-inner{max-width:1600px;margin:0 auto}
 
 /* ── Section label row (top of section) ── */
 .cfpg-label-row{display:flex;align-items:center;gap:14px;margin:0 0 clamp(20px,2.6vw,36px)}
@@ -149,7 +146,7 @@ const CSS = `
 /* ── Main 3-column grid ── */
 .cfpg-main{
   display:grid;
-  grid-template-columns:260px 1fr 290px;
+  grid-template-columns:26fr 48fr 26fr;
   gap:0;
   align-items:stretch;
 }
@@ -161,7 +158,7 @@ const CSS = `
   justify-content:space-between;
   padding-right:clamp(20px,2.4vw,36px);
   border-right:1px solid var(--cfpg-line);
-  min-height:580px;
+  min-height:620px;
 }
 .cfpg-left-heading{
   font-size:clamp(26px,3vw,42px);
@@ -190,7 +187,7 @@ const CSS = `
 }
 .cfpg-featured-wrap{
   width:100%;
-  min-height:580px;
+  height:620px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -198,11 +195,12 @@ const CSS = `
   padding:0;
 }
 .cfpg-featured-wrap img{
+  max-width:100%;
+  max-height:100%;
   width:100%;
   height:100%;
   object-fit:contain;
   display:block;
-  max-height:580px;
 }
 
 /* ── RIGHT PANEL ── */
@@ -371,9 +369,7 @@ const CSS = `
 
 /* ── Responsive ── */
 @media(max-width:1100px){
-  .cfpg-main{grid-template-columns:200px 1fr 250px}
-  .cfpg-featured-wrap{min-height:480px}
-  .cfpg-featured-wrap img{max-height:480px}
+  .cfpg-featured-wrap{height:480px}
   .cfpg-left{min-height:480px}
 }
 @media(max-width:860px){
@@ -392,16 +388,14 @@ const CSS = `
   }
   .cfpg-left-divider,.cfpg-tagline{display:none}
   .cfpg-center{grid-column:1;padding-left:0}
-  .cfpg-featured-wrap{min-height:380px}
-  .cfpg-featured-wrap img{max-height:380px}
+  .cfpg-featured-wrap{height:380px}
   .cfpg-right{grid-column:2;border-left:0;padding-left:clamp(14px,2vw,24px)}
 }
 @media(max-width:620px){
   .cfpg-main{grid-template-columns:1fr}
   .cfpg-left{grid-column:1;flex-direction:column;gap:0}
   .cfpg-center{grid-column:1;padding:0}
-  .cfpg-featured-wrap{min-height:280px}
-  .cfpg-featured-wrap img{max-height:280px}
+  .cfpg-featured-wrap{height:280px}
   .cfpg-right{grid-column:1;border-left:0;padding-left:0;margin-top:clamp(14px,2vw,20px)}
   .cfpg-cards{grid-template-columns:1fr}
   .cfpg-card-img{width:100px}
@@ -426,6 +420,7 @@ export default function CommercialFloorPlanGuide() {
     <>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
       <section className="cfpg" aria-label="Commercial Floor Plan Guide">
+      <div className="cfpg-inner">
 
         {/* Section label */}
         <div className="cfpg-label-row">
@@ -519,6 +514,7 @@ export default function CommercialFloorPlanGuide() {
           ))}
         </div>
 
+      </div>{/* cfpg-inner */}
       </section>
     </>
   );
