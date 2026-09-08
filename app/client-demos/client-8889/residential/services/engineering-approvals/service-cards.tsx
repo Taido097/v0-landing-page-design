@@ -1,36 +1,42 @@
 const D = '/client-8889/residential/detail';
-const CONTACT = 'mailto:info@nguyen-ae.com';
+const BASE = '/client-demos/client-8889/residential/services/engineering-approvals';
 
 const CARDS = [
   {
     img: `${D}/eng-svc-01-structural.png`,
     title: 'Structural Engineering',
     desc: 'Foundation systems, structural framing, load calculations, and permit-ready documentation — coordinated with the architectural design.',
+    href: `${BASE}/structural-engineering`,
   },
   {
     img: `${D}/eng-svc-02-electrical.png`,
     title: 'Electrical Engineering',
     desc: 'Panel coordination, lighting layouts, load calculations, and code-compliant electrical design for residential and commercial projects.',
+    href: `${BASE}/electrical-engineering`,
   },
   {
     img: `${D}/eng-svc-03-mechanical-hvac.png`,
     title: 'Mechanical / HVAC Engineering',
     desc: 'Heating, cooling, and ventilation system design — energy-efficient and coordinated with the architectural and structural documents.',
+    href: `${BASE}/mechanical-hvac-engineering`,
   },
   {
     img: `${D}/eng-svc-04-plumbing.png`,
     title: 'Plumbing Engineering',
     desc: 'Water supply, drainage, and fixture coordination — designed to code and integrated with the architectural and structural set.',
+    href: `${BASE}/plumbing-engineering`,
   },
   {
     img: `${D}/eng-svc-05-energy-title24.png`,
     title: 'Energy & Title 24',
     desc: 'California Title 24 energy compliance analysis and documentation — required for permit submittal on most residential and commercial projects.',
+    href: `${BASE}/energy-title-24`,
   },
   {
     img: `${D}/eng-svc-06-fire-life-safety.png`,
     title: 'Fire & Life Safety',
     desc: 'Fire sprinkler layout, egress planning, and life-safety code coordination through building department review and permit approval.',
+    href: `${BASE}/fire-life-safety`,
   },
 ];
 
@@ -141,7 +147,7 @@ export default function EngineeringServiceCards() {
         <p className="esc-eyebrow">Our Engineering Services</p>
         <div className="esc-grid">
           {CARDS.map((card) => (
-            <a className="esc-card" href={CONTACT} key={card.title}>
+            <a className="esc-card" href={card.href} key={card.title}>
               <div className="esc-img">
                 <img src={card.img} alt={card.title} loading="lazy" />
               </div>
