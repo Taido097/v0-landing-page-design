@@ -99,6 +99,111 @@ const SERVICES_HTML =
 // runtime leaves hidden. It defers on mobile (clean hydration) and runs immediately + observes on
 // desktop; a shared safety net reveals the page if the runtime ever stalls and leaves it blank.
 const RULES_JSON = JSON.stringify(REPLACEMENTS.map(([re, rep]) => [re.source, re.flags, rep]));
+
+const BLUEPRINT_CSS = [
+  '.rbpg{--rbpg-bg:#f3f0e9;--rbpg-surface:#faf8f3;--rbpg-line:#ddd5c4;--rbpg-ink:#1a1814;--rbpg-muted:#6b6358;--rbpg-soft:#9a9188;--rbpg-gold:#b3894f;width:100%;background:var(--rbpg-bg);border-top:1px solid var(--rbpg-line);border-bottom:1px solid var(--rbpg-line);padding:clamp(40px,5vw,72px) clamp(24px,4vw,80px) clamp(32px,4vw,56px);font-family:"Inter Display","Inter",system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:var(--rbpg-ink)}',
+  '.rbpg *{box-sizing:border-box}',
+  '.rbpg-inner{max-width:1600px;margin:0 auto}',
+  '.rbpg-label-row{display:flex;align-items:center;gap:14px;margin:0 0 clamp(20px,2.6vw,36px)}',
+  '.rbpg-label-line{flex:none;width:36px;height:1px;background:var(--rbpg-ink)}',
+  '.rbpg-label-txt{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;font-weight:600;color:var(--rbpg-ink);margin:0}',
+  '.rbpg-main{display:grid;grid-template-columns:26fr 48fr 26fr;gap:0;align-items:stretch}',
+  '.rbpg-left{display:flex;flex-direction:column;justify-content:space-between;padding-right:clamp(20px,2.4vw,36px);border-right:1px solid var(--rbpg-line);min-height:620px}',
+  '.rbpg-left-heading{font-size:clamp(26px,3vw,42px);line-height:1.04;font-weight:600;letter-spacing:-.02em;color:var(--rbpg-ink);margin:0 0 16px}',
+  '.rbpg-left-desc{font-size:13.5px;line-height:1.6;color:var(--rbpg-muted);margin:0;max-width:30ch}',
+  '.rbpg-left-divider{width:40px;height:1px;background:var(--rbpg-line);margin:clamp(20px,2.4vw,32px) 0}',
+  '.rbpg-tagline{display:flex;flex-direction:column;gap:1px}',
+  '.rbpg-tagline span{font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--rbpg-soft);line-height:1.5}',
+  '.rbpg-center{display:flex;align-items:stretch;padding:0 clamp(12px,1.6vw,24px)}',
+  '.rbpg-featured-wrap{width:100%;height:620px;display:flex;align-items:center;justify-content:center;background:transparent;padding:0}',
+  '.rbpg-featured-wrap img{max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;display:block}',
+  '.rbpg-right{display:flex;flex-direction:column;padding-left:clamp(20px,2.4vw,36px);border-left:1px solid var(--rbpg-line)}',
+  '.rbpg-tabs{display:flex;gap:0;border-bottom:1px solid var(--rbpg-line);margin:0 0 clamp(16px,2vw,26px)}',
+  '.rbpg-tab{background:transparent;border:0;border-bottom:2px solid transparent;padding:10px 0;margin-right:clamp(10px,1.4vw,18px);margin-bottom:-1px;font-size:11.5px;font-weight:400;letter-spacing:.01em;color:var(--rbpg-muted);cursor:pointer;transition:color .2s,border-color .2s;font-family:inherit;white-space:nowrap}',
+  '.rbpg-tab:hover{color:var(--rbpg-ink)}',
+  '.rbpg-tab.is-active{color:var(--rbpg-ink);border-bottom-color:var(--rbpg-ink);font-weight:500}',
+  '.rbpg-plan-eyebrow{font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;color:var(--rbpg-soft);margin:0 0 8px;display:flex;align-items:center;gap:10px}',
+  '.rbpg-plan-eyebrow::before{content:"";display:inline-block;width:20px;height:1px;background:var(--rbpg-gold)}',
+  '.rbpg-plan-sqft{font-size:clamp(17px,1.7vw,22px);font-weight:700;letter-spacing:.04em;color:var(--rbpg-ink);margin:0 0 4px;text-transform:uppercase}',
+  '.rbpg-plan-name{font-size:clamp(22px,2.2vw,32px);font-weight:600;line-height:1.08;letter-spacing:-.015em;color:var(--rbpg-ink);margin:0 0 clamp(10px,1.2vw,16px)}',
+  '.rbpg-plan-rule{height:1px;background:var(--rbpg-line);margin:0 0 clamp(10px,1.2vw,14px)}',
+  '.rbpg-plan-desc{font-size:13px;line-height:1.65;color:var(--rbpg-muted);margin:0 0 clamp(14px,1.8vw,22px)}',
+  '.rbpg-features{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:clamp(12px,1.6vw,18px) 0;border-top:1px solid var(--rbpg-line);border-bottom:1px solid var(--rbpg-line);margin:0}',
+  '.rbpg-feature{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}',
+  '.rbpg-feature-icon{width:40px;height:40px;display:flex;align-items:center;justify-content:center;color:var(--rbpg-ink);opacity:.8}',
+  '.rbpg-feature-label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--rbpg-ink);line-height:1.3}',
+  '.rbpg-feature-sub{font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--rbpg-soft);line-height:1.2;margin-top:-4px}',
+  '.rbpg-cards{margin-top:clamp(20px,2.6vw,36px);display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(10px,1.2vw,16px)}',
+  '.rbpg-card{display:flex;flex-direction:row;background:var(--rbpg-surface);border:1px solid var(--rbpg-line);cursor:pointer;transition:border-color .18s;text-align:left;padding:0;font-family:inherit;overflow:hidden;width:100%}',
+  '.rbpg-card:hover{border-color:var(--rbpg-gold)}',
+  '.rbpg-card.is-active{border-color:var(--rbpg-ink);box-shadow:0 0 0 1px var(--rbpg-ink)}',
+  '.rbpg-card-img{flex:none;width:clamp(120px,10vw,170px);background:#fff;display:flex;align-items:center;justify-content:center;padding:10px;border-right:1px solid var(--rbpg-line)}',
+  '.rbpg-card-img img{max-width:100%;max-height:140px;object-fit:contain;display:block}',
+  '.rbpg-card-body{flex:1;padding:clamp(12px,1.2vw,18px) clamp(14px,1.4vw,20px);display:flex;flex-direction:column;justify-content:space-between}',
+  '.rbpg-card-sqft{font-size:10px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--rbpg-soft);margin:0 0 4px}',
+  '.rbpg-card-name{font-size:clamp(12px,1vw,14px);font-weight:600;line-height:1.2;color:var(--rbpg-ink);margin:0 0 6px}',
+  '.rbpg-card-desc{font-size:11.5px;line-height:1.5;color:var(--rbpg-muted);margin:0 0 10px;flex:1}',
+  '.rbpg-card-cta{font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--rbpg-ink);display:inline-flex;align-items:center;gap:6px}',
+  '.rbpg-card.is-active .rbpg-card-sqft{color:var(--rbpg-gold)}',
+  '@media(max-width:1100px){.rbpg-featured-wrap{height:480px}.rbpg-left{min-height:480px}}',
+  '@media(max-width:860px){.rbpg-main{grid-template-columns:1fr 1fr;grid-template-rows:auto auto}.rbpg-left{grid-column:1/3;flex-direction:row;align-items:flex-start;min-height:auto;border-right:0;border-bottom:1px solid var(--rbpg-line);padding-right:0;padding-bottom:clamp(16px,2.4vw,24px);margin-bottom:clamp(16px,2.4vw,24px);gap:clamp(20px,3vw,40px)}.rbpg-left-divider,.rbpg-tagline{display:none}.rbpg-center{grid-column:1;padding-left:0}.rbpg-featured-wrap{height:380px}.rbpg-right{grid-column:2;border-left:0;padding-left:clamp(14px,2vw,24px)}}',
+  '@media(max-width:620px){.rbpg-main{grid-template-columns:1fr}.rbpg-left{grid-column:1;flex-direction:column;gap:0}.rbpg-center{grid-column:1;padding:0}.rbpg-featured-wrap{height:280px}.rbpg-right{grid-column:1;border-left:0;padding-left:0;margin-top:clamp(14px,2vw,20px)}.rbpg-cards{grid-template-columns:1fr}.rbpg-card-img{width:100px}.rbpg-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch}.rbpg-tab{font-size:11px;margin-right:8px}}',
+].join('\n');
+
+const BLUEPRINT_TABS = [
+  {
+    id: 'custom-home',
+    label: 'Custom Home',
+    heading: 'Explore Custom Homes',
+    subheading: 'Bespoke residences designed around your lifestyle, site, and long-term vision — from compact modern homes to expansive estates.',
+    tagline: ['CRAFTED', 'FOR HOW', 'YOU LIVE'],
+    features: [
+      { icon: 'home',    label: 'Fully Custom',   sub: 'Design' },
+      { icon: 'ruler',   label: 'Site-Specific',  sub: 'Planning' },
+      { icon: 'check',   label: 'Any Style',       sub: 'Architecture' },
+    ],
+    plans: [
+      { sqft: '1,800 SQ FT', name: 'The Modern Starter',    desc: 'An efficient single-story custom home with open-plan living, a chef-ready kitchen, two bedrooms, and indoor-outdoor flow designed for modern California living.',                                          src: '/client-8889/residential/floor-plans/custom_home/custom_home_1800_sq_ft.png' },
+      { sqft: '3,000 SQ FT', name: 'The Family Residence',  desc: 'A spacious family home with generous living areas, four bedrooms, a dedicated home office, and a seamless connection between indoor and outdoor entertaining spaces.',                                          src: '/client-8889/residential/floor-plans/custom_home/custom_home_3000_sq_ft.png' },
+      { sqft: '4,500 SQ FT', name: 'The Estate Home',       desc: 'A statement residence with a grand entry, expansive living and dining spaces, five bedrooms, a private primary suite, and curated detailing throughout every room.',                                              src: '/client-8889/residential/floor-plans/custom_home/custom_home_4500_sq_ft.png' },
+    ],
+  },
+  {
+    id: 'multi-family',
+    label: 'Multi-Family / Condos',
+    heading: 'Explore Multi-Family & Condos',
+    subheading: 'Thoughtfully designed residential buildings that balance livability, unit efficiency, and community — built for owners and investors alike.',
+    tagline: ['COMMUNITY', 'BY', 'DESIGN'],
+    features: [
+      { icon: 'building', label: 'Unit Efficiency',  sub: 'Optimized Layout' },
+      { icon: 'grid',     label: 'Shared Amenities', sub: 'Community Spaces' },
+      { icon: 'check',    label: 'Zoning Ready',     sub: 'Code Compliant' },
+    ],
+    plans: [
+      { sqft: '1,200 SQ FT', name: 'The Urban Flat',          desc: 'A compact, efficient condominium unit with an open living-kitchen plan, a private bedroom, and thoughtful storage — designed for urban infill sites and first-time buyers.',                                  src: '/client-8889/residential/floor-plans/multi_family_condos/multi_family_condos_1200_sq_ft.png' },
+      { sqft: '2,400 SQ FT', name: 'The Garden Condo',         desc: 'A generous two-unit layout with private patios, well-proportioned living areas, and separated bedroom zones — optimized for rental income and long-term tenancy.',                                            src: '/client-8889/residential/floor-plans/multi_family_condos/multi_family_condos_2400_sq_ft.png' },
+      { sqft: '3,600 SQ FT', name: 'The Mixed-Use Podium',     desc: 'A three-unit residential building with a shared courtyard entry, stacked living zones, and a flexible ground-level unit adaptable for live-work or retail use.',                                              src: '/client-8889/residential/floor-plans/multi_family_condos/multi_family_condos_3600_sq_ft.png' },
+    ],
+  },
+  {
+    id: 'townhomes',
+    label: 'Townhomes',
+    heading: 'Explore Townhomes',
+    subheading: 'Multi-level attached residences that deliver single-family living efficiency — private entries, dedicated outdoor space, and minimal site footprint.',
+    tagline: ['VERTICAL', 'LIVING,', 'PRIVATE', 'ENTRY'],
+    features: [
+      { icon: 'layers', label: 'Shared Wall',    sub: 'Efficient Build' },
+      { icon: 'home',   label: 'Private Entry',  sub: 'Each Unit' },
+      { icon: 'check',  label: 'Low Footprint',  sub: 'Site Efficient' },
+    ],
+    plans: [
+      { sqft: '1,400 SQ FT', name: 'The Compact Townhome',  desc: 'A well-organized two-story townhome with an open ground-floor living area, two upper bedrooms, and a private entry — efficient to build and easy to live in.',                                               src: '/client-8889/residential/floor-plans/townhomes/townhome_1400_sq_ft.png' },
+      { sqft: '2,000 SQ FT', name: 'The Family Townhome',   desc: 'A three-story townhome with a flexible ground-floor bonus room, a bright second-floor living-dining level, and three private bedrooms on the upper floor.',                                                      src: '/client-8889/residential/floor-plans/townhomes/townhome_2000_sq_ft.png' },
+      { sqft: '2,800 SQ FT', name: 'The Premium Townhome',  desc: 'A spacious end-unit townhome with abundant natural light, an oversized primary suite, a rooftop terrace, and a garage — maximizing value on infill sites.',                                                     src: '/client-8889/residential/floor-plans/townhomes/townhome_2800_sq_ft.png' },
+    ],
+  },
+];
+
 const CLIENT_REBRAND = `
 <script id="nguyen-residential-rebrand">
 (function(){
@@ -106,6 +211,8 @@ const CLIENT_REBRAND = `
     var isMobile = window.matchMedia && window.matchMedia('(max-width: 809.98px)').matches;
     var rules = ${RULES_JSON}.map(function (r) { return [new RegExp(r[0], r[1]), r[2]]; });
     var done = new WeakSet();
+    var rbpgCss = ${JSON.stringify(BLUEPRINT_CSS)};
+    var rbpgData = ${JSON.stringify(BLUEPRINT_TABS)};
     var SERVICES_HTML = ${JSON.stringify(SERVICES_HTML)};
     function findGallery(){
       var details = document.querySelector('section[data-framer-name="Details"]');
@@ -231,6 +338,92 @@ const CLIENT_REBRAND = `
       });
       return true;
     }
+    function rbpgBuild(tabIdx, planIdx) {
+      var t = rbpgData[tabIdx];
+      var p = t.plans[planIdx];
+      var origin = window.location.origin;
+      var ICONS = {
+        home: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>',
+        grid: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
+        layers: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>',
+        check: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>',
+        ruler: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M9 3v18M3 9h6M3 15h6"/></svg>',
+        building: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>',
+      };
+      var tabsHtml = rbpgData.map(function(tab, i) {
+        return '<button class="rbpg-tab' + (i === tabIdx ? ' is-active' : '') + '" data-rbpg-tab="' + i + '">' + tab.label + '</button>';
+      }).join('');
+      var featuresHtml = t.features.map(function(f) {
+        return '<div class="rbpg-feature"><div class="rbpg-feature-icon">' + (ICONS[f.icon] || '') + '</div><span class="rbpg-feature-label">' + f.label + '</span><span class="rbpg-feature-sub">' + f.sub + '</span></div>';
+      }).join('');
+      var taglineHtml = t.tagline.map(function(w) { return '<span>' + w + '</span>'; }).join('');
+      var cardsHtml = t.plans.map(function(plan, i) {
+        return '<button class="rbpg-card' + (i === planIdx ? ' is-active' : '') + '" data-rbpg-plan="' + i + '">' +
+          '<div class="rbpg-card-img"><img src="' + origin + plan.src + '" alt="' + plan.sqft + ' floor plan" loading="lazy"></div>' +
+          '<div class="rbpg-card-body"><div>' +
+            '<p class="rbpg-card-sqft">' + plan.sqft + '</p>' +
+            '<p class="rbpg-card-name">' + plan.name + '</p>' +
+            '<p class="rbpg-card-desc">' + plan.desc + '</p>' +
+          '</div><span class="rbpg-card-cta">View Plan &#8594;</span></div></button>';
+      }).join('');
+      return '<div class="rbpg-inner">' +
+        '<div class="rbpg-label-row"><span class="rbpg-label-line" aria-hidden="true"></span><p class="rbpg-label-txt">Residential Blueprint Guide</p></div>' +
+        '<div class="rbpg-main">' +
+          '<div class="rbpg-left"><div><h2 class="rbpg-left-heading">' + t.heading + '</h2><p class="rbpg-left-desc">' + t.subheading + '</p><div class="rbpg-left-divider"></div></div><div class="rbpg-tagline" aria-hidden="true">' + taglineHtml + '</div></div>' +
+          '<div class="rbpg-center"><div class="rbpg-featured-wrap"><img src="' + origin + p.src + '" alt="' + p.sqft + ' floor plan"></div></div>' +
+          '<div class="rbpg-right"><div class="rbpg-tabs" role="tablist">' + tabsHtml + '</div>' +
+            '<p class="rbpg-plan-eyebrow">Featured Plan</p>' +
+            '<p class="rbpg-plan-sqft">' + p.sqft + '</p>' +
+            '<h3 class="rbpg-plan-name">' + p.name + '</h3>' +
+            '<div class="rbpg-plan-rule"></div>' +
+            '<p class="rbpg-plan-desc">' + p.desc + '</p>' +
+            '<div class="rbpg-features">' + featuresHtml + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="rbpg-cards">' + cardsHtml + '</div>' +
+      '</div>';
+    }
+    function injectBlueprint() {
+      if (document.getElementById('nguyen-blueprint-guide')) return;
+      var svc = document.getElementById('nguyen-residential-services');
+      if (!svc || !svc.parentNode) return;
+      if (!document.getElementById('rbpg-style')) {
+        var st = document.createElement('style');
+        st.id = 'rbpg-style';
+        st.textContent = rbpgCss;
+        document.head.appendChild(st);
+      }
+      var sec = document.createElement('section');
+      sec.id = 'nguyen-blueprint-guide';
+      sec.className = 'rbpg';
+      sec.setAttribute('aria-label', 'Residential Blueprint Guide');
+      sec.dataset.curTab = '0';
+      sec.dataset.curPlan = '0';
+      sec.innerHTML = rbpgBuild(0, 0);
+      svc.parentNode.insertBefore(sec, svc);
+      sec.addEventListener('click', function(e) {
+        var curTab = parseInt(sec.dataset.curTab || '0', 10);
+        var curPlan = parseInt(sec.dataset.curPlan || '0', 10);
+        var el = e.target;
+        while (el && el !== sec) {
+          if (el.dataset && el.dataset.rbpgTab !== undefined) {
+            curTab = parseInt(el.dataset.rbpgTab, 10);
+            curPlan = 0;
+            sec.dataset.curTab = String(curTab);
+            sec.dataset.curPlan = '0';
+            sec.innerHTML = rbpgBuild(curTab, curPlan);
+            return;
+          }
+          if (el.dataset && el.dataset.rbpgPlan !== undefined) {
+            curPlan = parseInt(el.dataset.rbpgPlan, 10);
+            sec.dataset.curPlan = String(curPlan);
+            sec.innerHTML = rbpgBuild(curTab, curPlan);
+            return;
+          }
+          el = el.parentElement;
+        }
+      });
+    }
     function start(){
       rebrand(document.body);
       var observer = new MutationObserver(function (muts) {
@@ -275,7 +468,7 @@ const CLIENT_REBRAND = `
         }
       });
     }
-    [1600, 2600, 4000, 6000].forEach(function (t) { setTimeout(function () { injectServices(); hideGallery(); squareImages(); routeServices(); fixNav(); }, t); });
+    [1600, 2600, 4000, 6000].forEach(function (t) { setTimeout(function () { injectServices(); injectBlueprint(); hideGallery(); squareImages(); routeServices(); fixNav(); }, t); });
     [800, 5000, 8000].forEach(function (t) { setTimeout(function () { squareImages(); routeServices(); fixNav(); if (looksBlank()) reveal(); }, t); });
   } catch (e) {}
 })();

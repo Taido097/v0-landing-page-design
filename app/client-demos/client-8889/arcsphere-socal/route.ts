@@ -532,8 +532,8 @@ const DESIGN_PANELS_PATCH = `
   const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
 
   const PANELS = [
-    { key: 'commercialdesign', url: base + '/commercial' },
-    { key: 'residentialdesign', url: base + '/custom-homes' },
+    { key: 'commercialdesign', url: base + '/commercial#commercial-floor-plans' },
+    { key: 'residentialdesign', url: window.location.origin + '/client-demos/client-8889/residential#nguyen-blueprint-guide' },
   ];
 
   // Replace the real hover counts (16+, 35+) with 200+
@@ -955,8 +955,8 @@ const CARD_ROUTING_PATCH = `
     if (href.indexOf('serenity-villa') !== -1) return svc + '/custom-homes';
     if (href.indexOf('corporate-office-space') !== -1) return svc + '/commercial';
     if (href.indexOf('minimalist-apartment-interior') !== -1) return svc + '/commercial';
-    if (t.indexOf('residentialdesign') !== -1 || t.indexOf('residencial') !== -1 || t.indexOf('residentialarchitecture') !== -1 || t.indexOf('customhome') !== -1) return svc + '/custom-homes';
-    if (t.indexOf('commercialdesign') !== -1 || t.indexOf('commercialarchitecture') !== -1 || t.indexOf('commercialbuilding') !== -1) return svc + '/commercial';
+    if (t.indexOf('residentialdesign') !== -1 || t.indexOf('residencial') !== -1 || t.indexOf('residentialarchitecture') !== -1 || t.indexOf('customhome') !== -1) return origin + '/client-demos/client-8889/residential#nguyen-blueprint-guide';
+    if (t.indexOf('commercialdesign') !== -1 || t.indexOf('commercialarchitecture') !== -1 || t.indexOf('commercialbuilding') !== -1) return svc + '/commercial#commercial-floor-plans';
     if (t.indexOf('multifamily') !== -1) return svc + '/multifamily';
     if (t.indexOf('adu') !== -1) return svc + '/adus';
     if (t.indexOf('addition') !== -1 || t.indexOf('remodel') !== -1) return svc + '/additions-remodels';
