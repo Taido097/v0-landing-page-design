@@ -12,6 +12,7 @@ import Gallery from './gallery';
 import HeroBanner from './hero-banner';
 import Navbar from '../navbar';
 import FloorPlanGuide from '../adus/floor-plan-guide';
+import CommercialFloorPlanGuide from '../commercial/floor-plan-guide';
 
 const RESIDENTIAL_HREF = '/client-demos/client-8889/residential';
 const HOME_HREF = '/client-demos/client-8889/arcsphere-socal';
@@ -455,7 +456,10 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
 
       <div className="nrd-shell">
         {slug === 'commercial' ? (
-          <CommercialBody shots={svc.gallery ?? []} />
+          <>
+            <CommercialFloorPlanGuide />
+            <CommercialBody shots={svc.gallery ?? []} />
+          </>
         ) : (
         <>
         {svc.heroBanner ? (
