@@ -419,7 +419,7 @@ export default function CommercialFloorPlanGuide() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
-      <section className="cfpg" aria-label="Commercial Floor Plan Guide">
+      <section id="commercial-floor-plans" className="cfpg" aria-label="Commercial Floor Plan Guide">
       <div className="cfpg-inner">
 
         {/* Section label */}
