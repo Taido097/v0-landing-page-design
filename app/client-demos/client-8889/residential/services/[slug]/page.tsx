@@ -11,6 +11,7 @@ import { SERVICE_DETAILS, getServiceDetail, type GalleryShot } from '../services
 import Gallery from './gallery';
 import HeroBanner from './hero-banner';
 import Navbar from '../navbar';
+import FloorPlanGuide from '../adus/floor-plan-guide';
 
 const RESIDENTIAL_HREF = '/client-demos/client-8889/residential';
 const HOME_HREF = '/client-demos/client-8889/arcsphere-socal';
@@ -478,6 +479,8 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
             </div>
           </section>
         )}
+
+        {slug === 'adus' ? <FloorPlanGuide /> : null}
 
         {slug === 'adus' ? <AduTypes /> : null}
 
