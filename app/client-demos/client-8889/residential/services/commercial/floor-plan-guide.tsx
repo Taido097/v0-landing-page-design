@@ -482,10 +482,6 @@ export default function CommercialFloorPlanGuide() {
               ))}
             </div>
 
-            <button className="cfpg-cta-btn" type="button" disabled>
-              View Plan Details
-              <span className="cfpg-cta-arrow">&#8594;</span>
-            </button>
           </div>
 
         </div>

@@ -481,10 +481,6 @@ export default function FloorPlanGuide() {
               ))}
             </div>
 
-            <button className="afpg-cta-btn" type="button" disabled>
-              View Plan Details
-              <span className="afpg-cta-arrow">&#8594;</span>
-            </button>
           </div>
 
         </div>
