@@ -455,6 +455,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
       )}
 
       {slug === 'commercial' ? <CommercialFloorPlanGuide /> : null}
+      {slug === 'adus' ? <FloorPlanGuide /> : null}
 
       <div className="nrd-shell">
         {slug === 'commercial' ? (
@@ -484,8 +485,6 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
             </div>
           </section>
         )}
-
-        {slug === 'adus' ? <FloorPlanGuide /> : null}
 
         {slug === 'adus' ? <AduTypes /> : null}
 
