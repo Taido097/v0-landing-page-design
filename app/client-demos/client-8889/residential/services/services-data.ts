@@ -204,7 +204,10 @@ export const SERVICE_DETAILS: ServiceDetail[] = [
     subtitle: 'Structural · MEP + Title 24 · Permitting · Plan-Check',
     intro:
       'NGUYEN coordinates the technical side of residential projects — structural and MEP engineering, Title 24, permitting, and plan-check support — aligned with the architectural design from documentation through approval.',
-    hero: `${D}/eng-01-structural-frame.jpg`,
+    hero: `${D}/eng-hero-banner.png`,
+    heroBanner: true,
+    bannerLabel: 'Engineering & Approvals',
+    heroCaption: ['Structural Engineering', 'MEP + Title 24', 'Permitting & Plan-Check'],
     columns: [
       { label: 'Structural Engineering', items: ['Structural Framing Design', 'Foundation Coordination', 'Structural Modifications', 'Permit Documentation'] },
       { label: 'MEP + Title 24', items: ['Mechanical Coordination', 'Electrical Coordination', 'Plumbing Coordination', 'Title 24 Compliance'] },
