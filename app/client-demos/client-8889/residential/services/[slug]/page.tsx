@@ -464,7 +464,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
           <>
             <CommercialBody shots={svc.gallery ?? []} />
           </>
-        ) : (
+        ) : slug === 'engineering-approvals' ? null : (
         <>
         {svc.heroBanner ? (
           <div className="nrd-lead">
