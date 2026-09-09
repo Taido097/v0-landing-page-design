@@ -935,6 +935,58 @@ const EXTRA_CARD_CLEANUP_PATCH = `
 })();
 </script>`
 
+// Swap process card images with the four client-supplied PNGs. Cards are marked with
+// data-nguyen-process-step="N" by arcsphere-fixed, so we can target them even after
+// Framer lazy-loads or re-renders the images.
+const PROCESS_TILE_IMAGE_PATCH = `
+<script id="nguyen-socal-process-tile-images">
+(() => {
+  const origin = window.location.origin;
+  const STEP_MAP = [
+    { step: '1', src: origin + '/client-8889/process/01_discovery.png',                             alt: 'Consultation' },
+    { step: '2', src: origin + '/client-8889/process/02_existing_condition_survey_design.png',       alt: 'Site Analysis & Feasibility' },
+    { step: '3', src: origin + '/client-8889/process/03_architecture_engineering.png',               alt: 'Concept Design' },
+    { step: '4', src: origin + '/client-8889/process/04_execution.png',                             alt: 'Design & Engineering' },
+    { step: '5', src: origin + '/client-8889/process/04_execution.png',                             alt: 'Permit Submittal' },
+    { step: '6', src: origin + '/client-8889/process/04_execution.png',                             alt: 'Plan Check & Approval' },
+  ];
+
+  function swapImg(img, src, alt) {
+    if (img.getAttribute('data-nguyen-process-img') === src) return;
+    img.setAttribute('data-nguyen-process-img', src);
+    img.setAttribute('src', src);
+    img.setAttribute('alt', alt);
+    img.removeAttribute('srcset');
+    img.removeAttribute('sizes');
+    img.style.setProperty('object-fit', 'cover', 'important');
+    img.style.setProperty('object-position', 'center', 'important');
+    img.style.setProperty('opacity', '1', 'important');
+    img.style.setProperty('visibility', 'visible', 'important');
+    const picture = img.closest('picture');
+    if (picture) picture.querySelectorAll('source').forEach((s) => { s.setAttribute('srcset', src); s.removeAttribute('sizes'); });
+  }
+
+  function patchProcessTiles() {
+    if (!document.body) return;
+    STEP_MAP.forEach(({ step, src, alt }) => {
+      const card = document.querySelector('[data-nguyen-process-step="' + step + '"]');
+      if (!card) return;
+      const img = card.querySelector('img');
+      if (img) swapImg(img, src, alt);
+    });
+  }
+
+  patchProcessTiles();
+  window.addEventListener('load', patchProcessTiles, { once: true });
+  [300, 800, 1800, 3500, 6000].forEach((t) => setTimeout(patchProcessTiles, t));
+
+  let ptTimer;
+  const obs = new MutationObserver(() => { clearTimeout(ptTimer); ptTimer = setTimeout(patchProcessTiles, 150); });
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['src', 'srcset'] });
+  setTimeout(() => obs.disconnect(), 12000);
+})();
+</script>`
+
 // Universal card routing. The project cards and design panels are Framer <a href="./projects..."> links
 // that resolve to the Framer site via the <base> tag. Per-card detection (size gates, breakpoint copies)
 // kept missing on mobile, so instead map EVERY Framer project link to the correct internal page by its
@@ -1008,7 +1060,7 @@ export async function GET() {
 
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${PROCESS_TILE_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')
