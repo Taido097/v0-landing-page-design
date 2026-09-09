@@ -1140,6 +1140,18 @@ const HERO_CTA_PATCH = `
     'scheduleaconsultation','scheduleconsultation','letswork','letsworktogether',
   ]);
 
+  // Framer's split-text animation wraps each character in a separate span, causing
+  // textContent to contain the label twice (e.g. "START A PROJECTSTART A PROJECT").
+  // matchesCTA handles single, doubled, and tripled forms so we catch both the static
+  // and animated states of the button.
+  function matchesCTA(key) {
+    if (CTA_KEYS.has(key)) return true;
+    for (const k of CTA_KEYS) {
+      if (key === k + k || key === k + k + k) return true;
+    }
+    return false;
+  }
+
   // Use DOM ancestry only (not getBoundingClientRect which returns top=0 for unpositioned elements).
   // Only exclude elements inside semantic <nav> or role="navigation" — Framer uses <div> for most things.
   function isInNav(el) {
@@ -1154,7 +1166,7 @@ const HERO_CTA_PATCH = `
       if (el.getAttribute('data-nguyen-hero-cta') === '1') return;
       if (isInNav(el)) return;
       const key = compact(el.textContent);
-      if (!CTA_KEYS.has(key)) return;
+      if (!matchesCTA(key)) return;
       // Skip containers — only target the innermost element with that text.
       for (const child of el.children) {
         if (compact(child.textContent) === key) return;
@@ -1181,7 +1193,7 @@ const HERO_CTA_PATCH = `
       let node = e.target;
       while (node && node !== document.body) {
         if (node.nodeType === Node.ELEMENT_NODE && !isInNav(node)) {
-          if (CTA_KEYS.has(compact(node.textContent || ''))) {
+          if (matchesCTA(compact(node.textContent || ''))) {
             e.preventDefault();
             e.stopPropagation();
             if (e.stopImmediatePropagation) e.stopImmediatePropagation();

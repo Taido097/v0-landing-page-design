@@ -401,6 +401,15 @@ const CLIENT_PATCH = `
       if (href) window.location.href = href;
     }, true);
   }
+  var HERO_CTA_KEYS = ['startaproject','bookconsultation','bookaconsultation','getintouch','startyourproject','requestconsultation','scheduleaconsultation','scheduleconsultation','letswork','letsworktogether'];
+  function isHeroCta(a) {
+    var k = (a.textContent || '').replace(/\s+/g,'').toLowerCase();
+    for (var i = 0; i < HERO_CTA_KEYS.length; i++) {
+      var key = HERO_CTA_KEYS[i];
+      if (k === key || k === key + key || k === key + key + key) return true;
+    }
+    return false;
+  }
   function fixNav(){
     var home = window.location.origin + window.location.pathname;
     var navLinks = document.querySelectorAll('nav a, [data-framer-name] a');
@@ -411,6 +420,9 @@ const CLIENT_PATCH = `
         if (wrap) wrap.style.setProperty('display','none','important');
         return;
       }
+      // Never intercept hero CTA buttons — they are handled by the socal layer and must
+      // navigate to the contact form, not loop back to the current page.
+      if (isHeroCta(a)) return;
       if (!a.querySelector('img') && !a.dataset.nnav && !a.matches('[href^="mailto:"], [href^="tel:"]')) {
         a.dataset.nnav = '1';
         a.setAttribute('href', home);
