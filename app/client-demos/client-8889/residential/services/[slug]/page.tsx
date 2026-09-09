@@ -603,9 +603,10 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
                 <span>Behance</span>
               </div>
               <div className="nrd-foot-col">
-                <a href={RESIDENTIAL_HREF}>Privacy Policy</a>
-                <a href={RESIDENTIAL_HREF}>Cookie Policy</a>
-                <a href={RESIDENTIAL_HREF}>Terms &amp; Conditions</a>
+                {/* Legal pages not yet created — add real URLs when available */}
+                <span>Privacy Policy</span>
+                <span>Cookie Policy</span>
+                <span>Terms &amp; Conditions</span>
               </div>
             </div>
           </div>
