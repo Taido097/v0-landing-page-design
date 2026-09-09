@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
   Home, Gem, Hammer, Ruler, Zap, FileCheck, Map, LayoutTemplate, ShieldCheck, Wrench,
-  Check, ArrowRight, Mail, Phone, MapPin,
+  Check, ArrowRight,
   Coffee, UtensilsCrossed, Monitor, Building2, ShoppingBag,
   Search, PencilRuler, FileText, HardHat,
 } from 'lucide-react';
@@ -188,12 +188,7 @@ const CSS = `
 .nrd-foot-col{display:flex;flex-direction:column;gap:12px}
 .nrd-foot-col a,.nrd-foot-col span{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);transition:color .2s}
 .nrd-foot-col a:hover{color:var(--ink)}
-.nrd-foot-bottom{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:clamp(34px,4vw,52px);padding-top:clamp(22px,2.6vw,32px);border-top:1px solid var(--line);flex-wrap:wrap}
-/* Contact info row: icon + label, horizontal on desktop, stacking on mobile */
-.nrd-foot-contact{display:flex;flex-wrap:wrap;gap:clamp(12px,2.4vw,32px);align-items:center}
-.nrd-foot-ci{display:inline-flex;align-items:center;gap:7px;font-size:clamp(10.5px,1.1vw,12px);letter-spacing:.01em;color:var(--muted);text-decoration:none;transition:color .2s;overflow-wrap:break-word;word-break:break-all}
-.nrd-foot-ci:hover{color:var(--ink)}
-.nrd-foot-ci svg{flex:none;color:var(--ink)}
+.nrd-foot-bottom{display:flex;align-items:center;justify-content:flex-end;gap:18px;margin-top:clamp(34px,4vw,52px);padding-top:clamp(22px,2.6vw,32px);border-top:1px solid var(--line);flex-wrap:wrap}
 .nrd-foot-copy{font-size:11.5px;color:var(--soft);letter-spacing:.02em;margin:0}
 .nrd-marquee{overflow:hidden;white-space:nowrap;margin:clamp(30px,4vw,56px) 0 clamp(24px,3vw,40px)}
 .nrd-marquee-track{display:inline-flex;align-items:center;animation:nrd-scroll 40s linear infinite;will-change:transform}
@@ -225,9 +220,7 @@ const CSS = `
   .nrd-adu-scope .nrd-cols.n2{grid-template-columns:1fr;max-width:520px}
   .nrd-adu-scope .nrd-col{padding:0}
   .nrd-adu-scope .nrd-col:first-child{border-right:0;border-bottom:1px solid var(--line);padding-bottom:28px;margin-bottom:28px}
-  .nrd-foot-contact{flex-direction:column;align-items:flex-start;gap:14px}
   .nrd-foot-bottom{flex-direction:column;align-items:flex-start;gap:20px}
-  .nrd-foot-ci{white-space:normal}
 }
 /* Commercial "Built For Business" image-mosaic body */
 .cx-body{padding-top:clamp(36px,4.5vw,64px)}
@@ -611,26 +604,6 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
             </div>
           </div>
           <div className="nrd-foot-bottom">
-            <div className="nrd-foot-contact">
-              <a className="nrd-foot-ci" href="mailto:info@nguyenarchitecture.com" aria-label="Email">
-                <Mail size={15} strokeWidth={1.6} />
-                <span>info@nguyenarchitecture.com</span>
-              </a>
-              <a className="nrd-foot-ci" href="tel:+17147078889" aria-label="Phone">
-                <Phone size={15} strokeWidth={1.6} />
-                <span>(714) 707-8889</span>
-              </a>
-              <a
-                className="nrd-foot-ci"
-                href="https://maps.google.com/?q=7171+Warner+Ave+Suite+B+Huntington+Beach+CA+92647"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Office address"
-              >
-                <MapPin size={15} strokeWidth={1.6} />
-                <span>7171 Warner Ave., Suite B, Huntington Beach, CA 92647</span>
-              </a>
-            </div>
             <p className="nrd-foot-copy">© 2026 NGUYEN ARCHITECTURE. All Rights Reserved.</p>
           </div>
         </div>

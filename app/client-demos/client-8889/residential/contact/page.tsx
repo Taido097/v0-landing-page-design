@@ -218,7 +218,7 @@ const CSS = `
 /* ── body layout ── */
 .cf-body{
   display:grid;
-  grid-template-columns:1fr 280px;
+  grid-template-columns:repeat(2,minmax(220px,1fr));
   gap:clamp(32px,4vw,72px);
   align-items:start;
 }
@@ -264,7 +264,7 @@ const CSS = `
 .cf-aside-block{display:flex;flex-direction:column;gap:6px}
 .cf-aside-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:#9a918a;margin:0}
 .cf-aside-val{font-size:14px;line-height:1.55;color:#4f4742;margin:0}
-.cf-aside-link{color:inherit;text-decoration:none;transition:opacity .2s;display:block}
+.cf-aside-link{color:inherit;text-decoration:none;transition:opacity .2s;display:block;white-space:nowrap}
 .cf-aside-link:hover{opacity:.6}
 
 /* ── thank-you ── */
