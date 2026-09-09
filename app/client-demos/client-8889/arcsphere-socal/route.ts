@@ -1054,13 +1054,76 @@ const CARD_ROUTING_PATCH = `
 </script>`
 
 
+// Route hero / section CTA buttons (START A PROJECT, BOOK CONSULTATION, GET IN TOUCH, etc.)
+// to the contact form. These buttons are NOT in the top nav so MAIN_NAV_PATCH misses them.
+const HERO_CTA_PATCH = `
+<script id="nguyen-socal-hero-cta-patch">
+(() => {
+  const contactUrl = window.location.origin + '/client-demos/client-8889/residential/contact';
+  const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
+  // Exclude 'contactus'/'contact' — those are already handled by MAIN_NAV_PATCH on the nav link.
+  // Only match unambiguous hero/section CTA labels here.
+  const CTA_KEYS = new Set([
+    'startaproject','bookconsultation','bookaconsultation','getintouch',
+    'startyourproject','requestconsultation',
+    'scheduleaconsultation','scheduleconsultation','letswork','letsworktogether',
+  ]);
+
+  // Use DOM ancestry to detect nav items — NOT getBoundingClientRect() which returns top=0
+  // for elements Framer hasn't positioned yet, wrongly treating them as nav.
+  function isInNav(el) {
+    return !!(el.closest('nav, header, [role="navigation"], [data-framer-name*="nav" i], [data-framer-name*="header" i]'));
+  }
+
+  function patchHeroCtas() {
+    if (!document.body) return;
+    document.querySelectorAll('a[href], button').forEach((el) => {
+      if (el.getAttribute('data-nguyen-hero-cta') === '1') return;
+      if (isInNav(el)) return;
+      const key = compact(el.textContent);
+      if (!CTA_KEYS.has(key)) return;
+      el.setAttribute('data-nguyen-hero-cta', '1');
+      if (el.tagName === 'A') {
+        el.setAttribute('href', contactUrl);
+        el.removeAttribute('target');
+        el.removeAttribute('rel');
+      }
+    });
+  }
+
+  patchHeroCtas();
+  window.addEventListener('load', patchHeroCtas, { once: true });
+  [100, 300, 800, 1500, 3000, 6000, 10000].forEach((t) => setTimeout(patchHeroCtas, t));
+
+  // Capture-phase click handler — fires on actual user interaction so position is known.
+  if (!window.__nguyenHeroCtaRouting) {
+    window.__nguyenHeroCtaRouting = true;
+    document.addEventListener('click', (e) => {
+      const target = e.target && e.target.nodeType === Node.TEXT_NODE ? e.target.parentElement : e.target;
+      if (!target || !target.closest) return;
+      const el = target.closest('a[href], button');
+      if (!el || isInNav(el)) return;
+      if (!CTA_KEYS.has(compact(el.textContent))) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      window.location.href = contactUrl;
+    }, true);
+  }
+
+  const obs = new MutationObserver(patchHeroCtas);
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true });
+  setTimeout(() => obs.disconnect(), 20000);
+})();
+</script>`
+
 export async function GET() {
   const response = await getConcept()
   if (!response.ok) return response
 
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${PROCESS_TILE_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${PROCESS_TILE_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}${HERO_CTA_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')

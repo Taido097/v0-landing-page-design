@@ -468,8 +468,26 @@ const CLIENT_REBRAND = `
         }
       });
     }
-    [1600, 2600, 4000, 6000].forEach(function (t) { setTimeout(function () { injectServices(); injectBlueprint(); hideGallery(); squareImages(); routeServices(); fixNav(); }, t); });
-    [800, 5000, 8000].forEach(function (t) { setTimeout(function () { squareImages(); routeServices(); fixNav(); if (looksBlank()) reveal(); }, t); });
+    function fixHeroCtas() {
+      var ctaUrl = window.location.origin + '/client-demos/client-8889/residential/contact';
+      var CTA_KEYS = ['startaproject','bookconsultation','bookaconsultation','getintouch','startyourproject','scheduleaconsultation','scheduleconsultation','requestconsultation','letswork','letsworktogether'];
+      document.querySelectorAll('a[href], button').forEach(function(el) {
+        if (el.getAttribute('data-nnav') || el.getAttribute('data-nguyen-hero-cta') === '1') return;
+        // Use DOM ancestry to detect nav — NOT getBoundingClientRect which returns top=0 for unpositioned elements
+        if (el.closest('nav, header, [role="navigation"]')) return;
+        var key = (el.textContent || '').replace(/\s+/g,'').toLowerCase();
+        if (CTA_KEYS.indexOf(key) === -1) return;
+        el.setAttribute('data-nguyen-hero-cta', '1');
+        if (el.tagName === 'A') {
+          if (el.getAttribute('href') === ctaUrl) return;
+          el.setAttribute('href', ctaUrl);
+          el.removeAttribute('target');
+          el.removeAttribute('rel');
+        }
+      });
+    }
+    [1600, 2600, 4000, 6000].forEach(function (t) { setTimeout(function () { injectServices(); injectBlueprint(); hideGallery(); squareImages(); routeServices(); fixNav(); fixHeroCtas(); }, t); });
+    [800, 5000, 8000].forEach(function (t) { setTimeout(function () { squareImages(); routeServices(); fixNav(); fixHeroCtas(); if (looksBlank()) reveal(); }, t); });
   } catch (e) {}
 })();
 </script>`;
