@@ -942,14 +942,73 @@ const PROCESS_TILE_IMAGE_PATCH = `
 <script id="nguyen-socal-process-tile-images">
 (() => {
   const origin = window.location.origin;
+  // Each entry lists every known title variant (original Framer + NGUYEN patched) so the
+  // card can be located by text content even before arcsphere-fixed sets data-nguyen-process-step.
   const STEP_MAP = [
-    { step: '1', src: origin + '/client-8889/process/01_discovery.png',                             alt: 'Consultation' },
-    { step: '2', src: origin + '/client-8889/process/02_existing_condition_survey_design.png',       alt: 'Site Analysis & Feasibility' },
-    { step: '3', src: origin + '/client-8889/process/03_architecture_engineering.png',               alt: 'Concept Design' },
-    { step: '4', src: origin + '/client-8889/process/04_execution.png',                             alt: 'Design & Engineering' },
-    { step: '5', src: origin + '/client-8889/process/04_execution.png',                             alt: 'Permit Submittal' },
-    { step: '6', src: origin + '/client-8889/process/04_execution.png',                             alt: 'Plan Check & Approval' },
+    {
+      step: '1',
+      keys: ['discovery', 'consultation'],
+      src: origin + '/client-8889/process/01_discovery.png',
+      alt: 'Consultation',
+    },
+    {
+      step: '2',
+      keys: ['existingcondition', 'siteanalysis', 'conceptdevelopment'],
+      src: origin + '/client-8889/process/02_existing_condition_survey_design.png',
+      alt: 'Site Analysis & Feasibility',
+    },
+    {
+      step: '3',
+      keys: ['architectureengineering', 'designdevelopment', 'conceptdesign'],
+      src: origin + '/client-8889/process/03_architecture_engineering.png',
+      alt: 'Concept Design',
+    },
+    {
+      step: '4',
+      keys: ['execution', 'implementation', 'designengineering'],
+      src: origin + '/client-8889/process/04_execution.png',
+      alt: 'Design & Engineering',
+    },
+    {
+      step: '5',
+      keys: ['permitsubmittal'],
+      src: origin + '/client-8889/process/04_execution.png',
+      alt: 'Permit Submittal',
+    },
+    {
+      step: '6',
+      keys: ['plancheckapproval', 'plancheckcorrections'],
+      src: origin + '/client-8889/process/04_execution.png',
+      alt: 'Plan Check & Approval',
+    },
   ];
+
+  const compact = (v) => (v || '').replace(/[^a-z0-9]/gi, '').toLowerCase();
+
+  function findCard(spec) {
+    // Prefer the explicit attribute set by arcsphere-fixed (most precise).
+    const byAttr = document.querySelector('[data-nguyen-process-step="' + spec.step + '"]');
+    if (byAttr) return byAttr;
+
+    // Fall back: find the tightest element that (a) contains only one of our title strings
+    // as a leaf and (b) has an img descendant.
+    let found = null;
+    document.querySelectorAll('div,section,article').forEach((el) => {
+      if (found) return;
+      const txt = compact(el.textContent);
+      if (!spec.keys.some((k) => txt.startsWith(k) || txt.indexOf(k) === 0 || txt === k || txt.replace(/[0-9]/g,'').startsWith(k))) return;
+      // Skip wrappers that just contain a child with the same text
+      if (Array.from(el.children).some((c) => spec.keys.some((k) => compact(c.textContent).startsWith(k)))) return;
+      // Must have an img
+      if (!el.querySelector('img')) return;
+      // Card must be narrower than 90 % viewport (skip full-section containers)
+      const vw = window.innerWidth || 1200;
+      const w = el.getBoundingClientRect().width;
+      if (w > 0 && w >= vw * 0.85) return;
+      found = el;
+    });
+    return found;
+  }
 
   function swapImg(img, src, alt) {
     if (img.getAttribute('data-nguyen-process-img') === src) return;
@@ -968,22 +1027,24 @@ const PROCESS_TILE_IMAGE_PATCH = `
 
   function patchProcessTiles() {
     if (!document.body) return;
-    STEP_MAP.forEach(({ step, src, alt }) => {
-      const card = document.querySelector('[data-nguyen-process-step="' + step + '"]');
+    STEP_MAP.forEach((spec) => {
+      const card = findCard(spec);
       if (!card) return;
       const img = card.querySelector('img');
-      if (img) swapImg(img, src, alt);
+      if (img) swapImg(img, spec.src, spec.alt);
     });
   }
 
   patchProcessTiles();
   window.addEventListener('load', patchProcessTiles, { once: true });
-  [300, 800, 1800, 3500, 6000].forEach((t) => setTimeout(patchProcessTiles, t));
+  [100, 300, 600, 1000, 1800, 3000, 5000, 8000].forEach((t) => setTimeout(patchProcessTiles, t));
 
+  // Watch ALL DOM/attribute changes so we catch arcsphere-fixed setting data-nguyen-process-step
+  // and Framer reverting images via lazy-load.
   let ptTimer;
-  const obs = new MutationObserver(() => { clearTimeout(ptTimer); ptTimer = setTimeout(patchProcessTiles, 150); });
-  if (document.body) obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['src', 'srcset'] });
-  setTimeout(() => obs.disconnect(), 12000);
+  const obs = new MutationObserver(() => { clearTimeout(ptTimer); ptTimer = setTimeout(patchProcessTiles, 80); });
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true, attributes: true });
+  setTimeout(() => obs.disconnect(), 20000);
 })();
 </script>`
 
