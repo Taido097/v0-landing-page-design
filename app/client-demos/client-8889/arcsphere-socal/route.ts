@@ -171,7 +171,7 @@ const MAIN_NAV_PATCH = `
 (() => {
   const home = window.location.origin + '/client-demos/client-8889/arcsphere-socal';
   const services = home + '#services';
-  const contact = 'mailto:info@nguyen-ae.com';
+  const contact = window.location.origin + '/client-demos/client-8889/residential/contact';
   const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim();
   const compact = (value) => normalize(value).replace(/\\s+/g, '').toLowerCase();
   const linkFont = '"Inter Display","Inter",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif';
@@ -942,14 +942,80 @@ const PROCESS_TILE_IMAGE_PATCH = `
 <script id="nguyen-socal-process-tile-images">
 (() => {
   const origin = window.location.origin;
+  // Mirror the exact description strings used by arcsphere-fixed so we find cards the same way.
+  // 'desc' lists all known variants (original Framer + NGUYEN-patched) so the patch works
+  // regardless of whether arcsphere-fixed has already run.
   const STEP_MAP = [
-    { step: '1', src: origin + '/client-8889/process/01_discovery.png',                             alt: 'Consultation' },
-    { step: '2', src: origin + '/client-8889/process/02_existing_condition_survey_design.png',       alt: 'Site Analysis & Feasibility' },
-    { step: '3', src: origin + '/client-8889/process/03_architecture_engineering.png',               alt: 'Concept Design' },
-    { step: '4', src: origin + '/client-8889/process/04_execution.png',                             alt: 'Design & Engineering' },
-    { step: '5', src: origin + '/client-8889/process/04_execution.png',                             alt: 'Permit Submittal' },
-    { step: '6', src: origin + '/client-8889/process/04_execution.png',                             alt: 'Plan Check & Approval' },
+    {
+      step: '1',
+      desc: [
+        'We begin by understanding your goals, requirements, and design vision.',
+        'We begin with existing conditions, business needs, zoning, occupancy and local requirements.',
+        'We discuss your goals, project scope, budget, timeline, and requirements.',
+      ],
+      src: origin + '/client-8889/process/01_discovery.png',
+      alt: 'Consultation',
+    },
+    {
+      step: '2',
+      desc: [
+        'Our team develops layouts, ideas, and creative design directions.',
+        'We review the site, zoning, codes, constraints, existing conditions, and project feasibility.',
+      ],
+      src: origin + '/client-8889/process/02_existing_condition_survey_design.png',
+      alt: 'Site Analysis & Feasibility',
+    },
+    {
+      step: '3',
+      desc: [
+        'Detailed drawings, materials, and spatial specifications are finalized.',
+        'We develop the initial layout, massing, design direction, and key project concepts.',
+      ],
+      src: origin + '/client-8889/process/03_architecture_engineering.png',
+      alt: 'Concept Design',
+    },
+    {
+      step: '4',
+      desc: [
+        'We guide implementation to ensure the final result reflects the original design vision.',
+        'We support building permit, plan check, corrections, consultants and city coordination through approval.',
+        'We coordinate architectural and engineering drawings into a complete permit-ready design.',
+      ],
+      src: origin + '/client-8889/process/04_execution.png',
+      alt: 'Design & Engineering',
+    },
+    {
+      step: '5',
+      desc: ['We prepare and submit the permit package to the appropriate city or agency.'],
+      src: origin + '/client-8889/process/04_execution.png',
+      alt: 'Permit Submittal',
+    },
+    {
+      step: '6',
+      desc: ['We respond to plan-check comments and coordinate revisions through approval.'],
+      src: origin + '/client-8889/process/04_execution.png',
+      alt: 'Plan Check & Approval',
+    },
   ];
+
+  const compact = (v) => (v || '').replace(/\\s+/g, ' ').trim().replace(/\\s+/g, '').toLowerCase();
+
+  // Identical to arcsphere-fixed's findProcessCardByDescription: find a leaf whose
+  // textContent exactly matches a description, then walk up until we have a node
+  // that contains both a description key and an img.
+  function findCardByDesc(descList) {
+    const keys = new Set(descList.map(compact));
+    const all = document.body ? [document.body, ...document.body.querySelectorAll('*')] : [];
+    for (const el of all) {
+      if (!keys.has(compact(el.textContent))) continue;
+      // Walk up to a container that also has an img
+      let node = el;
+      for (let d = 0; node && d < 12; d++, node = node.parentElement) {
+        if (node.querySelector('img')) return node;
+      }
+    }
+    return null;
+  }
 
   function swapImg(img, src, alt) {
     if (img.getAttribute('data-nguyen-process-img') === src) return;
@@ -960,6 +1026,7 @@ const PROCESS_TILE_IMAGE_PATCH = `
     img.removeAttribute('sizes');
     img.style.setProperty('object-fit', 'cover', 'important');
     img.style.setProperty('object-position', 'center', 'important');
+    img.style.setProperty('filter', 'none', 'important');
     img.style.setProperty('opacity', '1', 'important');
     img.style.setProperty('visibility', 'visible', 'important');
     const picture = img.closest('picture');
@@ -968,22 +1035,27 @@ const PROCESS_TILE_IMAGE_PATCH = `
 
   function patchProcessTiles() {
     if (!document.body) return;
-    STEP_MAP.forEach(({ step, src, alt }) => {
-      const card = document.querySelector('[data-nguyen-process-step="' + step + '"]');
+    STEP_MAP.forEach((spec) => {
+      // Fast path: arcsphere-fixed already marked this card
+      let card = document.querySelector('[data-nguyen-process-step="' + spec.step + '"]');
+      // Slow path: find by description text (same strategy as arcsphere-fixed)
+      if (!card) card = findCardByDesc(spec.desc);
       if (!card) return;
       const img = card.querySelector('img');
-      if (img) swapImg(img, src, alt);
+      if (img) swapImg(img, spec.src, spec.alt);
     });
   }
 
   patchProcessTiles();
   window.addEventListener('load', patchProcessTiles, { once: true });
-  [300, 800, 1800, 3500, 6000].forEach((t) => setTimeout(patchProcessTiles, t));
+  [100, 300, 600, 1000, 1800, 3000, 5000, 8000, 12000].forEach((t) => setTimeout(patchProcessTiles, t));
 
+  // Watch childList + src/srcset attributes (same pattern as BLUEPRINT_IMAGE_PATCH).
+  // Also watch all attributes so we catch arcsphere-fixed setting data-nguyen-process-step.
   let ptTimer;
-  const obs = new MutationObserver(() => { clearTimeout(ptTimer); ptTimer = setTimeout(patchProcessTiles, 150); });
-  if (document.body) obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['src', 'srcset'] });
-  setTimeout(() => obs.disconnect(), 12000);
+  const obs = new MutationObserver(() => { clearTimeout(ptTimer); ptTimer = setTimeout(patchProcessTiles, 80); });
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true, attributes: true });
+  setTimeout(() => obs.disconnect(), 25000);
 })();
 </script>`
 
@@ -1061,7 +1133,6 @@ const HERO_CTA_PATCH = `
 (() => {
   const contactUrl = window.location.origin + '/client-demos/client-8889/residential/contact';
   const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
-  // Exclude 'contactus'/'contact' — those are already handled by MAIN_NAV_PATCH on the nav link.
   // Only match unambiguous hero/section CTA labels here.
   const CTA_KEYS = new Set([
     'startaproject','bookconsultation','bookaconsultation','getintouch',
@@ -1069,19 +1140,25 @@ const HERO_CTA_PATCH = `
     'scheduleaconsultation','scheduleconsultation','letswork','letsworktogether',
   ]);
 
-  // Use DOM ancestry to detect nav items — NOT getBoundingClientRect() which returns top=0
-  // for elements Framer hasn't positioned yet, wrongly treating them as nav.
+  // Use DOM ancestry only (not getBoundingClientRect which returns top=0 for unpositioned elements).
+  // Only exclude elements inside semantic <nav> or role="navigation" — Framer uses <div> for most things.
   function isInNav(el) {
-    return !!(el.closest('nav, header, [role="navigation"], [data-framer-name*="nav" i], [data-framer-name*="header" i]'));
+    return !!(el.closest && el.closest('nav, [role="navigation"]'));
   }
 
   function patchHeroCtas() {
     if (!document.body) return;
-    document.querySelectorAll('a[href], button').forEach((el) => {
+    // Scan ALL elements so we catch Framer's <div>-based buttons, not just <a> and <button>.
+    // Find the smallest element whose compact text matches CTA_KEYS (no child with the same text).
+    document.body.querySelectorAll('*').forEach((el) => {
       if (el.getAttribute('data-nguyen-hero-cta') === '1') return;
       if (isInNav(el)) return;
       const key = compact(el.textContent);
       if (!CTA_KEYS.has(key)) return;
+      // Skip containers — only target the innermost element with that text.
+      for (const child of el.children) {
+        if (compact(child.textContent) === key) return;
+      }
       el.setAttribute('data-nguyen-hero-cta', '1');
       if (el.tagName === 'A') {
         el.setAttribute('href', contactUrl);
@@ -1095,19 +1172,25 @@ const HERO_CTA_PATCH = `
   window.addEventListener('load', patchHeroCtas, { once: true });
   [100, 300, 800, 1500, 3000, 6000, 10000].forEach((t) => setTimeout(patchHeroCtas, t));
 
-  // Capture-phase click handler — fires on actual user interaction so position is known.
+  // Capture-phase click on document — fires before any Framer handler.
+  // Walk UP from the click target to find the first ancestor whose text matches CTA_KEYS.
+  // This catches <div>-based Framer buttons (not just <a href> or <button>).
   if (!window.__nguyenHeroCtaRouting) {
     window.__nguyenHeroCtaRouting = true;
     document.addEventListener('click', (e) => {
-      const target = e.target && e.target.nodeType === Node.TEXT_NODE ? e.target.parentElement : e.target;
-      if (!target || !target.closest) return;
-      const el = target.closest('a[href], button');
-      if (!el || isInNav(el)) return;
-      if (!CTA_KEYS.has(compact(el.textContent))) return;
-      e.preventDefault();
-      e.stopPropagation();
-      if (e.stopImmediatePropagation) e.stopImmediatePropagation();
-      window.location.href = contactUrl;
+      let node = e.target;
+      while (node && node !== document.body) {
+        if (node.nodeType === Node.ELEMENT_NODE && !isInNav(node)) {
+          if (CTA_KEYS.has(compact(node.textContent || ''))) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+            window.location.href = contactUrl;
+            return;
+          }
+        }
+        node = node.parentElement;
+      }
     }, true);
   }
 

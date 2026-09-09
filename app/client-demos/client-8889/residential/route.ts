@@ -440,7 +440,7 @@ const CLIENT_REBRAND = `
     function fixNav(){
       var home = window.location.origin + '/client-demos/client-8889/arcsphere-socal';
       var services = home + '#services';
-      var contact = 'mailto:info@nguyen-ae.com';
+      var contact = window.location.origin + '/client-demos/client-8889/residential/contact';
       var navLinks = document.querySelectorAll('nav a, [data-framer-name="nav"] a');
       navLinks.forEach(function(a){
         var text = (a.textContent || '').trim().toLowerCase().replace(/\\s+/g,' ');
@@ -471,12 +471,19 @@ const CLIENT_REBRAND = `
     function fixHeroCtas() {
       var ctaUrl = window.location.origin + '/client-demos/client-8889/residential/contact';
       var CTA_KEYS = ['startaproject','bookconsultation','bookaconsultation','getintouch','startyourproject','scheduleaconsultation','scheduleconsultation','requestconsultation','letswork','letsworktogether'];
-      document.querySelectorAll('a[href], button').forEach(function(el) {
+      // Scan ALL elements so we catch Framer's <div>-based buttons.
+      // Use DOM ancestry for nav detection (not getBoundingClientRect which is 0 before Framer positions elements).
+      document.body && document.body.querySelectorAll('*').forEach(function(el) {
         if (el.getAttribute('data-nnav') || el.getAttribute('data-nguyen-hero-cta') === '1') return;
-        // Use DOM ancestry to detect nav — NOT getBoundingClientRect which returns top=0 for unpositioned elements
-        if (el.closest('nav, header, [role="navigation"]')) return;
+        if (el.closest('nav, [role="navigation"]')) return;
         var key = (el.textContent || '').replace(/\s+/g,'').toLowerCase();
         if (CTA_KEYS.indexOf(key) === -1) return;
+        // Skip containers — only target innermost matching element.
+        var hasMatchingChild = false;
+        for (var ci = 0; ci < el.children.length; ci++) {
+          if ((el.children[ci].textContent || '').replace(/\s+/g,'').toLowerCase() === key) { hasMatchingChild = true; break; }
+        }
+        if (hasMatchingChild) return;
         el.setAttribute('data-nguyen-hero-cta', '1');
         if (el.tagName === 'A') {
           if (el.getAttribute('href') === ctaUrl) return;

@@ -1,6 +1,6 @@
 const HOME_HREF = '/client-demos/client-8889/arcsphere-socal';
 const SERVICES_HREF = '/client-demos/client-8889/arcsphere-socal#services';
-const CONTACT_HREF = 'mailto:info@nguyen-ae.com';
+const CONTACT_HREF = '/client-demos/client-8889/residential/contact';
 
 const NAV_CSS = `
 .rnav-bar{position:sticky;top:0;z-index:20;background:rgba(240,235,230,.96);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}

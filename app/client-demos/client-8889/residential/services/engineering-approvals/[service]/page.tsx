@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { Check, ArrowRight, Mail, Phone, MapPin } from 'lucide-react';
 import Navbar from '../../navbar';
 
-const CONTACT = 'mailto:info@nguyen-ae.com';
+const CONTACT = '/client-demos/client-8889/residential/contact';
 const ENG_HREF = '/client-demos/client-8889/residential/services/engineering-approvals';
 const RESIDENTIAL_HREF = '/client-demos/client-8889/residential';
 const HOME_HREF = '/client-demos/client-8889/arcsphere-socal';

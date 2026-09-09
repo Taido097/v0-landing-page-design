@@ -17,7 +17,7 @@ import EngineeringServiceCards from '../engineering-approvals/service-cards';
 
 const RESIDENTIAL_HREF = '/client-demos/client-8889/residential';
 const HOME_HREF = '/client-demos/client-8889/arcsphere-socal';
-const CONTACT = 'mailto:info@nguyen-ae.com';
+const CONTACT = '/client-demos/client-8889/residential/contact';
 
 const ICONS: Record<string, typeof Home> = {
   Home, Gem, Hammer, Ruler, Zap, FileCheck, Map, LayoutTemplate, ShieldCheck, Wrench,
