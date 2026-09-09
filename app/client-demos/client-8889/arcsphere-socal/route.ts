@@ -171,7 +171,7 @@ const MAIN_NAV_PATCH = `
 (() => {
   const home = window.location.origin + '/client-demos/client-8889/arcsphere-socal';
   const services = home + '#services';
-  const contact = 'mailto:info@nguyen-ae.com';
+  const contact = window.location.origin + '/client-demos/client-8889/residential/contact';
   const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim();
   const compact = (value) => normalize(value).replace(/\\s+/g, '').toLowerCase();
   const linkFont = '"Inter Display","Inter",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif';
