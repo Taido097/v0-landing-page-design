@@ -1126,13 +1126,71 @@ const CARD_ROUTING_PATCH = `
 </script>`
 
 
+// Route hero / section CTA buttons (START A PROJECT, BOOK CONSULTATION, GET IN TOUCH, etc.)
+// to the contact form. These buttons are NOT in the top nav so MAIN_NAV_PATCH misses them.
+const HERO_CTA_PATCH = `
+<script id="nguyen-socal-hero-cta-patch">
+(() => {
+  const contactUrl = window.location.origin + '/client-demos/client-8889/residential/contact';
+  const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
+  const CTA_KEYS = new Set([
+    'startaproject','bookconsultation','bookaconsultation','getintouch',
+    'contactus','contact','startyourproject','requestconsultation',
+    'scheduleaconsultation','scheduleconsultation','letswork','letsworktogether',
+  ]);
+
+  // Returns true if the anchor is close to the top of the page (i.e. in the nav)
+  function isNav(el) {
+    const rect = el.getBoundingClientRect();
+    return rect.top < 160 && rect.bottom > -20;
+  }
+
+  function patchHeroCtas() {
+    if (!document.body) return;
+    document.querySelectorAll('a[href]').forEach((a) => {
+      if (a.getAttribute('data-nguyen-hero-cta') === '1') return;
+      if (isNav(a)) return;                  // skip nav items (handled by MAIN_NAV_PATCH)
+      const key = compact(a.textContent);
+      if (!CTA_KEYS.has(key)) return;
+      a.setAttribute('data-nguyen-hero-cta', '1');
+      a.setAttribute('href', contactUrl);
+      a.removeAttribute('target');
+      a.removeAttribute('rel');
+    });
+  }
+
+  patchHeroCtas();
+  window.addEventListener('load', patchHeroCtas, { once: true });
+  [300, 800, 1500, 3000, 6000].forEach((t) => setTimeout(patchHeroCtas, t));
+
+  // Capture-phase click handler so Framer's own handlers don't fire first.
+  if (!window.__nguyenHeroCtaRouting) {
+    window.__nguyenHeroCtaRouting = true;
+    document.addEventListener('click', (e) => {
+      const start = e.target && e.target.nodeType === Node.TEXT_NODE ? e.target.parentElement : e.target;
+      const a = start && start.closest ? start.closest('a[href]') : null;
+      if (!a || isNav(a)) return;
+      if (!CTA_KEYS.has(compact(a.textContent))) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      window.location.href = contactUrl;
+    }, true);
+  }
+
+  const obs = new MutationObserver(patchHeroCtas);
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true });
+  setTimeout(() => obs.disconnect(), 15000);
+})();
+</script>`
+
 export async function GET() {
   const response = await getConcept()
   if (!response.ok) return response
 
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${PROCESS_TILE_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${PROCESS_TILE_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}${HERO_CTA_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')

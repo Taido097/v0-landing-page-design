@@ -440,7 +440,7 @@ const CLIENT_REBRAND = `
     function fixNav(){
       var home = window.location.origin + '/client-demos/client-8889/arcsphere-socal';
       var services = home + '#services';
-      var contact = 'mailto:info@nguyen-ae.com';
+      var contact = window.location.origin + '/client-demos/client-8889/residential/contact';
       var navLinks = document.querySelectorAll('nav a, [data-framer-name="nav"] a');
       navLinks.forEach(function(a){
         var text = (a.textContent || '').trim().toLowerCase().replace(/\\s+/g,' ');
@@ -468,8 +468,23 @@ const CLIENT_REBRAND = `
         }
       });
     }
-    [1600, 2600, 4000, 6000].forEach(function (t) { setTimeout(function () { injectServices(); injectBlueprint(); hideGallery(); squareImages(); routeServices(); fixNav(); }, t); });
-    [800, 5000, 8000].forEach(function (t) { setTimeout(function () { squareImages(); routeServices(); fixNav(); if (looksBlank()) reveal(); }, t); });
+    function fixHeroCtas() {
+      var ctaUrl = window.location.origin + '/client-demos/client-8889/residential/contact';
+      var CTA_KEYS = ['startaproject','bookconsultation','bookaconsultation','getintouch','startyourproject','scheduleaconsultation','scheduleconsultation','requestconsultation','letswork','letsworktogether'];
+      document.querySelectorAll('a[href]').forEach(function(a) {
+        if (a.getAttribute('data-nnav')) return; // already handled by fixNav
+        var rect = a.getBoundingClientRect();
+        if (rect.top < 160) return; // skip nav-height area
+        var key = (a.textContent || '').replace(/\s+/g,'').toLowerCase();
+        if (CTA_KEYS.indexOf(key) === -1) return;
+        if (a.getAttribute('href') === ctaUrl) return;
+        a.setAttribute('href', ctaUrl);
+        a.removeAttribute('target');
+        a.removeAttribute('rel');
+      });
+    }
+    [1600, 2600, 4000, 6000].forEach(function (t) { setTimeout(function () { injectServices(); injectBlueprint(); hideGallery(); squareImages(); routeServices(); fixNav(); fixHeroCtas(); }, t); });
+    [800, 5000, 8000].forEach(function (t) { setTimeout(function () { squareImages(); routeServices(); fixNav(); fixHeroCtas(); if (looksBlank()) reveal(); }, t); });
   } catch (e) {}
 })();
 </script>`;
