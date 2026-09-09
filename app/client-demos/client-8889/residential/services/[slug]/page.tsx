@@ -189,11 +189,11 @@ const CSS = `
 .nrd-foot-col a,.nrd-foot-col span{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);transition:color .2s}
 .nrd-foot-col a:hover{color:var(--ink)}
 .nrd-foot-bottom{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:clamp(34px,4vw,52px);padding-top:clamp(22px,2.6vw,32px);border-top:1px solid var(--line);flex-wrap:wrap}
-.nrd-foot-icons{display:flex;align-items:center}
-.nrd-foot-icons a,.nrd-foot-icons span{display:grid;place-items:center;color:var(--ink);padding:0 16px;border-right:1px solid var(--line);transition:color .2s}
-.nrd-foot-icons a:first-child,.nrd-foot-icons span:first-child{padding-left:0}
-.nrd-foot-icons a:last-child,.nrd-foot-icons span:last-child{border-right:0;padding-right:0}
-.nrd-foot-icons a:hover{color:var(--gold)}
+/* Contact info row: icon + label, horizontal on desktop, stacking on mobile */
+.nrd-foot-contact{display:flex;flex-wrap:wrap;gap:clamp(12px,2.4vw,32px);align-items:center}
+.nrd-foot-ci{display:inline-flex;align-items:center;gap:7px;font-size:12px;letter-spacing:.01em;color:var(--muted);text-decoration:none;transition:color .2s;white-space:nowrap}
+.nrd-foot-ci:hover{color:var(--ink)}
+.nrd-foot-ci svg{flex:none;color:var(--ink)}
 .nrd-foot-copy{font-size:11.5px;color:var(--soft);letter-spacing:.02em;margin:0}
 .nrd-marquee{overflow:hidden;white-space:nowrap;margin:clamp(30px,4vw,56px) 0 clamp(24px,3vw,40px)}
 .nrd-marquee-track{display:inline-flex;align-items:center;animation:nrd-scroll 40s linear infinite;will-change:transform}
@@ -225,6 +225,9 @@ const CSS = `
   .nrd-adu-scope .nrd-cols.n2{grid-template-columns:1fr;max-width:520px}
   .nrd-adu-scope .nrd-col{padding:0}
   .nrd-adu-scope .nrd-col:first-child{border-right:0;border-bottom:1px solid var(--line);padding-bottom:28px;margin-bottom:28px}
+  .nrd-foot-contact{flex-direction:column;align-items:flex-start;gap:14px}
+  .nrd-foot-bottom{flex-direction:column;align-items:flex-start;gap:20px}
+  .nrd-foot-ci{white-space:normal}
 }
 /* Commercial "Built For Business" image-mosaic body */
 .cx-body{padding-top:clamp(36px,4.5vw,64px)}
@@ -587,16 +590,17 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
               <div className="nrd-foot-col">
                 <a href={HOME_HREF}>Home</a>
                 <a href={RESIDENTIAL_HREF}>About</a>
-                <a href={RESIDENTIAL_HREF}>Services</a>
-                <a href={RESIDENTIAL_HREF}>Projects</a>
-                <a href={RESIDENTIAL_HREF}>Process</a>
+                <a href={`${HOME_HREF}#services`}>Services</a>
+                <a href={`${HOME_HREF}#services`}>Projects</a>
+                <a href={HOME_HREF}>Process</a>
                 <a href={CONTACT}>Contact</a>
               </div>
               <div className="nrd-foot-col">
-                <a href={CONTACT}>Pinterest</a>
-                <a href={CONTACT}>LinkedIn</a>
-                <a href={CONTACT}>Instagram</a>
-                <a href={CONTACT}>Behance</a>
+                {/* Social URLs not yet provided — add verified profile links here */}
+                <span>Pinterest</span>
+                <span>LinkedIn</span>
+                <span>Instagram</span>
+                <span>Behance</span>
               </div>
               <div className="nrd-foot-col">
                 <a href={RESIDENTIAL_HREF}>Privacy Policy</a>
@@ -606,12 +610,27 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
             </div>
           </div>
           <div className="nrd-foot-bottom">
-            <div className="nrd-foot-icons">
-              <a href={CONTACT} aria-label="Email"><Mail size={16} strokeWidth={1.6} /></a>
-              <a href="tel:+17141234567" aria-label="Phone"><Phone size={16} strokeWidth={1.6} /></a>
-              <span aria-label="Location, Los Angeles, CA"><MapPin size={16} strokeWidth={1.6} /></span>
+            <div className="nrd-foot-contact">
+              <a className="nrd-foot-ci" href="mailto:info@nguyenarchitecture.com" aria-label="Email">
+                <Mail size={15} strokeWidth={1.6} />
+                <span>info@nguyenarchitecture.com</span>
+              </a>
+              <a className="nrd-foot-ci" href="tel:+17147078889" aria-label="Phone">
+                <Phone size={15} strokeWidth={1.6} />
+                <span>(714) 707-8889</span>
+              </a>
+              <a
+                className="nrd-foot-ci"
+                href="https://maps.google.com/?q=7171+Warner+Ave+Suite+B+Huntington+Beach+CA+92647"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Office address"
+              >
+                <MapPin size={15} strokeWidth={1.6} />
+                <span>7171 Warner Ave., Suite B, Huntington Beach, CA 92647</span>
+              </a>
             </div>
-            <p className="nrd-foot-copy">© 2026 NGUYEN Architecture &amp; Engineering. All Rights Reserved.</p>
+            <p className="nrd-foot-copy">© 2026 NGUYEN ARCHITECTURE. All Rights Reserved.</p>
           </div>
         </div>
         <div className="nrd-marquee" aria-hidden="true">
