@@ -30,7 +30,7 @@ export default function ContactPage() {
       `Message:`,
       fields.message,
     ].join('\n');
-    window.location.href = `mailto:info@nguyen-ae.com?subject=Project Inquiry — ${encodeURIComponent(fields.name)}&body=${encodeURIComponent(body)}`;
+    window.location.href = `mailto:info@nguyenarchitecture.com?subject=Project Inquiry — ${encodeURIComponent(fields.name)}&body=${encodeURIComponent(body)}`;
     setSubmitted(true);
   }
 
@@ -165,12 +165,11 @@ export default function ContactPage() {
                 </div>
                 <div className="cf-aside-block">
                   <p className="cf-aside-label">Phone</p>
-                  <a className="cf-aside-val cf-aside-link" href="tel:+12092338888">209-233-8888</a>
-                  <a className="cf-aside-val cf-aside-link" href="tel:+17147078889">714-707-8889</a>
+                  <a className="cf-aside-val cf-aside-link" href="tel:+17147078889">(714) 707-8889</a>
                 </div>
                 <div className="cf-aside-block">
                   <p className="cf-aside-label">Email</p>
-                  <a className="cf-aside-val cf-aside-link" href="mailto:info@nguyen-ae.com">info@nguyen-ae.com</a>
+                  <a className="cf-aside-val cf-aside-link" href="mailto:info@nguyenarchitecture.com">info@nguyenarchitecture.com</a>
                 </div>
                 <div className="cf-aside-block">
                   <p className="cf-aside-label">Hours</p>

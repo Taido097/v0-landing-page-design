@@ -410,10 +410,22 @@ const CLIENT_PATCH = `
     }
     return false;
   }
+  function isInFooter(a) {
+    var el = a;
+    while (el) {
+      if (el.tagName && el.tagName.toLowerCase() === 'footer') return true;
+      var fn = el.getAttribute ? el.getAttribute('data-framer-name') : null;
+      if (fn && /footer/i.test(fn)) return true;
+      el = el.parentElement;
+    }
+    return false;
+  }
   function fixNav(){
     var home = window.location.origin + window.location.pathname;
     var navLinks = document.querySelectorAll('nav a, [data-framer-name] a');
     navLinks.forEach(function(a){
+      // Skip footer links — handled by FOOTER_NAV_PATCH in the socal layer
+      if (isInFooter(a)) return;
       var text = (a.textContent || '').trim().toLowerCase().replace(/\s+/g,' ');
       if (/^projects?$|^view project/i.test(text) || text === 'projectsprojects' || text === 'view project typesview project types') {
         var wrap = a.closest('[class*="container"]') || a.parentElement;

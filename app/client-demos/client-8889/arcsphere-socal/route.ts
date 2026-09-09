@@ -194,6 +194,9 @@ const MAIN_NAV_PATCH = `
 
   function isNearTop(anchor) {
     const rect = anchor.getBoundingClientRect();
+    // If both width and height are 0 the page hasn't rendered yet — don't treat as near-top
+    // (avoids styleContact() being applied to footer links on the synchronous first run).
+    if (rect.width === 0 && rect.height === 0) return false;
     return rect.top < 150 && rect.bottom > -30;
   }
 
@@ -777,7 +780,7 @@ const FOOTER_PATCH = `
   const normalize = (v) => (v || '').replace(/\\s+/g, ' ').trim();
   const compact = (v) => normalize(v).replace(/\\s+/g, '').toLowerCase();
   const OLD_PHONE = compact('+62 812 3456 7890');
-  const NEW_PHONE = '209-233-8888   714-707-8889';
+  const NEW_PHONE = '(714) 707-8889';
 
   const OLD_ADDR = compact('Dubai-Based Architecture And Interior Design Studio');
   const NEW_ADDR = '7171 Warner Ave., Ste. B, Huntington Beach, CA 92647';
@@ -798,9 +801,7 @@ const FOOTER_PATCH = `
           parent.innerHTML = '';
           const wrap = document.createElement('span');
           wrap.setAttribute('data-nguyen-footer-phone', '1');
-          wrap.appendChild(document.createTextNode('209-233-8888'));
-          wrap.appendChild(document.createElement('br'));
-          wrap.appendChild(document.createTextNode('714-707-8889'));
+          wrap.appendChild(document.createTextNode(NEW_PHONE));
           parent.appendChild(wrap);
         }
       }
@@ -815,10 +816,29 @@ const FOOTER_PATCH = `
       if (normalize(el.textContent) !== NEW_ADDR) el.textContent = NEW_ADDR;
     });
 
-    // Fix email link color — match surrounding text color
+    // Copyright: replace Framer placeholder with NGUYEN ARCHITECTURE.
+    document.querySelectorAll('div,span,p,li').forEach((el) => {
+      const k = compact(el.textContent || '');
+      if (k.indexOf('yourarchitecturestudio') === -1 && k.indexOf('nguyenarchitecture&engineering') === -1 && k.indexOf('nguyenarchitectureengineering') === -1) return;
+      if (Array.from(el.children).some((c) => { const ck = compact(c.textContent || ''); return ck.indexOf('yourarchitecturestudio') !== -1 || ck.indexOf('nguyenarchitecture&engineering') !== -1; })) return;
+      const curr = normalize(el.textContent || '');
+      const next = curr
+        .replace(/Your Architecture Studio/gi, 'NGUYEN ARCHITECTURE')
+        .replace(/NGUYEN Architecture\s*&(?:amp;)?\s*Engineering/gi, 'NGUYEN ARCHITECTURE');
+      if (curr !== next) el.textContent = next;
+    });
+
+    // Fix email link: correct href, reduce font size so full address is never clipped, no decoration.
     document.querySelectorAll('a[href^="mailto:"]').forEach((a) => {
+      if (!a.getAttribute('href').includes('nguyenarchitecture.com')) {
+        a.setAttribute('href', 'mailto:info@nguyenarchitecture.com');
+      }
       a.style.setProperty('color', 'inherit', 'important');
       a.style.setProperty('text-decoration', 'none', 'important');
+      a.style.setProperty('font-size', 'clamp(11px,1vw,13px)', 'important');
+      a.style.setProperty('word-break', 'break-all', 'important');
+      a.style.setProperty('overflow-wrap', 'anywhere', 'important');
+      a.style.setProperty('white-space', 'normal', 'important');
     });
   }
 
@@ -831,6 +851,77 @@ const FOOTER_PATCH = `
   setTimeout(() => obs.disconnect(), 60000);
 })();
 </script>`
+
+const FOOTER_NAV_PATCH = `
+<script id="nguyen-socal-footer-nav-patch">
+(() => {
+  const origin = window.location.origin;
+  const FOOTER_MAP = {
+    'home':      origin + '/client-demos/client-8889/arcsphere-socal',
+    'about':     origin + '/client-demos/client-8889/residential',
+    'services':  origin + '/client-demos/client-8889/arcsphere-socal#services',
+    'projects':  origin + '/client-demos/client-8889/arcsphere-socal#services',
+    'process':   origin + '/client-demos/client-8889/arcsphere-socal',
+    'contact':   origin + '/client-demos/client-8889/residential/contact',
+    'contactus': origin + '/client-demos/client-8889/residential/contact',
+  };
+  const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
+
+  function isInFooter(a) {
+    let el = a;
+    while (el) {
+      if (el.tagName && el.tagName.toLowerCase() === 'footer') return true;
+      const fn = el.getAttribute && el.getAttribute('data-framer-name');
+      if (fn && /footer/i.test(fn)) return true;
+      el = el.parentElement;
+    }
+    return false;
+  }
+
+  function patchFooterNav() {
+    document.querySelectorAll('a').forEach((a) => {
+      if (!isInFooter(a)) return;
+      const key = compact(a.textContent);
+      const dest = FOOTER_MAP[key];
+      if (!dest) return;
+      // Restore any link hidden by fixNav (e.g. Projects)
+      if (a.style.display === 'none') a.style.removeProperty('display');
+      const parent = a.parentElement;
+      if (parent && parent.style.display === 'none') parent.style.removeProperty('display');
+      a.setAttribute('href', dest);
+      a.setAttribute('data-nguyen-footer-nav', key);
+      // Override hover: remove any Framer pill background children
+      Array.from(a.children).forEach((child) => {
+        const cs = window.getComputedStyle(child);
+        if (cs.position === 'absolute' && parseFloat(cs.borderRadius) > 4) {
+          child.style.setProperty('display', 'none', 'important');
+        }
+      });
+      a.style.setProperty('text-decoration', 'none', 'important');
+    });
+  }
+
+  // Document-level capture intercepts BEFORE fixNav's element-level capture listeners
+  document.addEventListener('click', (e) => {
+    const start = e.target && e.target.nodeType === Node.TEXT_NODE ? e.target.parentElement : e.target;
+    const a = start && start.closest ? start.closest('a[data-nguyen-footer-nav]') : null;
+    if (!a) return;
+    const dest = a.getAttribute('href');
+    if (!dest) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    window.location.href = dest;
+  }, true);
+
+  patchFooterNav();
+  window.addEventListener('load', patchFooterNav, { once: true });
+  [300, 800, 1800, 3500, 6000, 10000].forEach((t) => setTimeout(patchFooterNav, t));
+
+  const obs = new MutationObserver(patchFooterNav);
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true });
+  setTimeout(() => obs.disconnect(), 20000);
+})();
+<\/script>`
 
 const ICON_BAR_PATCH = `
 <script id="nguyen-socal-icon-bar-patch">
@@ -1218,7 +1309,7 @@ export async function GET() {
 
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${PROCESS_TILE_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}${HERO_CTA_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${PROCESS_TILE_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${FOOTER_NAV_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}${HERO_CTA_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')

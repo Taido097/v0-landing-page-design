@@ -50,7 +50,7 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/Dubai, 2025/gi, 'Los Angeles'],
   [/Dubai/gi, 'Southern California'],
   [/United Arab Emirates/gi, 'California'],
-  [/Your Architecture Studio/gi, 'NGUYEN Architecture & Engineering'],
+  [/Your Architecture Studio/gi, 'NGUYEN ARCHITECTURE'],
   [/Get in touch/gi, 'Start a Project'],
   [/\bDesign Process\b/gi, 'Home'],
 ];

@@ -191,7 +191,7 @@ const CSS = `
 .nrd-foot-bottom{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:clamp(34px,4vw,52px);padding-top:clamp(22px,2.6vw,32px);border-top:1px solid var(--line);flex-wrap:wrap}
 /* Contact info row: icon + label, horizontal on desktop, stacking on mobile */
 .nrd-foot-contact{display:flex;flex-wrap:wrap;gap:clamp(12px,2.4vw,32px);align-items:center}
-.nrd-foot-ci{display:inline-flex;align-items:center;gap:7px;font-size:12px;letter-spacing:.01em;color:var(--muted);text-decoration:none;transition:color .2s;white-space:nowrap}
+.nrd-foot-ci{display:inline-flex;align-items:center;gap:7px;font-size:clamp(10.5px,1.1vw,12px);letter-spacing:.01em;color:var(--muted);text-decoration:none;transition:color .2s;overflow-wrap:break-word;word-break:break-all}
 .nrd-foot-ci:hover{color:var(--ink)}
 .nrd-foot-ci svg{flex:none;color:var(--ink)}
 .nrd-foot-copy{font-size:11.5px;color:var(--soft);letter-spacing:.02em;margin:0}
