@@ -71,6 +71,11 @@ export const SERVICE_DETAILS: ServiceDetail[] = [
       { src: `${D}/ch-exterior-02.jpg`, cat: 'Exteriors', alt: 'Custom home exterior elevation' },
       { src: `${S}/svc-02-additions-remodels.jpg`, cat: 'Interiors', alt: 'Open-plan living and kitchen' },
       { src: `${D}/ch-interior-02.jpg`, cat: 'Interiors', alt: 'Custom home interior detail' },
+      { src: `${D}/custom-home-gallery-01.jpeg`, cat: 'Exteriors', label: 'Modern Custom Residence', alt: 'Modern custom home exterior with desert landscaping' },
+      { src: `${D}/custom-home-gallery-02.jpeg`, cat: 'Exteriors', label: 'Estate Residence', alt: 'Large custom estate residence viewed from above' },
+      { src: `${D}/custom-home-gallery-03.jpeg`, cat: 'Exteriors', label: 'Spanish Custom Home', alt: 'Spanish-style custom home exterior at dusk' },
+      { src: `${D}/custom-home-gallery-04.jpeg`, cat: 'Exteriors', label: 'Backyard Estate', alt: 'Custom home backyard with pool at sunset' },
+      { src: `${D}/custom-home-gallery-05.jpeg`, cat: 'Exteriors', label: 'Contemporary Estate', alt: 'Contemporary custom home exterior with palm trees at dusk' },
     ],
     process: [
       { t: 'Consultation', d: 'Discuss goals, scope, site, budget, timeline, and requirements.' },
