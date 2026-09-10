@@ -336,10 +336,7 @@ const ENGINEERING_SERVICE_PATCH = `
     margin-bottom: 0 !important;
     overflow: visible !important;
   }
-  [data-nguyen-engineering-service="true"] [data-nguyen-engineering-media="true"],
-  [data-nguyen-engineering-service="true"] picture,
-  [data-nguyen-engineering-service="true"] img,
-  [data-nguyen-engineering-service="true"] [data-framer-background-image-wrapper="true"] {
+  [data-nguyen-engineering-service="true"] [data-nguyen-engineering-media="true"] {
     display: none !important;
     height: 0 !important;
     min-height: 0 !important;
@@ -364,26 +361,68 @@ const ENGINEERING_SERVICE_PATCH = `
   ]);
   const targetUrl = window.location.origin + '/client-demos/client-8889/residential/services/engineering-approvals';
 
+  // A marked card gets every image inside it hidden at phone widths, so the climb below must never
+  // escape the single Engineering card. Without this guard it walked past the card (mobile card copies
+  // have no direct img, so the loop kept going) up to a section/main, and the phone stylesheet then
+  // blanked every image on the page.
+  function isTooBroad(el) {
+    if (!el || !el.isConnected) return true;
+    if (el === document.body || el === document.documentElement) return true;
+    if (el.matches?.('body, main, header, footer, nav, section, article')) return true;
+    if (el.getAttribute?.('data-framer-name') === 'content') return true;
+    if (el.querySelector?.('header, footer, section')) return true;
+    // A single service card has one title; more than one means this is the row holding sibling cards.
+    if ((el.querySelectorAll?.('h1, h2, h3, h4, h5, h6') || []).length > 1) return true;
+    return false;
+  }
+
+  // Must be an exact leaf match: "ENGINEERING" is a substring of the replacement description
+  // ("Structural engineering, MEP, ..."), so a substring test matches the description paragraph itself.
+  function containsTitle(el) {
+    const nodes = [el, ...el.querySelectorAll('*')];
+    for (const node of nodes) {
+      const key = compact(node.textContent);
+      if (!titleKeys.has(key)) continue;
+      if (Array.from(node.children).some((child) => compact(child.textContent) === key)) continue;
+      return true;
+    }
+    return false;
+  }
+
   function findEngineeringCards() {
     // Framer ships one DOM copy per breakpoint (desktop / tablet / phone), so return the card for EVERY
     // copy — patching only the first left the phone Engineering card unconverted (and missing, since the
-    // base layer no longer renders it as a plain card). Falls back to a wrapping ancestor when a mobile
-    // card layout has no direct img.
+    // base layer no longer renders it as a plain card).
     const cards = [];
     const candidates = Array.from(document.querySelectorAll('*'));
     for (const candidate of candidates) {
       const key = compact(candidate.textContent);
       if (key !== sourceDescription && key !== targetDescriptionKey) continue;
+      // Anchor on the card's own title, never on the presence of an <img>: the phone copy of this card
+      // has no image, so an img-seeking climb always overshot into the surrounding card row.
       let picked = null;
       let card = candidate;
       for (let depth = 0; card && depth < 10; depth += 1, card = card.parentElement) {
-        if (!card.querySelector?.('img')) continue;
-        const text = compact(card.textContent);
-        if (!text.includes(sourceDescription) && !text.includes(targetDescriptionKey)) continue;
+        if (isTooBroad(card)) break;
+        if (!containsTitle(card)) continue;
         picked = card;
         break;
       }
-      if (!picked) picked = candidate.parentElement?.parentElement || candidate.parentElement || candidate;
+      if (!picked) {
+        // Title copy can drift out of titleKeys; fall back to the outermost node still inside the card
+        // boundary so the description and link patches keep working. isTooBroad caps the walk.
+        let node = candidate;
+        while (node.parentElement && !isTooBroad(node.parentElement)) node = node.parentElement;
+        if (!isTooBroad(node)) picked = node;
+      }
+      // The title sits in the card's text block, beside the media rather than around it. Widen just far
+      // enough to take in this card's own image, and stop before the row of sibling cards.
+      for (let depth = 0; picked && depth < 6; depth += 1) {
+        if (picked.querySelector('img, picture, [data-framer-background-image-wrapper="true"]')) break;
+        const parent = picked.parentElement;
+        if (!parent || isTooBroad(parent)) break;
+        picked = parent;
+      }
       if (picked && cards.indexOf(picked) === -1) cards.push(picked);
     }
     return cards;
@@ -414,8 +453,21 @@ const ENGINEERING_SERVICE_PATCH = `
     });
   }
 
+  function dropStaleMarkers(cards) {
+    // Framer re-renders can grow a marked node into a container; a marker left on one would hide every
+    // image beneath it at phone widths.
+    document.querySelectorAll('[data-nguyen-engineering-service="true"]').forEach((el) => {
+      if (cards.indexOf(el) !== -1 && !isTooBroad(el)) return;
+      el.removeAttribute('data-nguyen-engineering-service');
+      el.querySelectorAll('[data-nguyen-engineering-media="true"]').forEach((media) => {
+        media.removeAttribute('data-nguyen-engineering-media');
+      });
+    });
+  }
+
   function patchEngineering() {
     const cards = findEngineeringCards();
+    dropStaleMarkers(cards);
     if (!cards.length) return false;
 
     cards.forEach((card) => {
