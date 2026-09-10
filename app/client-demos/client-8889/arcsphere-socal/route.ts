@@ -926,13 +926,6 @@ const FOOTER_NAV_PATCH = `
 const ICON_BAR_PATCH = `
 <script id="nguyen-socal-icon-bar-patch">
 (() => {
-  const EMAIL = 'info@nguyenarchitecture.com';
-  const PHONE = '(714) 707-8889';
-  const LOC   = 'California';
-  const EMAIL_HREF = 'mailto:info@nguyenarchitecture.com';
-  const PHONE_HREF = 'tel:+17147078889';
-  const MAPS_HREF  = 'https://www.google.com/maps/search/?api=1&query=California';
-
   const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
   const hasIcon = (a) => !!(a.querySelector('svg') || a.querySelector('img') || a.querySelector('use'));
 
@@ -948,58 +941,15 @@ const ICON_BAR_PATCH = `
     return h.startsWith('tel:') || h.includes('+62') || digits.includes('6281234567890') || /812.?3456.?7890/.test(t);
   };
 
-  // Replace the visible/hover label of a link without touching the SVG icon.
-  function setLabel(link, text) {
-    // Collect text nodes that are NOT inside an <svg>
-    const svgEl = link.querySelector('svg');
-    const walker = document.createTreeWalker(link, NodeFilter.SHOW_TEXT);
-    const textNodes = [];
-    let n;
-    while ((n = walker.nextNode())) {
-      if (svgEl && svgEl.contains(n)) continue;
-      if ((n.nodeValue || '').trim().length > 0) textNodes.push(n);
-    }
-    if (textNodes.length > 0) {
-      textNodes.forEach((tn, i) => {
-        const want = i === 0 ? text : '';
-        if (tn.nodeValue !== want) tn.nodeValue = want;
-      });
-      return;
-    }
-    // No existing text node — inject a label span after the icon
-    let span = link.querySelector('[data-nib-t]');
-    if (!span) {
-      span = document.createElement('span');
-      span.setAttribute('data-nib-t', '1');
-      span.setAttribute('style', 'margin-left:8px;white-space:nowrap;vertical-align:middle;display:inline;font-size:clamp(10px,0.9vw,12px);');
-      if (svgEl) svgEl.insertAdjacentElement('afterend', span);
-      else link.appendChild(span);
-    }
-    if (span.textContent !== text) span.textContent = text;
-  }
-
-  function applyEmail(a) {
-    a.setAttribute('href', EMAIL_HREF);
-    a.setAttribute('title', EMAIL);
-    a.setAttribute('aria-label', 'Email NGUYEN Architecture');
-    a.style.setProperty('white-space', 'nowrap', 'important');
-    setLabel(a, EMAIL);
-  }
-  function applyPhone(a) {
-    a.setAttribute('href', PHONE_HREF);
-    a.setAttribute('title', PHONE);
-    a.setAttribute('aria-label', 'Call NGUYEN Architecture');
-    a.style.setProperty('white-space', 'nowrap', 'important');
-    setLabel(a, PHONE);
-  }
-  function applyLocation(a) {
-    a.setAttribute('href', MAPS_HREF);
-    a.setAttribute('target', '_blank');
-    a.setAttribute('rel', 'noopener noreferrer');
-    a.setAttribute('title', LOC);
-    a.setAttribute('aria-label', 'NGUYEN Architecture location in California');
-    a.style.setProperty('white-space', 'nowrap', 'important');
-    setLabel(a, LOC);
+  function hide(el) {
+    if (!el || el.getAttribute('data-nib-hidden') === '1') return;
+    el.setAttribute('data-nib-hidden', '1');
+    el.style.setProperty('display', 'none', 'important');
+    el.style.setProperty('visibility', 'hidden', 'important');
+    el.style.setProperty('width', '0', 'important');
+    el.style.setProperty('height', '0', 'important');
+    el.style.setProperty('overflow', 'hidden', 'important');
+    el.style.setProperty('pointer-events', 'none', 'important');
   }
 
   function patchBar() {
@@ -1017,14 +967,9 @@ const ICON_BAR_PATCH = `
         if (iconLinks.length >= 2 && iconLinks.length <= 4 && iconLinks.some(isPhone)) { found = row; break; }
         row = row.parentElement; depth++;
       }
-
-      if (!found) { applyEmail(emailA); return; }
-
-      Array.from(found.querySelectorAll('a')).filter(hasIcon).forEach((a) => {
-        if (isEmail(a)) applyEmail(a);
-        else if (isPhone(a)) applyPhone(a);
-        else applyLocation(a);
-      });
+      // Remove the whole contact icon group; if the group container wasn't found,
+      // at least remove the individual envelope icon link.
+      hide(found || emailA);
     });
   }
 
