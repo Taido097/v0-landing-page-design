@@ -1185,45 +1185,69 @@ const PROCESS_TILE_IMAGE_PATCH = `
     return null;
   }
 
+  // Compare against the LIVE src, never against a marker attribute: when Framer
+  // re-renders it resets img.src back to the original photo while leaving our
+  // data-* marker in place, so a marker-based guard would skip the repair forever.
+  // Every write below is conditional, so a no-op pass triggers no mutations
+  // (and therefore no observer feedback loop).
   function swapImg(img, src, alt) {
-    if (img.getAttribute('data-nguyen-process-img') === src) return;
-    img.setAttribute('data-nguyen-process-img', src);
-    img.setAttribute('src', src);
-    img.setAttribute('alt', alt);
-    img.removeAttribute('srcset');
-    img.removeAttribute('sizes');
-    img.style.setProperty('object-fit', 'cover', 'important');
-    img.style.setProperty('object-position', 'center', 'important');
-    img.style.setProperty('filter', 'none', 'important');
-    img.style.setProperty('opacity', '1', 'important');
-    img.style.setProperty('visibility', 'visible', 'important');
+    if (img.getAttribute('src') !== src) img.setAttribute('src', src);
+    if (img.getAttribute('data-nguyen-process-img') !== src) img.setAttribute('data-nguyen-process-img', src);
+    if (img.getAttribute('alt') !== alt) img.setAttribute('alt', alt);
+    if (img.hasAttribute('srcset')) img.removeAttribute('srcset');
+    if (img.hasAttribute('sizes')) img.removeAttribute('sizes');
+    if (img.style.objectFit !== 'cover') img.style.setProperty('object-fit', 'cover', 'important');
+    if (img.style.objectPosition !== 'center') img.style.setProperty('object-position', 'center', 'important');
+    if (img.style.filter !== 'none') img.style.setProperty('filter', 'none', 'important');
+    if (img.style.opacity !== '1') img.style.setProperty('opacity', '1', 'important');
+    if (img.style.visibility !== 'visible') img.style.setProperty('visibility', 'visible', 'important');
     const picture = img.closest('picture');
-    if (picture) picture.querySelectorAll('source').forEach((s) => { s.setAttribute('srcset', src); s.removeAttribute('sizes'); });
+    if (picture) picture.querySelectorAll('source').forEach((s) => {
+      if (s.getAttribute('srcset') !== src) s.setAttribute('srcset', src);
+      if (s.hasAttribute('sizes')) s.removeAttribute('sizes');
+    });
   }
+
+  // Cache the resolved <img> per step so repeat passes are cheap (the description
+  // lookup walks every element in the document, which is far too costly to repeat
+  // on every scroll/mutation tick).
+  const resolved = new Map();
 
   function patchProcessTiles() {
     if (!document.body) return;
     STEP_MAP.forEach((spec) => {
-      // Fast path: arcsphere-fixed already marked this card
-      let card = document.querySelector('[data-nguyen-process-step="' + spec.step + '"]');
-      // Slow path: find by description text (same strategy as arcsphere-fixed)
-      if (!card) card = findCardByDesc(spec.desc);
-      if (!card) return;
-      const img = card.querySelector('img');
-      if (img) swapImg(img, spec.src, spec.alt);
+      let img = resolved.get(spec.step);
+      if (img && !img.isConnected) { resolved.delete(spec.step); img = null; }
+      if (!img) {
+        // Fast path: arcsphere-fixed already marked this card
+        let card = document.querySelector('[data-nguyen-process-step="' + spec.step + '"]');
+        // Slow path: find by description text (same strategy as arcsphere-fixed)
+        if (!card) card = findCardByDesc(spec.desc);
+        if (!card) return;
+        img = card.querySelector('img');
+        if (!img) return;
+        resolved.set(spec.step, img);
+      }
+      swapImg(img, spec.src, spec.alt);
     });
   }
 
+  let ptTimer;
+  const schedule = () => { clearTimeout(ptTimer); ptTimer = setTimeout(patchProcessTiles, 80); };
+
   patchProcessTiles();
   window.addEventListener('load', patchProcessTiles, { once: true });
-  [100, 300, 600, 1000, 1800, 3000, 5000, 8000, 12000].forEach((t) => setTimeout(patchProcessTiles, t));
+  [100, 300, 600, 1000, 1800, 3000, 5000, 8000, 12000, 20000].forEach((t) => setTimeout(patchProcessTiles, t));
 
-  // Watch childList + src/srcset attributes (same pattern as BLUEPRINT_IMAGE_PATCH).
-  // Also watch all attributes so we catch arcsphere-fixed setting data-nguyen-process-step.
-  let ptTimer;
-  const obs = new MutationObserver(() => { clearTimeout(ptTimer); ptTimer = setTimeout(patchProcessTiles, 80); });
-  if (document.body) obs.observe(document.body, { childList: true, subtree: true, attributes: true });
-  setTimeout(() => obs.disconnect(), 25000);
+  // The process section sits far down the page, so Framer may not render or may
+  // re-render those cards until the user scrolls to them — long after any short
+  // observer window would have closed. Keep repairing for the page lifetime:
+  // the cached-img fast path makes each pass negligible.
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', schedule, { passive: true });
+
+  const obs = new MutationObserver(schedule);
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['src', 'srcset', 'sizes', 'data-nguyen-process-step'] });
 })();
 </script>`
 
