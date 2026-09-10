@@ -44,6 +44,12 @@ test('page visibility guard repairs accidental hidden Framer content wrapper las
   assert.match(guard, /data-framer-name="content"/);
   assert.match(guard, /display', 'flex', 'important'/);
   assert.match(guard, /removeAttribute\('data-nguyen-card-url'\)/);
-  assert.match(guard, /MutationObserver/);
   assert.match(source, /HERO_CTA_PATCH\}\$\{PAGE_VISIBILITY_GUARD_PATCH\}/);
+});
+test('page visibility guard does not run on every scroll-driven style mutation', () => {
+  const guard = source.split('const PAGE_VISIBILITY_GUARD_PATCH = `')[1].split('export async function GET')[0];
+  assert.doesNotMatch(guard, /MutationObserver/);
+  assert.doesNotMatch(guard, /attributeFilter: \['style'/);
+  assert.doesNotMatch(guard, /subtree: true/);
+  assert.match(guard, /if \(!needsRepair\) return;/);
 });

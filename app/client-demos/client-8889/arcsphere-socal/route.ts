@@ -1458,6 +1458,13 @@ const PAGE_VISIBILITY_GUARD_PATCH = `
   function repairContentWrapper() {
     const wrappers = document.querySelectorAll('.framer-HJnCY > [data-framer-name="content"]');
     wrappers.forEach((wrapper) => {
+      const needsRepair =
+        getComputedStyle(wrapper).display === 'none' ||
+        wrapper.style.getPropertyValue('cursor') === 'pointer' ||
+        wrapper.hasAttribute('data-nguyen-card-url') ||
+        wrapper.hasAttribute('data-nguyen-panel-url') ||
+        wrapper.hasAttribute('data-nguyen-link');
+      if (!needsRepair) return;
       wrapper.style.setProperty('display', 'flex', 'important');
       if (wrapper.style.getPropertyValue('cursor') === 'pointer') wrapper.style.removeProperty('cursor');
       wrapper.removeAttribute('data-nguyen-card-url');
@@ -1470,16 +1477,7 @@ const PAGE_VISIBILITY_GUARD_PATCH = `
 
   repairContentWrapper();
   window.addEventListener('load', repairContentWrapper, { once: true });
-  [50, 150, 300, 800, 1500, 3000, 6000, 10000].forEach((t) => setTimeout(repairContentWrapper, t));
-
-  const observer = new MutationObserver(repairContentWrapper);
-  if (document.body) observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ['style', 'data-nguyen-card-url', 'data-nguyen-panel-url', 'data-nguyen-link', 'role', 'tabindex'],
-  });
-  setTimeout(() => observer.disconnect(), 20000);
+  [50, 150, 300, 800, 1500, 3000, 6000].forEach((t) => setTimeout(repairContentWrapper, t));
 })();
 </script>`
 
