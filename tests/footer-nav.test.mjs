@@ -15,6 +15,14 @@ test('replacement is scoped to footer-links with a mobile position reset', () =>
   assert.match(patch, /@media \(max-width: 809px\)/);
   assert.match(patch, /left: 71.5%/);
 });
+test('footer nav observer is debounced and disconnects so mobile scroll cannot thrash layout', () => {
+  // patchFooterNav walks every footer subtree and reads getBoundingClientRect; running it on every
+  // mutation Framer fires during a mobile scroll crashed the tab and reloaded it to the top.
+  assert.match(patch, /const scheduleFooterNav = \(\) => \{ clearTimeout\(navTimer\); navTimer = setTimeout\(patchFooterNav, 200\); \};/);
+  assert.match(patch, /new MutationObserver\(scheduleFooterNav\)/);
+  assert.match(patch, /setTimeout\(\(\) => observer\.disconnect\(\), 60000\)/);
+  assert.doesNotMatch(patch, /new MutationObserver\(patchFooterNav\)/);
+});
 test('breakpoint copies of the old nav are hidden by label, not only by Framer name', () => {
   // Not every footer copy carries data-framer-name="footer-links", so the stylesheet alone left one
   // showing through underneath the injected nav.

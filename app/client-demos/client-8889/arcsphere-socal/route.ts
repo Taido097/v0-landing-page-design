@@ -1111,8 +1111,16 @@ footer > .nguyen-footer-links > a:focus-visible { text-decoration: underline !im
   window.addEventListener('load', patchFooterNav, { once: true });
   window.addEventListener('resize', patchFooterNav);
   [300, 800, 1800, 3500, 6000, 10000].forEach((delay) => setTimeout(patchFooterNav, delay));
-  const observer = new MutationObserver(patchFooterNav);
+  // patchFooterNav walks every footer's whole subtree and reads layout (getBoundingClientRect), so
+  // running it on each of the many mutations Framer fires during a mobile scroll thrashed layout hard
+  // enough to crash the tab and reload it to the top. Coalesce mutation bursts into one delayed run,
+  // and disconnect once the footer breakpoint copies have settled — the nav is positioned relative to
+  // its footer, so scrolling never needs a re-run.
+  let navTimer;
+  const scheduleFooterNav = () => { clearTimeout(navTimer); navTimer = setTimeout(patchFooterNav, 200); };
+  const observer = new MutationObserver(scheduleFooterNav);
   if (document.body) observer.observe(document.body, { childList: true, subtree: true });
+  setTimeout(() => observer.disconnect(), 60000);
 })();
 <\/script>`
 
