@@ -1149,117 +1149,122 @@ const PROCESS_TILE_IMAGE_PATCH = `
       src: origin + '/client-8889/process/04_execution.png',
       alt: 'Design & Engineering',
     },
-    {
-      step: '5',
-      desc: ['We prepare and submit the permit package to the appropriate city or agency.'],
-      src: origin + '/client-8889/process/04_execution.png',
-      alt: 'Permit Submittal',
-    },
-    {
-      step: '6',
-      desc: ['We respond to plan-check comments and coordinate revisions through approval.'],
-      src: origin + '/client-8889/process/04_execution.png',
-      alt: 'Plan Check & Approval',
-    },
   ];
 
   const compact = (v) => (v || '').replace(/\\s+/g, ' ').trim().replace(/\\s+/g, '').toLowerCase();
 
+  // PROCESS_PATCH marks the bottom text panel, not the full card. Always climb to
+  // the Framer card that owns the full-size background image before replacing it.
+  function findMediaCard(start) {
+    let node = start;
+    for (let depth = 0; node && depth < 12; depth += 1, node = node.parentElement) {
+      if (node.querySelector(':scope > [data-framer-background-image-wrapper="true"]')) return node;
+    }
+    return null;
+  }
+
   // Walk the DOM for an element whose textContent exactly matches a description,
-  // then climb to find the nearest ancestor that contains an <img> or background-image.
+  // then climb to its full Framer card.
   function findCardByDesc(descList) {
     const keys = new Set(descList.map(compact));
     const all = document.body ? document.body.querySelectorAll('*') : [];
     for (const el of all) {
       if (!keys.has(compact(el.textContent))) continue;
-      let node = el;
-      for (let d = 0; node && d < 14; d++, node = node.parentElement) {
-        if (node.querySelector('img')) return node;
-        if (node.style && node.style.backgroundImage && node.style.backgroundImage !== 'none') return node;
-        if (node.querySelector('[style*="background-image"]')) return node;
-      }
+      const card = findMediaCard(el);
+      if (card) return card;
     }
     return null;
   }
 
-  // Strategy: inject a NEW <img> element absolutely positioned over the Framer image,
-  // instead of fighting Framer's reconciler over the original img.src.
-  // Our injected img is invisible to React/Framer so it is never reset.
-  function injectOverlay(card, src, alt) {
-    // Find the Framer image container (first img or first bg-image div inside card)
-    const existingImg = card.querySelector('img');
-    const bgEls = card.querySelectorAll('[style*="background-image"]');
-    const anchor = existingImg
-      ? existingImg.parentElement || existingImg
-      : (bgEls.length > 0 ? bgEls[bgEls.length - 1] : card);
+  const imageObservers = new Map();
 
-    // Check if our overlay is already present and up-to-date
-    const existing = anchor.querySelector
-      ? anchor.querySelector('img[data-nguyen-overlay]')
-      : null;
-    if (existing) {
-      if (existing.getAttribute('src') !== src) existing.setAttribute('src', src);
-      return;
-    }
-    // Also check parent to avoid double-injection when anchor is the img itself
-    const parentCheck = anchor.parentElement
-      ? anchor.parentElement.querySelector('img[data-nguyen-overlay]')
-      : null;
-    if (parentCheck) {
-      if (parentCheck.getAttribute('src') !== src) parentCheck.setAttribute('src', src);
-      return;
-    }
-
-    // Make the anchor position:relative so the absolute overlay fits inside it
-    const pos = anchor.style.position;
-    if (!pos || pos === 'static') anchor.style.setProperty('position', 'relative', 'important');
-
-    const overlay = document.createElement('img');
-    overlay.src = src;
-    overlay.alt = alt;
-    overlay.setAttribute('data-nguyen-overlay', '1');
-    overlay.style.cssText = [
-      'position:absolute',
-      'top:0','left:0',
-      'width:100%','height:100%',
-      'object-fit:cover',
-      'object-position:center',
-      'z-index:5',
-      'pointer-events:none',
-      'display:block',
-    ].join(';') + ';';
-    anchor.appendChild(overlay);
+  function setImportantStyle(el, property, value) {
+    if (el.style.getPropertyValue(property) === value && el.style.getPropertyPriority(property) === 'important') return;
+    el.style.setProperty(property, value, 'important');
   }
 
-  // Cache: step → card element (so we don't re-search every tick)
+  function applyImage(img, src, alt) {
+    if (img.getAttribute('src') !== src) img.setAttribute('src', src);
+    if (img.getAttribute('alt') !== alt) img.setAttribute('alt', alt);
+    if (img.getAttribute('data-nguyen-process-img') !== src) {
+      img.setAttribute('data-nguyen-process-img', src);
+    }
+    if (img.hasAttribute('srcset')) img.removeAttribute('srcset');
+    if (img.hasAttribute('sizes')) img.removeAttribute('sizes');
+
+    // CSS content keeps the supplied image visible even if Framer briefly restores
+    // its original src during reconciliation. The attribute observer repairs src too.
+    setImportantStyle(img, 'content', 'url("' + src + '")');
+    setImportantStyle(img, 'display', 'block');
+    setImportantStyle(img, 'width', '100%');
+    setImportantStyle(img, 'height', '100%');
+    setImportantStyle(img, 'object-fit', 'cover');
+    setImportantStyle(img, 'object-position', 'center');
+  }
+
+  function lockImage(img, src, alt) {
+    applyImage(img, src, alt);
+    if (imageObservers.has(img)) return;
+
+    const observer = new MutationObserver(() => applyImage(img, src, alt));
+    observer.observe(img, {
+      attributes: true,
+      attributeFilter: ['src', 'srcset', 'sizes', 'style'],
+    });
+    imageObservers.set(img, observer);
+  }
+
+  // Cache each step's real background image, never the bottom text panel.
   const resolved = new Map();
 
   function patchProcessTiles() {
     if (!document.body) return;
     STEP_MAP.forEach((spec) => {
-      let card = resolved.get(spec.step);
-      if (card && !card.isConnected) { resolved.delete(spec.step); card = null; }
-      if (!card) {
-        card = document.querySelector('[data-nguyen-process-step="' + spec.step + '"]');
-        if (!card) card = findCardByDesc(spec.desc);
-        if (!card) return;
-        resolved.set(spec.step, card);
+      let img = resolved.get(spec.step);
+      if (img && !img.isConnected) {
+        const imageObserver = imageObservers.get(img);
+        if (imageObserver) imageObserver.disconnect();
+        imageObservers.delete(img);
+        resolved.delete(spec.step);
+        img = null;
       }
-      injectOverlay(card, spec.src, spec.alt);
+
+      if (!img) {
+        const marked = document.querySelector('[data-nguyen-process-step="' + spec.step + '"]');
+        const card = findMediaCard(marked) || findCardByDesc(spec.desc);
+        if (!card) return;
+        img = card.querySelector(':scope > [data-framer-background-image-wrapper="true"] img');
+        if (!img) return;
+        resolved.set(spec.step, img);
+      }
+
+      lockImage(img, spec.src, spec.alt);
     });
   }
 
   let ptTimer;
   const schedule = () => { clearTimeout(ptTimer); ptTimer = setTimeout(patchProcessTiles, 80); };
 
-  patchProcessTiles();
-  window.addEventListener('load', patchProcessTiles, { once: true });
-  [100, 300, 600, 1000, 1800, 3000, 5000, 8000, 12000, 20000].forEach((t) => setTimeout(patchProcessTiles, t));
-  window.addEventListener('scroll', schedule, { passive: true });
-  window.addEventListener('resize', schedule, { passive: true });
+  function start() {
+    patchProcessTiles();
+    [100, 300, 600, 1000, 1800, 3000, 5000, 8000, 12000, 20000].forEach((t) => setTimeout(patchProcessTiles, t));
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule, { passive: true });
 
-  const obs = new MutationObserver(schedule);
-  if (document.body) obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-nguyen-process-step', 'style'] });
+    const observer = new MutationObserver(schedule);
+    if (document.body) {
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['data-nguyen-process-step'],
+      });
+    }
+  }
+
+  // Wait until the Framer page has hydrated before touching its image elements.
+  if (document.readyState === 'complete') setTimeout(start, 0);
+  else window.addEventListener('load', start, { once: true });
 })();
 </script>`
 
