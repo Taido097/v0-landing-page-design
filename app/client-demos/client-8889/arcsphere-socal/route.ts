@@ -1470,88 +1470,6 @@ const CARD_ROUTING_PATCH = `
 })();
 </script>`
 
-const HERO_IMAGE_PATCH = `
-<script id="nguyen-socal-hero-image-patch">
-(() => {
-  const desktopHeroImageUrl = 'https://framerusercontent.com/images/vVqkA2phwOpc7kzAHksLgpPasxY.png?width=1376&height=768';
-  const heroSlotImages = {
-    'img-left': 'https://framerusercontent.com/images/JEOoI9AUjiorAUapWVh1gnkvdBI.png?width=1376&height=768',
-    'img-main': desktopHeroImageUrl,
-    'img-right': 'https://framerusercontent.com/images/eJtReq8aEIEdVjdWqNPxJAANXJQ.jpg?width=1200&height=1361',
-  };
-
-  function forceVisible(el) {
-    if (!el) return;
-    el.style.setProperty('display', 'block', 'important');
-    el.style.setProperty('visibility', 'visible', 'important');
-    el.style.setProperty('opacity', '1', 'important');
-  }
-
-  function setImageLayer(el, imageUrl) {
-    if (!el) return;
-    el.style.setProperty('background-image', 'url("' + imageUrl + '")', 'important');
-    el.style.setProperty('background-size', 'cover', 'important');
-    el.style.setProperty('background-position', 'center', 'important');
-    el.style.setProperty('background-repeat', 'no-repeat', 'important');
-  }
-
-  function patchSlot(hero, slotName, imageUrl) {
-    const slots = hero.querySelectorAll('[data-framer-name="' + slotName + '"]');
-    slots.forEach((slot) => {
-      setImageLayer(slot, imageUrl);
-
-      const wrappers = slot.querySelectorAll('[data-framer-background-image-wrapper="true"], [data-framer-name="img-hero"], figure');
-      wrappers.forEach((wrapper) => {
-        forceVisible(wrapper);
-        wrapper.style.setProperty('overflow', 'hidden', 'important');
-        setImageLayer(wrapper, imageUrl);
-      });
-
-      const images = slot.querySelectorAll('[data-framer-background-image-wrapper="true"] img');
-      images.forEach((img) => {
-        img.setAttribute('src', imageUrl);
-        img.removeAttribute('srcset');
-        img.removeAttribute('sizes');
-        img.loading = 'eager';
-        img.decoding = 'async';
-        img.style.width = '100%';
-        img.style.height = '100%';
-        img.style.objectFit = 'cover';
-        img.style.objectPosition = 'center';
-        forceVisible(img);
-      });
-    });
-  }
-
-  function patchHeroImage() {
-    const hero = document.querySelector('header[data-framer-name="hero-section"]');
-    if (!hero) return false;
-
-    const visibleHeroLayers = hero.querySelectorAll('[data-framer-name="hero_img-box"], [data-framer-name="img-main"]');
-    visibleHeroLayers.forEach((layer) => {
-      layer.style.setProperty('background-image', 'url("' + desktopHeroImageUrl + '")', 'important');
-      layer.style.setProperty('background-size', 'cover', 'important');
-      layer.style.setProperty('background-position', 'center', 'important');
-      layer.style.setProperty('background-repeat', 'no-repeat', 'important');
-    });
-
-    Object.entries(heroSlotImages).forEach(([slotName, imageUrl]) => {
-      patchSlot(hero, slotName, imageUrl);
-    });
-
-    return hero.querySelectorAll('[data-framer-background-image-wrapper="true"] img').length > 0;
-  }
-
-  patchHeroImage();
-  window.addEventListener('load', patchHeroImage, { once: true });
-  [50, 150, 300, 800, 1500, 3000, 6000, 10000].forEach((t) => setTimeout(patchHeroImage, t));
-
-  const obs = new MutationObserver(patchHeroImage);
-  if (document.body) obs.observe(document.body, { childList: true, subtree: true });
-  setTimeout(() => obs.disconnect(), 15000);
-})();
-</script>`
-
 // Route hero / section CTA buttons (START A PROJECT, BOOK CONSULTATION, GET IN TOUCH, etc.)
 // to the contact form. These buttons are NOT in the top nav so MAIN_NAV_PATCH misses them.
 const HERO_CTA_PATCH = `
@@ -1687,7 +1605,7 @@ export async function GET() {
   // The base layer's /ArcSphere/gi branding swap rewrites server-rendered "arcsphere" to
   // "NGUYEN", so cover both the raw and post-rebrand forms (harmless if client-rendered).
   html = html.replace(/hello@(?:arcsphere|nguyen)studio\.ae/gi, 'info@nguyenarchitecture.com')
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${PROCESS_TILE_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${FOOTER_NAV_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}${HERO_IMAGE_PATCH}${HERO_CTA_PATCH}${PAGE_VISIBILITY_GUARD_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${PROCESS_TILE_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${FOOTER_NAV_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}${HERO_CTA_PATCH}${PAGE_VISIBILITY_GUARD_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')
