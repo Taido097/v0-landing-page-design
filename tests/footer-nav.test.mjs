@@ -26,3 +26,16 @@ test('extra-card cleanup cannot collapse page or footer containers', () => {
   assert.match(cleanup, /el\.querySelector\('footer'\)/);
   assert.match(cleanup, /card\.closest\('footer'\)/);
 });
+test('main nav project hiding cannot hide a Framer page wrapper', () => {
+  const main = source.split('const MAIN_NAV_PATCH')[1].split('const ENGINEERING_SERVICE_PATCH')[0];
+  assert.match(main, /function hideProjects\(anchor\)/);
+  assert.match(main, /anchor\.closest\('footer'\)/);
+  assert.doesNotMatch(main, /setStyle\(item, 'display', 'none'\)/);
+});
+test('project-card routing ignores whole-page wrappers with header or footer content', () => {
+  const projects = source.split('const PROJECT_CARDS_PATCH = `')[1].split('const DESIGN_PANELS_PATCH')[0];
+  assert.match(projects, /function isPageWrapper/);
+  assert.match(projects, /el\.querySelector\('header, footer'\)/);
+  assert.match(projects, /if \(isPageWrapper\(cursor\)\) break;/);
+  assert.match(projects, /if \(isPageWrapper\(el\)\) return;/);
+});

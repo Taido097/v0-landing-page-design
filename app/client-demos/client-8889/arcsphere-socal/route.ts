@@ -201,15 +201,10 @@ const MAIN_NAV_PATCH = `
   }
 
   function hideProjects(anchor) {
-    let item = anchor;
-    for (let depth = 0; depth < 4 && item.parentElement; depth += 1) {
-      const parent = item.parentElement;
-      const key = compact(parent.textContent);
-      if (parent.querySelectorAll('a').length !== 1) break;
-      if (!key || key.replace(/projects/g, '') !== '') break;
-      item = parent;
-    }
-    setStyle(item, 'display', 'none');
+    if (!anchor || anchor.closest('footer')) return;
+    // Hide only the Projects link itself. Earlier versions climbed parent
+    // wrappers and could hide Framer's full content container on hydration.
+    setStyle(anchor, 'display', 'none');
   }
 
   function styleStandardLink(anchor) {
@@ -442,6 +437,14 @@ const PROJECT_CARDS_PATCH = `
     return null;
   }
 
+  function isPageWrapper(el) {
+    if (!el || !el.isConnected) return true;
+    if (el.matches('body, main, footer')) return true;
+    if (el.getAttribute('data-framer-name') === 'content') return true;
+    if (el.querySelector('header, footer')) return true;
+    return false;
+  }
+
   function findCards() {
     // Cards are elements that contain a category label + an arrow button
     const arrows = Array.from(document.querySelectorAll('a, button, [role="button"]')).filter((el) => {
@@ -453,6 +456,7 @@ const PROJECT_CARDS_PATCH = `
     arrows.forEach((arrow) => {
       let cursor = arrow.parentElement;
       for (let i = 0; i < 8 && cursor && cursor !== document.body; i++, cursor = cursor.parentElement) {
+        if (isPageWrapper(cursor)) break;
         const text = compact(cursor.textContent);
         const hasCategory = CATEGORY_MAP.some((e) => text.includes(e.key));
         if (!hasCategory) continue;
@@ -466,6 +470,7 @@ const PROJECT_CARDS_PATCH = `
     if (!cards.length) {
       const all = Array.from(document.querySelectorAll('div, article, section, li'));
       all.forEach((el) => {
+        if (isPageWrapper(el)) return;
         const text = compact(el.textContent);
         const hasCategory = CATEGORY_MAP.some((e) => text.includes(e.key));
         if (!hasCategory) return;
