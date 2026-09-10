@@ -969,19 +969,44 @@ const ICON_BAR_PATCH = `
       hide(found || emailA);
     });
 
-    // Detection B — by shape: the tightest container that holds exactly 3 icon SVGs
-    // and almost no text is the envelope/phone/location bar. This does NOT depend on
-    // hrefs or text, so it catches icon-only links (or plain <div> icons) too.
-    document.querySelectorAll('div,nav,ul,section,footer,aside').forEach((el) => {
-      if (el.getAttribute('data-nib-hidden') === '1') return;
-      const svgs = el.querySelectorAll('svg');
-      if (svgs.length !== 3) return;
-      // must be the tightest wrapper — no single child already contains all 3 icons
-      if (Array.from(el.children).some((c) => c.querySelectorAll('svg').length === 3)) return;
-      // icon-only: allow hidden hover labels but reject real content sections
-      const txt = (el.textContent || '').replace(/\\s+/g, '');
-      if (txt.length > 80) return;
-      hide(el);
+    // Detection B — by shape, independent of tag names, hrefs, text and exact counts.
+    // For each icon graphic, walk up to the largest wrapper that still contains only
+    // that ONE graphic: that wrapper is the icon's own item/link. Group those items by
+    // their shared parent. A parent holding 3+ icon items with almost no text is the
+    // envelope/phone/location bar (dividers between icons are counted harmlessly).
+    const groups = new Map();
+    Array.from(document.querySelectorAll('svg,img')).forEach((gfx) => {
+      let item = gfx;
+      while (item.parentElement && item.parentElement.querySelectorAll('svg,img').length === 1) {
+        item = item.parentElement;
+      }
+      const parent = item.parentElement;
+      if (!parent) return;
+      if (!groups.has(parent)) groups.set(parent, []);
+      groups.get(parent).push(item);
+    });
+
+    const NAV_WORDS = /^(home|services?|projects?|process|about|contact|work|studio|team|blog|news|careers?|privacy|terms|faq|shop|gallery|portfolio|menu)/;
+    const isContactish = (t) =>
+      t.includes('@') ||
+      (t.replace(/[^\\d]/g, '').length >= 7) ||
+      /(california|huntington|warner|suite|ste\\.|street|ave|road|usa|location|address|email|mail|phone|call|tel)/.test(t);
+
+    groups.forEach((items, parent) => {
+      if (parent.getAttribute('data-nib-hidden') === '1') return;
+      if (items.length < 3 || items.length > 6) return;
+      // icon-only row: allow hidden hover labels, reject real content sections
+      const txt = (parent.textContent || '').replace(/\\s+/g, '');
+      if (txt.length > 150) return;
+
+      const texts = items.map((i) => compact(i.textContent));
+      // Never touch a navigation row (Home / Services / Contact links with arrow icons)
+      if (texts.some((t) => t && NAV_WORDS.test(t))) return;
+      // Qualify only pure icon rows, or rows whose labels are contact details
+      const allEmpty = texts.every((t) => t.length === 0);
+      if (!allEmpty && !texts.some((t) => t && isContactish(t))) return;
+
+      hide(parent);
     });
   }
 
