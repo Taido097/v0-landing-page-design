@@ -895,7 +895,12 @@ footer > .nguyen-footer-links > a {
 footer > .nguyen-footer-links > a:hover,
 footer > .nguyen-footer-links > a:focus-visible { text-decoration: underline !important; text-underline-offset: 5px; color: #4f4742 !important; }
 @media (max-width: 809px) {
-  footer > .nguyen-footer-links { left: var(--footer-nav-mobile-left, 24px) !important; gap: 0 !important; }
+  footer > .nguyen-footer-links {
+    left: var(--footer-nav-mobile-left, 24px) !important;
+    top: var(--footer-nav-mobile-top, auto) !important;
+    width: min(220px, calc(100% - 48px)) !important;
+    gap: 0 !important;
+  }
 }
 </style>
 <script id="nguyen-socal-footer-nav-patch">
@@ -931,9 +936,18 @@ footer > .nguyen-footer-links > a:focus-visible { text-decoration: underline !im
       const bounds = footer.getBoundingClientRect();
       const heading = footer.querySelector('h3, h2');
       const mobile = window.innerWidth <= 809;
-      const reference = (mobile ? original : heading || original).getBoundingClientRect();
-      nav.style.top = Math.max(0, reference.top - bounds.top - (mobile ? 0 : 12)) + 'px';
-      nav.style.setProperty('--footer-nav-mobile-left', (reference.left - bounds.left) + 'px');
+      const contactLabel = footer.querySelector('[data-framer-name="Contact Us"]');
+      const reference = (mobile ? contactLabel || heading || original : heading || original).getBoundingClientRect();
+      if (mobile) {
+        const leftReference = heading || contactLabel || original;
+        const left = Math.max(20, leftReference.getBoundingClientRect().left - bounds.left);
+        nav.style.setProperty('--footer-nav-mobile-top', Math.max(0, reference.bottom - bounds.top + 28) + 'px');
+        nav.style.setProperty('--footer-nav-mobile-left', left + 'px');
+      } else {
+        nav.style.top = Math.max(0, reference.top - bounds.top - 12) + 'px';
+        nav.style.removeProperty('--footer-nav-mobile-top');
+        nav.style.removeProperty('--footer-nav-mobile-left');
+      }
     });
     // The process cards already exist; mark their containing section for this link.
     const card = Array.from(document.querySelectorAll('h2,h3,h4')).find((el) =>

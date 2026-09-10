@@ -15,6 +15,11 @@ test('replacement is scoped to footer-links with a mobile position reset', () =>
   assert.match(patch, /@media \(max-width: 809px\)/);
   assert.match(patch, /left: 71.5%/);
 });
+test('mobile footer navigation is placed below the get-in-touch label, not on top of the headline', () => {
+  assert.match(patch, /data-framer-name="Contact Us"/);
+  assert.match(patch, /--footer-nav-mobile-top/);
+  assert.match(patch, /reference\.bottom - bounds\.top \+ 28/);
+});
 test('header navigation styling never targets footer links after scrolling', () => {
   const main = source.split('const MAIN_NAV_PATCH')[1].split('const ENGINEERING_SERVICE_PATCH')[0];
   assert.match(main, /anchor\.closest\('footer'\)/);
