@@ -944,6 +944,13 @@ const FOOTER_NAV_PATCH = `
       a.style.setProperty('margin-bottom', 'clamp(16px,1.55vw,24px)', 'important');
     });
 
+    function commonAncestor(nodes) {
+      if (!nodes.length) return null;
+      const firstPath = [];
+      for (let n = nodes[0]; n && n !== document.body; n = n.parentElement) firstPath.push(n);
+      return firstPath.find((candidate) => nodes.every((node) => candidate.contains(node))) || null;
+    }
+
     const parents = new Set(visibleNav.map((a) => a.parentElement).filter(Boolean));
     parents.forEach((parent) => {
       parent.style.setProperty('display', 'flex', 'important');
@@ -952,6 +959,21 @@ const FOOTER_NAV_PATCH = `
       parent.style.setProperty('gap', '0', 'important');
     });
     visibleNav.at(-1)?.style.setProperty('margin-bottom', '0', 'important');
+
+    const group = commonAncestor(visibleNav);
+    const groupText = compact(group?.textContent || '');
+    const safeNavGroup = group && group !== document.body && !(group.tagName && group.tagName.toLowerCase() === 'footer') && groupText.length < 220 && !groupText.includes('opentonewprojects') && !groupText.includes('getintouch');
+    if (safeNavGroup) {
+      group.setAttribute('data-nguyen-footer-nav-group', '1');
+      group.style.setProperty('display', 'flex', 'important');
+      group.style.setProperty('flex-direction', 'column', 'important');
+      group.style.setProperty('align-items', 'flex-start', 'important');
+      group.style.setProperty('justify-content', 'flex-start', 'important');
+      group.style.setProperty('gap', 'clamp(18px,1.7vw,26px)', 'important');
+      group.style.setProperty('transform', 'translateX(-28px)', 'important');
+      group.style.setProperty('width', 'max-content', 'important');
+      group.style.setProperty('max-width', '220px', 'important');
+    }
   }
 
   // Document-level capture intercepts BEFORE fixNav's element-level capture listeners
