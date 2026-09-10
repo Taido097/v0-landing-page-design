@@ -926,35 +926,66 @@ const FOOTER_NAV_PATCH = `
 const ICON_BAR_PATCH = `
 <script id="nguyen-socal-icon-bar-patch">
 (() => {
-  function hideIconBar() {
-    const candidates = Array.from(document.querySelectorAll('div, nav, ul, section'));
-    candidates.forEach((el) => {
-      if (el.getAttribute('data-nguyen-icon-bar-checked')) return;
-      el.setAttribute('data-nguyen-icon-bar-checked', '1');
+  const EMAIL = 'info@nguyenarchitecture.com';
+  const PHONE = '(714) 707-8889  \xb7  (209) 233-8888';
+  const ADDR  = '7171 Warner Ave., Ste. B, Huntington Beach, CA 92647';
+  const MAPS  = 'https://maps.google.com/?q=7171+Warner+Ave+Suite+B+Huntington+Beach+CA+92647';
+  const TS    = 'font-size:clamp(10px,0.9vw,12px);margin-left:8px;white-space:nowrap;vertical-align:middle;display:inline;';
 
-      // Must have exactly 3 child links/buttons that are icon-only (SVG, no text)
-      const links = Array.from(el.querySelectorAll(':scope > * > a, :scope > a, :scope > button, :scope > * > button'));
+  // Set / replace the visible text inside a link.
+  // Prefers an existing injected span, then a leaf element containing '@' or any text,
+  // then falls back to appending a new span after the SVG.
+  function setText(link, text) {
+    const existing = link.querySelector('[data-nib-t]');
+    if (existing) { existing.textContent = text; return; }
+    const leaves = Array.from(link.querySelectorAll('*')).filter((c) => !c.children.length);
+    for (const c of leaves) {
+      const t = (c.textContent || '').trim();
+      if (t.length > 1 && c.tagName !== 'svg' && c.tagName !== 'SVG') { c.textContent = text; return; }
+    }
+    const span = document.createElement('span');
+    span.setAttribute('data-nib-t', '1');
+    span.style.cssText = TS;
+    span.textContent = text;
+    link.appendChild(span);
+  }
+
+  function patchBar() {
+    if (!document.body) return;
+    document.querySelectorAll('div,nav,ul,section').forEach((el) => {
+      if (el.getAttribute('data-nib') === '1') return;
+      const links = Array.from(el.querySelectorAll(':scope > a, :scope > * > a'));
       if (links.length !== 3) return;
-      const allIconOnly = links.every((link) => {
-        const text = (link.textContent || '').replace(/\\s+/g, '');
-        return text === '' && link.querySelector('svg');
+      if (!links.every((l) => !!l.querySelector('svg'))) return;
+      el.setAttribute('data-nib', '1');
+      links.forEach((link) => {
+        const href = (link.getAttribute('href') || '').toLowerCase();
+        const txt  = (link.textContent || '').replace(/\\s+/g, '').toLowerCase();
+        if (href.includes('mailto') || txt.includes('@')) {
+          link.setAttribute('href', 'mailto:' + EMAIL);
+          setText(link, EMAIL);
+          link.style.setProperty('white-space', 'nowrap', 'important');
+          link.style.setProperty('font-size', 'clamp(10px,0.9vw,12px)', 'important');
+        } else if (href.includes('tel:') || href.includes('+62') || href.includes('81234')) {
+          link.setAttribute('href', 'tel:+17147078889');
+          setText(link, PHONE);
+          link.style.setProperty('white-space', 'nowrap', 'important');
+          link.style.setProperty('font-size', 'clamp(10px,0.9vw,12px)', 'important');
+        } else {
+          link.setAttribute('href', MAPS);
+          link.setAttribute('target', '_blank');
+          link.setAttribute('rel', 'noopener noreferrer');
+          setText(link, ADDR);
+          link.style.setProperty('font-size', 'clamp(10px,0.9vw,12px)', 'important');
+        }
       });
-      if (!allIconOnly) return;
-
-      // Should be a thin horizontal strip with dividers between icons.
-      // Allow up to 200px to cover taller mobile layouts where icons may stack.
-      const r = el.getBoundingClientRect();
-      if (r.height > 200) return;
-
-      el.style.setProperty('display', 'none', 'important');
     });
   }
 
-  hideIconBar();
-  window.addEventListener('load', hideIconBar, { once: true });
-  [300, 800, 1800, 3500, 6000, 10000, 20000, 40000].forEach((t) => setTimeout(hideIconBar, t));
-
-  const obs = new MutationObserver(hideIconBar);
+  patchBar();
+  window.addEventListener('load', patchBar, { once: true });
+  [300, 800, 1800, 3500, 6000].forEach((t) => setTimeout(patchBar, t));
+  const obs = new MutationObserver(patchBar);
   if (document.body) obs.observe(document.body, { childList: true, subtree: true });
   setTimeout(() => obs.disconnect(), 60000);
 })();
