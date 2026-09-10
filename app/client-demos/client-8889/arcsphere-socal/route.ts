@@ -969,15 +969,30 @@ const ICON_BAR_PATCH = `
       hide(found || emailA);
     });
 
-    // Detection B — by shape, independent of tag names, hrefs, text and exact counts.
-    // For each icon graphic, walk up to the largest wrapper that still contains only
-    // that ONE graphic: that wrapper is the icon's own item/link. Group those items by
-    // their shared parent. A parent holding 3+ icon items with almost no text is the
-    // envelope/phone/location bar (dividers between icons are counted harmlessly).
+    // Detection B — by shape, confined to the footer.
+    // For each icon SVG, walk up to the largest wrapper that still contains only that
+    // ONE svg: that wrapper is the icon's own item/link. Group those items by shared
+    // parent. A footer row of 3-4 icon items with almost no text is the contact bar.
+    //
+    // Scope guards (important): only <svg> is considered — never <img>, which would
+    // match project galleries and logo strips — and the row must live inside the
+    // footer, so service/process icon rows in the page body are never touched.
+    function inFooter(el) {
+      let n = el;
+      while (n) {
+        if (n.tagName && n.tagName.toLowerCase() === 'footer') return true;
+        const fn = n.getAttribute && n.getAttribute('data-framer-name');
+        if (fn && /footer/i.test(fn)) return true;
+        n = n.parentElement;
+      }
+      return false;
+    }
+
     const groups = new Map();
-    Array.from(document.querySelectorAll('svg,img')).forEach((gfx) => {
+    Array.from(document.querySelectorAll('svg')).forEach((gfx) => {
+      if (!inFooter(gfx)) return;
       let item = gfx;
-      while (item.parentElement && item.parentElement.querySelectorAll('svg,img').length === 1) {
+      while (item.parentElement && item.parentElement.querySelectorAll('svg').length === 1) {
         item = item.parentElement;
       }
       const parent = item.parentElement;
@@ -994,7 +1009,10 @@ const ICON_BAR_PATCH = `
 
     groups.forEach((items, parent) => {
       if (parent.getAttribute('data-nib-hidden') === '1') return;
+      // 3 icons, plus up to 3 more if the dividers between them are svgs too
       if (items.length < 3 || items.length > 6) return;
+      // never collapse the footer itself or a large wrapper
+      if (parent.tagName && parent.tagName.toLowerCase() === 'footer') return;
       // icon-only row: allow hidden hover labels, reject real content sections
       const txt = (parent.textContent || '').replace(/\\s+/g, '');
       if (txt.length > 150) return;
