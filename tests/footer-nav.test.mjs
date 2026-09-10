@@ -15,6 +15,22 @@ test('replacement is scoped to footer-links with a mobile position reset', () =>
   assert.match(patch, /@media \(max-width: 809px\)/);
   assert.match(patch, /left: 71.5%/);
 });
+test('breakpoint copies of the old nav are hidden by label, not only by Framer name', () => {
+  // Not every footer copy carries data-framer-name="footer-links", so the stylesheet alone left one
+  // showing through underneath the injected nav.
+  assert.match(patch, /function hideLegacyNavGroups/);
+  assert.match(patch, /LEGACY_NAV_LABELS/);
+  assert.match(patch, /document\.querySelectorAll\('footer'\)\.forEach\(hideLegacyNavGroups\)/);
+});
+test('hiding the old nav never takes the social, legal or injected columns with it', () => {
+  assert.match(patch, /OTHER_COLUMN_LABELS/);
+  assert.match(patch, /pinterest/);
+  assert.match(patch, /privacypolicy/);
+  assert.match(patch, /el\.querySelector\('\.nguyen-footer-links'\)\) return/);
+  assert.match(patch, /el\.closest\('\.nguyen-footer-links'\)\) return/);
+  // Only the tightest container holding the labels is hidden; a wider one holds real content.
+  assert.match(patch, /matches\.some\(\(other\) => other !== el && el\.contains\(other\)\)/);
+});
 test('mobile footer navigation is placed below the get-in-touch text, not on top of the headline', () => {
   assert.match(patch, /findFooterText/);
   assert.match(patch, /GET IN TOUCH/);

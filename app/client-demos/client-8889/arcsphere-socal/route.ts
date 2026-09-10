@@ -1004,7 +1004,37 @@ footer > .nguyen-footer-links > a:focus-visible { text-decoration: underline !im
       return !Array.from(el.children).some((child) => (child.textContent || '').replace(/\\s+/g, '').toLowerCase() === key);
     });
   }
+  const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
+  // Framer ships one footer copy per breakpoint and not every copy carries
+  // data-framer-name="footer-links", so the stylesheet above misses those and they show through
+  // underneath the injected nav. Match on the link labels instead of the Framer name.
+  const LEGACY_NAV_LABELS = ['home', 'about', 'services', 'projects', 'process', 'contact'];
+  const OTHER_COLUMN_LABELS = ['pinterest', 'linkedin', 'instagram', 'behance', 'privacypolicy', 'cookiepolicy', 'terms&conditions'];
+
+  function hideLegacyNavGroups(footer) {
+    const matches = [];
+    footer.querySelectorAll('*').forEach((el) => {
+      if (el.classList.contains('nguyen-footer-links')) return;
+      if (el.closest('.nguyen-footer-links')) return;
+      if (el.querySelector('.nguyen-footer-links')) return;
+      const text = compact(el.textContent);
+      if (LEGACY_NAV_LABELS.filter((label) => text.indexOf(label) !== -1).length < 3) return;
+      // A container that also holds the social or legal column is wider than the nav group.
+      if (OTHER_COLUMN_LABELS.some((label) => text.indexOf(label) !== -1)) return;
+      matches.push(el);
+    });
+    matches.forEach((el) => {
+      // Hide only the tightest container holding the labels; a wider one takes real content with it.
+      if (matches.some((other) => other !== el && el.contains(other))) return;
+      el.setAttribute('aria-hidden', 'true');
+      el.setAttribute('inert', '');
+      el.style.setProperty('visibility', 'hidden', 'important');
+      el.style.setProperty('pointer-events', 'none', 'important');
+    });
+  }
+
   function patchFooterNav() {
+    document.querySelectorAll('footer').forEach(hideLegacyNavGroups);
     document.querySelectorAll('footer [data-framer-name="footer-links"]').forEach((original) => {
       const footer = original.closest('footer');
       original.setAttribute('aria-hidden', 'true');
