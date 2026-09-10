@@ -19,3 +19,10 @@ test('header navigation styling never targets footer links after scrolling', () 
   const main = source.split('const MAIN_NAV_PATCH')[1].split('const ENGINEERING_SERVICE_PATCH')[0];
   assert.match(main, /anchor\.closest\('footer'\)/);
 });
+test('extra-card cleanup cannot collapse page or footer containers', () => {
+  const cleanup = source.split('const EXTRA_CARD_CLEANUP_PATCH = `')[1].split('const PROCESS_TILE_IMAGE_PATCH')[0];
+  assert.match(cleanup, /isProtectedContainer/);
+  assert.match(cleanup, /el\.matches\('body, main, footer'\)/);
+  assert.match(cleanup, /el\.querySelector\('footer'\)/);
+  assert.match(cleanup, /card\.closest\('footer'\)/);
+});

@@ -1061,8 +1061,17 @@ const EXTRA_CARD_CLEANUP_PATCH = `
   const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
   const EXTRA_DESC = compact('Professional guidance during construction to ensure the design vision is executed correctly.');
 
+  function isProtectedContainer(el) {
+    if (!el || !el.isConnected) return true;
+    if (el.matches('body, main, footer')) return true;
+    if (el.querySelector('footer')) return true;
+    if (el.querySelector('[data-nguyen-footer-nav]')) return true;
+    if (el.closest('footer')) return true;
+    return false;
+  }
+
   function hide(el) {
-    if (!el || !el.isConnected || el.getAttribute('data-nex') === '1') return;
+    if (!el || !el.isConnected || el.getAttribute('data-nex') === '1' || isProtectedContainer(el)) return;
     el.setAttribute('data-nex', '1');
     el.style.setProperty('display', 'none', 'important');
     el.style.setProperty('height', '0', 'important');
@@ -1088,19 +1097,24 @@ const EXTRA_CARD_CLEANUP_PATCH = `
       // Walk up to find the card (first img-bearing ancestor of the description leaf)
       let card = el;
       for (let d = 0; card.parentElement && d < 10; d++, card = card.parentElement) {
+        if (isProtectedContainer(card) || isProtectedContainer(card.parentElement)) return;
         if (card.parentElement.querySelector?.('img')) { card = card.parentElement; break; }
       }
+
+      if (card.closest('footer') || isProtectedContainer(card)) return;
 
       // Walk up further to find the outermost single-card container.
       // Stop when the parent is the section container (has >1 img = multiple cards, or is full-width).
       for (let d = 0; card.parentElement && d < 8; d++) {
         const p = card.parentElement;
+        if (isProtectedContainer(p)) break;
         if ((p.querySelectorAll?.('img') || []).length > 1) break;
         const pw = p.getBoundingClientRect().width;
         if (pw > 0 && pw >= vw * 0.9) break;
         card = p;
       }
 
+      if (isProtectedContainer(card)) return;
       hide(card);
     });
   }
