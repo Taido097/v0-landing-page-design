@@ -1418,6 +1418,57 @@ const CARD_ROUTING_PATCH = `
 })();
 </script>`
 
+const HERO_IMAGE_PATCH = `
+<script id="nguyen-socal-hero-image-patch">
+(() => {
+  const heroImageUrl = window.location.origin + '/client-8889/residential/footer-main-1728.jpg';
+
+  function forceVisible(el) {
+    if (!el) return;
+    el.style.setProperty('display', 'block', 'important');
+    el.style.setProperty('visibility', 'visible', 'important');
+    el.style.setProperty('opacity', '1', 'important');
+  }
+
+  function patchHeroImage() {
+    const hero = document.querySelector('header[data-framer-name="hero-section"]');
+    if (!hero) return false;
+
+    const wrappers = hero.querySelectorAll('[data-framer-background-image-wrapper="true"]');
+    wrappers.forEach((wrapper) => {
+      forceVisible(wrapper);
+      wrapper.style.setProperty('overflow', 'hidden', 'important');
+      wrapper.style.setProperty('background-image', 'url("' + heroImageUrl + '")', 'important');
+      wrapper.style.setProperty('background-size', 'cover', 'important');
+      wrapper.style.setProperty('background-position', 'center', 'important');
+    });
+
+    const images = hero.querySelectorAll('[data-framer-background-image-wrapper="true"] img, img[data-framer-name*="hero" i], img[src*="framerusercontent.com"]');
+    images.forEach((img) => {
+      img.setAttribute('src', heroImageUrl);
+      img.removeAttribute('srcset');
+      img.removeAttribute('sizes');
+      img.loading = 'eager';
+      img.decoding = 'async';
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = 'cover';
+      img.style.objectPosition = 'center';
+      forceVisible(img);
+    });
+
+    return images.length > 0 || wrappers.length > 0;
+  }
+
+  patchHeroImage();
+  window.addEventListener('load', patchHeroImage, { once: true });
+  [50, 150, 300, 800, 1500, 3000, 6000, 10000].forEach((t) => setTimeout(patchHeroImage, t));
+
+  const obs = new MutationObserver(patchHeroImage);
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true });
+  setTimeout(() => obs.disconnect(), 15000);
+})();
+</script>`
 
 // Route hero / section CTA buttons (START A PROJECT, BOOK CONSULTATION, GET IN TOUCH, etc.)
 // to the contact form. These buttons are NOT in the top nav so MAIN_NAV_PATCH misses them.
@@ -1554,7 +1605,7 @@ export async function GET() {
   // The base layer's /ArcSphere/gi branding swap rewrites server-rendered "arcsphere" to
   // "NGUYEN", so cover both the raw and post-rebrand forms (harmless if client-rendered).
   html = html.replace(/hello@(?:arcsphere|nguyen)studio\.ae/gi, 'info@nguyenarchitecture.com')
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${PROCESS_TILE_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${FOOTER_NAV_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}${HERO_CTA_PATCH}${PAGE_VISIBILITY_GUARD_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${PROCESS_TILE_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${FOOTER_NAV_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}${HERO_IMAGE_PATCH}${HERO_CTA_PATCH}${PAGE_VISIBILITY_GUARD_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')
@@ -1562,3 +1613,4 @@ export async function GET() {
 
   return new Response(html, { status: response.status, headers })
 }
+
