@@ -836,9 +836,9 @@ const FOOTER_PATCH = `
       a.style.setProperty('color', 'inherit', 'important');
       a.style.setProperty('text-decoration', 'none', 'important');
       a.style.setProperty('font-size', 'clamp(11px,1vw,13px)', 'important');
-      a.style.setProperty('word-break', 'break-all', 'important');
-      a.style.setProperty('overflow-wrap', 'anywhere', 'important');
-      a.style.setProperty('white-space', 'normal', 'important');
+      a.style.setProperty('word-break', 'normal', 'important');
+      a.style.setProperty('overflow-wrap', 'normal', 'important');
+      a.style.setProperty('white-space', 'nowrap', 'important');
     });
   }
 
