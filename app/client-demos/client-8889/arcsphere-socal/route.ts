@@ -326,6 +326,27 @@ const MAIN_NAV_PATCH = `
 </script>`
 
 const ENGINEERING_SERVICE_PATCH = `
+<style id="nguyen-socal-engineering-service-styles">
+@media (max-width: 809px) {
+  [data-nguyen-engineering-service="true"] {
+    min-height: 0 !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+  }
+  [data-nguyen-engineering-service="true"] [data-nguyen-engineering-media="true"],
+  [data-nguyen-engineering-service="true"] picture,
+  [data-nguyen-engineering-service="true"] img,
+  [data-nguyen-engineering-service="true"] [data-framer-background-image-wrapper="true"] {
+    display: none !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+}
+</style>
 <script id="nguyen-socal-engineering-service-patch">
 (() => {
   const normalize = (value) => (value || '').replace(/\\s+/g, ' ').trim();
@@ -384,6 +405,12 @@ const ENGINEERING_SERVICE_PATCH = `
     return any;
   }
 
+  function markEngineeringMedia(card) {
+    card.querySelectorAll('img, picture, [data-framer-background-image-wrapper="true"]').forEach((media) => {
+      media.setAttribute('data-nguyen-engineering-media', 'true');
+    });
+  }
+
   function patchEngineering() {
     const cards = findEngineeringCards();
     if (!cards.length) return false;
@@ -393,6 +420,7 @@ const ENGINEERING_SERVICE_PATCH = `
       replaceLeafText(card, titleKeys, 'ENGINEERING');
 
       card.setAttribute('data-nguyen-engineering-service', 'true');
+      markEngineeringMedia(card);
       card.setAttribute('data-nguyen-link', targetUrl);
       // Un-hide if any layer set display:none; the base no longer hides this card, so don't force a
       // display value (that could break Framer's own flex/grid) — just clear an inherited none.
@@ -901,6 +929,7 @@ footer > .nguyen-footer-links > a:focus-visible { text-decoration: underline !im
     width: min(220px, calc(100% - 48px)) !important;
     gap: 0 !important;
   }
+  footer > .nguyen-footer-links > a { min-height: 36px !important; }
 }
 </style>
 <script id="nguyen-socal-footer-nav-patch">
@@ -913,6 +942,13 @@ footer > .nguyen-footer-links > a:focus-visible { text-decoration: underline !im
     process: home + '#process',
     contact: window.location.origin + '/client-demos/client-8889/residential/contact'
   };
+  function findFooterText(footer, text) {
+    const key = text.replace(/\\s+/g, '').toLowerCase();
+    return Array.from(footer.querySelectorAll('h1,h2,h3,h4,p,span,div')).find((el) => {
+      if ((el.textContent || '').replace(/\\s+/g, '').toLowerCase() !== key) return false;
+      return !Array.from(el.children).some((child) => (child.textContent || '').replace(/\\s+/g, '').toLowerCase() === key);
+    });
+  }
   function patchFooterNav() {
     document.querySelectorAll('footer [data-framer-name="footer-links"]').forEach((original) => {
       const footer = original.closest('footer');
@@ -936,12 +972,12 @@ footer > .nguyen-footer-links > a:focus-visible { text-decoration: underline !im
       const bounds = footer.getBoundingClientRect();
       const heading = footer.querySelector('h3, h2');
       const mobile = window.innerWidth <= 809;
-      const contactLabel = footer.querySelector('[data-framer-name="Contact Us"]');
-      const reference = (mobile ? contactLabel || heading || original : heading || original).getBoundingClientRect();
+      const getInTouch = findFooterText(footer, 'GET IN TOUCH');
+      const reference = (mobile ? getInTouch || heading || original : heading || original).getBoundingClientRect();
       if (mobile) {
-        const leftReference = heading || contactLabel || original;
+        const leftReference = heading || getInTouch || original;
         const left = Math.max(20, leftReference.getBoundingClientRect().left - bounds.left);
-        nav.style.setProperty('--footer-nav-mobile-top', Math.max(0, reference.bottom - bounds.top + 28) + 'px');
+        nav.style.setProperty('--footer-nav-mobile-top', Math.max(0, reference.bottom - bounds.top + 42) + 'px');
         nav.style.setProperty('--footer-nav-mobile-left', left + 'px');
       } else {
         nav.style.top = Math.max(0, reference.top - bounds.top - 12) + 'px';

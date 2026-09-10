@@ -15,10 +15,12 @@ test('replacement is scoped to footer-links with a mobile position reset', () =>
   assert.match(patch, /@media \(max-width: 809px\)/);
   assert.match(patch, /left: 71.5%/);
 });
-test('mobile footer navigation is placed below the get-in-touch label, not on top of the headline', () => {
-  assert.match(patch, /data-framer-name="Contact Us"/);
+test('mobile footer navigation is placed below the get-in-touch text, not on top of the headline', () => {
+  assert.match(patch, /findFooterText/);
+  assert.match(patch, /GET IN TOUCH/);
   assert.match(patch, /--footer-nav-mobile-top/);
-  assert.match(patch, /reference\.bottom - bounds\.top \+ 28/);
+  assert.match(patch, /reference\.bottom - bounds\.top \+ 42/);
+  assert.doesNotMatch(patch, /data-framer-name="Contact Us"/);
 });
 test('header navigation styling never targets footer links after scrolling', () => {
   const main = source.split('const MAIN_NAV_PATCH')[1].split('const ENGINEERING_SERVICE_PATCH')[0];
@@ -58,4 +60,11 @@ test('page visibility guard does not run on every scroll-driven style mutation',
   assert.match(guard, /observer\.observe\(wrapper/);
   assert.match(guard, /attributeFilter: \['style'/);
   assert.match(guard, /if \(!needsRepair\) return;/);
+});
+test('mobile engineering row collapses leftover media area before project expertise', () => {
+  const engineering = source.split('const ENGINEERING_SERVICE_PATCH = `')[1].split('const PROJECT_CARDS_PATCH')[0];
+  assert.match(engineering, /nguyen-socal-engineering-service-styles/);
+  assert.match(engineering, /data-nguyen-engineering-service/);
+  assert.match(engineering, /data-nguyen-engineering-media/);
+  assert.match(engineering, /max-height: 0/);
 });
