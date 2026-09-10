@@ -25,9 +25,17 @@ test("phone-width hiding is limited to media explicitly marked on the Engineerin
 test("the card search refuses containers broader than a single service card", () => {
   assert.ok(engineeringPatch, "expected to find ENGINEERING_SERVICE_PATCH")
   assert.match(engineeringPatch, /function isTooBroad/)
-  assert.match(engineeringPatch, /body, main, header, footer, nav, section, article/)
+  assert.match(engineeringPatch, /body, main, header, footer, nav/)
   assert.match(engineeringPatch, /h1, h2, h3, h4, h5, h6'\) \|\| \[\]\)\.length > 1/)
+  assert.match(engineeringPatch, /img'\) \|\| \[\]\)\.length > 2/)
   assert.match(engineeringPatch, /if \(isTooBroad\(card\)\) break/)
+})
+
+test("breadth is judged by content, not by the section and article tags", () => {
+  assert.ok(engineeringPatch, "expected to find ENGINEERING_SERVICE_PATCH")
+  // The services list renders each row as a section/article. Rejecting those by tag stopped the climb
+  // short of the row, so the description converted but the title stayed as the original copy.
+  assert.doesNotMatch(engineeringPatch, /body, main, header, footer, nav, section, article/)
 })
 
 test("the card search anchors on the card title rather than on finding an image", () => {

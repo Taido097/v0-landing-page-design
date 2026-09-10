@@ -368,11 +368,14 @@ const ENGINEERING_SERVICE_PATCH = `
   function isTooBroad(el) {
     if (!el || !el.isConnected) return true;
     if (el === document.body || el === document.documentElement) return true;
-    if (el.matches?.('body, main, header, footer, nav, section, article')) return true;
+    if (el.matches?.('body, main, header, footer, nav')) return true;
     if (el.getAttribute?.('data-framer-name') === 'content') return true;
     if (el.querySelector?.('header, footer, section')) return true;
-    // A single service card has one title; more than one means this is the row holding sibling cards.
+    // A single service card or row has one title; more than one means this holds sibling cards.
+    // Deliberately not keyed on the section/article tags: the services list renders each row as one,
+    // and rejecting them by tag stopped the climb short of the row, leaving its title unconverted.
     if ((el.querySelectorAll?.('h1, h2, h3, h4, h5, h6') || []).length > 1) return true;
+    if ((el.querySelectorAll?.('img') || []).length > 2) return true;
     return false;
   }
 
