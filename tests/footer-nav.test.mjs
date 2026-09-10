@@ -48,8 +48,9 @@ test('page visibility guard repairs accidental hidden Framer content wrapper las
 });
 test('page visibility guard does not run on every scroll-driven style mutation', () => {
   const guard = source.split('const PAGE_VISIBILITY_GUARD_PATCH = `')[1].split('export async function GET')[0];
-  assert.doesNotMatch(guard, /MutationObserver/);
-  assert.doesNotMatch(guard, /attributeFilter: \['style'/);
   assert.doesNotMatch(guard, /subtree: true/);
+  assert.doesNotMatch(guard, /observer\.observe\(document\.body/);
+  assert.match(guard, /observer\.observe\(wrapper/);
+  assert.match(guard, /attributeFilter: \['style'/);
   assert.match(guard, /if \(!needsRepair\) return;/);
 });

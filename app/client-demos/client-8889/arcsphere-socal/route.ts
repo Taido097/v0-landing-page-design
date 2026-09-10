@@ -1455,9 +1455,19 @@ const HERO_CTA_PATCH = `
 const PAGE_VISIBILITY_GUARD_PATCH = `
 <script id="nguyen-socal-page-visibility-guard">
 (() => {
+  const watched = new WeakSet();
+
   function repairContentWrapper() {
     const wrappers = document.querySelectorAll('.framer-HJnCY > [data-framer-name="content"]');
     wrappers.forEach((wrapper) => {
+      if (!watched.has(wrapper)) {
+        watched.add(wrapper);
+        const observer = new MutationObserver(() => repairContentWrapper());
+        observer.observe(wrapper, {
+          attributes: true,
+          attributeFilter: ['style', 'data-nguyen-card-url', 'data-nguyen-panel-url', 'data-nguyen-link', 'role', 'tabindex'],
+        });
+      }
       const needsRepair =
         getComputedStyle(wrapper).display === 'none' ||
         wrapper.style.getPropertyValue('cursor') === 'pointer' ||
