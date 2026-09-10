@@ -166,6 +166,7 @@ export default function ContactPage() {
                 <div className="cf-aside-block">
                   <p className="cf-aside-label">Phone</p>
                   <a className="cf-aside-val cf-aside-link" href="tel:+17147078889">(714) 707-8889</a>
+                  <a className="cf-aside-val cf-aside-link" href="tel:+12092338888">(209) 233-8888</a>
                 </div>
                 <div className="cf-aside-block">
                   <p className="cf-aside-label">Email</p>

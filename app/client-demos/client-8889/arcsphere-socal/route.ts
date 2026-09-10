@@ -780,7 +780,7 @@ const FOOTER_PATCH = `
   const normalize = (v) => (v || '').replace(/\\s+/g, ' ').trim();
   const compact = (v) => normalize(v).replace(/\\s+/g, '').toLowerCase();
   const OLD_PHONE = compact('+62 812 3456 7890');
-  const NEW_PHONE = '(714) 707-8889';
+  const NEW_PHONE = '(714) 707-8889  ·  (209) 233-8888';
 
   const OLD_ADDR = compact('Dubai-Based Architecture And Interior Design Studio');
   const NEW_ADDR = '7171 Warner Ave., Ste. B, Huntington Beach, CA 92647';
