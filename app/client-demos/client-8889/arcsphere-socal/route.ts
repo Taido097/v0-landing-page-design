@@ -265,6 +265,9 @@ const MAIN_NAV_PATCH = `
     let matched = false;
 
     anchors.forEach((anchor) => {
+      // Footer links can enter the top of the viewport when scrolling. They are
+      // not header navigation and must never be hidden or styled as header CTAs.
+      if (anchor.closest('footer')) return;
       if (!isNearTop(anchor)) return;
       const key = compact(anchor.textContent);
       let target = null;
@@ -869,132 +872,88 @@ const FOOTER_PATCH = `
 </script>`
 
 const FOOTER_NAV_PATCH = `
+<style id="nguyen-footer-nav-styles">
+footer [data-framer-name="footer-links"] { visibility: hidden !important; pointer-events: none !important; }
+footer [data-framer-name="footer-links"] * { visibility: hidden !important; pointer-events: none !important; }
+footer > .nguyen-footer-links {
+  position: absolute !important; left: 71.5% !important; width: 136px !important;
+  display: flex !important; flex-direction: column !important; gap: 4px !important;
+  margin: 0 !important; padding: 0 !important; z-index: 5;
+}
+footer > .nguyen-footer-links > a {
+  display: flex !important; align-items: center !important; min-height: 44px !important;
+  margin: 0 !important; padding: 0 !important; opacity: 1 !important;
+  visibility: visible !important; transform: none !important; background: transparent !important;
+  color: rgba(79,71,66,.8) !important; font: 500 14px/1.3 "Inter Display", Arial, sans-serif !important;
+  letter-spacing: -.4px !important; text-decoration: none !important; border-radius: 0 !important;
+}
+footer > .nguyen-footer-links > a:hover,
+footer > .nguyen-footer-links > a:focus-visible { text-decoration: underline !important; text-underline-offset: 5px; color: #4f4742 !important; }
+@media (max-width: 809px) {
+  footer > .nguyen-footer-links { left: var(--footer-nav-mobile-left, 24px) !important; gap: 0 !important; }
+}
+</style>
 <script id="nguyen-socal-footer-nav-patch">
 (() => {
-  const origin = window.location.origin;
-  const FOOTER_MAP = {
-    'home':      origin + '/client-demos/client-8889/arcsphere-socal',
-    'services':  origin + '/client-demos/client-8889/arcsphere-socal#services',
-    'projects':  origin + '/client-demos/client-8889/arcsphere-socal#featured-projects',
-    'process':   origin + '/client-demos/client-8889/arcsphere-socal',
-    'contact':   origin + '/client-demos/client-8889/residential/contact',
-    'contactus': origin + '/client-demos/client-8889/residential/contact',
+  const home = window.location.origin + '/client-demos/client-8889/arcsphere-socal';
+  const destinations = {
+    home,
+    services: home + '#services',
+    projects: home + '#featured-projects',
+    process: home + '#process',
+    contact: window.location.origin + '/client-demos/client-8889/residential/contact'
   };
-  const REMOVE_FOOTER_KEYS = new Set([
-    'about',
-    'pinterest',
-    'linkedin',
-    'instagram',
-    'behance',
-    'privacypolicy',
-    'cookiepolicy',
-    'terms&conditions',
-    'termsandconditions',
-  ]);
-  const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
-
-  function isInFooter(a) {
-    let el = a;
-    while (el) {
-      if (el.tagName && el.tagName.toLowerCase() === 'footer') return true;
-      const fn = el.getAttribute && el.getAttribute('data-framer-name');
-      if (fn && /footer/i.test(fn)) return true;
-      el = el.parentElement;
-    }
-    return false;
-  }
-
   function patchFooterNav() {
-    const visibleNav = [];
-
-    document.querySelectorAll('footer a, footer span, footer p, footer div').forEach((el) => {
-      if (!isInFooter(el)) return;
-      const key = compact(el.textContent);
-      if (REMOVE_FOOTER_KEYS.has(key) && !Array.from(el.children).some((child) => REMOVE_FOOTER_KEYS.has(compact(child.textContent)))) {
-        const target = el.closest('a') || el;
-        target.style.setProperty('display', 'none', 'important');
-        target.style.setProperty('visibility', 'hidden', 'important');
-        target.style.setProperty('pointer-events', 'none', 'important');
+    document.querySelectorAll('footer [data-framer-name="footer-links"]').forEach((original) => {
+      const footer = original.closest('footer');
+      original.setAttribute('aria-hidden', 'true');
+      original.setAttribute('inert', '');
+      if (getComputedStyle(footer).position === 'static') footer.style.position = 'relative';
+      let nav = footer.querySelector(':scope > .nguyen-footer-links');
+      if (!nav) {
+        nav = document.createElement('nav');
+        nav.className = 'nguyen-footer-links';
+        nav.setAttribute('aria-label', 'Footer navigation');
+        ['home', 'services', 'projects', 'process', 'contact'].forEach((key) => {
+          const link = document.createElement('a');
+          link.textContent = key.toUpperCase();
+          link.href = destinations[key];
+          link.setAttribute('data-nguyen-footer-nav', key);
+          nav.appendChild(link);
+        });
+        footer.appendChild(nav);
       }
+      const bounds = footer.getBoundingClientRect();
+      const heading = footer.querySelector('h3, h2');
+      const mobile = window.innerWidth <= 809;
+      const reference = (mobile ? original : heading || original).getBoundingClientRect();
+      nav.style.top = Math.max(0, reference.top - bounds.top - (mobile ? 0 : 12)) + 'px';
+      nav.style.setProperty('--footer-nav-mobile-left', (reference.left - bounds.left) + 'px');
     });
-
-    document.querySelectorAll('a').forEach((a) => {
-      if (!isInFooter(a)) return;
-      const key = compact(a.textContent);
-      if (REMOVE_FOOTER_KEYS.has(key)) return;
-      const dest = FOOTER_MAP[key];
-      if (!dest) return;
-      // Restore any link hidden by fixNav (e.g. Projects)
-      if (a.style.display === 'none') a.style.removeProperty('display');
-      const parent = a.parentElement;
-      if (parent && parent.style.display === 'none') parent.style.removeProperty('display');
-      a.setAttribute('href', dest);
-      a.setAttribute('data-nguyen-footer-nav', key);
-      visibleNav.push(a);
-      // Override hover: remove any Framer pill background children
-      Array.from(a.children).forEach((child) => {
-        const cs = window.getComputedStyle(child);
-        if (cs.position === 'absolute' && parseFloat(cs.borderRadius) > 4) {
-          child.style.setProperty('display', 'none', 'important');
-        }
-      });
-      a.style.setProperty('text-decoration', 'none', 'important');
-      a.style.setProperty('display', 'block', 'important');
-      a.style.setProperty('line-height', '1.25', 'important');
-      a.style.setProperty('margin-bottom', 'clamp(16px,1.55vw,24px)', 'important');
-    });
-
-    function commonAncestor(nodes) {
-      if (!nodes.length) return null;
-      const firstPath = [];
-      for (let n = nodes[0]; n && n !== document.body; n = n.parentElement) firstPath.push(n);
-      return firstPath.find((candidate) => nodes.every((node) => candidate.contains(node))) || null;
-    }
-
-    const parents = new Set(visibleNav.map((a) => a.parentElement).filter(Boolean));
-    parents.forEach((parent) => {
-      parent.style.setProperty('display', 'flex', 'important');
-      parent.style.setProperty('flex-direction', 'column', 'important');
-      parent.style.setProperty('align-items', 'flex-start', 'important');
-      parent.style.setProperty('gap', '0', 'important');
-    });
-    visibleNav.at(-1)?.style.setProperty('margin-bottom', '0', 'important');
-
-    const group = commonAncestor(visibleNav);
-    const groupText = compact(group?.textContent || '');
-    const safeNavGroup = group && group !== document.body && !(group.tagName && group.tagName.toLowerCase() === 'footer') && groupText.length < 220 && !groupText.includes('opentonewprojects') && !groupText.includes('getintouch');
-    if (safeNavGroup) {
-      group.setAttribute('data-nguyen-footer-nav-group', '1');
-      group.style.setProperty('display', 'flex', 'important');
-      group.style.setProperty('flex-direction', 'column', 'important');
-      group.style.setProperty('align-items', 'flex-start', 'important');
-      group.style.setProperty('justify-content', 'flex-start', 'important');
-      group.style.setProperty('gap', 'clamp(18px,1.7vw,26px)', 'important');
-      group.style.setProperty('transform', 'translateX(-28px)', 'important');
-      group.style.setProperty('width', 'max-content', 'important');
-      group.style.setProperty('max-width', '220px', 'important');
-    }
+    // The process cards already exist; mark their containing section for this link.
+    const card = Array.from(document.querySelectorAll('h2,h3,h4')).find((el) =>
+      /^(consultation|discovery)$/i.test((el.textContent || '').trim()) && !el.closest('footer'));
+    const section = card?.closest('section');
+    if (section && !document.getElementById('process')) section.id = 'process';
   }
-
-  // Document-level capture intercepts BEFORE fixNav's element-level capture listeners
-  document.addEventListener('click', (e) => {
-    const start = e.target && e.target.nodeType === Node.TEXT_NODE ? e.target.parentElement : e.target;
-    const a = start && start.closest ? start.closest('a[data-nguyen-footer-nav]') : null;
-    if (!a) return;
-    const dest = a.getAttribute('href');
-    if (!dest) return;
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    window.location.href = dest;
+  document.addEventListener('click', (event) => {
+    const link = event.target?.closest?.('.nguyen-footer-links a');
+    if (!link) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    const url = new URL(link.href);
+    const target = url.pathname === location.pathname && url.hash && document.getElementById(url.hash.slice(1));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      history.replaceState(null, '', url.hash);
+    } else location.href = link.href;
   }, true);
-
   patchFooterNav();
   window.addEventListener('load', patchFooterNav, { once: true });
-  [300, 800, 1800, 3500, 6000, 10000].forEach((t) => setTimeout(patchFooterNav, t));
-
-  const obs = new MutationObserver(patchFooterNav);
-  if (document.body) obs.observe(document.body, { childList: true, subtree: true });
-  setTimeout(() => obs.disconnect(), 20000);
+  window.addEventListener('resize', patchFooterNav);
+  [300, 800, 1800, 3500, 6000, 10000].forEach((delay) => setTimeout(patchFooterNav, delay));
+  const observer = new MutationObserver(patchFooterNav);
+  if (document.body) observer.observe(document.body, { childList: true, subtree: true });
 })();
 <\/script>`
 
