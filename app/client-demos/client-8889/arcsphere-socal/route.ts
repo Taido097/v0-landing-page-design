@@ -478,8 +478,24 @@ const PROJECT_CARDS_PATCH = `
 
   const patched = new WeakSet();
 
+  function markFeaturedProjects(cards) {
+    if (!cards.length) return;
+    const sorted = cards.slice().sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
+    let target = sorted[0];
+    for (let node = sorted[0].parentElement, depth = 0; node && node !== document.body && depth < 10; node = node.parentElement, depth += 1) {
+      const count = sorted.filter((card) => node.contains(card)).length;
+      if (count >= Math.min(3, sorted.length)) {
+        target = node;
+        break;
+      }
+    }
+    target.setAttribute('id', 'featured-projects');
+    target.style.setProperty('scroll-margin-top', '96px', 'important');
+  }
+
   function patchCards() {
     const cards = findCards();
+    markFeaturedProjects(cards);
     cards.forEach((card) => {
       if (patched.has(card)) return;
       const url = resolveUrl(card);
@@ -859,7 +875,7 @@ const FOOTER_NAV_PATCH = `
   const FOOTER_MAP = {
     'home':      origin + '/client-demos/client-8889/arcsphere-socal',
     'services':  origin + '/client-demos/client-8889/arcsphere-socal#services',
-    'projects':  origin + '/client-demos/client-8889/arcsphere-socal#services',
+    'projects':  origin + '/client-demos/client-8889/arcsphere-socal#featured-projects',
     'process':   origin + '/client-demos/client-8889/arcsphere-socal',
     'contact':   origin + '/client-demos/client-8889/residential/contact',
     'contactus': origin + '/client-demos/client-8889/residential/contact',
@@ -889,6 +905,8 @@ const FOOTER_NAV_PATCH = `
   }
 
   function patchFooterNav() {
+    const visibleNav = [];
+
     document.querySelectorAll('footer a, footer span, footer p, footer div').forEach((el) => {
       if (!isInFooter(el)) return;
       const key = compact(el.textContent);
@@ -912,6 +930,7 @@ const FOOTER_NAV_PATCH = `
       if (parent && parent.style.display === 'none') parent.style.removeProperty('display');
       a.setAttribute('href', dest);
       a.setAttribute('data-nguyen-footer-nav', key);
+      visibleNav.push(a);
       // Override hover: remove any Framer pill background children
       Array.from(a.children).forEach((child) => {
         const cs = window.getComputedStyle(child);
@@ -920,7 +939,19 @@ const FOOTER_NAV_PATCH = `
         }
       });
       a.style.setProperty('text-decoration', 'none', 'important');
+      a.style.setProperty('display', 'block', 'important');
+      a.style.setProperty('line-height', '1.25', 'important');
+      a.style.setProperty('margin-bottom', 'clamp(16px,1.55vw,24px)', 'important');
     });
+
+    const parents = new Set(visibleNav.map((a) => a.parentElement).filter(Boolean));
+    parents.forEach((parent) => {
+      parent.style.setProperty('display', 'flex', 'important');
+      parent.style.setProperty('flex-direction', 'column', 'important');
+      parent.style.setProperty('align-items', 'flex-start', 'important');
+      parent.style.setProperty('gap', '0', 'important');
+    });
+    visibleNav.at(-1)?.style.setProperty('margin-bottom', '0', 'important');
   }
 
   // Document-level capture intercepts BEFORE fixNav's element-level capture listeners
@@ -1294,7 +1325,7 @@ const CARD_ROUTING_PATCH = `
     if (t.indexOf('adu') !== -1) return svc + '/adus';
     if (t.indexOf('addition') !== -1 || t.indexOf('remodel') !== -1) return svc + '/additions-remodels';
     if (t.indexOf('landdevelopment') !== -1) return svc + '/land-development';
-    if (t.indexOf('viewprojecttypes') !== -1 || t.indexOf('viewmoreprojects') !== -1 || t.indexOf('projects') !== -1) return home + '#services';
+    if (t.indexOf('viewprojecttypes') !== -1 || t.indexOf('viewmoreprojects') !== -1 || t.indexOf('projects') !== -1) return home + '#featured-projects';
     return null;
   }
 

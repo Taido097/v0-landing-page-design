@@ -380,8 +380,8 @@ const CSS = `
 .nrd-foot-head{font-size:clamp(26px,3.4vw,40px);line-height:1.2;font-weight:500;letter-spacing:-.035em;text-transform:uppercase;margin:0;max-width:14em;color:#4f4742}
 .nrd a.nrd-foot-cta{display:inline-block;margin-top:clamp(20px,2.4vw,30px);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;border-bottom:1px solid var(--ink);padding-bottom:6px;color:var(--ink);transition:color .2s,border-color .2s}
 .nrd a.nrd-foot-cta:hover{color:var(--gold);border-color:var(--gold)}
-.nrd-foot-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2vw,30px)}
-.nrd-foot-col{display:flex;flex-direction:column;gap:12px}
+.nrd-foot-cols{display:grid;grid-template-columns:minmax(150px,220px);justify-content:end}
+.nrd-foot-col{display:flex;flex-direction:column;gap:clamp(16px,1.55vw,24px)}
 .nrd-foot-col a,.nrd-foot-col span{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);transition:color .2s}
 .nrd-foot-col a:hover{color:var(--ink)}
 .nrd-foot-bottom{display:flex;align-items:center;justify-content:flex-end;gap:18px;margin-top:clamp(34px,4vw,52px);padding-top:clamp(22px,2.6vw,32px);border-top:1px solid var(--line);flex-wrap:wrap}
@@ -503,7 +503,7 @@ export default async function EngSubServicePage({ params }: { params: Promise<{ 
               <div className="nrd-foot-col">
                 <a href={HOME_HREF}>Home</a>
                 <a href={`${HOME_HREF}#services`}>Services</a>
-                <a href={`${HOME_HREF}#services`}>Projects</a>
+                <a href={`${HOME_HREF}#featured-projects`}>Projects</a>
                 <a href={HOME_HREF}>Process</a>
                 <a href={CONTACT}>Contact</a>
               </div>
