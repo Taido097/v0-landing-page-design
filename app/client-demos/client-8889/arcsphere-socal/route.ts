@@ -1110,9 +1110,6 @@ const PROCESS_TILE_IMAGE_PATCH = `
 <script id="nguyen-socal-process-tile-images">
 (() => {
   const origin = window.location.origin;
-  // Mirror the exact description strings used by arcsphere-fixed so we find cards the same way.
-  // 'desc' lists all known variants (original Framer + NGUYEN-patched) so the patch works
-  // regardless of whether arcsphere-fixed has already run.
   const STEP_MAP = [
     {
       step: '1',
@@ -1168,39 +1165,39 @@ const PROCESS_TILE_IMAGE_PATCH = `
 
   const compact = (v) => (v || '').replace(/\\s+/g, ' ').trim().replace(/\\s+/g, '').toLowerCase();
 
-  // Identical to arcsphere-fixed's findProcessCardByDescription: find a leaf whose
-  // textContent exactly matches a description, then walk up until we have a node
-  // that contains both a description key and an img.
+  // Walk the DOM for an element whose textContent compactly matches a description,
+  // then climb to the nearest ancestor that holds an <img> OR a background-image div.
   function findCardByDesc(descList) {
     const keys = new Set(descList.map(compact));
-    const all = document.body ? [document.body, ...document.body.querySelectorAll('*')] : [];
+    const all = document.body ? document.body.querySelectorAll('*') : [];
     for (const el of all) {
       if (!keys.has(compact(el.textContent))) continue;
-      // Walk up to a container that also has an img
       let node = el;
-      for (let d = 0; node && d < 12; d++, node = node.parentElement) {
+      for (let d = 0; node && d < 14; d++, node = node.parentElement) {
         if (node.querySelector('img')) return node;
+        // Also accept a node that directly has an inline background-image (Framer card bg)
+        if (node.style && node.style.backgroundImage && node.style.backgroundImage !== 'none') return node;
+        if (node.querySelector('[style*="background-image"]')) return node;
       }
     }
     return null;
   }
 
-  // Compare against the LIVE src, never against a marker attribute: when Framer
-  // re-renders it resets img.src back to the original photo while leaving our
-  // data-* marker in place, so a marker-based guard would skip the repair forever.
-  // Every write below is conditional, so a no-op pass triggers no mutations
-  // (and therefore no observer feedback loop).
-  function swapImg(img, src, alt) {
+  // Per-img element observers so we can re-apply the src immediately when Framer resets it,
+  // without waiting for the 80 ms debounce on the document-wide observer.
+  const imgObservers = new Map();
+
+  function applyImg(img, src, alt) {
     if (img.getAttribute('src') !== src) img.setAttribute('src', src);
     if (img.getAttribute('data-nguyen-process-img') !== src) img.setAttribute('data-nguyen-process-img', src);
     if (img.getAttribute('alt') !== alt) img.setAttribute('alt', alt);
     if (img.hasAttribute('srcset')) img.removeAttribute('srcset');
     if (img.hasAttribute('sizes')) img.removeAttribute('sizes');
-    if (img.style.objectFit !== 'cover') img.style.setProperty('object-fit', 'cover', 'important');
-    if (img.style.objectPosition !== 'center') img.style.setProperty('object-position', 'center', 'important');
-    if (img.style.filter !== 'none') img.style.setProperty('filter', 'none', 'important');
-    if (img.style.opacity !== '1') img.style.setProperty('opacity', '1', 'important');
-    if (img.style.visibility !== 'visible') img.style.setProperty('visibility', 'visible', 'important');
+    img.style.setProperty('object-fit', 'cover', 'important');
+    img.style.setProperty('object-position', 'center', 'important');
+    img.style.setProperty('filter', 'none', 'important');
+    img.style.setProperty('opacity', '1', 'important');
+    img.style.setProperty('visibility', 'visible', 'important');
     const picture = img.closest('picture');
     if (picture) picture.querySelectorAll('source').forEach((s) => {
       if (s.getAttribute('srcset') !== src) s.setAttribute('srcset', src);
@@ -1208,27 +1205,85 @@ const PROCESS_TILE_IMAGE_PATCH = `
     });
   }
 
-  // Cache the resolved <img> per step so repeat passes are cheap (the description
-  // lookup walks every element in the document, which is far too costly to repeat
-  // on every scroll/mutation tick).
+  function lockImg(img, src, alt) {
+    applyImg(img, src, alt);
+    if (imgObservers.has(img)) return;
+    let busy = false;
+    const ob = new MutationObserver(() => {
+      if (busy) return;
+      if (img.getAttribute('src') === src && !img.hasAttribute('srcset')) return;
+      busy = true;
+      applyImg(img, src, alt);
+      busy = false;
+    });
+    ob.observe(img, { attributes: true, attributeFilter: ['src', 'srcset', 'sizes'] });
+    imgObservers.set(img, ob);
+  }
+
+  // Swap a CSS background-image div (Framer card bg variant).
+  function applyBg(el, src) {
+    const wanted = 'url("' + src + '")';
+    if (el.style.backgroundImage === wanted) return;
+    el.style.setProperty('background-image', wanted, 'important');
+    el.style.setProperty('background-size', 'cover', 'important');
+    el.style.setProperty('background-position', 'center', 'important');
+    el.setAttribute('data-nguyen-process-img', src);
+  }
+
+  function lockBg(card, src) {
+    // Prefer the deepest inline background-image element inside the card.
+    let bgEl = null;
+    const children = card.querySelectorAll('[style*="background-image"]');
+    if (children.length > 0) bgEl = children[children.length - 1];
+    else if (card.style && card.style.backgroundImage) bgEl = card;
+    if (!bgEl) return false;
+    applyBg(bgEl, src);
+    if (!imgObservers.has(bgEl)) {
+      const ob = new MutationObserver(() => applyBg(bgEl, src));
+      ob.observe(bgEl, { attributes: true, attributeFilter: ['style'] });
+      imgObservers.set(bgEl, ob);
+    }
+    return true;
+  }
+
+  // Cache: step → resolved <img> or background element
   const resolved = new Map();
 
   function patchProcessTiles() {
     if (!document.body) return;
     STEP_MAP.forEach((spec) => {
-      let img = resolved.get(spec.step);
-      if (img && !img.isConnected) { resolved.delete(spec.step); img = null; }
-      if (!img) {
-        // Fast path: arcsphere-fixed already marked this card
+      let target = resolved.get(spec.step);
+      if (target && !target.isConnected) {
+        const ob = imgObservers.get(target);
+        if (ob) { ob.disconnect(); imgObservers.delete(target); }
+        resolved.delete(spec.step);
+        target = null;
+      }
+      if (!target) {
         let card = document.querySelector('[data-nguyen-process-step="' + spec.step + '"]');
-        // Slow path: find by description text (same strategy as arcsphere-fixed)
         if (!card) card = findCardByDesc(spec.desc);
         if (!card) return;
-        img = card.querySelector('img');
-        if (!img) return;
-        resolved.set(spec.step, img);
+        const img = card.querySelector('img');
+        if (img) {
+          resolved.set(spec.step, img);
+          lockImg(img, spec.src, spec.alt);
+          return;
+        }
+        // No <img> — try CSS background-image (Framer alternate card style)
+        const bgChildren = card.querySelectorAll('[style*="background-image"]');
+        const bgEl = bgChildren.length > 0 ? bgChildren[bgChildren.length - 1] : (card.style.backgroundImage ? card : null);
+        if (bgEl) {
+          resolved.set(spec.step, bgEl);
+          lockBg(card, spec.src);
+        }
+        return;
       }
-      swapImg(img, spec.src, spec.alt);
+      // Re-apply to cached target
+      if (target.tagName === 'IMG') {
+        lockImg(target, spec.src, spec.alt);
+      } else {
+        applyBg(target, spec.src);
+      }
     });
   }
 
@@ -1238,16 +1293,11 @@ const PROCESS_TILE_IMAGE_PATCH = `
   patchProcessTiles();
   window.addEventListener('load', patchProcessTiles, { once: true });
   [100, 300, 600, 1000, 1800, 3000, 5000, 8000, 12000, 20000].forEach((t) => setTimeout(patchProcessTiles, t));
-
-  // The process section sits far down the page, so Framer may not render or may
-  // re-render those cards until the user scrolls to them — long after any short
-  // observer window would have closed. Keep repairing for the page lifetime:
-  // the cached-img fast path makes each pass negligible.
   window.addEventListener('scroll', schedule, { passive: true });
   window.addEventListener('resize', schedule, { passive: true });
 
   const obs = new MutationObserver(schedule);
-  if (document.body) obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['src', 'srcset', 'sizes', 'data-nguyen-process-step'] });
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['src', 'srcset', 'sizes', 'data-nguyen-process-step', 'style'] });
 })();
 </script>`
 
