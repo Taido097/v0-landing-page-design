@@ -950,35 +950,67 @@ const ICON_BAR_PATCH = `
     link.appendChild(span);
   }
 
+  function applyLink(link, type) {
+    if (link.getAttribute('data-nib-done') === '1') return;
+    link.setAttribute('data-nib-done', '1');
+    if (type === 'email') {
+      link.setAttribute('href', 'mailto:' + EMAIL);
+      setText(link, EMAIL);
+      link.style.setProperty('white-space', 'nowrap', 'important');
+      link.style.setProperty('font-size', 'clamp(10px,0.9vw,12px)', 'important');
+    } else if (type === 'phone') {
+      link.setAttribute('href', 'tel:+17147078889');
+      setText(link, PHONE);
+      link.style.setProperty('white-space', 'nowrap', 'important');
+      link.style.setProperty('font-size', 'clamp(10px,0.9vw,12px)', 'important');
+    } else {
+      link.setAttribute('href', MAPS);
+      link.setAttribute('target', '_blank');
+      link.setAttribute('rel', 'noopener noreferrer');
+      setText(link, ADDR);
+      link.style.setProperty('font-size', 'clamp(10px,0.9vw,12px)', 'important');
+    }
+  }
+
+  function classifyLink(link) {
+    const href = (link.getAttribute('href') || '').toLowerCase();
+    const txt  = (link.textContent || '').replace(/\\s+/g, '').toLowerCase();
+    if (href.includes('mailto') || txt.includes('@')) return 'email';
+    if (href.includes('tel:') || href.includes('+62') || href.includes('81234')) return 'phone';
+    return 'location';
+  }
+
   function patchBar() {
     if (!document.body) return;
+
+    // Pass 1: patch any link identifiable directly by its href/text content
+    document.querySelectorAll('a').forEach((link) => {
+      if (link.getAttribute('data-nib-done') === '1') return;
+      if (!link.querySelector('svg')) return;
+      const href = (link.getAttribute('href') || '').toLowerCase();
+      const txt  = (link.textContent || '').replace(/\\s+/g, '').toLowerCase();
+      if (href.includes('arcspherestudio') || txt.includes('arcspherestudio')) {
+        applyLink(link, 'email');
+      } else if ((href.includes('mailto:') && !href.includes('nguyenarchitecture')) ||
+                 (txt.includes('@') && !txt.includes('nguyenarchitecture'))) {
+        applyLink(link, 'email');
+      } else if (href.includes('tel:+62') || href.includes('6281234')) {
+        applyLink(link, 'phone');
+      }
+    });
+
+    // Pass 2: find containers with exactly 3 SVG-bearing links and patch remaining ones
     document.querySelectorAll('div,nav,ul,section').forEach((el) => {
       if (el.getAttribute('data-nib') === '1') return;
-      const links = Array.from(el.querySelectorAll(':scope > a, :scope > * > a'));
-      if (links.length !== 3) return;
-      if (!links.every((l) => !!l.querySelector('svg'))) return;
-      el.setAttribute('data-nib', '1');
-      links.forEach((link) => {
-        const href = (link.getAttribute('href') || '').toLowerCase();
-        const txt  = (link.textContent || '').replace(/\\s+/g, '').toLowerCase();
-        if (href.includes('mailto') || txt.includes('@')) {
-          link.setAttribute('href', 'mailto:' + EMAIL);
-          setText(link, EMAIL);
-          link.style.setProperty('white-space', 'nowrap', 'important');
-          link.style.setProperty('font-size', 'clamp(10px,0.9vw,12px)', 'important');
-        } else if (href.includes('tel:') || href.includes('+62') || href.includes('81234')) {
-          link.setAttribute('href', 'tel:+17147078889');
-          setText(link, PHONE);
-          link.style.setProperty('white-space', 'nowrap', 'important');
-          link.style.setProperty('font-size', 'clamp(10px,0.9vw,12px)', 'important');
-        } else {
-          link.setAttribute('href', MAPS);
-          link.setAttribute('target', '_blank');
-          link.setAttribute('rel', 'noopener noreferrer');
-          setText(link, ADDR);
-          link.style.setProperty('font-size', 'clamp(10px,0.9vw,12px)', 'important');
-        }
+      const links = Array.from(el.querySelectorAll('a')).filter((l) => {
+        if (!l.querySelector('svg')) return false;
+        // only count direct child links or links whose parent is a direct child
+        const p = l.parentElement;
+        return p === el || p.parentElement === el;
       });
+      if (links.length !== 3) return;
+      el.setAttribute('data-nib', '1');
+      links.forEach((link) => applyLink(link, classifyLink(link)));
     });
   }
 
