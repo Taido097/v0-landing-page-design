@@ -858,13 +858,23 @@ const FOOTER_NAV_PATCH = `
   const origin = window.location.origin;
   const FOOTER_MAP = {
     'home':      origin + '/client-demos/client-8889/arcsphere-socal',
-    'about':     origin + '/client-demos/client-8889/residential',
     'services':  origin + '/client-demos/client-8889/arcsphere-socal#services',
     'projects':  origin + '/client-demos/client-8889/arcsphere-socal#services',
     'process':   origin + '/client-demos/client-8889/arcsphere-socal',
     'contact':   origin + '/client-demos/client-8889/residential/contact',
     'contactus': origin + '/client-demos/client-8889/residential/contact',
   };
+  const REMOVE_FOOTER_KEYS = new Set([
+    'about',
+    'pinterest',
+    'linkedin',
+    'instagram',
+    'behance',
+    'privacypolicy',
+    'cookiepolicy',
+    'terms&conditions',
+    'termsandconditions',
+  ]);
   const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
 
   function isInFooter(a) {
@@ -879,9 +889,21 @@ const FOOTER_NAV_PATCH = `
   }
 
   function patchFooterNav() {
+    document.querySelectorAll('footer a, footer span, footer p, footer div').forEach((el) => {
+      if (!isInFooter(el)) return;
+      const key = compact(el.textContent);
+      if (REMOVE_FOOTER_KEYS.has(key) && !Array.from(el.children).some((child) => REMOVE_FOOTER_KEYS.has(compact(child.textContent)))) {
+        const target = el.closest('a') || el;
+        target.style.setProperty('display', 'none', 'important');
+        target.style.setProperty('visibility', 'hidden', 'important');
+        target.style.setProperty('pointer-events', 'none', 'important');
+      }
+    });
+
     document.querySelectorAll('a').forEach((a) => {
       if (!isInFooter(a)) return;
       const key = compact(a.textContent);
+      if (REMOVE_FOOTER_KEYS.has(key)) return;
       const dest = FOOTER_MAP[key];
       if (!dest) return;
       // Restore any link hidden by fixNav (e.g. Projects)

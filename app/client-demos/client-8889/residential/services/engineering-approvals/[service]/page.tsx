@@ -502,24 +502,10 @@ export default async function EngSubServicePage({ params }: { params: Promise<{ 
             <div className="nrd-foot-cols">
               <div className="nrd-foot-col">
                 <a href={HOME_HREF}>Home</a>
-                <a href={RESIDENTIAL_HREF}>About</a>
                 <a href={`${HOME_HREF}#services`}>Services</a>
                 <a href={`${HOME_HREF}#services`}>Projects</a>
                 <a href={HOME_HREF}>Process</a>
                 <a href={CONTACT}>Contact</a>
-              </div>
-              <div className="nrd-foot-col">
-                {/* Social URLs not yet provided — add verified profile links here */}
-                <span>Pinterest</span>
-                <span>LinkedIn</span>
-                <span>Instagram</span>
-                <span>Behance</span>
-              </div>
-              <div className="nrd-foot-col">
-                {/* Legal pages not yet created — add real URLs when available */}
-                <span>Privacy Policy</span>
-                <span>Cookie Policy</span>
-                <span>Terms &amp; Conditions</span>
               </div>
             </div>
           </div>
