@@ -926,114 +926,92 @@ const FOOTER_NAV_PATCH = `
 const ICON_BAR_PATCH = `
 <script id="nguyen-socal-icon-bar-patch">
 (() => {
-  const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
-  const hasIcon = (a) => !!(a.querySelector('svg') || a.querySelector('img') || a.querySelector('use'));
+  const ROW_SELECTOR = 'footer [data-framer-name="icons-group"]';
+  const CONTACTS = [
+    { key: 'email', text: 'info@nguyenarchitecture.com', label: 'Email NGUYEN Architecture', href: 'mailto:info@nguyenarchitecture.com' },
+    { key: 'phone', text: '(714) 707-8889', label: 'Call NGUYEN Architecture', href: 'tel:+17147078889' },
+    { key: 'location', text: 'California', label: 'View NGUYEN Architecture location', href: 'https://www.google.com/maps/search/?api=1&query=California', external: true },
+  ];
 
-  const isEmail = (a) => {
-    const h = (a.getAttribute('href') || '').toLowerCase();
-    const t = compact(a.textContent);
-    return h.startsWith('mailto:') || t.includes('@') || h.includes('arcsphere') || t.includes('arcsphere');
-  };
-  const isPhone = (a) => {
-    const h = (a.getAttribute('href') || '').toLowerCase();
-    const digits = h.replace(/[^\\d]/g, '');
-    const t = compact(a.textContent);
-    return h.startsWith('tel:') || h.includes('+62') || digits.includes('6281234567890') || /812.?3456.?7890/.test(t);
-  };
+  function setAttribute(el, name, value) {
+    if (el.getAttribute(name) !== value) el.setAttribute(name, value);
+  }
 
-  function hide(el) {
-    if (!el || el.getAttribute('data-nib-hidden') === '1') return;
-    el.setAttribute('data-nib-hidden', '1');
-    el.style.setProperty('display', 'none', 'important');
-    el.style.setProperty('visibility', 'hidden', 'important');
-    el.style.setProperty('width', '0', 'important');
-    el.style.setProperty('height', '0', 'important');
-    el.style.setProperty('overflow', 'hidden', 'important');
-    el.style.setProperty('pointer-events', 'none', 'important');
+  function updateLabel(label, text) {
+    if (label.textContent === text) return;
+    // Framer splits hover labels into animated letter spans. Keep those nodes so
+    // its hover transition can still update them and remove them on mouse leave.
+    const walker = document.createTreeWalker(label, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    let node;
+    while ((node = walker.nextNode())) nodes.push(node);
+    if (!nodes.length) {
+      label.textContent = text;
+      return;
+    }
+    let offset = 0;
+    nodes.forEach((part, index) => {
+      const end = index === nodes.length - 1 ? text.length : offset + (part.nodeValue || '').length;
+      const value = text.slice(offset, end);
+      if (part.nodeValue !== value) part.nodeValue = value;
+      offset = end;
+    });
   }
 
   function patchBar() {
-    if (!document.body) return;
-
-    // Detection A — by link identity: nearest ancestor of an email icon-link that
-    // also holds a phone icon-link (2–4 icon links). Works when the links carry
-    // mailto:/tel: hrefs or visible text.
-    const emailIcons = Array.from(document.querySelectorAll('a')).filter((a) => hasIcon(a) && isEmail(a));
-    emailIcons.forEach((emailA) => {
-      let row = emailA.parentElement, depth = 0, found = null;
-      while (row && depth < 8) {
-        const iconLinks = Array.from(row.querySelectorAll('a')).filter(hasIcon);
-        if (iconLinks.length >= 2 && iconLinks.length <= 4 && iconLinks.some(isPhone)) { found = row; break; }
-        row = row.parentElement; depth++;
-      }
-      hide(found || emailA);
-    });
-
-    // Detection B — by shape, confined to the footer.
-    // For each icon SVG, walk up to the largest wrapper that still contains only that
-    // ONE svg: that wrapper is the icon's own item/link. Group those items by shared
-    // parent. A footer row of 3-4 icon items with almost no text is the contact bar.
-    //
-    // Scope guards (important): only <svg> is considered — never <img>, which would
-    // match project galleries and logo strips — and the row must live inside the
-    // footer, so service/process icon rows in the page body are never touched.
-    function inFooter(el) {
-      let n = el;
-      while (n) {
-        if (n.tagName && n.tagName.toLowerCase() === 'footer') return true;
-        const fn = n.getAttribute && n.getAttribute('data-framer-name');
-        if (fn && /footer/i.test(fn)) return true;
-        n = n.parentElement;
-      }
-      return false;
-    }
-
-    const groups = new Map();
-    Array.from(document.querySelectorAll('svg')).forEach((gfx) => {
-      if (!inFooter(gfx)) return;
-      let item = gfx;
-      while (item.parentElement && item.parentElement.querySelectorAll('svg').length === 1) {
-        item = item.parentElement;
-      }
-      const parent = item.parentElement;
-      if (!parent) return;
-      if (!groups.has(parent)) groups.set(parent, []);
-      groups.get(parent).push(item);
-    });
-
-    const NAV_WORDS = /^(home|services?|projects?|process|about|contact|work|studio|team|blog|news|careers?|privacy|terms|faq|shop|gallery|portfolio|menu)/;
-    const isContactish = (t) =>
-      t.includes('@') ||
-      (t.replace(/[^\\d]/g, '').length >= 7) ||
-      /(california|huntington|warner|suite|ste\\.|street|ave|road|usa|location|address|email|mail|phone|call|tel)/.test(t);
-
-    groups.forEach((items, parent) => {
-      if (parent.getAttribute('data-nib-hidden') === '1') return;
-      // 3 icons, plus up to 3 more if the dividers between them are svgs too
-      if (items.length < 3 || items.length > 6) return;
-      // never collapse the footer itself or a large wrapper
-      if (parent.tagName && parent.tagName.toLowerCase() === 'footer') return;
-      // icon-only row: allow hidden hover labels, reject real content sections
-      const txt = (parent.textContent || '').replace(/\\s+/g, '');
-      if (txt.length > 150) return;
-
-      const texts = items.map((i) => compact(i.textContent));
-      // Never touch a navigation row (Home / Services / Contact links with arrow icons)
-      if (texts.some((t) => t && NAV_WORDS.test(t))) return;
-      // Qualify only pure icon rows, or rows whose labels are contact details
-      const allEmpty = texts.every((t) => t.length === 0);
-      if (!allEmpty && !texts.some((t) => t && isContactish(t))) return;
-
-      hide(parent);
+    document.querySelectorAll(ROW_SELECTOR).forEach((row) => {
+      // The three direct component wrappers are email, phone and location; the
+      // intervening SVG background divs are separators, not contact items.
+      const items = row.querySelectorAll(':scope > div > [data-framer-name]');
+      if (items.length !== CONTACTS.length) return;
+      items.forEach((item, index) => {
+        const contact = CONTACTS[index];
+        setAttribute(item, 'data-nguyen-footer-contact', contact.key);
+        setAttribute(item, 'data-nguyen-contact-href', contact.href);
+        setAttribute(item, 'role', 'link');
+        setAttribute(item, 'tabindex', '0');
+        setAttribute(item, 'aria-label', contact.label + ': ' + contact.text);
+        item.querySelectorAll('[data-framer-component-type="RichTextContainer"] p').forEach((label) => updateLabel(label, contact.text));
+        item.querySelectorAll('a').forEach((link) => setAttribute(link, 'href', contact.href));
+      });
     });
   }
 
-  patchBar();
-  window.addEventListener('load', patchBar, { once: true });
-  [200, 500, 1000, 1800, 3000, 5000, 8000].forEach((t) => setTimeout(patchBar, t));
-  const obs = new MutationObserver(patchBar);
-  if (document.body) obs.observe(document.body, { childList: true, subtree: true, characterData: true });
-  setTimeout(() => obs.disconnect(), 60000);
+  function activateContact(event) {
+    if (event.type === 'keydown' && event.key !== 'Enter') return;
+    const target = event.target?.nodeType === Node.TEXT_NODE ? event.target.parentElement : event.target;
+    const item = target?.closest?.('[data-nguyen-footer-contact]');
+    if (!item || !item.closest(ROW_SELECTOR)) return;
+    const contact = CONTACTS.find((entry) => entry.key === item.getAttribute('data-nguyen-footer-contact'));
+    if (!contact) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    if (contact.external) window.open(contact.href, '_blank', 'noopener,noreferrer');
+    else window.location.href = contact.href;
+  }
+
+  function start() {
+    patchBar();
+    document.addEventListener('click', activateContact, true);
+    document.addEventListener('keydown', activateContact, true);
+    // Labels are mounted anew on hover, even minutes after load. Observe those
+    // changes before paint, and discover replacement footers on breakpoint changes.
+    const observer = new MutationObserver((records) => {
+      const relevant = records.some((record) => {
+        const target = record.target.nodeType === Node.TEXT_NODE ? record.target.parentElement : record.target;
+        if (target?.closest?.(ROW_SELECTOR)) return true;
+        return Array.from(record.addedNodes).some((node) => node.nodeType === Node.ELEMENT_NODE &&
+          (node.matches(ROW_SELECTOR) || node.querySelector(ROW_SELECTOR)));
+      });
+      if (relevant) patchBar();
+    });
+    if (document.body) {
+      observer.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['href'] });
+    }
+  }
+
+  if (document.readyState === 'complete') start();
+  else window.addEventListener('load', start, { once: true });
 })();
 </script>`
 
