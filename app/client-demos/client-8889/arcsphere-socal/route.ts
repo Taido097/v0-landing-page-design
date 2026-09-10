@@ -930,87 +930,100 @@ const ICON_BAR_PATCH = `
   const PHONE = '(714) 707-8889  \xb7  (209) 233-8888';
   const ADDR  = '7171 Warner Ave., Ste. B, Huntington Beach, CA 92647';
   const MAPS  = 'https://maps.google.com/?q=7171+Warner+Ave+Suite+B+Huntington+Beach+CA+92647';
-  const TS    = 'font-size:clamp(10px,0.9vw,12px);margin-left:8px;white-space:nowrap;vertical-align:middle;display:inline;';
+  const SPAN_CSS = 'margin-left:8px;white-space:nowrap;vertical-align:middle;display:inline;font-size:clamp(10px,0.9vw,12px);';
 
-  // Set / replace the visible text inside a link.
-  // Prefers an existing injected span, then a leaf element containing '@' or any text,
-  // then falls back to appending a new span after the SVG.
-  function setText(link, text) {
-    const existing = link.querySelector('[data-nib-t]');
-    if (existing) { existing.textContent = text; return; }
-    const leaves = Array.from(link.querySelectorAll('*')).filter((c) => !c.children.length);
-    for (const c of leaves) {
+  // Set text inside a link, skipping SVG subtree (avoids clobbering <title> or <text> inside icons)
+  function setText(link, newText) {
+    const inj = link.querySelector('[data-nib-t]');
+    if (inj) { if (inj.textContent !== newText) inj.textContent = newText; return; }
+    const svgEl = link.querySelector('svg');
+    // Find first leaf element that is NOT inside the SVG
+    for (const c of link.querySelectorAll('*')) {
+      if (c.children.length) continue;
+      if (svgEl && svgEl.contains(c)) continue;
       const t = (c.textContent || '').trim();
-      if (t.length > 1 && c.tagName !== 'svg' && c.tagName !== 'SVG') { c.textContent = text; return; }
+      if (t.length > 0) {
+        if (c.textContent !== newText) c.textContent = newText;
+        c.setAttribute('data-nib-t', '1');
+        return;
+      }
     }
+    // No non-SVG text leaf — inject a span after the SVG (or append)
     const span = document.createElement('span');
     span.setAttribute('data-nib-t', '1');
-    span.style.cssText = TS;
-    span.textContent = text;
-    link.appendChild(span);
-  }
-
-  function applyLink(link, type) {
-    if (link.getAttribute('data-nib-done') === '1') return;
-    link.setAttribute('data-nib-done', '1');
-    if (type === 'email') {
-      link.setAttribute('href', 'mailto:' + EMAIL);
-      setText(link, EMAIL);
-      link.style.setProperty('white-space', 'nowrap', 'important');
-      link.style.setProperty('font-size', 'clamp(10px,0.9vw,12px)', 'important');
-    } else if (type === 'phone') {
-      link.setAttribute('href', 'tel:+17147078889');
-      setText(link, PHONE);
-      link.style.setProperty('white-space', 'nowrap', 'important');
-      link.style.setProperty('font-size', 'clamp(10px,0.9vw,12px)', 'important');
-    } else {
-      link.setAttribute('href', MAPS);
-      link.setAttribute('target', '_blank');
-      link.setAttribute('rel', 'noopener noreferrer');
-      setText(link, ADDR);
-      link.style.setProperty('font-size', 'clamp(10px,0.9vw,12px)', 'important');
-    }
-  }
-
-  function classifyLink(link) {
-    const href = (link.getAttribute('href') || '').toLowerCase();
-    const txt  = (link.textContent || '').replace(/\\s+/g, '').toLowerCase();
-    if (href.includes('mailto') || txt.includes('@')) return 'email';
-    if (href.includes('tel:') || href.includes('+62') || href.includes('81234')) return 'phone';
-    return 'location';
+    span.setAttribute('style', SPAN_CSS);
+    span.textContent = newText;
+    if (svgEl) svgEl.insertAdjacentElement('afterend', span);
+    else link.appendChild(span);
   }
 
   function patchBar() {
     if (!document.body) return;
 
-    // Pass 1: patch any link identifiable directly by its href/text content
-    document.querySelectorAll('a').forEach((link) => {
-      if (link.getAttribute('data-nib-done') === '1') return;
-      if (!link.querySelector('svg')) return;
-      const href = (link.getAttribute('href') || '').toLowerCase();
-      const txt  = (link.textContent || '').replace(/\\s+/g, '').toLowerCase();
-      if (href.includes('arcspherestudio') || txt.includes('arcspherestudio')) {
-        applyLink(link, 'email');
-      } else if ((href.includes('mailto:') && !href.includes('nguyenarchitecture')) ||
-                 (txt.includes('@') && !txt.includes('nguyenarchitecture'))) {
-        applyLink(link, 'email');
-      } else if (href.includes('tel:+62') || href.includes('6281234')) {
-        applyLink(link, 'phone');
+    // Pass 1 — TreeWalker: fix wrong email text nodes directly (mirrors FOOTER_PATCH phone approach).
+    // Catches cases where arcspherestudio placeholder text is in a text node (even split-text).
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+      const v = (node.nodeValue || '').trim().toLowerCase();
+      if (!v.includes('arcspherestudio') && !v.includes('hello@')) continue;
+      // Skip text nodes that are inside an SVG element
+      let inSvg = false, p = node.parentElement;
+      while (p) { if (p.tagName === 'SVG' || p.tagName === 'svg') { inSvg = true; break; } p = p.parentElement; }
+      if (inSvg) continue;
+      if (node.nodeValue !== EMAIL) node.nodeValue = EMAIL;
+      const a = node.parentElement && node.parentElement.closest && node.parentElement.closest('a');
+      if (a) {
+        a.setAttribute('href', 'mailto:' + EMAIL);
+        a.style.setProperty('white-space', 'nowrap', 'important');
+        a.style.setProperty('font-size', 'clamp(10px,0.9vw,12px)', 'important');
       }
-    });
+    }
 
-    // Pass 2: find containers with exactly 3 SVG-bearing links and patch remaining ones
-    document.querySelectorAll('div,nav,ul,section').forEach((el) => {
-      if (el.getAttribute('data-nib') === '1') return;
-      const links = Array.from(el.querySelectorAll('a')).filter((l) => {
-        if (!l.querySelector('svg')) return false;
-        // only count direct child links or links whose parent is a direct child
-        const p = l.parentElement;
-        return p === el || p.parentElement === el;
+    // Pass 2 — container scan: find the 3-icon bar and apply all three labels.
+    // Allows links up to 4 levels deep inside the container.
+    document.querySelectorAll('div,nav,ul,section,footer').forEach((el) => {
+      const svgLinks = [];
+      for (const a of el.querySelectorAll('a')) {
+        if (!a.querySelector('svg')) continue;
+        let depth = 0, anc = a.parentElement;
+        while (anc && anc !== el && depth < 4) { anc = anc.parentElement; depth++; }
+        if (anc === el) svgLinks.push(a);
+      }
+      if (svgLinks.length !== 3) return;
+
+      svgLinks.forEach((link) => {
+        const href = (link.getAttribute('href') || '').toLowerCase();
+        const txt  = (link.textContent || '').replace(/\\s+/g, '').toLowerCase();
+        if (href.includes('mailto') || txt.includes('@')) {
+          // email: always ensure correct text and href
+          if (!txt.includes('nguyenarchitecture') || !href.includes('nguyenarchitecture')) {
+            link.setAttribute('href', 'mailto:' + EMAIL);
+            setText(link, EMAIL);
+            link.style.setProperty('white-space', 'nowrap', 'important');
+            link.style.setProperty('font-size', 'clamp(10px,0.9vw,12px)', 'important');
+          }
+        } else if (href.includes('tel:') || href.includes('+62') || href.includes('81234') || href.includes('tel:+17147')) {
+          // phone: add/update label
+          const inj = link.querySelector('[data-nib-t]');
+          if (!inj || inj.textContent !== PHONE) {
+            link.setAttribute('href', 'tel:+17147078889');
+            setText(link, PHONE);
+            link.style.setProperty('white-space', 'nowrap', 'important');
+            link.style.setProperty('font-size', 'clamp(10px,0.9vw,12px)', 'important');
+          }
+        } else {
+          // location: add/update label
+          const inj = link.querySelector('[data-nib-t]');
+          if (!inj || inj.textContent !== ADDR) {
+            link.setAttribute('href', MAPS);
+            link.setAttribute('target', '_blank');
+            link.setAttribute('rel', 'noopener noreferrer');
+            setText(link, ADDR);
+            link.style.setProperty('font-size', 'clamp(10px,0.9vw,12px)', 'important');
+          }
+        }
       });
-      if (links.length !== 3) return;
-      el.setAttribute('data-nib', '1');
-      links.forEach((link) => applyLink(link, classifyLink(link)));
     });
   }
 
