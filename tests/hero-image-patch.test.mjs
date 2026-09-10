@@ -11,11 +11,12 @@ const heroImagePatch = routeSource.match(
   /const HERO_IMAGE_PATCH = `([\s\S]*?)`\n\n\/\/ Route hero/,
 )?.[1]
 
-test("homepage hero has a scoped self-hosted image repair for mobile", () => {
+test("homepage hero repair uses the same Framer hero image as desktop", () => {
   assert.ok(heroImagePatch, "expected to find HERO_IMAGE_PATCH")
   assert.match(heroImagePatch, /nguyen-socal-hero-image-patch/)
   assert.match(heroImagePatch, /header\[data-framer-name="hero-section"\]/)
-  assert.match(heroImagePatch, /\/client-8889\/residential\/footer-main-1728\.jpg/)
+  assert.match(heroImagePatch, /vVqkA2phwOpc7kzAHksLgpPasxY\.png/)
+  assert.doesNotMatch(heroImagePatch, /footer-main-1728\.jpg/)
 })
 
 test("hero image repair removes responsive Framer sources and forces the layer visible", () => {
@@ -26,12 +27,13 @@ test("hero image repair removes responsive Framer sources and forces the layer v
   assert.match(heroImagePatch, /objectFit = 'cover'/)
 })
 
-test("hero image repair paints the visible mobile hero container, not only hidden image tags", () => {
+test("hero image repair keeps mobile and desktop on the same hero layer without an extra mobile pseudo-image", () => {
   assert.ok(heroImagePatch, "expected to find HERO_IMAGE_PATCH")
-  assert.match(heroImagePatch, /nguyen-socal-hero-mobile-image-style/)
-  assert.match(heroImagePatch, /@media \(max-width: 809px\)/)
+  assert.match(heroImagePatch, /visibleHeroLayers/)
   assert.match(heroImagePatch, /\[data-framer-name="hero_img-box"\]/)
-  assert.match(heroImagePatch, /linear-gradient/)
+  assert.match(heroImagePatch, /desktopHeroImageUrl/)
+  assert.doesNotMatch(heroImagePatch, /nguyen-socal-hero-mobile-image-style/)
+  assert.doesNotMatch(heroImagePatch, /::before/)
 })
 
 test("hero image repair loads before hero CTA routing", () => {
