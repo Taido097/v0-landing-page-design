@@ -39,3 +39,11 @@ test('project-card routing ignores whole-page wrappers with header or footer con
   assert.match(projects, /if \(isPageWrapper\(cursor\)\) break;/);
   assert.match(projects, /if \(isPageWrapper\(el\)\) return;/);
 });
+test('page visibility guard repairs accidental hidden Framer content wrapper last', () => {
+  const guard = source.split('const PAGE_VISIBILITY_GUARD_PATCH = `')[1].split('export async function GET')[0];
+  assert.match(guard, /data-framer-name="content"/);
+  assert.match(guard, /display', 'flex', 'important'/);
+  assert.match(guard, /removeAttribute\('data-nguyen-card-url'\)/);
+  assert.match(guard, /MutationObserver/);
+  assert.match(source, /HERO_CTA_PATCH\}\$\{PAGE_VISIBILITY_GUARD_PATCH\}/);
+});

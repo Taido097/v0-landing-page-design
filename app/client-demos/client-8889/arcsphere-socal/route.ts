@@ -1452,6 +1452,37 @@ const HERO_CTA_PATCH = `
 })();
 </script>`
 
+const PAGE_VISIBILITY_GUARD_PATCH = `
+<script id="nguyen-socal-page-visibility-guard">
+(() => {
+  function repairContentWrapper() {
+    const wrappers = document.querySelectorAll('.framer-HJnCY > [data-framer-name="content"]');
+    wrappers.forEach((wrapper) => {
+      wrapper.style.setProperty('display', 'flex', 'important');
+      if (wrapper.style.getPropertyValue('cursor') === 'pointer') wrapper.style.removeProperty('cursor');
+      wrapper.removeAttribute('data-nguyen-card-url');
+      wrapper.removeAttribute('data-nguyen-panel-url');
+      wrapper.removeAttribute('data-nguyen-link');
+      wrapper.removeAttribute('role');
+      wrapper.removeAttribute('tabindex');
+    });
+  }
+
+  repairContentWrapper();
+  window.addEventListener('load', repairContentWrapper, { once: true });
+  [50, 150, 300, 800, 1500, 3000, 6000, 10000].forEach((t) => setTimeout(repairContentWrapper, t));
+
+  const observer = new MutationObserver(repairContentWrapper);
+  if (document.body) observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['style', 'data-nguyen-card-url', 'data-nguyen-panel-url', 'data-nguyen-link', 'role', 'tabindex'],
+  });
+  setTimeout(() => observer.disconnect(), 20000);
+})();
+</script>`
+
 export async function GET() {
   const response = await getConcept()
   if (!response.ok) return response
@@ -1462,7 +1493,7 @@ export async function GET() {
   // The base layer's /ArcSphere/gi branding swap rewrites server-rendered "arcsphere" to
   // "NGUYEN", so cover both the raw and post-rebrand forms (harmless if client-rendered).
   html = html.replace(/hello@(?:arcsphere|nguyen)studio\.ae/gi, 'info@nguyenarchitecture.com')
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${PROCESS_TILE_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${FOOTER_NAV_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}${HERO_CTA_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${PROCESS_TILE_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${FOOTER_NAV_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}${HERO_CTA_PATCH}${PAGE_VISIBILITY_GUARD_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')
