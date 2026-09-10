@@ -218,10 +218,11 @@ const CSS = `
 /* ── body layout ── */
 .cf-body{
   display:grid;
-  grid-template-columns:repeat(2,minmax(220px,1fr));
+  grid-template-columns:minmax(0,1fr) minmax(220px,300px);
   gap:clamp(32px,4vw,72px);
   align-items:start;
 }
+.cf-form{min-width:0}
 
 /* ── form ── */
 .cf-form{display:flex;flex-direction:column;gap:24px}
@@ -260,11 +261,11 @@ const CSS = `
 .cf-submit:hover{opacity:.8}
 
 /* ── aside ── */
-.cf-aside{display:flex;flex-direction:column;gap:32px;padding-top:6px}
-.cf-aside-block{display:flex;flex-direction:column;gap:6px}
+.cf-aside{display:flex;flex-direction:column;gap:32px;padding-top:6px;min-width:0;width:100%}
+.cf-aside-block{display:flex;flex-direction:column;gap:6px;min-width:0}
 .cf-aside-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:#9a918a;margin:0}
 .cf-aside-val{font-size:14px;line-height:1.55;color:#4f4742;margin:0}
-.cf-aside-link{color:inherit;text-decoration:none;transition:opacity .2s;display:block;white-space:nowrap}
+.cf-aside-link{color:inherit;text-decoration:none;transition:opacity .2s;display:block;white-space:nowrap;overflow-wrap:normal;word-break:normal;font-size:clamp(12px,1.4vw,14px)}
 .cf-aside-link:hover{opacity:.6}
 
 /* ── thank-you ── */
@@ -293,5 +294,6 @@ const CSS = `
 @media(max-width:560px){
   .cf-row{grid-template-columns:1fr}
   .cf-aside{flex-direction:column;gap:20px}
+  .cf-aside-link{font-size:13px;white-space:normal;overflow-wrap:break-word;word-break:break-word}
 }
 `;
