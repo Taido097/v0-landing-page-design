@@ -1165,8 +1165,8 @@ const PROCESS_TILE_IMAGE_PATCH = `
 
   const compact = (v) => (v || '').replace(/\\s+/g, ' ').trim().replace(/\\s+/g, '').toLowerCase();
 
-  // Walk the DOM for an element whose textContent compactly matches a description,
-  // then climb to the nearest ancestor that holds an <img> OR a background-image div.
+  // Walk the DOM for an element whose textContent exactly matches a description,
+  // then climb to find the nearest ancestor that contains an <img> or background-image.
   function findCardByDesc(descList) {
     const keys = new Set(descList.map(compact));
     const all = document.body ? document.body.querySelectorAll('*') : [];
@@ -1175,7 +1175,6 @@ const PROCESS_TILE_IMAGE_PATCH = `
       let node = el;
       for (let d = 0; node && d < 14; d++, node = node.parentElement) {
         if (node.querySelector('img')) return node;
-        // Also accept a node that directly has an inline background-image (Framer card bg)
         if (node.style && node.style.backgroundImage && node.style.backgroundImage !== 'none') return node;
         if (node.querySelector('[style*="background-image"]')) return node;
       }
@@ -1183,107 +1182,70 @@ const PROCESS_TILE_IMAGE_PATCH = `
     return null;
   }
 
-  // Per-img element observers so we can re-apply the src immediately when Framer resets it,
-  // without waiting for the 80 ms debounce on the document-wide observer.
-  const imgObservers = new Map();
+  // Strategy: inject a NEW <img> element absolutely positioned over the Framer image,
+  // instead of fighting Framer's reconciler over the original img.src.
+  // Our injected img is invisible to React/Framer so it is never reset.
+  function injectOverlay(card, src, alt) {
+    // Find the Framer image container (first img or first bg-image div inside card)
+    const existingImg = card.querySelector('img');
+    const bgEls = card.querySelectorAll('[style*="background-image"]');
+    const anchor = existingImg
+      ? existingImg.parentElement || existingImg
+      : (bgEls.length > 0 ? bgEls[bgEls.length - 1] : card);
 
-  function applyImg(img, src, alt) {
-    if (img.getAttribute('src') !== src) img.setAttribute('src', src);
-    if (img.getAttribute('data-nguyen-process-img') !== src) img.setAttribute('data-nguyen-process-img', src);
-    if (img.getAttribute('alt') !== alt) img.setAttribute('alt', alt);
-    if (img.hasAttribute('srcset')) img.removeAttribute('srcset');
-    if (img.hasAttribute('sizes')) img.removeAttribute('sizes');
-    img.style.setProperty('object-fit', 'cover', 'important');
-    img.style.setProperty('object-position', 'center', 'important');
-    img.style.setProperty('filter', 'none', 'important');
-    img.style.setProperty('opacity', '1', 'important');
-    img.style.setProperty('visibility', 'visible', 'important');
-    const picture = img.closest('picture');
-    if (picture) picture.querySelectorAll('source').forEach((s) => {
-      if (s.getAttribute('srcset') !== src) s.setAttribute('srcset', src);
-      if (s.hasAttribute('sizes')) s.removeAttribute('sizes');
-    });
-  }
-
-  function lockImg(img, src, alt) {
-    applyImg(img, src, alt);
-    if (imgObservers.has(img)) return;
-    let busy = false;
-    const ob = new MutationObserver(() => {
-      if (busy) return;
-      if (img.getAttribute('src') === src && !img.hasAttribute('srcset')) return;
-      busy = true;
-      applyImg(img, src, alt);
-      busy = false;
-    });
-    ob.observe(img, { attributes: true, attributeFilter: ['src', 'srcset', 'sizes'] });
-    imgObservers.set(img, ob);
-  }
-
-  // Swap a CSS background-image div (Framer card bg variant).
-  function applyBg(el, src) {
-    const wanted = 'url("' + src + '")';
-    if (el.style.backgroundImage === wanted) return;
-    el.style.setProperty('background-image', wanted, 'important');
-    el.style.setProperty('background-size', 'cover', 'important');
-    el.style.setProperty('background-position', 'center', 'important');
-    el.setAttribute('data-nguyen-process-img', src);
-  }
-
-  function lockBg(card, src) {
-    // Prefer the deepest inline background-image element inside the card.
-    let bgEl = null;
-    const children = card.querySelectorAll('[style*="background-image"]');
-    if (children.length > 0) bgEl = children[children.length - 1];
-    else if (card.style && card.style.backgroundImage) bgEl = card;
-    if (!bgEl) return false;
-    applyBg(bgEl, src);
-    if (!imgObservers.has(bgEl)) {
-      const ob = new MutationObserver(() => applyBg(bgEl, src));
-      ob.observe(bgEl, { attributes: true, attributeFilter: ['style'] });
-      imgObservers.set(bgEl, ob);
+    // Check if our overlay is already present and up-to-date
+    const existing = anchor.querySelector
+      ? anchor.querySelector('img[data-nguyen-overlay]')
+      : null;
+    if (existing) {
+      if (existing.getAttribute('src') !== src) existing.setAttribute('src', src);
+      return;
     }
-    return true;
+    // Also check parent to avoid double-injection when anchor is the img itself
+    const parentCheck = anchor.parentElement
+      ? anchor.parentElement.querySelector('img[data-nguyen-overlay]')
+      : null;
+    if (parentCheck) {
+      if (parentCheck.getAttribute('src') !== src) parentCheck.setAttribute('src', src);
+      return;
+    }
+
+    // Make the anchor position:relative so the absolute overlay fits inside it
+    const pos = anchor.style.position;
+    if (!pos || pos === 'static') anchor.style.setProperty('position', 'relative', 'important');
+
+    const overlay = document.createElement('img');
+    overlay.src = src;
+    overlay.alt = alt;
+    overlay.setAttribute('data-nguyen-overlay', '1');
+    overlay.style.cssText = [
+      'position:absolute',
+      'top:0','left:0',
+      'width:100%','height:100%',
+      'object-fit:cover',
+      'object-position:center',
+      'z-index:5',
+      'pointer-events:none',
+      'display:block',
+    ].join(';') + ';';
+    anchor.appendChild(overlay);
   }
 
-  // Cache: step → resolved <img> or background element
+  // Cache: step → card element (so we don't re-search every tick)
   const resolved = new Map();
 
   function patchProcessTiles() {
     if (!document.body) return;
     STEP_MAP.forEach((spec) => {
-      let target = resolved.get(spec.step);
-      if (target && !target.isConnected) {
-        const ob = imgObservers.get(target);
-        if (ob) { ob.disconnect(); imgObservers.delete(target); }
-        resolved.delete(spec.step);
-        target = null;
-      }
-      if (!target) {
-        let card = document.querySelector('[data-nguyen-process-step="' + spec.step + '"]');
+      let card = resolved.get(spec.step);
+      if (card && !card.isConnected) { resolved.delete(spec.step); card = null; }
+      if (!card) {
+        card = document.querySelector('[data-nguyen-process-step="' + spec.step + '"]');
         if (!card) card = findCardByDesc(spec.desc);
         if (!card) return;
-        const img = card.querySelector('img');
-        if (img) {
-          resolved.set(spec.step, img);
-          lockImg(img, spec.src, spec.alt);
-          return;
-        }
-        // No <img> — try CSS background-image (Framer alternate card style)
-        const bgChildren = card.querySelectorAll('[style*="background-image"]');
-        const bgEl = bgChildren.length > 0 ? bgChildren[bgChildren.length - 1] : (card.style.backgroundImage ? card : null);
-        if (bgEl) {
-          resolved.set(spec.step, bgEl);
-          lockBg(card, spec.src);
-        }
-        return;
+        resolved.set(spec.step, card);
       }
-      // Re-apply to cached target
-      if (target.tagName === 'IMG') {
-        lockImg(target, spec.src, spec.alt);
-      } else {
-        applyBg(target, spec.src);
-      }
+      injectOverlay(card, spec.src, spec.alt);
     });
   }
 
@@ -1297,7 +1259,7 @@ const PROCESS_TILE_IMAGE_PATCH = `
   window.addEventListener('resize', schedule, { passive: true });
 
   const obs = new MutationObserver(schedule);
-  if (document.body) obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['src', 'srcset', 'sizes', 'data-nguyen-process-step', 'style'] });
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-nguyen-process-step', 'style'] });
 })();
 </script>`
 
