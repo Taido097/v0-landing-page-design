@@ -927,111 +927,112 @@ const ICON_BAR_PATCH = `
 <script id="nguyen-socal-icon-bar-patch">
 (() => {
   const EMAIL = 'info@nguyenarchitecture.com';
-  const PHONE = '(714) 707-8889  \xb7  (209) 233-8888';
-  const ADDR  = '7171 Warner Ave., Ste. B, Huntington Beach, CA 92647';
-  const MAPS  = 'https://maps.google.com/?q=7171+Warner+Ave+Suite+B+Huntington+Beach+CA+92647';
-  const SPAN_CSS = 'margin-left:8px;white-space:nowrap;vertical-align:middle;display:inline;font-size:clamp(10px,0.9vw,12px);';
+  const PHONE = '(714) 707-8889';
+  const LOC   = 'California';
+  const EMAIL_HREF = 'mailto:info@nguyenarchitecture.com';
+  const PHONE_HREF = 'tel:+17147078889';
+  const MAPS_HREF  = 'https://www.google.com/maps/search/?api=1&query=California';
 
-  // Set text inside a link, skipping SVG subtree (avoids clobbering <title> or <text> inside icons)
-  function setText(link, newText) {
-    const inj = link.querySelector('[data-nib-t]');
-    if (inj) { if (inj.textContent !== newText) inj.textContent = newText; return; }
+  const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
+  const hasIcon = (a) => !!(a.querySelector('svg') || a.querySelector('img') || a.querySelector('use'));
+
+  const isEmail = (a) => {
+    const h = (a.getAttribute('href') || '').toLowerCase();
+    const t = compact(a.textContent);
+    return h.startsWith('mailto:') || t.includes('@') || h.includes('arcsphere') || t.includes('arcsphere');
+  };
+  const isPhone = (a) => {
+    const h = (a.getAttribute('href') || '').toLowerCase();
+    const digits = h.replace(/[^\\d]/g, '');
+    const t = compact(a.textContent);
+    return h.startsWith('tel:') || h.includes('+62') || digits.includes('6281234567890') || /812.?3456.?7890/.test(t);
+  };
+
+  // Replace the visible/hover label of a link without touching the SVG icon.
+  function setLabel(link, text) {
+    // Collect text nodes that are NOT inside an <svg>
     const svgEl = link.querySelector('svg');
-    // Find first leaf element that is NOT inside the SVG
-    for (const c of link.querySelectorAll('*')) {
-      if (c.children.length) continue;
-      if (svgEl && svgEl.contains(c)) continue;
-      const t = (c.textContent || '').trim();
-      if (t.length > 0) {
-        if (c.textContent !== newText) c.textContent = newText;
-        c.setAttribute('data-nib-t', '1');
-        return;
-      }
+    const walker = document.createTreeWalker(link, NodeFilter.SHOW_TEXT);
+    const textNodes = [];
+    let n;
+    while ((n = walker.nextNode())) {
+      if (svgEl && svgEl.contains(n)) continue;
+      if ((n.nodeValue || '').trim().length > 0) textNodes.push(n);
     }
-    // No non-SVG text leaf — inject a span after the SVG (or append)
-    const span = document.createElement('span');
-    span.setAttribute('data-nib-t', '1');
-    span.setAttribute('style', SPAN_CSS);
-    span.textContent = newText;
-    if (svgEl) svgEl.insertAdjacentElement('afterend', span);
-    else link.appendChild(span);
+    if (textNodes.length > 0) {
+      textNodes.forEach((tn, i) => {
+        const want = i === 0 ? text : '';
+        if (tn.nodeValue !== want) tn.nodeValue = want;
+      });
+      return;
+    }
+    // No existing text node — inject a label span after the icon
+    let span = link.querySelector('[data-nib-t]');
+    if (!span) {
+      span = document.createElement('span');
+      span.setAttribute('data-nib-t', '1');
+      span.setAttribute('style', 'margin-left:8px;white-space:nowrap;vertical-align:middle;display:inline;font-size:clamp(10px,0.9vw,12px);');
+      if (svgEl) svgEl.insertAdjacentElement('afterend', span);
+      else link.appendChild(span);
+    }
+    if (span.textContent !== text) span.textContent = text;
+  }
+
+  function applyEmail(a) {
+    a.setAttribute('href', EMAIL_HREF);
+    a.setAttribute('title', EMAIL);
+    a.setAttribute('aria-label', 'Email NGUYEN Architecture');
+    a.style.setProperty('white-space', 'nowrap', 'important');
+    setLabel(a, EMAIL);
+  }
+  function applyPhone(a) {
+    a.setAttribute('href', PHONE_HREF);
+    a.setAttribute('title', PHONE);
+    a.setAttribute('aria-label', 'Call NGUYEN Architecture');
+    a.style.setProperty('white-space', 'nowrap', 'important');
+    setLabel(a, PHONE);
+  }
+  function applyLocation(a) {
+    a.setAttribute('href', MAPS_HREF);
+    a.setAttribute('target', '_blank');
+    a.setAttribute('rel', 'noopener noreferrer');
+    a.setAttribute('title', LOC);
+    a.setAttribute('aria-label', 'NGUYEN Architecture location in California');
+    a.style.setProperty('white-space', 'nowrap', 'important');
+    setLabel(a, LOC);
   }
 
   function patchBar() {
     if (!document.body) return;
 
-    // Pass 1 — TreeWalker: fix wrong email text nodes directly (mirrors FOOTER_PATCH phone approach).
-    // Catches cases where arcspherestudio placeholder text is in a text node (even split-text).
-    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-    let node;
-    while ((node = walker.nextNode())) {
-      const v = (node.nodeValue || '').trim().toLowerCase();
-      if (!v.includes('arcspherestudio') && !v.includes('hello@')) continue;
-      // Skip text nodes that are inside an SVG element
-      let inSvg = false, p = node.parentElement;
-      while (p) { if (p.tagName === 'SVG' || p.tagName === 'svg') { inSvg = true; break; } p = p.parentElement; }
-      if (inSvg) continue;
-      if (node.nodeValue !== EMAIL) node.nodeValue = EMAIL;
-      const a = node.parentElement && node.parentElement.closest && node.parentElement.closest('a');
-      if (a) {
-        a.setAttribute('href', 'mailto:' + EMAIL);
-        a.style.setProperty('white-space', 'nowrap', 'important');
-        a.style.setProperty('font-size', 'clamp(10px,0.9vw,12px)', 'important');
-      }
-    }
+    // Find each contact icon row: the nearest ancestor of an email icon-link that also
+    // contains a phone icon-link, holding 2–4 icon links total. This targets ONLY the
+    // envelope/phone/location group (icon links), never the plain-text footer phone.
+    const emailIcons = Array.from(document.querySelectorAll('a')).filter((a) => hasIcon(a) && isEmail(a));
 
-    // Pass 2 — container scan: find the 3-icon bar and apply all three labels.
-    // Allows links up to 4 levels deep inside the container.
-    document.querySelectorAll('div,nav,ul,section,footer').forEach((el) => {
-      const svgLinks = [];
-      for (const a of el.querySelectorAll('a')) {
-        if (!a.querySelector('svg')) continue;
-        let depth = 0, anc = a.parentElement;
-        while (anc && anc !== el && depth < 4) { anc = anc.parentElement; depth++; }
-        if (anc === el) svgLinks.push(a);
+    emailIcons.forEach((emailA) => {
+      let row = emailA.parentElement, depth = 0, found = null;
+      while (row && depth < 8) {
+        const iconLinks = Array.from(row.querySelectorAll('a')).filter(hasIcon);
+        if (iconLinks.length >= 2 && iconLinks.length <= 4 && iconLinks.some(isPhone)) { found = row; break; }
+        row = row.parentElement; depth++;
       }
-      if (svgLinks.length !== 3) return;
 
-      svgLinks.forEach((link) => {
-        const href = (link.getAttribute('href') || '').toLowerCase();
-        const txt  = (link.textContent || '').replace(/\\s+/g, '').toLowerCase();
-        if (href.includes('mailto') || txt.includes('@')) {
-          // email: always ensure correct text and href
-          if (!txt.includes('nguyenarchitecture') || !href.includes('nguyenarchitecture')) {
-            link.setAttribute('href', 'mailto:' + EMAIL);
-            setText(link, EMAIL);
-            link.style.setProperty('white-space', 'nowrap', 'important');
-            link.style.setProperty('font-size', 'clamp(10px,0.9vw,12px)', 'important');
-          }
-        } else if (href.includes('tel:') || href.includes('+62') || href.includes('81234') || href.includes('tel:+17147')) {
-          // phone: add/update label
-          const inj = link.querySelector('[data-nib-t]');
-          if (!inj || inj.textContent !== PHONE) {
-            link.setAttribute('href', 'tel:+17147078889');
-            setText(link, PHONE);
-            link.style.setProperty('white-space', 'nowrap', 'important');
-            link.style.setProperty('font-size', 'clamp(10px,0.9vw,12px)', 'important');
-          }
-        } else {
-          // location: add/update label
-          const inj = link.querySelector('[data-nib-t]');
-          if (!inj || inj.textContent !== ADDR) {
-            link.setAttribute('href', MAPS);
-            link.setAttribute('target', '_blank');
-            link.setAttribute('rel', 'noopener noreferrer');
-            setText(link, ADDR);
-            link.style.setProperty('font-size', 'clamp(10px,0.9vw,12px)', 'important');
-          }
-        }
+      if (!found) { applyEmail(emailA); return; }
+
+      Array.from(found.querySelectorAll('a')).filter(hasIcon).forEach((a) => {
+        if (isEmail(a)) applyEmail(a);
+        else if (isPhone(a)) applyPhone(a);
+        else applyLocation(a);
       });
     });
   }
 
   patchBar();
   window.addEventListener('load', patchBar, { once: true });
-  [300, 800, 1800, 3500, 6000].forEach((t) => setTimeout(patchBar, t));
+  [200, 500, 1000, 1800, 3000, 5000, 8000].forEach((t) => setTimeout(patchBar, t));
   const obs = new MutationObserver(patchBar);
-  if (document.body) obs.observe(document.body, { childList: true, subtree: true });
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true, characterData: true });
   setTimeout(() => obs.disconnect(), 60000);
 })();
 </script>`
@@ -1385,8 +1386,10 @@ export async function GET() {
 
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
-  // Replace the Framer placeholder email everywhere it appears in the HTML (text content + hrefs)
-  html = html.split('hello@arcspherestudio.ae').join('info@nguyenarchitecture.com')
+  // Replace the Framer placeholder email everywhere it appears server-rendered in the HTML.
+  // The base layer's /ArcSphere/gi branding swap rewrites server-rendered "arcsphere" to
+  // "NGUYEN", so cover both the raw and post-rebrand forms (harmless if client-rendered).
+  html = html.replace(/hello@(?:arcsphere|nguyen)studio\.ae/gi, 'info@nguyenarchitecture.com')
   html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${PROCESS_TILE_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${FOOTER_NAV_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}${HERO_CTA_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
