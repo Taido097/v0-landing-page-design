@@ -36,6 +36,17 @@ test("hero image repair keeps mobile and desktop on the same hero layer without 
   assert.doesNotMatch(heroImagePatch, /::before/)
 })
 
+test("hero image repair stabilizes left, main, and right hero images", () => {
+  assert.ok(heroImagePatch, "expected to find HERO_IMAGE_PATCH")
+  assert.match(heroImagePatch, /heroSlotImages/)
+  assert.match(heroImagePatch, /img-left/)
+  assert.match(heroImagePatch, /img-main/)
+  assert.match(heroImagePatch, /img-right/)
+  assert.match(heroImagePatch, /JEOoI9AUjiorAUapWVh1gnkvdBI\.png/)
+  assert.match(heroImagePatch, /vVqkA2phwOpc7kzAHksLgpPasxY\.png/)
+  assert.match(heroImagePatch, /eJtReq8aEIEdVjdWqNPxJAANXJQ\.jpg/)
+})
+
 test("hero image repair loads before hero CTA routing", () => {
   assert.match(routeSource, /TESTIMONIAL_PATCH\}\$\{HERO_IMAGE_PATCH\}\$\{HERO_CTA_PATCH\}/)
 })

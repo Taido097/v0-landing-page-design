@@ -1422,12 +1422,53 @@ const HERO_IMAGE_PATCH = `
 <script id="nguyen-socal-hero-image-patch">
 (() => {
   const desktopHeroImageUrl = 'https://framerusercontent.com/images/vVqkA2phwOpc7kzAHksLgpPasxY.png?width=1376&height=768';
+  const heroSlotImages = {
+    'img-left': 'https://framerusercontent.com/images/JEOoI9AUjiorAUapWVh1gnkvdBI.png?width=1376&height=768',
+    'img-main': desktopHeroImageUrl,
+    'img-right': 'https://framerusercontent.com/images/eJtReq8aEIEdVjdWqNPxJAANXJQ.jpg?width=1200&height=1361',
+  };
 
   function forceVisible(el) {
     if (!el) return;
     el.style.setProperty('display', 'block', 'important');
     el.style.setProperty('visibility', 'visible', 'important');
     el.style.setProperty('opacity', '1', 'important');
+  }
+
+  function setImageLayer(el, imageUrl) {
+    if (!el) return;
+    el.style.setProperty('background-image', 'url("' + imageUrl + '")', 'important');
+    el.style.setProperty('background-size', 'cover', 'important');
+    el.style.setProperty('background-position', 'center', 'important');
+    el.style.setProperty('background-repeat', 'no-repeat', 'important');
+  }
+
+  function patchSlot(hero, slotName, imageUrl) {
+    const slots = hero.querySelectorAll('[data-framer-name="' + slotName + '"]');
+    slots.forEach((slot) => {
+      setImageLayer(slot, imageUrl);
+
+      const wrappers = slot.querySelectorAll('[data-framer-background-image-wrapper="true"], [data-framer-name="img-hero"], figure');
+      wrappers.forEach((wrapper) => {
+        forceVisible(wrapper);
+        wrapper.style.setProperty('overflow', 'hidden', 'important');
+        setImageLayer(wrapper, imageUrl);
+      });
+
+      const images = slot.querySelectorAll('[data-framer-background-image-wrapper="true"] img');
+      images.forEach((img) => {
+        img.setAttribute('src', imageUrl);
+        img.removeAttribute('srcset');
+        img.removeAttribute('sizes');
+        img.loading = 'eager';
+        img.decoding = 'async';
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+        img.style.objectPosition = 'center';
+        forceVisible(img);
+      });
+    });
   }
 
   function patchHeroImage() {
@@ -1442,30 +1483,11 @@ const HERO_IMAGE_PATCH = `
       layer.style.setProperty('background-repeat', 'no-repeat', 'important');
     });
 
-    const wrappers = hero.querySelectorAll('[data-framer-name="img-main"] [data-framer-background-image-wrapper="true"]');
-    wrappers.forEach((wrapper) => {
-      forceVisible(wrapper);
-      wrapper.style.setProperty('overflow', 'hidden', 'important');
-      wrapper.style.setProperty('background-image', 'url("' + desktopHeroImageUrl + '")', 'important');
-      wrapper.style.setProperty('background-size', 'cover', 'important');
-      wrapper.style.setProperty('background-position', 'center', 'important');
+    Object.entries(heroSlotImages).forEach(([slotName, imageUrl]) => {
+      patchSlot(hero, slotName, imageUrl);
     });
 
-    const images = hero.querySelectorAll('[data-framer-name="img-main"] [data-framer-background-image-wrapper="true"] img');
-    images.forEach((img) => {
-      img.setAttribute('src', desktopHeroImageUrl);
-      img.removeAttribute('srcset');
-      img.removeAttribute('sizes');
-      img.loading = 'eager';
-      img.decoding = 'async';
-      img.style.width = '100%';
-      img.style.height = '100%';
-      img.style.objectFit = 'cover';
-      img.style.objectPosition = 'center';
-      forceVisible(img);
-    });
-
-    return images.length > 0 || wrappers.length > 0;
+    return hero.querySelectorAll('[data-framer-background-image-wrapper="true"] img').length > 0;
   }
 
   patchHeroImage();
