@@ -490,11 +490,14 @@ const ENGINEERING_SERVICE_PATCH = `
 
   patchEngineering();
   window.addEventListener('load', patchEngineering, { once: true });
-  [250, 750, 1500, 3000, 6200].forEach((delay) => setTimeout(patchEngineering, delay));
+  // The base layer rewrites this card's title to 'Existing-Condition Survey & Business Layout' and
+  // keeps doing so until 60s. Outlast it, or React's next re-render restores that title for good once
+  // this patch has stopped running.
+  [250, 750, 1500, 3000, 6200, 8500, 12500, 20500, 40500, 60500].forEach((delay) => setTimeout(patchEngineering, delay));
 
   const observer = new MutationObserver(() => patchEngineering());
   observer.observe(document.body, { childList: true, subtree: true, characterData: true });
-  setTimeout(() => observer.disconnect(), 7000);
+  setTimeout(() => observer.disconnect(), 61000);
 })();
 </script>`
 
