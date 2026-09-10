@@ -955,11 +955,10 @@ const ICON_BAR_PATCH = `
   function patchBar() {
     if (!document.body) return;
 
-    // Find each contact icon row: the nearest ancestor of an email icon-link that also
-    // contains a phone icon-link, holding 2–4 icon links total. This targets ONLY the
-    // envelope/phone/location group (icon links), never the plain-text footer phone.
+    // Detection A — by link identity: nearest ancestor of an email icon-link that
+    // also holds a phone icon-link (2–4 icon links). Works when the links carry
+    // mailto:/tel: hrefs or visible text.
     const emailIcons = Array.from(document.querySelectorAll('a')).filter((a) => hasIcon(a) && isEmail(a));
-
     emailIcons.forEach((emailA) => {
       let row = emailA.parentElement, depth = 0, found = null;
       while (row && depth < 8) {
@@ -967,9 +966,22 @@ const ICON_BAR_PATCH = `
         if (iconLinks.length >= 2 && iconLinks.length <= 4 && iconLinks.some(isPhone)) { found = row; break; }
         row = row.parentElement; depth++;
       }
-      // Remove the whole contact icon group; if the group container wasn't found,
-      // at least remove the individual envelope icon link.
       hide(found || emailA);
+    });
+
+    // Detection B — by shape: the tightest container that holds exactly 3 icon SVGs
+    // and almost no text is the envelope/phone/location bar. This does NOT depend on
+    // hrefs or text, so it catches icon-only links (or plain <div> icons) too.
+    document.querySelectorAll('div,nav,ul,section,footer,aside').forEach((el) => {
+      if (el.getAttribute('data-nib-hidden') === '1') return;
+      const svgs = el.querySelectorAll('svg');
+      if (svgs.length !== 3) return;
+      // must be the tightest wrapper — no single child already contains all 3 icons
+      if (Array.from(el.children).some((c) => c.querySelectorAll('svg').length === 3)) return;
+      // icon-only: allow hidden hover labels but reject real content sections
+      const txt = (el.textContent || '').replace(/\\s+/g, '');
+      if (txt.length > 80) return;
+      hide(el);
     });
   }
 
