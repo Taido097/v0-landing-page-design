@@ -480,6 +480,9 @@ const ENGINEERING_SERVICE_PATCH = `
       card.setAttribute('data-nguyen-engineering-service', 'true');
       markEngineeringMedia(card);
       card.setAttribute('data-nguyen-link', targetUrl);
+      // data-nguyen-link has no click handler; data-nguyen-card-url is the attribute the card router
+      // already listens on, so this is what actually opens the Engineering page.
+      card.setAttribute('data-nguyen-card-url', targetUrl);
       // Un-hide if any layer set display:none; the base no longer hides this card, so don't force a
       // display value (that could break Framer's own flex/grid) — just clear an inherited none.
       if (card.style.display === 'none') card.style.removeProperty('display');
