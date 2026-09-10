@@ -1423,6 +1423,39 @@ const HERO_IMAGE_PATCH = `
 (() => {
   const heroImageUrl = window.location.origin + '/client-8889/residential/footer-main-1728.jpg';
 
+  function installMobileHeroStyle() {
+    if (document.getElementById('nguyen-socal-hero-mobile-image-style')) return;
+    const style = document.createElement('style');
+    style.id = 'nguyen-socal-hero-mobile-image-style';
+    style.textContent = [
+      '@media (max-width: 809px) {',
+      '  header[data-framer-name="hero-section"] [data-framer-name="hero"],',
+      '  header[data-framer-name="hero-section"] [data-framer-name="hero_img-box"] {',
+      '    background-image: linear-gradient(180deg, rgba(79,71,66,.08) 0%, rgba(79,71,66,.44) 45%, rgba(79,71,66,.90) 100%), url("' + heroImageUrl + '") !important;',
+      '    background-size: cover !important;',
+      '    background-position: center !important;',
+      '    background-repeat: no-repeat !important;',
+      '  }',
+      '  header[data-framer-name="hero-section"] [data-framer-name="hero_img-box"]::before {',
+      '    content: "" !important;',
+      '    position: absolute !important;',
+      '    inset: 0 !important;',
+      '    background-image: linear-gradient(180deg, rgba(79,71,66,.08) 0%, rgba(79,71,66,.44) 45%, rgba(79,71,66,.90) 100%), url("' + heroImageUrl + '") !important;',
+      '    background-size: cover !important;',
+      '    background-position: center !important;',
+      '    border-radius: inherit !important;',
+      '    z-index: 0 !important;',
+      '    pointer-events: none !important;',
+      '  }',
+      '  header[data-framer-name="hero-section"] [data-framer-name="hero_img-box"] > * {',
+      '    position: relative !important;',
+      '    z-index: 1 !important;',
+      '  }',
+      '}',
+    ].join('\\n');
+    document.head.appendChild(style);
+  }
+
   function forceVisible(el) {
     if (!el) return;
     el.style.setProperty('display', 'block', 'important');
@@ -1431,8 +1464,17 @@ const HERO_IMAGE_PATCH = `
   }
 
   function patchHeroImage() {
+    installMobileHeroStyle();
     const hero = document.querySelector('header[data-framer-name="hero-section"]');
     if (!hero) return false;
+
+    const visibleHeroLayers = hero.querySelectorAll('[data-framer-name="hero"], [data-framer-name="hero_img-box"], [data-framer-name="img-main"]');
+    visibleHeroLayers.forEach((layer) => {
+      layer.style.setProperty('background-image', 'linear-gradient(180deg, rgba(79,71,66,.08) 0%, rgba(79,71,66,.44) 45%, rgba(79,71,66,.90) 100%), url("' + heroImageUrl + '")', 'important');
+      layer.style.setProperty('background-size', 'cover', 'important');
+      layer.style.setProperty('background-position', 'center', 'important');
+      layer.style.setProperty('background-repeat', 'no-repeat', 'important');
+    });
 
     const wrappers = hero.querySelectorAll('[data-framer-background-image-wrapper="true"]');
     wrappers.forEach((wrapper) => {
