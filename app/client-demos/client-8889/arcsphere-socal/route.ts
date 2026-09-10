@@ -329,9 +329,12 @@ const ENGINEERING_SERVICE_PATCH = `
 <style id="nguyen-socal-engineering-service-styles">
 @media (max-width: 809px) {
   [data-nguyen-engineering-service="true"] {
+    height: auto !important;
     min-height: 0 !important;
+    max-height: none !important;
     padding-bottom: 0 !important;
     margin-bottom: 0 !important;
+    overflow: visible !important;
   }
   [data-nguyen-engineering-service="true"] [data-nguyen-engineering-media="true"],
   [data-nguyen-engineering-service="true"] picture,

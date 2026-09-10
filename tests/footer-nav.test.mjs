@@ -65,6 +65,7 @@ test('mobile engineering row collapses leftover media area before project expert
   const engineering = source.split('const ENGINEERING_SERVICE_PATCH = `')[1].split('const PROJECT_CARDS_PATCH')[0];
   assert.match(engineering, /nguyen-socal-engineering-service-styles/);
   assert.match(engineering, /data-nguyen-engineering-service/);
+  assert.match(engineering, /height: auto/);
   assert.match(engineering, /data-nguyen-engineering-media/);
   assert.match(engineering, /max-height: 0/);
 });
