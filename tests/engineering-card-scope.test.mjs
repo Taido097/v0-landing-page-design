@@ -59,3 +59,22 @@ test("markers left on a container by an earlier render are cleared", () => {
   assert.match(engineeringPatch, /removeAttribute\('data-nguyen-engineering-service'\)/)
   assert.match(engineeringPatch, /removeAttribute\('data-nguyen-engineering-media'\)/)
 })
+
+test("the Engineering title is rewritten server-side so React hydrates with ENGINEERING", () => {
+  // The client patch loses the title race once its observer disconnects: the base layer bakes
+  // "Existing-Condition Survey & Business Layout" into the served HTML and hydration data, so React
+  // restores it on re-render. Rewriting the source string (raw & entity-encoded ampersand) is the fix.
+  assert.match(routeSource, /const ENGINEERING_TITLE_SOURCES = \[/)
+  assert.match(routeSource, /'Existing-Condition Survey & Business Layout'/)
+  assert.match(routeSource, /'Existing-Condition Survey &amp; Business Layout'/)
+  assert.match(routeSource, /for \(const source of ENGINEERING_TITLE_SOURCES\) html = html\.split\(source\)\.join\(ENGINEERING_TITLE\)/)
+
+  const sources = [
+    "Existing-Condition Survey & Business Layout",
+    "Existing-Condition Survey &amp; Business Layout",
+  ]
+  let html = `<h2>${sources[0]}</h2><script>{"t":"${sources[1]}"}</script>`
+  for (const s of sources) html = html.split(s).join("ENGINEERING")
+  assert.doesNotMatch(html, /Existing-Condition/)
+  assert.equal((html.match(/ENGINEERING/g) || []).length, 2)
+})

@@ -4,6 +4,16 @@ import { TESTIMONIAL_PATCH } from "./testimonial-patch"
 const OLD_COPY = 'Based in Orange County, we provide commercial architecture, engineering and permit support from existing-condition survey and business layout through plan check and approval.'
 const NEW_COPY = 'Based in Southern California, we provide residential and commercial architecture, engineering, and permit support from concept through approval.'
 
+// The base arcsphere layer rewrites "Space Planning" -> this title server-side, baking it into both the
+// visible HTML and Framer's hydration data, so React restores it on every re-render. Replacing it at the
+// source (both the raw & and the entity-encoded form) makes ENGINEERING the hydration truth — the only
+// race-free fix; the client patch alone loses once its observer disconnects.
+const ENGINEERING_TITLE_SOURCES = [
+  'Existing-Condition Survey & Business Layout',
+  'Existing-Condition Survey &amp; Business Layout',
+]
+const ENGINEERING_TITLE = 'ENGINEERING'
+
 const SPLIT_TEXT_PATCH = `
 <script id="nguyen-socal-split-text-patch">
 (() => {
@@ -1640,6 +1650,7 @@ export async function GET() {
 
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
+  for (const source of ENGINEERING_TITLE_SOURCES) html = html.split(source).join(ENGINEERING_TITLE)
   // Replace the Framer placeholder email everywhere it appears server-rendered in the HTML.
   // The base layer's /ArcSphere/gi branding swap rewrites server-rendered "arcsphere" to
   // "NGUYEN", so cover both the raw and post-rebrand forms (harmless if client-rendered).
