@@ -1,0 +1,1 @@
+trade_id,date,account,mode,ticker,direction,strategy,setup,market_regime,entry_time,entry_price,exit_time,exit_price,position_size,stop,target,planned_risk_usd,planned_risk_pct,actual_pnl_usd,return_r,mfe,mae,slippage,fees,reason_entered,reason_exited,rule_compliance,classification,loss_class,notes

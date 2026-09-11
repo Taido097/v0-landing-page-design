@@ -12,3 +12,9 @@ node_modules/
 
 # TypeScript incremental build cache
 *.tsbuildinfo
+
+# Trading agent — never commit any credential/secret material
+TRADING_AGENT/**/secrets*
+TRADING_AGENT/**/*credential*
+TRADING_AGENT/**/*.key
+TRADING_AGENT/.env*
