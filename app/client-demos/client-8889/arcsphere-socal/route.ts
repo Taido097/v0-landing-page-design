@@ -1835,6 +1835,86 @@ const HERO_CTA_PATCH = `
 })();
 </script>`
 
+// Swap the two images in the intro band directly UNDER the hero — the one headed "DESIGNING TIMELESS
+// SPACES WITH PURPOSE" — for the client's Japanese (left) and Mediterranean (right) photos. This band's
+// images are not referenced by any Framer source hash we know, so it is targeted by that heading and by
+// each image's horizontal side. It NEVER touches header[data-framer-name="hero-section"] (the locked
+// hero with the coastal/courtyard/commercial images), and never changes display/visibility/opacity.
+const HOMEPAGE_INTRO_IMAGE_SWAP_PATCH = `
+<script id="nguyen-socal-homepage-intro-image-swap">
+(() => {
+  const origin = window.location.origin;
+  const LEFT_URL = origin + '/client-8889/homepage-intro-left-japanese.webp';
+  const RIGHT_URL = origin + '/client-8889/homepage-intro-right-mediterranean.webp';
+  const HERO = 'header[data-framer-name="hero-section"]';
+  const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
+  const observers = new Map();
+
+  function setImp(el, p, v) {
+    if (el.style.getPropertyValue(p) !== v || el.style.getPropertyPriority(p) !== 'important') el.style.setProperty(p, v, 'important');
+  }
+  function paintImage(img, url) {
+    if (!img || img.closest(HERO)) return; // never the locked hero
+    if (img.getAttribute('src') !== url) img.setAttribute('src', url);
+    if (img.hasAttribute('srcset')) img.removeAttribute('srcset');
+    if (img.hasAttribute('sizes')) img.removeAttribute('sizes');
+    setImp(img, 'content', 'url("' + url + '")');
+    setImp(img, 'object-fit', 'cover');
+    setImp(img, 'object-position', 'center');
+    if (observers.has(img)) return;
+    const obs = new MutationObserver(() => paintImage(img, url));
+    obs.observe(img, { attributes: true, attributeFilter: ['src', 'srcset', 'sizes', 'style'] });
+    observers.set(img, obs);
+  }
+
+  // The intro band holds this exact heading and sits outside the hero.
+  function findBand() {
+    const nodes = Array.from(document.querySelectorAll('h1,h2,h3,h4,p,div,span'));
+    const heading = nodes.find((el) => {
+      const t = compact(el.textContent);
+      const hit = t.indexOf('designingtimeless') !== -1 || t.indexOf('spaceswithpurpose') !== -1;
+      return hit && !Array.from(el.children).some((c) => compact(c.textContent) === t);
+    });
+    if (!heading || heading.closest(HERO)) return null;
+    let band = heading;
+    for (let d = 0; d < 10 && band.parentElement; d += 1, band = band.parentElement) {
+      if (band.closest(HERO)) return null;
+      if (band.querySelector('img')) break;
+    }
+    return band.closest(HERO) ? null : band;
+  }
+
+  function run() {
+    const band = findBand();
+    if (!band) return false;
+    const br = band.getBoundingClientRect();
+    if (!br.width) return false;
+    const centerX = br.left + br.width / 2;
+    band.querySelectorAll('img').forEach((img) => {
+      if (img.closest(HERO)) return;
+      const r = img.getBoundingClientRect();
+      if (r.width < 40 || r.height < 40) return;
+      const cs = getComputedStyle(img);
+      if (cs.visibility === 'hidden' || cs.display === 'none' || cs.opacity === '0') return;
+      const c = r.left + r.width / 2;
+      if (Math.abs(c - centerX) < br.width * 0.08) return; // skip the centre text
+      paintImage(img, c < centerX ? LEFT_URL : RIGHT_URL);
+    });
+    return true;
+  }
+
+  run();
+  window.addEventListener('load', run, { once: true });
+  window.addEventListener('resize', run);
+  [200, 600, 1200, 2500, 4500, 8000].forEach((t) => setTimeout(run, t));
+  let timer;
+  const schedule = () => { clearTimeout(timer); timer = setTimeout(run, 150); };
+  const obs = new MutationObserver(schedule);
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true });
+  setTimeout(() => obs.disconnect(), 20000);
+})();
+</script>`
+
 const PAGE_VISIBILITY_GUARD_PATCH = `
 <script id="nguyen-socal-page-visibility-guard">
 (() => {
@@ -1887,7 +1967,7 @@ export async function GET() {
   // The base layer's /ArcSphere/gi branding swap rewrites server-rendered "arcsphere" to
   // "NGUYEN", so cover both the raw and post-rebrand forms (harmless if client-rendered).
   html = html.replace(/hello@(?:arcsphere|nguyen)studio\.ae/gi, 'info@nguyenarchitecture.com')
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${PROCESS_TILE_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${FOOTER_NAV_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}${HOMEPAGE_HERO_LOCK_PATCH}${HOMEPAGE_SIDE_HERO_LOCK_PATCH}${HERO_CTA_PATCH}${PAGE_VISIBILITY_GUARD_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${PROCESS_TILE_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${FOOTER_NAV_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}${HOMEPAGE_HERO_LOCK_PATCH}${HOMEPAGE_SIDE_HERO_LOCK_PATCH}${HERO_CTA_PATCH}${HOMEPAGE_INTRO_IMAGE_SWAP_PATCH}${PAGE_VISIBILITY_GUARD_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')
