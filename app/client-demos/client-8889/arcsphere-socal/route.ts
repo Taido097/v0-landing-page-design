@@ -118,6 +118,13 @@ const ENGINEERING_TITLE_SOURCES = [
 ]
 const ENGINEERING_TITLE = 'ENGINEERING'
 
+// The base arcsphere layer's serviceSpecs (serialized into its injected client patch) set the ADU
+// service-card title. Retarget that spec in the served HTML so the card renders "ADU & SB9" — this
+// changes the base patch's own data, so there is no client-side race. Only the ADU spec carries this
+// exact "title: 'ADU'," string, so the replace is unique.
+const ADU_TITLE_SPEC_SOURCE = "title: 'ADU',"
+const ADU_TITLE_SPEC_TARGET = "title: 'ADU & SB9',"
+
 const SPLIT_TEXT_PATCH = `
 <script id="nguyen-socal-split-text-patch">
 (() => {
@@ -966,7 +973,7 @@ const RESIDENTIAL_ROW_IMAGE_PATCH = `
   var ROWS = [
     { heading: 'RESIDENTIAL', src: origin + '/client-8889/residential/residential_house.png' },
     { heading: 'COMMERCIAL',  src: origin + '/client-8889/residential/detail/cx-09-building.jpg' },
-    { heading: 'ADU',         src: origin + '/client-8889/residential/detail/adu-04-golden-hour.jpg' }
+    { heading: 'ADU & SB9',   src: origin + '/client-8889/residential/detail/adu-04-golden-hour.jpg' }
   ];
 
   function compact(v) { return (v || '').replace(/\\s+/g, '').toLowerCase(); }
@@ -1971,6 +1978,7 @@ export async function GET() {
   for (const source of HOMEPAGE_HERO_SOURCES) html = html.split(source).join(HOMEPAGE_HERO_IMAGE)
   for (const [source, target] of HOMEPAGE_SIDE_HERO_SOURCES) html = html.split(source).join(target)
   for (const source of ENGINEERING_TITLE_SOURCES) html = html.split(source).join(ENGINEERING_TITLE)
+  html = html.split(ADU_TITLE_SPEC_SOURCE).join(ADU_TITLE_SPEC_TARGET)
   // Replace the Framer placeholder email everywhere it appears server-rendered in the HTML.
   // The base layer's /ArcSphere/gi branding swap rewrites server-rendered "arcsphere" to
   // "NGUYEN", so cover both the raw and post-rebrand forms (harmless if client-rendered).
