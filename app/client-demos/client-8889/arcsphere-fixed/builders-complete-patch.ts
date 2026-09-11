@@ -83,7 +83,7 @@ export const BUILDERS_COMPLETE_PATCH = `
       title = leafText.find((el) => /construction|supervision|management|guidance|permit/i.test(normalize(el.textContent))) || leafText[0] || null;
     }
     if (title) {
-      title.textContent = TARGET_TITLE;
+      if (normalize(title.textContent) !== TARGET_TITLE) title.textContent = TARGET_TITLE;
       title.style.setProperty('white-space', 'normal', 'important');
       title.style.setProperty('overflow-wrap', 'normal', 'important');
     }
@@ -92,15 +92,15 @@ export const BUILDERS_COMPLETE_PATCH = `
   function swapThumbnail(card) {
     const img = card.querySelector('img');
     if (img) {
-      img.setAttribute('src', THUMBNAIL);
-      img.removeAttribute('srcset');
-      img.removeAttribute('sizes');
+      if (img.getAttribute('src') !== THUMBNAIL) img.setAttribute('src', THUMBNAIL);
+      if (img.hasAttribute('srcset')) img.removeAttribute('srcset');
+      if (img.hasAttribute('sizes')) img.removeAttribute('sizes');
       img.style.setProperty('object-fit', 'cover', 'important');
       img.style.setProperty('object-position', 'center', 'important');
       const picture = img.closest('picture');
       if (picture) picture.querySelectorAll('source').forEach((source) => {
-        source.setAttribute('srcset', THUMBNAIL);
-        source.removeAttribute('sizes');
+        if (source.getAttribute('srcset') !== THUMBNAIL) source.setAttribute('srcset', THUMBNAIL);
+        if (source.hasAttribute('sizes')) source.removeAttribute('sizes');
       });
     }
   }
@@ -144,7 +144,7 @@ export const BUILDERS_COMPLETE_PATCH = `
     clearTimeout(timer);
     timer = setTimeout(patch, 120);
   });
-  if (document.body) observer.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['style', 'src', 'srcset'] });
+  if (document.body) observer.observe(document.body, { childList: true, subtree: true, characterData: true });
   setTimeout(() => { patch(); observer.disconnect(); }, 61000);
 })();
 </script>`;
