@@ -188,6 +188,9 @@ export const SERVICE_DETAILS: ServiceDetail[] = [
       { src: `${D}/cm-05-common-area.jpg`, cat: 'Multifamily', label: 'Common Area', alt: 'Multifamily common area' },
       { src: `${D}/cm-09-condo-bath.jpg`, cat: 'Interiors', label: 'Condo Bath', alt: 'Condo bathroom interior' },
       { src: `${D}/cm-10-rooftop-amenity.jpg`, cat: 'Multifamily', label: 'Rooftop Amenity', alt: 'Rooftop amenity space' },
+      { src: `${D}/multifamily-townhomes-gallery-01.jpeg`, cat: 'Townhomes', label: 'Townhome Community', alt: 'California townhome community with landscaped streets and Spanish-style architecture' },
+      { src: `${D}/multifamily-townhomes-gallery-02.jpeg`, cat: 'Townhomes', label: 'Townhome Streetscape', alt: 'Landscaped California townhome streetscape under a clear blue sky' },
+      { src: `${D}/multifamily-townhomes-gallery-03.jpeg`, cat: 'Townhomes', label: 'Townhome Neighborhood', alt: 'California townhome neighborhood entrance with coordinated residential buildings' },
     ],
     process: [
       { t: 'Feasibility', d: 'Understand goals, budget, site constraints, and development potential.' },
