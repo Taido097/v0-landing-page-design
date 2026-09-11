@@ -67,7 +67,6 @@ const SERVICES = [
   { n: '01', t: 'Custom Homes', c: 'Bespoke homes designed around your lifestyle, site, and long-term goals.', img: '/client-8889/residential/svc-01-custom-homes.jpg', slug: 'custom-homes' },
   { n: '02', t: 'Additions &amp; Major Remodels', c: 'Seamlessly expand and transform your home with careful planning and detail.', img: '/client-8889/residential/svc-02-additions-remodels.jpg', slug: 'additions-remodels' },
   { n: '04', t: 'Multifamily / Townhomes / Condos', c: 'Well-designed residences that balance livability, efficiency, and community.', img: '/client-8889/residential/svc-04-multifamily.jpg', slug: 'multifamily' },
-  { n: '05', t: 'Builders Complete Delivery', c: 'End-to-end design-to-build delivery — architecture, engineering, permitting, and construction coordination handled as one.', img: '/client-8889/residential/detail/eng-01-structural-frame.jpg', href: '/client-demos/client-8889/residential/contact' },
 ];
 const SERVICES_BASE = '/client-demos/client-8889/residential/services/';
 const SERVICES_STYLE = `
@@ -89,7 +88,7 @@ const SERVICES_STYLE = `
   @media(max-width:560px){#nguyen-residential-services .nrs-grid{grid-template-columns:1fr}#nguyen-residential-services .nrs-img{aspect-ratio:4/3}}`;
 const SERVICES_HTML =
   `<style>${SERVICES_STYLE}</style><div class="nrs-shell"><p class="nrs-eyebrow">Our Residential Services</p><div class="nrs-grid">` +
-  SERVICES.map((s) => `<a class="nrs-card" data-nhref="${('href' in s && s.href) ? s.href : `${SERVICES_BASE}${s.slug}`}"><div class="nrs-img"><img data-nsrc="${s.img}" alt="${s.t}" loading="lazy"></div><div class="nrs-text"><div class="nrs-head"><h3 class="nrs-title">${s.t}</h3><span class="nrs-arrow">↗</span></div><p class="nrs-copy">${s.c}</p></div></a>`).join('') +
+  SERVICES.map((s) => `<a class="nrs-card" data-nhref="${SERVICES_BASE}${s.slug}"><div class="nrs-img"><img data-nsrc="${s.img}" alt="${s.t}" loading="lazy"></div><div class="nrs-text"><div class="nrs-head"><h3 class="nrs-title">${s.t}</h3><span class="nrs-arrow">↗</span></div><p class="nrs-copy">${s.c}</p></div></a>`).join('') +
   `</div></div>`;
 
 // One client script for both surfaces. It applies the same REPLACEMENTS as substring rules to text
