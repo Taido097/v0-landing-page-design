@@ -1913,13 +1913,22 @@ const HOMEPAGE_INTRO_IMAGE_SWAP_PATCH = `
     if (!found) return false;
     const br = found.getBoundingClientRect();
     if (!br.width) return false;
+    const mobile = window.matchMedia('(max-width: 809px)').matches;
     const centerX = br.left + br.width / 2;
-    found.querySelectorAll('img').forEach((img) => {
+    const visibleImages = Array.from(found.querySelectorAll('img')).filter((img) => {
       if (img.closest(HERO)) return;
       const r = img.getBoundingClientRect();
       if (r.width < 40 || r.height < 40) return;
       const cs = getComputedStyle(img);
       if (cs.visibility === 'hidden' || cs.display === 'none' || cs.opacity === '0') return;
+      return true;
+    });
+    if (mobile) {
+      visibleImages.forEach((img, index) => paintImage(img, index === 0 ? LEFT_URL : RIGHT_URL));
+      return true;
+    }
+    visibleImages.forEach((img) => {
+      const r = img.getBoundingClientRect();
       const c = r.left + r.width / 2;
       if (Math.abs(c - centerX) < br.width * 0.08) return; // skip the centre text
       paintImage(img, c < centerX ? LEFT_URL : RIGHT_URL);
