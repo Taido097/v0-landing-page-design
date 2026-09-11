@@ -470,19 +470,34 @@ const ENGINEERING_SERVICE_PATCH = `
     return false;
   }
 
+  // True when an element paints an image via CSS background (Framer often does this instead of <img>).
+  function hasBgImage(el) {
+    if (!el || el.nodeType !== 1) return false;
+    if (/background-image\\s*:\\s*url/i.test(el.getAttribute('style') || '')) return true;
+    try { return (getComputedStyle(el).backgroundImage || '').indexOf('url(') !== -1; }
+    catch (e) { return false; }
+  }
+
   function markEngineeringMedia(card) {
-    card.querySelectorAll('img, picture, [data-framer-background-image-wrapper="true"]').forEach((media) => {
+    // Mark a media element, then climb to the outermost ancestor that still holds only media — no title
+    // or description — and mark that too. Framer stacks this card to [text] over [image] on mobile and
+    // gives the image cell a fixed height, so hiding just the leaf left that cell reserving a full blank
+    // row (the gap under ENGINEERING); collapsing the whole cell removes the reserved area. The guards
+    // never let this reach the text column or the card itself.
+    const collapseFrom = (media) => {
       media.setAttribute('data-nguyen-engineering-media', 'true');
-      // Framer stacks this card to [text] over [image] on mobile and gives the image its own cell a
-      // fixed height, so hiding just the <img> left that cell reserving a full blank row (the gap under
-      // ENGINEERING). Climb to the outermost ancestor that still holds only media — no title or
-      // description — and mark it too, so the collapse CSS removes the whole reserved area. The guards
-      // never let this reach the text column or the card itself.
       let cell = media;
       while (cell.parentElement && cell.parentElement !== card && !holdsCardText(cell.parentElement)) {
         cell = cell.parentElement;
       }
       if (cell !== card && !holdsCardText(cell)) cell.setAttribute('data-nguyen-engineering-media', 'true');
+    };
+    card.querySelectorAll('img, picture, [data-framer-background-image-wrapper="true"]').forEach(collapseFrom);
+    // The image may be a CSS background on a plain div with no <img> at all, which the selector above
+    // misses — that reserved div is the blank gap on mobile. Collapse any text-free element that carries
+    // a background image. Keyed on the background so it never touches the arrow icon or the text column.
+    card.querySelectorAll('div, a, span').forEach((el) => {
+      if (!holdsCardText(el) && hasBgImage(el)) collapseFrom(el);
     });
   }
 
@@ -519,6 +534,23 @@ const ENGINEERING_SERVICE_PATCH = `
       card.style.setProperty('cursor', 'pointer', 'important');
     });
     return true;
+  }
+
+  // Route the Engineering row reliably on every breakpoint. Desktop already opens the Engineering page,
+  // but the mobile breakpoint copy resolved to a different card-url ancestor and opened the wrong page.
+  // A capture-phase handler keyed on our own marker forces the Engineering page and, firing before the
+  // generic card-url router (injected after this patch), wins — so only mobile changes.
+  if (!window.__nguyenEngineeringRouting) {
+    window.__nguyenEngineeringRouting = true;
+    document.addEventListener('click', (event) => {
+      const start = event.target && event.target.nodeType === Node.TEXT_NODE ? event.target.parentElement : event.target;
+      const card = start && start.closest ? start.closest('[data-nguyen-engineering-service="true"]') : null;
+      if (!card) return;
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+      window.location.href = targetUrl;
+    }, true);
   }
 
   patchEngineering();

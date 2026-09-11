@@ -69,6 +69,24 @@ test("the media column is collapsed, not just the image, so no blank row is left
   assert.match(engineeringPatch, /if \(cell !== card && !holdsCardText\(cell\)\) cell\.setAttribute\('data-nguyen-engineering-media', 'true'\)/)
 })
 
+test("a CSS-background image (no <img>) is also collapsed, so the mobile gap closes", () => {
+  assert.ok(engineeringPatch, "expected to find ENGINEERING_SERVICE_PATCH")
+  // The mobile card paints its image as a CSS background on a plain div; the img/picture selector missed
+  // it, so the reserved div stayed as a blank row. Collapse text-free elements that carry a background.
+  assert.match(engineeringPatch, /function hasBgImage/)
+  assert.match(engineeringPatch, /background-image/)
+  assert.match(engineeringPatch, /if \(!holdsCardText\(el\) && hasBgImage\(el\)\) collapseFrom\(el\)/)
+})
+
+test("Engineering routes on every breakpoint via a marker-keyed capture handler", () => {
+  assert.ok(engineeringPatch, "expected to find ENGINEERING_SERVICE_PATCH")
+  // Desktop opened the Engineering page but the mobile breakpoint copy resolved to a different card-url
+  // ancestor and opened the wrong page. A capture handler keyed on our own marker forces the right page.
+  assert.match(engineeringPatch, /__nguyenEngineeringRouting/)
+  assert.match(engineeringPatch, /closest\('\[data-nguyen-engineering-service="true"\]'\)/)
+  assert.match(engineeringPatch, /window\.location\.href = targetUrl/)
+})
+
 test("the Engineering title is rewritten server-side so React hydrates with ENGINEERING", () => {
   // The client patch loses the title race once its observer disconnects: the base layer bakes
   // "Existing-Condition Survey & Business Layout" into the served HTML and hydration data, so React
