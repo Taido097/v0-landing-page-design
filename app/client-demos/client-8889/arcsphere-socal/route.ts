@@ -542,12 +542,28 @@ const ENGINEERING_SERVICE_PATCH = `
   // but the mobile breakpoint copy resolved to a different card-url ancestor and opened the wrong page.
   // A capture-phase handler keyed on our own marker forces the Engineering page and, firing before the
   // generic card-url router (injected after this patch), wins — so only mobile changes.
+  // The marker is applied by patchEngineering after hydration, so identify the row by its own text too.
+  // That keeps the very first click from falling through to Framer's stale href before the marker exists.
+  function engineeringRowFor(start) {
+    if (start && start.closest) {
+      const marked = start.closest('[data-nguyen-engineering-service="true"]');
+      if (marked) return marked;
+    }
+    let el = start;
+    for (let depth = 0; el && depth < 12; depth += 1, el = el.parentElement) {
+      if (el.nodeType !== 1) continue;
+      if (isTooBroad(el)) break;
+      const t = compact(el.textContent);
+      if (t.indexOf(targetDescriptionKey) !== -1 || t.indexOf(sourceDescription) !== -1) return el;
+    }
+    return null;
+  }
+
   if (!window.__nguyenEngineeringRouting) {
     window.__nguyenEngineeringRouting = true;
     document.addEventListener('click', (event) => {
       const start = event.target && event.target.nodeType === Node.TEXT_NODE ? event.target.parentElement : event.target;
-      const card = start && start.closest ? start.closest('[data-nguyen-engineering-service="true"]') : null;
-      if (!card) return;
+      if (!start || !engineeringRowFor(start)) return;
       event.preventDefault();
       event.stopPropagation();
       if (event.stopImmediatePropagation) event.stopImmediatePropagation();
@@ -1750,4 +1766,3 @@ export async function GET() {
 
   return new Response(html, { status: response.status, headers })
 }
-
