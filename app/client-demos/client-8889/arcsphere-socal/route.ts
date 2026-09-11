@@ -11,6 +11,10 @@ const HOMEPAGE_HERO_SOURCES = [
   'https://framerusercontent.com/images/vVqkA2phwOpc7kzAHksLgpPasxY.png',
 ]
 const HOMEPAGE_HERO_IMAGE = '/client-8889/homepage-hero-courtyard-morning.webp'
+const HOMEPAGE_SIDE_HERO_SOURCES = [
+  ['https://framerusercontent.com/images/JEOoI9AUjiorAUapWVh1gnkvdBI.png', '/client-8889/homepage-hero-side-left.webp'],
+  ['https://framerusercontent.com/images/eJtReq8aEIEdVjdWqNPxJAANXJQ.jpg', '/client-8889/homepage-hero-side-right.webp'],
+] as const
 
 // Framer can restore the original image URL during hydration even after the server-rendered HTML has
 // been rewritten. Lock only the center hero image by its unique source hash; never change layout or
@@ -48,6 +52,53 @@ const HOMEPAGE_HERO_LOCK_PATCH = `
   [100, 300, 750, 1500, 3000, 6000, 12000].forEach((delay) => setTimeout(patchHero, delay));
 
   const observer = new MutationObserver(patchHero);
+  if (document.body) observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['src', 'srcset', 'sizes'],
+  });
+})();
+</script>`
+
+// Keep the chosen portrait pair in the existing left/right slots after Framer hydration. Matching uses
+// each side image's unique source hash and never changes dimensions, position, display, or opacity.
+const HOMEPAGE_SIDE_HERO_LOCK_PATCH = `
+<script id="nguyen-socal-homepage-side-hero-lock">
+(() => {
+  const specs = [
+    { needle: 'JEOoI9AUjiorAUapWVh1gnkvdBI.png', path: '/client-8889/homepage-hero-side-left.webp' },
+    { needle: 'eJtReq8aEIEdVjdWqNPxJAANXJQ.jpg', path: '/client-8889/homepage-hero-side-right.webp' },
+  ];
+  const selector = 'header[data-framer-name="hero-section"] img';
+
+  function apply(img, spec) {
+    const target = window.location.origin + spec.path;
+    if (img.getAttribute('data-nguyen-homepage-hero-side') !== spec.path) {
+      img.setAttribute('data-nguyen-homepage-hero-side', spec.path);
+    }
+    if (img.getAttribute('src') !== target) img.setAttribute('src', target);
+    if (img.hasAttribute('srcset')) img.removeAttribute('srcset');
+    if (img.hasAttribute('sizes')) img.removeAttribute('sizes');
+    img.style.setProperty('content', 'url("' + target + '")', 'important');
+  }
+
+  function patchSides() {
+    document.querySelectorAll(selector).forEach((img) => {
+      const marker = img.getAttribute('data-nguyen-homepage-hero-side') || '';
+      const sources = [img.getAttribute('src') || '', img.currentSrc || '', img.src || ''];
+      const spec = specs.find((item) => marker === item.path ||
+        sources.some((source) => source.indexOf(item.needle) !== -1 || source.indexOf(item.path) !== -1));
+      if (spec) apply(img, spec);
+    });
+  }
+
+  patchSides();
+  window.addEventListener('load', patchSides, { once: true });
+  window.addEventListener('resize', patchSides, { passive: true });
+  [100, 300, 750, 1500, 3000, 6000, 12000].forEach((delay) => setTimeout(patchSides, delay));
+
+  const observer = new MutationObserver(patchSides);
   if (document.body) observer.observe(document.body, {
     childList: true,
     subtree: true,
@@ -1830,12 +1881,13 @@ export async function GET() {
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
   for (const source of HOMEPAGE_HERO_SOURCES) html = html.split(source).join(HOMEPAGE_HERO_IMAGE)
+  for (const [source, target] of HOMEPAGE_SIDE_HERO_SOURCES) html = html.split(source).join(target)
   for (const source of ENGINEERING_TITLE_SOURCES) html = html.split(source).join(ENGINEERING_TITLE)
   // Replace the Framer placeholder email everywhere it appears server-rendered in the HTML.
   // The base layer's /ArcSphere/gi branding swap rewrites server-rendered "arcsphere" to
   // "NGUYEN", so cover both the raw and post-rebrand forms (harmless if client-rendered).
   html = html.replace(/hello@(?:arcsphere|nguyen)studio\.ae/gi, 'info@nguyenarchitecture.com')
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${PROCESS_TILE_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${FOOTER_NAV_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}${HOMEPAGE_HERO_LOCK_PATCH}${HERO_CTA_PATCH}${PAGE_VISIBILITY_GUARD_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${PROCESS_TILE_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${FOOTER_NAV_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}${HOMEPAGE_HERO_LOCK_PATCH}${HOMEPAGE_SIDE_HERO_LOCK_PATCH}${HERO_CTA_PATCH}${PAGE_VISIBILITY_GUARD_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')
