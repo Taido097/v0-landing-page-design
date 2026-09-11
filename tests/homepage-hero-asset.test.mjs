@@ -11,11 +11,11 @@ const heroPath = new URL(
   import.meta.url,
 )
 const leftSidePath = new URL(
-  '../public/client-8889/homepage-hero-side-left.webp',
+  '../public/client-8889/homepage-hero-side-left-coastal-glass.webp',
   import.meta.url,
 )
 const rightSidePath = new URL(
-  '../public/client-8889/homepage-hero-side-right.webp',
+  '../public/client-8889/homepage-hero-side-right-commercial-showroom.webp',
   import.meta.url,
 )
 
@@ -48,8 +48,8 @@ test('selected side images replace only the original left and right Framer sourc
   assert.ok(sideSources, 'expected HOMEPAGE_SIDE_HERO_SOURCES')
   assert.match(routeSource, /JEOoI9AUjiorAUapWVh1gnkvdBI\.png/)
   assert.match(routeSource, /eJtReq8aEIEdVjdWqNPxJAANXJQ\.jpg/)
-  assert.match(routeSource, /'\/client-8889\/homepage-hero-side-left\.webp'/)
-  assert.match(routeSource, /'\/client-8889\/homepage-hero-side-right\.webp'/)
+  assert.match(routeSource, /'\/client-8889\/homepage-hero-side-left-coastal-glass\.webp'/)
+  assert.match(routeSource, /'\/client-8889\/homepage-hero-side-right-commercial-showroom\.webp'/)
   assert.match(routeSource, /for \(const \[source, target\] of HOMEPAGE_SIDE_HERO_SOURCES\) html = html\.split\(source\)\.join\(target\)/)
   assert.doesNotMatch(sideSources, /vVqkA2phwOpc7kzAHksLgpPasxY/)
 })

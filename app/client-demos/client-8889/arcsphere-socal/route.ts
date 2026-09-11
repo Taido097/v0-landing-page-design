@@ -12,8 +12,8 @@ const HOMEPAGE_HERO_SOURCES = [
 ]
 const HOMEPAGE_HERO_IMAGE = '/client-8889/homepage-hero-courtyard-morning.webp'
 const HOMEPAGE_SIDE_HERO_SOURCES = [
-  ['https://framerusercontent.com/images/JEOoI9AUjiorAUapWVh1gnkvdBI.png', '/client-8889/homepage-hero-side-left.webp'],
-  ['https://framerusercontent.com/images/eJtReq8aEIEdVjdWqNPxJAANXJQ.jpg', '/client-8889/homepage-hero-side-right.webp'],
+  ['https://framerusercontent.com/images/JEOoI9AUjiorAUapWVh1gnkvdBI.png', '/client-8889/homepage-hero-side-left-coastal-glass.webp'],
+  ['https://framerusercontent.com/images/eJtReq8aEIEdVjdWqNPxJAANXJQ.jpg', '/client-8889/homepage-hero-side-right-commercial-showroom.webp'],
 ] as const
 
 // Framer can restore the original image URL during hydration even after the server-rendered HTML has
@@ -67,8 +67,8 @@ const HOMEPAGE_SIDE_HERO_LOCK_PATCH = `
 <script id="nguyen-socal-homepage-side-hero-lock">
 (() => {
   const specs = [
-    { needle: 'JEOoI9AUjiorAUapWVh1gnkvdBI.png', path: '/client-8889/homepage-hero-side-left.webp' },
-    { needle: 'eJtReq8aEIEdVjdWqNPxJAANXJQ.jpg', path: '/client-8889/homepage-hero-side-right.webp' },
+    { needle: 'JEOoI9AUjiorAUapWVh1gnkvdBI.png', path: '/client-8889/homepage-hero-side-left-coastal-glass.webp' },
+    { needle: 'eJtReq8aEIEdVjdWqNPxJAANXJQ.jpg', path: '/client-8889/homepage-hero-side-right-commercial-showroom.webp' },
   ];
   const selector = 'header[data-framer-name="hero-section"] img';
 
