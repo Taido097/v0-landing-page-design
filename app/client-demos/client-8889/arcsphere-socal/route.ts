@@ -329,7 +329,9 @@ const MAIN_NAV_PATCH = `
   window.addEventListener('resize', patchNav);
   [250, 750, 1500, 3000, 5000, 7500].forEach((delay) => setTimeout(patchNav, delay));
 
-  const observer = new MutationObserver(() => patchNav());
+  let navTimer;
+  const scheduleNav = () => { clearTimeout(navTimer); navTimer = setTimeout(patchNav, 150); };
+  const observer = new MutationObserver(scheduleNav);
   observer.observe(document.body, { childList: true, subtree: true, characterData: true });
   setTimeout(() => { patchNav(); observer.disconnect(); }, 8000);
 })();
@@ -560,7 +562,12 @@ const ENGINEERING_SERVICE_PATCH = `
   // this patch has stopped running.
   [250, 750, 1500, 3000, 6200, 8500, 12500, 20500, 40500, 60500].forEach((delay) => setTimeout(patchEngineering, delay));
 
-  const observer = new MutationObserver(() => patchEngineering());
+  // patchEngineering scans the whole document (querySelectorAll('*')) and reads computed styles, so
+  // running it on every mutation batch Framer fires during a mobile scroll piled up enough work to
+  // crash the tab. Coalesce bursts into one delayed run; the timed passes above still cover hydration.
+  let engTimer;
+  const scheduleEngineering = () => { clearTimeout(engTimer); engTimer = setTimeout(patchEngineering, 150); };
+  const observer = new MutationObserver(scheduleEngineering);
   observer.observe(document.body, { childList: true, subtree: true, characterData: true });
   setTimeout(() => observer.disconnect(), 61000);
 })();
@@ -700,7 +707,11 @@ const PROJECT_CARDS_PATCH = `
   window.addEventListener('load', patchCards, { once: true });
   [500, 1200, 2500, 4500].forEach((t) => setTimeout(patchCards, t));
 
-  const obs = new MutationObserver(patchCards);
+  // patchCards reads layout (getBoundingClientRect) for every candidate; coalesce mutation bursts so a
+  // scroll does not force a reflow on each batch. The timed passes above still cover late renders.
+  let cardsTimer;
+  const scheduleCards = () => { clearTimeout(cardsTimer); cardsTimer = setTimeout(patchCards, 150); };
+  const obs = new MutationObserver(scheduleCards);
   if (document.body) obs.observe(document.body, { childList: true, subtree: true });
   setTimeout(() => obs.disconnect(), 8000);
 })();
@@ -797,6 +808,8 @@ const DESIGN_PANELS_PATCH = `
   }
 
   // MutationObserver catches React/Framer state-driven renders of hover content
+  let panelTimer;
+  const schedulePanels = () => { clearTimeout(panelTimer); panelTimer = setTimeout(patchPanelLinks, 150); };
   const obs = new MutationObserver((mutations) => {
     for (const m of mutations) {
       if (m.type === 'characterData') {
@@ -805,7 +818,8 @@ const DESIGN_PANELS_PATCH = `
         m.addedNodes.forEach((n) => fixCounts(n));
       }
     }
-    patchPanelLinks();
+    // patchPanelLinks scans for panels; coalesce so a mobile scroll's mutation flood re-scans once.
+    schedulePanels();
   });
 
   fixCounts(document.body);
@@ -1024,7 +1038,11 @@ const FOOTER_PATCH = `
   window.addEventListener('load', patchFooter, { once: true });
   [300, 800, 1800, 3500, 6000, 10000, 20000, 40000].forEach((t) => setTimeout(patchFooter, t));
 
-  const obs = new MutationObserver(patchFooter);
+  // patchFooter tree-walks every footer copy; running it on each mutation batch during a mobile scroll
+  // added up. Coalesce bursts into one delayed run — the timed passes above still cover late renders.
+  let footerTimer;
+  const scheduleFooter = () => { clearTimeout(footerTimer); footerTimer = setTimeout(patchFooter, 150); };
+  const obs = new MutationObserver(scheduleFooter);
   if (document.body) obs.observe(document.body, { childList: true, subtree: true, characterData: true });
   setTimeout(() => obs.disconnect(), 60000);
 })();
@@ -1559,7 +1577,11 @@ const CARD_ROUTING_PATCH = `
   rewrite();
   window.addEventListener('load', rewrite, { once: true });
   [300, 800, 1800, 3500, 6000, 10000, 20000].forEach((t) => setTimeout(rewrite, t));
-  const obs = new MutationObserver(rewrite);
+  // rewrite scans every anchor; coalesce the mutation-driven runs so a mobile scroll's flood of
+  // mutations does not re-scan on each batch. The timed passes above still cover late Framer renders.
+  let routeTimer;
+  const scheduleRewrite = () => { clearTimeout(routeTimer); routeTimer = setTimeout(rewrite, 150); };
+  const obs = new MutationObserver(scheduleRewrite);
   if (document.body) obs.observe(document.body, { childList: true, subtree: true });
   setTimeout(() => obs.disconnect(), 30000);
 
@@ -1660,7 +1682,11 @@ const HERO_CTA_PATCH = `
     }, true);
   }
 
-  const obs = new MutationObserver(patchHeroCtas);
+  // patchHeroCtas scans every element to catch Framer's div-based buttons; coalesce so a mobile scroll's
+  // mutation flood does not trigger a full scan on each batch. The timed passes still cover late renders.
+  let ctaTimer;
+  const scheduleCtas = () => { clearTimeout(ctaTimer); ctaTimer = setTimeout(patchHeroCtas, 150); };
+  const obs = new MutationObserver(scheduleCtas);
   if (document.body) obs.observe(document.body, { childList: true, subtree: true });
   setTimeout(() => obs.disconnect(), 20000);
 })();
