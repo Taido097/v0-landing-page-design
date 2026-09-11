@@ -12,6 +12,51 @@ const HOMEPAGE_HERO_SOURCES = [
 ]
 const HOMEPAGE_HERO_IMAGE = '/client-8889/homepage-hero-courtyard-morning.webp'
 
+// Framer can restore the original image URL during hydration even after the server-rendered HTML has
+// been rewritten. Lock only the center hero image by its unique source hash; never change layout or
+// visibility, so the two off-canvas side images keep Framer's existing breakpoint behavior.
+const HOMEPAGE_HERO_LOCK_PATCH = `
+<script id="nguyen-socal-homepage-hero-lock">
+(() => {
+  const originalNeedle = 'vVqkA2phwOpc7kzAHksLgpPasxY.png';
+  const assetPath = '/client-8889/homepage-hero-courtyard-morning.webp';
+  const target = window.location.origin + assetPath;
+  const selector = 'header[data-framer-name="hero-section"] img';
+
+  function apply(img) {
+    if (img.getAttribute('data-nguyen-homepage-hero') !== 'true') {
+      img.setAttribute('data-nguyen-homepage-hero', 'true');
+    }
+    if (img.getAttribute('src') !== target) img.setAttribute('src', target);
+    if (img.hasAttribute('srcset')) img.removeAttribute('srcset');
+    if (img.hasAttribute('sizes')) img.removeAttribute('sizes');
+    img.style.setProperty('content', 'url("' + target + '")', 'important');
+  }
+
+  function patchHero() {
+    document.querySelectorAll(selector).forEach((img) => {
+      const sources = [img.getAttribute('src') || '', img.currentSrc || '', img.src || ''];
+      const isMain = img.getAttribute('data-nguyen-homepage-hero') === 'true' ||
+        sources.some((source) => source.indexOf(originalNeedle) !== -1 || source.indexOf(assetPath) !== -1);
+      if (isMain) apply(img);
+    });
+  }
+
+  patchHero();
+  window.addEventListener('load', patchHero, { once: true });
+  window.addEventListener('resize', patchHero, { passive: true });
+  [100, 300, 750, 1500, 3000, 6000, 12000].forEach((delay) => setTimeout(patchHero, delay));
+
+  const observer = new MutationObserver(patchHero);
+  if (document.body) observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['src', 'srcset', 'sizes'],
+  });
+})();
+</script>`
+
 // The base arcsphere layer rewrites "Space Planning" -> this title server-side, baking it into both the
 // visible HTML and Framer's hydration data, so React restores it on every re-render. Replacing it at the
 // source (both the raw & and the entity-encoded form) makes ENGINEERING the hydration truth — the only
@@ -1790,7 +1835,7 @@ export async function GET() {
   // The base layer's /ArcSphere/gi branding swap rewrites server-rendered "arcsphere" to
   // "NGUYEN", so cover both the raw and post-rebrand forms (harmless if client-rendered).
   html = html.replace(/hello@(?:arcsphere|nguyen)studio\.ae/gi, 'info@nguyenarchitecture.com')
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${PROCESS_TILE_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${FOOTER_NAV_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}${HERO_CTA_PATCH}${PAGE_VISIBILITY_GUARD_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${PROCESS_TILE_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${FOOTER_NAV_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}${HOMEPAGE_HERO_LOCK_PATCH}${HERO_CTA_PATCH}${PAGE_VISIBILITY_GUARD_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')
