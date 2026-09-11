@@ -67,8 +67,6 @@ const SERVICES = [
   { n: '01', t: 'Custom Homes', c: 'Bespoke homes designed around your lifestyle, site, and long-term goals.', img: '/client-8889/residential/svc-01-custom-homes.jpg', slug: 'custom-homes' },
   { n: '02', t: 'Additions &amp; Major Remodels', c: 'Seamlessly expand and transform your home with careful planning and detail.', img: '/client-8889/residential/svc-02-additions-remodels.jpg', slug: 'additions-remodels' },
   { n: '04', t: 'Multifamily / Townhomes / Condos', c: 'Well-designed residences that balance livability, efficiency, and community.', img: '/client-8889/residential/svc-04-multifamily.jpg', slug: 'multifamily' },
-  { n: '05', t: 'Engineering &amp; Approvals', c: 'Structural, MEP + Title 24, permitting, and plan-check support — coordinated with your design.', img: '/client-8889/residential/detail/eng-01-structural-frame.jpg', slug: 'engineering-approvals' },
-  { n: '06', t: 'SB 9 Development', c: 'Feasibility, zoning review, two-unit concepts, urban lot split planning, and coordinated permit support for qualifying properties.', img: '/client-8889/residential/detail/sb9-01-modern-duplex.jpg', slug: 'sb9-development' },
 ];
 const SERVICES_BASE = '/client-demos/client-8889/residential/services/';
 const SERVICES_STYLE = `
