@@ -27,6 +27,8 @@ const GALLERY = [
   { src: `${BASE}/builders-complete-02-framing-east.webp`, label: 'Framing Progress', alt: 'Aerial view of residential wood framing in progress' },
   { src: `${BASE}/builders-complete-03-framing-wide.webp`, label: 'Structure + Coordination', alt: 'Wide aerial view of a framed residential project under construction' },
   { src: `${BASE}/builders-complete-04-framing-complete.webp`, label: 'Framing Delivery', alt: 'Completed framing stage of a coastal residential project' },
+  { src: `${BASE}/builders-complete-05-concrete-pour.webp`, label: 'Concrete Pour', alt: 'Crew placing concrete over rebar for a residential foundation slab at golden hour' },
+  { src: `${BASE}/builders-complete-06-framing-aerial.webp`, label: 'Two-Story Framing', alt: 'Aerial view of a two-story residential project during wood framing' },
 ];
 
 const CSS = `
