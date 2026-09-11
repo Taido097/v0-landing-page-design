@@ -1309,6 +1309,20 @@ const ICON_BAR_PATCH = `
 // walks up to find the outermost SINGLE-card container and collapses it with both display:none AND
 // layout-collapsing CSS (height:0, overflow:hidden, etc.) so no gap remains on any breakpoint.
 const EXTRA_CARD_CLEANUP_PATCH = `
+<style id="nguyen-socal-extra-card-mobile-styles">
+@media (max-width: 809px) {
+  [data-framer-name="service_list"] > [data-nguyen-extra-service-row="true"] {
+    display: none !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    overflow: hidden !important;
+  }
+}
+</style>
 <script id="nguyen-socal-extra-card-cleanup">
 (() => {
   const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
@@ -1346,6 +1360,15 @@ const EXTRA_CARD_CLEANUP_PATCH = `
       if (compact(el.textContent) !== EXTRA_DESC) return;
       // Skip wrapper elements that just contain a child with the same text
       if (Array.from(el.children).some((c) => compact(c.textContent) === EXTRA_DESC)) return;
+
+      // On the phone breakpoint Framer renders this removed service as a full-height <li> even after
+      // its inner content is hidden. Mark that exact row so the mobile-only rule above collapses the
+      // layout slot itself. The rule has no desktop selector, so desktop remains byte-for-byte styled
+      // by Framer and the existing cleanup below continues to behave exactly as before.
+      const row = el.closest('li');
+      if (row && row.parentElement?.getAttribute('data-framer-name') === 'service_list') {
+        row.setAttribute('data-nguyen-extra-service-row', 'true');
+      }
 
       // Walk up to find the card (first img-bearing ancestor of the description leaf)
       let card = el;

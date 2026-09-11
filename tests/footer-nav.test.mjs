@@ -57,6 +57,15 @@ test('extra-card cleanup cannot collapse page or footer containers', () => {
   assert.match(cleanup, /el\.querySelector\('footer'\)/);
   assert.match(cleanup, /card\.closest\('footer'\)/);
 });
+test('the hidden extra service collapses its outer list row on mobile only', () => {
+  const cleanup = source.split('const EXTRA_CARD_CLEANUP_PATCH = \`')[1].split('const PROCESS_TILE_IMAGE_PATCH')[0];
+  assert.match(cleanup, /@media \\(max-width: 809px\\)/);
+  assert.match(cleanup, /\\[data-nguyen-extra-service-row="true"\\]/);
+  assert.match(cleanup, /const row = el\\.closest\\('li'\\)/);
+  assert.match(cleanup, /row\\.parentElement\\?\\.getAttribute\\('data-framer-name'\\) === 'service_list'/);
+  assert.match(cleanup, /row\\.setAttribute\\('data-nguyen-extra-service-row', 'true'\\)/);
+  assert.doesNotMatch(cleanup, /@media \\(min-width:/);
+});
 test('main nav project hiding cannot hide a Framer page wrapper', () => {
   const main = source.split('const MAIN_NAV_PATCH')[1].split('const ENGINEERING_SERVICE_PATCH')[0];
   assert.match(main, /function hideProjects\(anchor\)/);
