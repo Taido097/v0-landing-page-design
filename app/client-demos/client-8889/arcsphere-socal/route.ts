@@ -16,6 +16,15 @@ const HOMEPAGE_SIDE_HERO_SOURCES = [
   ['https://framerusercontent.com/images/eJtReq8aEIEdVjdWqNPxJAANXJQ.jpg', '/client-8889/homepage-hero-side-right-commercial.webp'],
 ] as const
 
+const HOMEPAGE_MOBILE_HERO_CROP = `
+<style id="nguyen-socal-mobile-hero-crop">
+@media (max-width: 809px) {
+  header[data-framer-name="hero-section"] img[data-nguyen-homepage-hero="true"] {
+    object-position: 72% center !important;
+  }
+}
+</style>`
+
 // Framer can restore the original image URL during hydration even after the server-rendered HTML has
 // been rewritten. Lock only the center hero image by its unique source hash; never change layout or
 // visibility, so the two off-canvas side images keep Framer's existing breakpoint behavior.
@@ -1983,7 +1992,7 @@ export async function GET() {
   // The base layer's /ArcSphere/gi branding swap rewrites server-rendered "arcsphere" to
   // "NGUYEN", so cover both the raw and post-rebrand forms (harmless if client-rendered).
   html = html.replace(/hello@(?:arcsphere|nguyen)studio\.ae/gi, 'info@nguyenarchitecture.com')
-  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${PROCESS_TILE_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${FOOTER_NAV_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}${HOMEPAGE_HERO_LOCK_PATCH}${HOMEPAGE_SIDE_HERO_LOCK_PATCH}${HERO_CTA_PATCH}${HOMEPAGE_INTRO_IMAGE_SWAP_PATCH}${PAGE_VISIBILITY_GUARD_PATCH}</body>`)
+  html = html.replace('</body>', `${SPLIT_TEXT_PATCH}${BRAND_PATCH}${SQUARE_IMAGES_PATCH}${SERVICES_ANCHOR_PATCH}${MAIN_NAV_PATCH}${ENGINEERING_SERVICE_PATCH}${PROJECT_CARDS_PATCH}${DESIGN_PANELS_PATCH}${RESIDENTIAL_ROW_IMAGE_PATCH}${BLUEPRINT_IMAGE_PATCH}${PROCESS_TILE_IMAGE_PATCH}${CARD_ROUTING_PATCH}${EXTRA_CARD_CLEANUP_PATCH}${FOOTER_PATCH}${FOOTER_NAV_PATCH}${ICON_BAR_PATCH}${TESTIMONIAL_PATCH}${HOMEPAGE_MOBILE_HERO_CROP}${HOMEPAGE_HERO_LOCK_PATCH}${HOMEPAGE_SIDE_HERO_LOCK_PATCH}${HERO_CTA_PATCH}${HOMEPAGE_INTRO_IMAGE_SWAP_PATCH}${PAGE_VISIBILITY_GUARD_PATCH}</body>`)
 
   const headers = new Headers(response.headers)
   headers.set('Content-Type', 'text/html; charset=utf-8')

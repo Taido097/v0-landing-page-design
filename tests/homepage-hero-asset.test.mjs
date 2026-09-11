@@ -35,9 +35,23 @@ test('hero lock survives Framer hydration without revealing or restyling side im
   assert.doesNotMatch(routeSource, /HOMEPAGE_HERO_LOCK_PATCH[\s\S]*?img-left/)
   assert.doesNotMatch(routeSource, /HOMEPAGE_HERO_LOCK_PATCH[\s\S]*?img-right/)
   assert.doesNotMatch(routeSource, /HOMEPAGE_HERO_LOCK_PATCH[\s\S]*?forceVisible/)
-  assert.match(routeSource, /TESTIMONIAL_PATCH\}\$\{HOMEPAGE_HERO_LOCK_PATCH\}\$\{HOMEPAGE_SIDE_HERO_LOCK_PATCH\}\$\{HERO_CTA_PATCH\}/)
+  assert.match(routeSource, /TESTIMONIAL_PATCH\}\$\{HOMEPAGE_MOBILE_HERO_CROP\}\$\{HOMEPAGE_HERO_LOCK_PATCH\}\$\{HOMEPAGE_SIDE_HERO_LOCK_PATCH\}\$\{HERO_CTA_PATCH\}/)
 })
 
+test('mobile hero crop favors the house without changing desktop positioning', () => {
+  const mobileCrop = routeSource.match(
+    /const HOMEPAGE_MOBILE_HERO_CROP = \`([\s\S]*?)\`\n\n\/\/ Framer can restore/,
+  )?.[1]
+  assert.ok(mobileCrop, 'expected HOMEPAGE_MOBILE_HERO_CROP')
+  assert.match(mobileCrop, /@media \(max-width: 809px\)/)
+  assert.match(mobileCrop, /img\[data-nguyen-homepage-hero="true"\]/)
+  assert.match(mobileCrop, /object-position: 72% center !important/)
+  assert.doesNotMatch(mobileCrop, /min-width/)
+  assert.match(
+    routeSource,
+    /TESTIMONIAL_PATCH\}\$\{HOMEPAGE_MOBILE_HERO_CROP\}\$\{HOMEPAGE_HERO_LOCK_PATCH\}\$\{HOMEPAGE_SIDE_HERO_LOCK_PATCH\}/,
+  )
+})
 test('selected homepage hero image is present and non-empty', () => {
   assert.equal(existsSync(heroPath), true)
   assert.ok(statSync(heroPath).size > 100_000)
@@ -62,6 +76,7 @@ test('side-image hydration lock preserves Framer layout and visibility', () => {
   assert.match(patch, /removeAttribute\('srcset'\)/)
   assert.match(patch, /removeAttribute\('sizes'\)/)
   assert.doesNotMatch(patch, /forceVisible|style\.display|visibility|opacity/)
+  assert.doesNotMatch(patch, /matchMedia|max-width|min-width/)
   assert.doesNotMatch(patch, /homepage-hero-courtyard-morning|vVqkA2phwOpc7kzAHksLgpPasxY/)
   assert.match(routeSource, /HOMEPAGE_HERO_LOCK_PATCH\}\$\{HOMEPAGE_SIDE_HERO_LOCK_PATCH\}\$\{HERO_CTA_PATCH\}/)
 })
