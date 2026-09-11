@@ -17,6 +17,8 @@ import EngineeringServiceCards from '../engineering-approvals/service-cards';
 
 const RESIDENTIAL_HREF = '/client-demos/client-8889/residential';
 const HOME_HREF = '/client-demos/client-8889/arcsphere-socal';
+// The services listing, matching the site nav's "Services" link so the back arrow stays consistent.
+const SERVICES_HREF = `${HOME_HREF}#services`;
 const CONTACT = '/client-demos/client-8889/residential/contact';
 
 const ICONS: Record<string, typeof Home> = {
@@ -521,7 +523,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
         <>
         {svc.heroBanner ? (
           <div className="nrd-lead">
-            <a href={RESIDENTIAL_HREF} className="nrd-back nrd-back-lead">← Back to Residential</a>
+            <a href={slug === 'adus' ? SERVICES_HREF : RESIDENTIAL_HREF} className="nrd-back nrd-back-lead">← Back to {slug === 'adus' ? 'Services' : 'Residential'}</a>
             {svc.subtitle && slug !== 'adus' ? <h2 className="nrd-lead-h">{svc.subtitle}</h2> : null}
             {slug !== 'adus' ? <p className="nrd-lead-p">{svc.intro}</p> : null}
             {svc.note ? <p className="nrd-note">{svc.note}</p> : null}

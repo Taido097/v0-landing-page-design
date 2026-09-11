@@ -39,3 +39,11 @@ test("the section reuses the page's design tokens (no new page created)", () => 
   // Uses an existing local SB 9 image, not a newly invented asset.
   assert.match(src, /sb9-01-modern-duplex\.jpg/)
 })
+
+test("the ADU page's back arrow points to the Services listing, other pages unchanged", () => {
+  // The site nav's "Services" link targets the homepage #services section; the ADU back arrow matches
+  // it for consistent navigation. Only the adus slug is affected.
+  assert.match(src, /const SERVICES_HREF = `\$\{HOME_HREF\}#services`/)
+  assert.match(src, /href=\{slug === 'adus' \? SERVICES_HREF : RESIDENTIAL_HREF\}/)
+  assert.match(src, /← Back to \{slug === 'adus' \? 'Services' : 'Residential'\}/)
+})
