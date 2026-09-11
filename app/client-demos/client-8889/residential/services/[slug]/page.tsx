@@ -297,6 +297,29 @@ const CSS = `
 .svc-os-label{margin:15px 0 0;font-size:clamp(15px,1.2vw,17px);font-weight:500;letter-spacing:.01em;color:#3a352f}
 @media(max-width:820px){.svc-os-grid{grid-template-columns:1fr 1fr;gap:20px}}
 @media(max-width:520px){.svc-os-grid{grid-template-columns:1fr}}
+/* SB 9 featured band (ADU page only) — large image left, content right; uses the page's own tokens */
+.sb9-feature{margin-top:clamp(56px,7vw,104px)}
+.sb9-card{display:grid;grid-template-columns:1.05fr 1fr;gap:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;align-items:stretch}
+.sb9-media{background:#e7e0d5;overflow:hidden}
+.sb9-media img{width:100%;height:100%;min-height:clamp(300px,34vw,500px);object-fit:cover;display:block}
+.sb9-body{padding:clamp(30px,3.6vw,60px)}
+.sb9-eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;font-weight:600;color:var(--soft);margin:0}
+.sb9-eyebrow::after{content:"";display:block;width:34px;height:2px;background:var(--gold);margin:16px 0 0}
+.sb9-h{font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:clamp(28px,3.4vw,46px);line-height:1.06;letter-spacing:-.02em;font-weight:600;color:var(--ink);margin:22px 0 0;max-width:12em}
+.sb9-p{color:#453f39;font-size:clamp(14.5px,1.2vw,16.5px);line-height:1.62;margin:18px 0 0;max-width:34em}
+.nrd a.sb9-btn{display:inline-flex;align-items:center;gap:10px;margin-top:clamp(24px,2.6vw,32px);background:var(--gold);color:#1c1712;border-radius:999px;padding:14px 28px;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;transition:background .2s,transform .2s}
+.nrd a.sb9-btn:hover{background:#c99a58;transform:translateY(-2px)}
+.sb9-feats{display:grid;grid-template-columns:repeat(4,1fr);margin-top:clamp(28px,3.2vw,42px);border-top:1px solid var(--line);padding-top:clamp(22px,2.4vw,30px)}
+.sb9-feat{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:0 12px;position:relative}
+.sb9-feat + .sb9-feat::before{content:"";position:absolute;left:0;top:1px;bottom:1px;width:1px;background:var(--line)}
+.sb9-feat svg{color:var(--gold);flex:none}
+.sb9-feat span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--muted);line-height:1.45}
+@media(max-width:820px){
+  .sb9-card{grid-template-columns:1fr}
+  .sb9-media img{min-height:clamp(240px,58vw,420px)}
+  .sb9-feats{grid-template-columns:1fr 1fr;gap:24px 0}
+  .sb9-feat:nth-child(3)::before,.sb9-feat + .sb9-feat::before{display:none}
+}
 `;
 
 // Base path for the local detail images (commercial mosaic + ADU panels).
@@ -381,6 +404,40 @@ function AduTypes() {
             <div className="adu-img"><img src={a.src} alt={a.t} /></div>
           </figure>
         ))}
+      </div>
+    </section>
+  );
+}
+
+const SB9_HREF = `${RESIDENTIAL_HREF}/services/sb9-development`;
+const SB9_FEATURES = [
+  { Icon: Map, label: 'Feasibility Analysis' },
+  { Icon: LayoutTemplate, label: 'Lot Split Planning' },
+  { Icon: Home, label: 'Architectural Design' },
+  { Icon: FileCheck, label: 'Permitting Support' },
+];
+
+function Sb9Feature() {
+  return (
+    <section className="nrd-section sb9-feature" aria-label="SB 9 Development">
+      <div className="sb9-card">
+        <div className="sb9-media">
+          <img src={`${CX}/sb9-01-modern-duplex.jpg`} alt="SB 9 development — modern two-unit home" />
+        </div>
+        <div className="sb9-body">
+          <p className="sb9-eyebrow">SB 9 Development</p>
+          <h2 className="sb9-h">Maximize Your Property Potential</h2>
+          <p className="sb9-p">Explore opportunities for lot splits and additional residential units under California SB 9. We can help with feasibility, architectural design, engineering, permitting, and the approval process.</p>
+          <a className="sb9-btn" href={SB9_HREF}>Learn More <ArrowRight size={16} strokeWidth={2} /></a>
+          <div className="sb9-feats">
+            {SB9_FEATURES.map((f) => (
+              <div className="sb9-feat" key={f.label}>
+                <f.Icon size={22} strokeWidth={1.5} />
+                <span>{f.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -538,6 +595,8 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
             </div>
           </section>
         ) : null}
+
+        {slug === 'adus' ? <Sb9Feature /> : null}
 
         {svc.gallery ? (
           <section className="nrd-section">
