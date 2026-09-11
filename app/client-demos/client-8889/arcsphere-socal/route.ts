@@ -460,9 +460,29 @@ const ENGINEERING_SERVICE_PATCH = `
     return any;
   }
 
+  // True when the element holds the card's own title or description text, i.e. it is not media-only.
+  function holdsCardText(el) {
+    const t = compact(el.textContent);
+    if (!t) return false;
+    if (t.indexOf('engineering') !== -1) return true;
+    if (t.indexOf(sourceDescription) !== -1 || t.indexOf(targetDescriptionKey) !== -1) return true;
+    for (const key of titleKeys) if (t.indexOf(key) !== -1) return true;
+    return false;
+  }
+
   function markEngineeringMedia(card) {
     card.querySelectorAll('img, picture, [data-framer-background-image-wrapper="true"]').forEach((media) => {
       media.setAttribute('data-nguyen-engineering-media', 'true');
+      // Framer stacks this card to [text] over [image] on mobile and gives the image its own cell a
+      // fixed height, so hiding just the <img> left that cell reserving a full blank row (the gap under
+      // ENGINEERING). Climb to the outermost ancestor that still holds only media — no title or
+      // description — and mark it too, so the collapse CSS removes the whole reserved area. The guards
+      // never let this reach the text column or the card itself.
+      let cell = media;
+      while (cell.parentElement && cell.parentElement !== card && !holdsCardText(cell.parentElement)) {
+        cell = cell.parentElement;
+      }
+      if (cell !== card && !holdsCardText(cell)) cell.setAttribute('data-nguyen-engineering-media', 'true');
     });
   }
 

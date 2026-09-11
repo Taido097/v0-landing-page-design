@@ -60,6 +60,15 @@ test("markers left on a container by an earlier render are cleared", () => {
   assert.match(engineeringPatch, /removeAttribute\('data-nguyen-engineering-media'\)/)
 })
 
+test("the media column is collapsed, not just the image, so no blank row is left on mobile", () => {
+  assert.ok(engineeringPatch, "expected to find ENGINEERING_SERVICE_PATCH")
+  // Framer stacks the card to [text] over [image] on mobile and gives the image cell a fixed height;
+  // hiding only the <img> left that cell reserving a full blank row (the gap under ENGINEERING).
+  assert.match(engineeringPatch, /function holdsCardText/)
+  assert.match(engineeringPatch, /while \(cell\.parentElement && cell\.parentElement !== card && !holdsCardText\(cell\.parentElement\)\)/)
+  assert.match(engineeringPatch, /if \(cell !== card && !holdsCardText\(cell\)\) cell\.setAttribute\('data-nguyen-engineering-media', 'true'\)/)
+})
+
 test("the Engineering title is rewritten server-side so React hydrates with ENGINEERING", () => {
   // The client patch loses the title race once its observer disconnects: the base layer bakes
   // "Existing-Condition Survey & Business Layout" into the served HTML and hydration data, so React
