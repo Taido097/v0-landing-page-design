@@ -4,6 +4,14 @@ import { TESTIMONIAL_PATCH } from "./testimonial-patch"
 const OLD_COPY = 'Based in Orange County, we provide commercial architecture, engineering and permit support from existing-condition survey and business layout through plan check and approval.'
 const NEW_COPY = 'Based in Southern California, we provide residential and commercial architecture, engineering, and permit support from concept through approval.'
 
+// Replace the main Framer hero asset at the HTML/hydration source so desktop, tablet, and mobile all
+// render the same selected project image. The two off-canvas side images use different source hashes
+// and are intentionally left unchanged.
+const HOMEPAGE_HERO_SOURCES = [
+  'https://framerusercontent.com/images/vVqkA2phwOpc7kzAHksLgpPasxY.png',
+]
+const HOMEPAGE_HERO_IMAGE = '/client-8889/homepage-hero-courtyard-morning.webp'
+
 // The base arcsphere layer rewrites "Space Planning" -> this title server-side, baking it into both the
 // visible HTML and Framer's hydration data, so React restores it on every re-render. Replacing it at the
 // source (both the raw & and the entity-encoded form) makes ENGINEERING the hydration truth — the only
@@ -1776,6 +1784,7 @@ export async function GET() {
 
   let html = await response.text()
   html = html.split(OLD_COPY).join(NEW_COPY)
+  for (const source of HOMEPAGE_HERO_SOURCES) html = html.split(source).join(HOMEPAGE_HERO_IMAGE)
   for (const source of ENGINEERING_TITLE_SOURCES) html = html.split(source).join(ENGINEERING_TITLE)
   // Replace the Framer placeholder email everywhere it appears server-rendered in the HTML.
   // The base layer's /ArcSphere/gi branding swap rewrites server-rendered "arcsphere" to
