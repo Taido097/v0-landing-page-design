@@ -1376,17 +1376,19 @@ const PROCESS_TILE_IMAGE_PATCH = `
     return null;
   }
 
-  // Walk the DOM for an element whose textContent exactly matches a description,
-  // then climb to its full Framer card.
-  function findCardByDesc(descList) {
+  // Walk the DOM for every element whose textContent matches a description, then climb to its full
+  // Framer card. Framer ships one copy of the process card per breakpoint (desktop/tablet/phone), so
+  // return ALL of them — replacing only the first left the mobile copy showing the old Framer image.
+  function findAllCardsByDesc(descList) {
     const keys = new Set(descList.map(compact));
     const all = document.body ? document.body.querySelectorAll('*') : [];
+    const cards = [];
     for (const el of all) {
       if (!keys.has(compact(el.textContent))) continue;
       const card = findMediaCard(el);
-      if (card) return card;
+      if (card && cards.indexOf(card) === -1) cards.push(card);
     }
-    return null;
+    return cards;
   }
 
   const imageObservers = new Map();
@@ -1427,31 +1429,30 @@ const PROCESS_TILE_IMAGE_PATCH = `
     imageObservers.set(img, observer);
   }
 
-  // Cache each step's real background image, never the bottom text panel.
-  const resolved = new Map();
+  function cardImage(card) {
+    return card ? card.querySelector(':scope > [data-framer-background-image-wrapper="true"] img') : null;
+  }
+
+  // Collect the background image of EVERY breakpoint copy of a step's card: the ones arcsphere-fixed
+  // marked with data-nguyen-process-step, plus any found by description text as a fallback.
+  function collectStepImages(spec) {
+    const imgs = [];
+    const add = (img) => { if (img && imgs.indexOf(img) === -1) imgs.push(img); };
+    document.querySelectorAll('[data-nguyen-process-step="' + spec.step + '"]').forEach((marked) => {
+      add(cardImage(findMediaCard(marked)));
+    });
+    findAllCardsByDesc(spec.desc).forEach((card) => add(cardImage(card)));
+    return imgs;
+  }
 
   function patchProcessTiles() {
     if (!document.body) return;
+    // Drop observers whose image left the DOM on a breakpoint switch so the map cannot grow unbounded.
+    imageObservers.forEach((observer, img) => {
+      if (!img.isConnected) { observer.disconnect(); imageObservers.delete(img); }
+    });
     STEP_MAP.forEach((spec) => {
-      let img = resolved.get(spec.step);
-      if (img && !img.isConnected) {
-        const imageObserver = imageObservers.get(img);
-        if (imageObserver) imageObserver.disconnect();
-        imageObservers.delete(img);
-        resolved.delete(spec.step);
-        img = null;
-      }
-
-      if (!img) {
-        const marked = document.querySelector('[data-nguyen-process-step="' + spec.step + '"]');
-        const card = findMediaCard(marked) || findCardByDesc(spec.desc);
-        if (!card) return;
-        img = card.querySelector(':scope > [data-framer-background-image-wrapper="true"] img');
-        if (!img) return;
-        resolved.set(spec.step, img);
-      }
-
-      lockImage(img, spec.src, spec.alt);
+      collectStepImages(spec).forEach((img) => lockImage(img, spec.src, spec.alt));
     });
   }
 

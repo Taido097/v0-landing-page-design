@@ -28,3 +28,16 @@ test("process cards keep all four supplied image mappings", () => {
     assert.match(processPatch, new RegExp(filename.replaceAll(".", "\\.")))
   }
 })
+
+test("every breakpoint copy of a process card gets the replacement, not just the first", () => {
+  assert.ok(processPatch, "expected to find PROCESS_TILE_IMAGE_PATCH")
+  // Framer ships one copy of each card per breakpoint. Resolving a single img per step (querySelector,
+  // cached) left the mobile copy showing the old Framer image. Collect and lock ALL copies instead.
+  assert.match(processPatch, /function findAllCardsByDesc/)
+  assert.match(processPatch, /function collectStepImages/)
+  assert.match(processPatch, /document\.querySelectorAll\('\[data-nguyen-process-step="' \+ spec\.step \+ '"\]'\)\.forEach/)
+  assert.match(processPatch, /collectStepImages\(spec\)\.forEach\(\(img\) => lockImage\(img, spec\.src, spec\.alt\)\)/)
+  // The old single-resolve path must be gone.
+  assert.doesNotMatch(processPatch, /const resolved = new Map\(\)/)
+  assert.doesNotMatch(processPatch, /function findCardByDesc\b/)
+})
