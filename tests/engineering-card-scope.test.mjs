@@ -87,17 +87,6 @@ test("Engineering routes on every breakpoint via a marker-keyed capture handler"
   assert.match(engineeringPatch, /window\.location\.href = targetUrl/)
 })
 
-test("first click after a fresh load routes without waiting for the card to be marked", () => {
-  assert.ok(engineeringPatch, "expected to find ENGINEERING_SERVICE_PATCH")
-  // The marker is set by a deferred patch; a click before it ran fell through to the old Framer
-  // navigation. The click handler now detects the row from the click target's own ancestry instead.
-  assert.match(engineeringPatch, /function engineeringRowFor/)
-  assert.match(engineeringPatch, /if \(!start \|\| !engineeringRowFor\(start\)\) return/)
-  // It anchors on the row's unique description, bounded by isTooBroad so neighbours are never taken.
-  assert.match(engineeringPatch, /t\.indexOf\(targetDescriptionKey\) !== -1 \|\| t\.indexOf\(sourceDescription\) !== -1/)
-  assert.match(engineeringPatch, /if \(isTooBroad\(el\)\) break/)
-})
-
 test("the Engineering title is rewritten server-side so React hydrates with ENGINEERING", () => {
   // The client patch loses the title race once its observer disconnects: the base layer bakes
   // "Existing-Condition Survey & Business Layout" into the served HTML and hydration data, so React

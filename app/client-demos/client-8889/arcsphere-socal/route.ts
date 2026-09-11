@@ -542,32 +542,12 @@ const ENGINEERING_SERVICE_PATCH = `
   // but the mobile breakpoint copy resolved to a different card-url ancestor and opened the wrong page.
   // A capture-phase handler keyed on our own marker forces the Engineering page and, firing before the
   // generic card-url router (injected after this patch), wins — so only mobile changes.
-  // Find the Engineering row from a click target's own ancestry, independent of whether patchEngineering
-  // has marked it yet. This is what makes the FIRST click after a fresh load route correctly: the marker
-  // (data-nguyen-engineering-service / data-nguyen-card-url) is applied by a deferred patch, so a click
-  // before that patch runs used to fall through to the old Framer navigation and open the wrong page.
-  // Anchor on the row's unique description text; isTooBroad stops the climb before a container that spans
-  // other service rows, so a click on a neighbouring service (Land Development, ADU, ...) is never taken.
-  function engineeringRowFor(start) {
-    if (start && start.closest) {
-      const marked = start.closest('[data-nguyen-engineering-service="true"]');
-      if (marked) return marked;
-    }
-    let el = start;
-    for (let depth = 0; el && depth < 12; depth += 1, el = el.parentElement) {
-      if (el.nodeType !== 1) continue;
-      if (isTooBroad(el)) break;
-      const t = compact(el.textContent);
-      if (t.indexOf(targetDescriptionKey) !== -1 || t.indexOf(sourceDescription) !== -1) return el;
-    }
-    return null;
-  }
-
   if (!window.__nguyenEngineeringRouting) {
     window.__nguyenEngineeringRouting = true;
     document.addEventListener('click', (event) => {
       const start = event.target && event.target.nodeType === Node.TEXT_NODE ? event.target.parentElement : event.target;
-      if (!start || !engineeringRowFor(start)) return;
+      const card = start && start.closest ? start.closest('[data-nguyen-engineering-service="true"]') : null;
+      if (!card) return;
       event.preventDefault();
       event.stopPropagation();
       if (event.stopImmediatePropagation) event.stopImmediatePropagation();
