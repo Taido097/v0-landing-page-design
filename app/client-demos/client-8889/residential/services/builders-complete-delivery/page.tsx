@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Navbar from '../navbar';
+import HeroBanner from '../[slug]/hero-banner';
 
 const BASE = '/client-8889/residential/detail';
 const CONTACT = '/client-demos/client-8889/residential/contact';
@@ -45,6 +46,30 @@ const CSS = `
 .bcd-cta{padding:clamp(72px,9vw,130px) 0;text-align:center;border-top:1px solid var(--line)}.bcd-cta h2{margin:0 auto;max-width:15ch;color:var(--deep);font-size:clamp(34px,5vw,68px);line-height:.98;font-weight:500;letter-spacing:-.045em;text-transform:uppercase}.bcd-cta p{max-width:620px;margin:22px auto 28px;color:var(--muted);line-height:1.65}
 @media(max-width:900px){.bcd-hero{grid-template-columns:1fr}.bcd-hero-media{min-height:560px}.bcd-section-head{grid-template-columns:1fr}.bcd-scope{grid-template-columns:repeat(2,1fr)}.bcd-process{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.bcd h1{font-size:clamp(42px,13vw,62px)}.bcd-hero{padding-top:34px}.bcd-hero-media{min-height:410px}.bcd-scope{grid-template-columns:1fr}.bcd-process{grid-template-columns:1fr}.bcd-gallery{grid-template-columns:1fr}.bcd-step{min-height:0}.bcd-step h3{margin-top:34px}}
+/* full-width animated hero banner — reuses the shared HeroBanner component so the entrance
+   (image clip-path reveal, overlay fade, rule-line slides) is the exact same WAAPI animation
+   as the other service pages. Class names match the component; scoped under .bcd. */
+.bcd .nrd-banner{position:relative;margin:12px;border-radius:12px;height:97vh;max-height:1000px;overflow:hidden;background:#1a1712}
+.bcd .nrd-banner img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.bcd .nrd-banner-ov{position:absolute;inset:0;background:linear-gradient(#00000036 0%,#000000c9 100%)}
+.bcd .nrd-banner-inner{position:absolute;left:50%;bottom:40px;z-index:1;width:94%;transform:translateX(-50%)}
+.bcd .nrd-banner-h1{font-family:"Inter Display","Inter Display Placeholder",sans-serif;font-size:clamp(32px,3.9vw,56px);font-weight:400;letter-spacing:-.02em;line-height:1.1;color:#efede9;margin:0 0 clamp(32px,3.9vw,56px)}
+.bcd .nrd-banner-rule{display:flex;height:1px;margin:0 0 20px;overflow:hidden}
+.bcd .nrd-rule-h{flex:1 1 50%;height:1px;background:rgba(247,244,238,.38)}
+.bcd .nrd-banner-cap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.bcd .nrd-banner-cap span{font-size:clamp(13px,1.1vw,16px);letter-spacing:.01em;line-height:1.3;color:rgba(239,237,233,.85);font-weight:400}
+.bcd .nrd-banner-cap span:nth-child(2){text-align:center}
+.bcd .nrd-banner-cap span:nth-child(3){text-align:right}
+@keyframes nrd-img-in{to{clip-path:inset(0% 0% 0% 0%);opacity:1}}
+@keyframes nrd-fade-in{to{opacity:1}}
+@keyframes nrd-slide-in{to{transform:translateX(0);opacity:1}}
+.bcd .nrd-anim img{clip-path:inset(0% 0% 100% 0%);opacity:0;animation:nrd-img-in 1.3s cubic-bezier(.22,1,.36,1) 2s both}
+.bcd .nrd-anim .nrd-banner-ov{opacity:.001;animation:nrd-fade-in .5s ease-out 2.4s both}
+.bcd .nrd-anim .nrd-rule-l{transform:translateX(-600px);opacity:.001;animation:nrd-slide-in .9s cubic-bezier(.44,0,.56,1) 2.2s both}
+.bcd .nrd-anim .nrd-rule-r{transform:translateX(600px);opacity:.001;animation:nrd-slide-in .9s cubic-bezier(.44,0,.56,1) 2.2s both}
+.bcd-intro{padding:clamp(38px,5vw,68px) 0 clamp(8px,1.6vw,18px)}
+.bcd-intro-h{margin:16px 0 0;max-width:18ch;color:var(--deep);font-size:clamp(28px,3.8vw,50px);line-height:1.04;font-weight:500;letter-spacing:-.035em;text-transform:uppercase}
+@media(max-width:600px){.bcd .nrd-banner-cap{grid-template-columns:1fr}.bcd .nrd-banner-cap span:nth-child(2),.bcd .nrd-banner-cap span:nth-child(3){display:none}}
 `;
 
 export default function BuildersCompleteDeliveryPage() {
@@ -52,21 +77,21 @@ export default function BuildersCompleteDeliveryPage() {
     <main className="bcd">
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
       <Navbar />
+      <HeroBanner
+        hero={`${BASE}/builders-complete-04-framing-complete.webp`}
+        title="Builders Complete Delivery"
+        label="Builders Complete Delivery"
+        caption={['Planning & Permitting', 'Design & Engineering', 'Construction & Completion']}
+      />
       <div className="bcd-shell">
         <Link className="bcd-back" href={SERVICES}>← Back to Services</Link>
-        <section className="bcd-hero">
-          <div>
-            <p className="bcd-kicker">NGUYEN · Full Project Delivery</p>
-            <h1>Builders Complete Delivery</h1>
-            <p className="bcd-lead">One coordinated path from early planning and permits through active construction support and completion. NGUYEN keeps the design, engineering, approval, and field coordination connected so the project can move forward with fewer handoffs.</p>
-            <div className="bcd-actions">
-              <Link className="bcd-btn primary" href={CONTACT}>Start a Project</Link>
-              <Link className="bcd-btn" href={SERVICES}>View Services</Link>
-            </div>
-          </div>
-          <div className="bcd-hero-media">
-            <img src={`${BASE}/builders-complete-04-framing-complete.webp`} alt="Aerial view of a residential project at the completed framing stage" />
-            <span className="bcd-hero-tag">Planning → Build → Completion</span>
+        <section className="bcd-intro">
+          <p className="bcd-kicker">NGUYEN · Full Project Delivery</p>
+          <h2 className="bcd-intro-h">One coordinated path from plan to completion.</h2>
+          <p className="bcd-lead">One coordinated path from early planning and permits through active construction support and completion. NGUYEN keeps the design, engineering, approval, and field coordination connected so the project can move forward with fewer handoffs.</p>
+          <div className="bcd-actions">
+            <Link className="bcd-btn primary" href={CONTACT}>Start a Project</Link>
+            <Link className="bcd-btn" href={SERVICES}>View Services</Link>
           </div>
         </section>
 
