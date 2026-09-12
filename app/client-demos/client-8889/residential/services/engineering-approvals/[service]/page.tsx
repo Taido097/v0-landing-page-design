@@ -396,6 +396,7 @@ const CSS = `
 .nrd-foot-img img{width:100%;height:100%;object-fit:cover;display:block}
 @media(max-width:940px){
   .nrd-foot-main{grid-template-columns:1fr}
+  .nrd-foot-cols{justify-content:start}
 }
 @media(max-width:720px){
   .nrd-brand{display:none}

@@ -204,6 +204,7 @@ const CSS = `
   .nrd-approach-grid,.nrd-cols.n3,.nrd-cols.n4{grid-template-columns:repeat(2,1fr)}
   .nrd-offer,.nrd-gallery{grid-template-columns:repeat(2,1fr)}
   .nrd-foot-main{grid-template-columns:1fr}
+  .nrd-foot-cols{justify-content:start}
 }
 @media(max-width:720px){
   .nrd-brand{display:none}
