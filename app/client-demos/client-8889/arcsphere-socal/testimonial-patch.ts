@@ -346,6 +346,107 @@ export const TESTIMONIAL_PATCH = `
     items.forEach((item) => observer.observe(item));
   }
 
+  // --- width alignment ---------------------------------------------------------------------------
+  // The card ships capped at min(1180px, 100%) and centred. On desktop we widen it so its outer
+  // edges line up with the content frame of the section directly below, whatever width Framer gives
+  // that section. We only ever touch the section's horizontal padding and the card's outer width —
+  // never the internal layout — and we never make the card narrower than its default, so a failed or
+  // low-confidence measurement leaves the original centred card untouched.
+  const MOBILE_QUERY = '(max-width: 809.98px)';
+
+  function findSectionBelow(section) {
+    let node = section;
+    for (let depth = 0; depth < 6 && node && node !== document.body; depth++) {
+      let sib = node.nextElementSibling;
+      while (sib) {
+        const tag = sib.tagName;
+        if (tag !== 'SCRIPT' && tag !== 'STYLE' && tag !== 'FOOTER' && !sib.querySelector('footer')) {
+          const r = sib.getBoundingClientRect();
+          if (r.height > 40 && r.width > 120) return sib;
+        }
+        sib = sib.nextElementSibling;
+      }
+      node = node.parentElement;
+    }
+    return null;
+  }
+
+  // Estimate where a section's content actually sits by the *most common* left and right edges of
+  // its non-full-bleed, in-flow, visible descendants. Using the modal edge (rather than the extreme)
+  // targets the line real content aligns to and ignores a lone wider wrapper or an inner padding box.
+  // Returns null when it cannot find a confident content edge (so the card stays as-is).
+  function measureContentFrame(el) {
+    const rect = el.getBoundingClientRect();
+    if (rect.width < 200) return null;
+    const bucket = (x) => Math.round(x / 3) * 3;
+    const lefts = {}, rights = {};
+    let any = 0, extLeft = Infinity, extRight = -Infinity;
+    const kids = el.querySelectorAll('*');
+    for (let i = 0; i < kids.length; i++) {
+      const k = kids[i];
+      const cs = window.getComputedStyle(k);
+      if (cs.position === 'absolute' || cs.position === 'fixed') continue;
+      if (cs.display === 'none' || cs.visibility === 'hidden') continue;
+      const r = k.getBoundingClientRect();
+      if (r.height < 10 || r.width < 60) continue;
+      if (r.width > rect.width * 0.985) continue;
+      const lb = bucket(r.left), rb = bucket(r.right);
+      lefts[lb] = (lefts[lb] || 0) + 1;
+      rights[rb] = (rights[rb] || 0) + 1;
+      if (r.left < extLeft) extLeft = r.left;
+      if (r.right > extRight) extRight = r.right;
+      any++;
+    }
+    if (any < 2) return null;
+    // Prefer the most frequent edge (the line real content aligns to); on a tie prefer the inner one
+    // (larger left / smaller right) so the card never overhangs. Fall back to the outer content
+    // extent when no edge repeats, rather than giving up and leaving the card too narrow.
+    const pick = (map, inner) => {
+      let bestX = null, bestC = 0;
+      for (const key in map) {
+        const x = Number(key), c = map[key];
+        if (c > bestC || (c === bestC && bestX !== null && (inner ? x > bestX : x < bestX))) { bestC = c; bestX = x; }
+      }
+      return bestC >= 2 ? bestX : null;
+    };
+    let left = pick(lefts, true);
+    let right = pick(rights, false);
+    if (left === null) left = extLeft;
+    if (right === null) right = extRight;
+    if (!isFinite(left) || !isFinite(right) || (right - left) < rect.width * 0.4) return null;
+    return { left: Math.max(left, rect.left), right: Math.min(right, rect.right) };
+  }
+
+  function clearAlignment(section) {
+    section.style.removeProperty('padding-left');
+    section.style.removeProperty('padding-right');
+    const card = section.querySelector('.ng-testimonial-card');
+    if (card) {
+      card.style.removeProperty('width');
+      card.style.removeProperty('max-width');
+      card.style.removeProperty('margin');
+    }
+  }
+
+  function alignToSectionBelow(section) {
+    if (!section) return;
+    if (window.matchMedia(MOBILE_QUERY).matches) { clearAlignment(section); return; }
+    const card = section.querySelector('.ng-testimonial-card');
+    if (!card) return;
+    const below = findSectionBelow(section);
+    if (!below) return;
+    const frame = measureContentFrame(below);
+    if (!frame) return;
+    const targetWidth = frame.right - frame.left;
+    if (targetWidth <= card.getBoundingClientRect().width + 1) return;
+    const secRect = section.getBoundingClientRect();
+    section.style.paddingLeft = Math.max(0, Math.round(frame.left - secRect.left)) + 'px';
+    section.style.paddingRight = Math.max(0, Math.round(secRect.right - frame.right)) + 'px';
+    card.style.width = '100%';
+    card.style.maxWidth = 'none';
+    card.style.margin = '0';
+  }
+
   function install() {
     if (!document.body || document.getElementById(SECTION_ID)) return !!document.getElementById(SECTION_ID);
     const source = findSourceTestimonial();
@@ -357,9 +458,25 @@ export const TESTIMONIAL_PATCH = `
     return true;
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install, { once: true });
-  else install();
-  window.addEventListener('load', install, { once: true });
-  [250, 800, 1800, 3500].forEach((delay) => setTimeout(install, delay));
+  function installAndAlign() {
+    install();
+    const section = document.getElementById(SECTION_ID);
+    if (section) alignToSectionBelow(section);
+    return !!section;
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', installAndAlign, { once: true });
+  else installAndAlign();
+  window.addEventListener('load', installAndAlign, { once: true });
+  [250, 800, 1800, 3500, 6000].forEach((delay) => setTimeout(installAndAlign, delay));
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      const section = document.getElementById(SECTION_ID);
+      if (section) alignToSectionBelow(section);
+    }, 160);
+  });
 })();
 </script>`
