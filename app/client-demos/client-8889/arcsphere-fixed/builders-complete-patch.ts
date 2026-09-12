@@ -14,6 +14,10 @@ export const BUILDERS_COMPLETE_PATCH = `
   const TARGET_KEY = compact(TARGET_DESCRIPTION);
   const BUILDERS_MARKER = 'data-nguyen-builders-complete';
   const BUILDERS_SELECTOR = '[' + BUILDERS_MARKER + '="true"]';
+  const LEGACY_COLLAPSE_PROPS = [
+    'display', 'height', 'min-height', 'max-height', 'overflow',
+    'margin', 'padding', 'border', 'visibility', 'pointer-events'
+  ];
 
   function findCards() {
     const cards = [];
@@ -114,8 +118,41 @@ export const BUILDERS_COMPLETE_PATCH = `
     return true;
   }
 
+  function clearLegacyCleanup(el) {
+    if (!el || !el.style) return false;
+    const wasLegacyCollapsed =
+      el.getAttribute('data-nex') === '1' ||
+      el.getAttribute('data-nguyen-extra-service-row') === 'true';
+    if (!wasLegacyCollapsed) return clearHiddenDisplay(el);
+
+    LEGACY_COLLAPSE_PROPS.forEach((property) => el.style.removeProperty(property));
+    el.removeAttribute('data-nex');
+    el.removeAttribute('data-nguyen-extra-service-row');
+    return true;
+  }
+
   function revealBuildersVisibility(card) {
-    clearHiddenDisplay(card);
+    clearLegacyCleanup(card);
+
+    // The old Concept 1 cleanup may have marked either an inner card node or the full Framer service
+    // row. Those markers are authoritative evidence that the node was collapsed by that legacy script,
+    // so it is safe to remove every layout/visibility property that script wrote.
+    card.querySelectorAll('[data-nex="1"], [data-nguyen-extra-service-row="true"]').forEach(clearLegacyCleanup);
+
+    let legacyAncestor = card.parentElement;
+    for (let depth = 0; legacyAncestor && depth < 12; depth += 1, legacyAncestor = legacyAncestor.parentElement) {
+      if (legacyAncestor === document.body || legacyAncestor === document.documentElement) break;
+      if (legacyAncestor.getAttribute('data-nex') === '1' || legacyAncestor.getAttribute('data-nguyen-extra-service-row') === 'true') {
+        clearLegacyCleanup(legacyAncestor);
+      }
+    }
+
+    // The mobile cleanup adds its marker to the direct service-list <li>. Clear it explicitly so its
+    // CSS selector can no longer force display:none after a refresh.
+    const serviceRow = card.closest('li');
+    if (serviceRow && serviceRow.parentElement?.getAttribute('data-framer-name') === 'service_list') {
+      clearLegacyCleanup(serviceRow);
+    }
 
     // The base ArcSphere layer may have hidden a tighter child container before this patch claims the
     // service row. Clear only hidden nodes that still belong to the Builders source/target content.
@@ -129,7 +166,7 @@ export const BUILDERS_COMPLETE_PATCH = `
     // patch identifies as the card. Once our marker is installed, safely repair only ancestors that
     // actually contain the marked Builders card; never force a display type, just remove display:none.
     let ancestor = card.parentElement;
-    for (let depth = 0; ancestor && depth < 4; depth += 1, ancestor = ancestor.parentElement) {
+    for (let depth = 0; ancestor && depth < 8; depth += 1, ancestor = ancestor.parentElement) {
       if (ancestor === document.body || ancestor === document.documentElement) break;
       if (!ancestor.querySelector(BUILDERS_SELECTOR)) continue;
       clearHiddenDisplay(ancestor);
@@ -168,34 +205,36 @@ export const BUILDERS_COMPLETE_PATCH = `
 
   patch();
   window.addEventListener('load', patch, { once: true });
-  [200, 600, 1200, 2500, 5000, 8000, 12500, 20500, 40500, 60500].forEach((delay) => setTimeout(patch, delay));
+  [50, 150, 300, 600, 1200, 2500, 5000, 8000, 12500, 20500, 40500, 60500].forEach((delay) => setTimeout(patch, delay));
 
   let timer;
   const observer = new MutationObserver(() => {
     clearTimeout(timer);
-    timer = setTimeout(patch, 120);
+    timer = setTimeout(patch, 80);
   });
   if (document.body) observer.observe(document.body, { childList: true, subtree: true, characterData: true });
 
-  // The base Concept 1 patch and Framer hydration can reapply only an inline display:none after the
-  // Builders text is already correct. That style-only mutation is invisible to the content observer
-  // above, so repair it separately and only when the changed node is the marked card, inside it, or an
-  // ancestor containing it. This prevents the refresh race without touching neighboring service rows.
+  // The legacy cleanup and Framer hydration can reapply collapse styles/markers after Builders has
+  // already been converted. Watch exactly those attributes and repair only a node that is the marked
+  // Builders card, inside it, or an ancestor containing it.
   const visibilityObserver = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
-      if (mutation.type !== 'attributes' || mutation.attributeName !== 'style') continue;
+      if (mutation.type !== 'attributes') continue;
       const el = mutation.target;
       if (!el || el.nodeType !== Node.ELEMENT_NODE) continue;
-      if (el.style.getPropertyValue('display') !== 'none') continue;
-      const isBuildersScope =
-        el.matches?.(BUILDERS_SELECTOR) ||
+      const card =
+        (el.matches?.(BUILDERS_SELECTOR) && el) ||
         el.closest?.(BUILDERS_SELECTOR) ||
         el.querySelector?.(BUILDERS_SELECTOR);
-      if (!isBuildersScope) continue;
-      clearHiddenDisplay(el);
+      if (!card) continue;
+      revealBuildersVisibility(card);
     }
   });
-  if (document.body) visibilityObserver.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['style'] });
+  if (document.body) visibilityObserver.observe(document.body, {
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['style', 'data-nex', 'data-nguyen-extra-service-row']
+  });
 
   setTimeout(() => {
     patch();
