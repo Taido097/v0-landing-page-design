@@ -18,40 +18,35 @@ const STAGES = [
     num: '01',
     title: 'Concrete Pour & Foundation',
     body: 'We prepare the site, set forms, and pour a strong, precise foundation to ensure long-term durability.',
-    tagline: 'A solid start for a stronger build.',
     src: `${BASE}/builders-complete-05-concrete-pour.webp`,
     alt: 'Crew placing concrete over rebar for a residential foundation slab at golden hour',
   },
   {
     num: '02',
     title: 'Structural Coordination',
-    body: 'After the foundation, we coordinate structural framing and materials to bring the design to life, working closely with architects, engineers, and inspectors.',
-    tagline: 'Precision coordination as the structure rises.',
+    body: 'We coordinate structural engineering and materials to bring the design to life and keep the project on track.',
     src: `${BASE}/builders-complete-06-framing-aerial.webp`,
     alt: 'Aerial view of a two-story residential project during structural framing',
   },
   {
     num: '03',
     title: 'Framing Progress',
-    body: 'We manage framing, MEP coordination, and site work with consistent oversight so every phase moves forward with quality and control.',
-    tagline: 'The structure takes shape.',
+    body: 'The structure takes shape with precision framing, following approved plans and quality standards.',
     src: `${BASE}/builders-complete-03-framing-wide.webp`,
     alt: 'Wide aerial view of residential framing in progress',
   },
   {
     num: '04',
     title: 'Interior & Exterior Build',
-    body: 'From building systems to interior and exterior work, we keep the project aligned with the design vision and ready for the finishing stages.',
-    tagline: 'Bringing the vision to life inside and out.',
+    body: 'We install systems, complete interior and exterior finishes, and focus on quality craftsmanship in every detail.',
     src: `${BASE}/builders-complete-04-framing-complete.webp`,
     alt: 'Advanced framing stage of the coastal residential project',
   },
   {
     num: '05',
     title: 'Final Completion',
-    body: 'We finalize every detail, complete inspections, and deliver a move-in-ready home with the quality, care, and finish the project was designed for.',
-    tagline: 'A home, delivered completely.',
-    src: `${BASE}/builders-complete-07-finished.webp`,
+    body: 'We conduct final inspections, address any punch list items, and deliver a move-in-ready space built to last.',
+    src: `${BASE}/builders-complete-07-finished-home.webp`,
     alt: 'Finished modern coastal home after construction completion',
   },
 ];
@@ -75,13 +70,12 @@ const CSS = `
 /* body-only redesign */
 .bcd-journey{width:min(1560px,calc(100vw - 32px));margin:clamp(54px,7vw,104px) auto clamp(72px,8vw,120px);padding:0 clamp(8px,2vw,28px)}
 .bcd-journey-head{display:flex;align-items:center;gap:16px;margin:0 0 clamp(24px,3vw,42px);font-size:11px;font-weight:600;letter-spacing:.19em;text-transform:uppercase;color:var(--gold)}.bcd-journey-head::after{content:"";width:52px;height:1px;background:var(--gold);opacity:.8}
-.bcd-stage{display:grid;grid-template-columns:minmax(230px,.78fr) minmax(520px,1.9fr) minmax(220px,.72fr);gap:clamp(22px,3vw,46px);align-items:stretch;min-height:clamp(230px,23vw,340px)}.bcd-stage+.bcd-stage{margin-top:clamp(14px,1.6vw,24px)}
-.bcd-stage-left{position:relative;display:flex;flex-direction:column;justify-content:center;padding:24px 8px 24px 92px}.bcd-stage-left::before{content:"";position:absolute;left:54px;top:-14px;bottom:-14px;width:1px;background:rgba(179,137,79,.55)}.bcd-stage:first-child .bcd-stage-left::before{top:50%}.bcd-stage:last-child .bcd-stage-left::before{bottom:50%}.bcd-stage-left::after{content:"";position:absolute;left:47px;top:50%;width:14px;height:14px;border:1px solid var(--gold);border-radius:50%;background:var(--bg);transform:translateY(-50%)}
-.bcd-stage-num-left{position:absolute;left:0;top:50%;transform:translateY(-50%);font-size:clamp(20px,1.8vw,28px);font-weight:400;color:var(--gold);letter-spacing:.02em}.bcd-stage-title{margin:0;color:var(--deep);font-size:clamp(20px,1.7vw,28px);line-height:1.08;font-weight:500;letter-spacing:-.025em}.bcd-stage-copy{margin:12px 0 0;max-width:29ch;color:var(--muted);font-size:13px;line-height:1.62}
-.bcd-stage-media{position:relative;overflow:hidden;background:#d7d0c6;min-height:220px}.bcd-stage-media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .65s cubic-bezier(.22,1,.36,1)}.bcd-stage:hover .bcd-stage-media img{transform:scale(1.018)}
-.bcd-stage-right{display:flex;flex-direction:column;justify-content:center;border-top:1px solid var(--line);padding:24px 0}.bcd-stage-num-right{display:flex;align-items:center;gap:14px;margin:0 0 18px;color:var(--gold);font-size:clamp(22px,1.8vw,29px);font-weight:400}.bcd-stage-num-right::after{content:"";width:42px;height:1px;background:var(--gold);opacity:.7}.bcd-stage-right .bcd-stage-title{font-size:clamp(19px,1.5vw,25px)}.bcd-stage-tagline{margin:11px 0 0;max-width:22ch;color:var(--muted);font-size:13px;line-height:1.5}
-@media(max-width:1100px){.bcd-stage{grid-template-columns:minmax(210px,.7fr) minmax(0,1.7fr)}.bcd-stage-right{grid-column:2;padding:14px 0 4px;border-top:0}.bcd-stage-num-right,.bcd-stage-right .bcd-stage-title{display:none}.bcd-stage-tagline{max-width:none;margin:0;font-size:12px}.bcd-stage-left{grid-row:1 / span 2}.bcd-stage-media{min-height:300px}}
-@media(max-width:720px){.bcd .nrd-banner-cap{grid-template-columns:1fr}.bcd .nrd-banner-cap span:nth-child(2),.bcd .nrd-banner-cap span:nth-child(3){display:none}.bcd-journey{width:100%;padding:0 20px}.bcd-stage{grid-template-columns:1fr;gap:14px;min-height:0}.bcd-stage+.bcd-stage{margin-top:48px}.bcd-stage-left{grid-row:auto;padding:0 0 0 58px;min-height:100px}.bcd-stage-left::before{left:23px;top:-24px;bottom:-24px}.bcd-stage:first-child .bcd-stage-left::before{top:50%}.bcd-stage:last-child .bcd-stage-left::before{bottom:auto;height:50%}.bcd-stage-left::after{left:16px}.bcd-stage-num-left{left:0;font-size:17px}.bcd-stage-title{font-size:24px}.bcd-stage-copy{max-width:36ch}.bcd-stage-media{min-height:0;aspect-ratio:4/3}.bcd-stage-right{grid-column:1;padding:0 0 0 58px}.bcd-stage-tagline{font-size:12px}.bcd-cta{padding-left:8px;padding-right:8px}}
+.bcd-stage{display:grid;grid-template-columns:minmax(280px,.72fr) minmax(0,1.8fr);gap:clamp(28px,4vw,64px);align-items:stretch;min-height:clamp(260px,26vw,390px)}.bcd-stage+.bcd-stage{margin-top:clamp(18px,2vw,30px)}
+.bcd-stage-left{position:relative;display:flex;flex-direction:column;justify-content:center;padding:28px 0 28px 104px}.bcd-stage-left::before{content:"";position:absolute;left:58px;top:-18px;bottom:-18px;width:1px;background:rgba(179,137,79,.55)}.bcd-stage:first-child .bcd-stage-left::before{top:50%}.bcd-stage:last-child .bcd-stage-left::before{bottom:50%}.bcd-stage-left::after{content:"";position:absolute;left:51px;top:50%;width:14px;height:14px;border:1px solid var(--gold);border-radius:50%;background:var(--bg);transform:translateY(-50%)}
+.bcd-stage-num-left{position:absolute;left:0;top:50%;transform:translateY(-50%);font-size:clamp(20px,1.8vw,28px);font-weight:400;color:var(--gold);letter-spacing:.02em}.bcd-stage-title{margin:0;color:var(--deep);font-size:clamp(22px,2vw,32px);line-height:1.08;font-weight:500;letter-spacing:-.025em}.bcd-stage-copy{margin:14px 0 0;max-width:31ch;color:var(--muted);font-size:14px;line-height:1.68}
+.bcd-stage-media{position:relative;overflow:hidden;background:#d7d0c6;min-height:280px}.bcd-stage-media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .65s cubic-bezier(.22,1,.36,1)}.bcd-stage:hover .bcd-stage-media img{transform:scale(1.018)}
+@media(max-width:1000px){.bcd-stage{grid-template-columns:minmax(230px,.8fr) minmax(0,1.45fr);gap:30px;min-height:300px}.bcd-stage-left{padding-left:86px}.bcd-stage-left::before{left:46px}.bcd-stage-left::after{left:39px}.bcd-stage-copy{max-width:28ch}}
+@media(max-width:720px){.bcd .nrd-banner-cap{grid-template-columns:1fr}.bcd .nrd-banner-cap span:nth-child(2),.bcd .nrd-banner-cap span:nth-child(3){display:none}.bcd-journey{width:100%;padding:0 20px}.bcd-stage{grid-template-columns:1fr;gap:16px;min-height:0}.bcd-stage+.bcd-stage{margin-top:48px}.bcd-stage-left{padding:0 0 0 58px;min-height:118px}.bcd-stage-left::before{left:23px;top:-24px;bottom:-24px}.bcd-stage:first-child .bcd-stage-left::before{top:50%}.bcd-stage:last-child .bcd-stage-left::before{bottom:auto;height:50%}.bcd-stage-left::after{left:16px}.bcd-stage-num-left{left:0;font-size:17px}.bcd-stage-title{font-size:25px}.bcd-stage-copy{max-width:36ch}.bcd-stage-media{min-height:0;aspect-ratio:4/3}.bcd-cta{padding-left:8px;padding-right:8px}}
 `;
 
 export default function BuildersCompleteDeliveryPage() {
@@ -111,11 +105,6 @@ export default function BuildersCompleteDeliveryPage() {
             </div>
             <div className="bcd-stage-media">
               <img src={stage.src} alt={stage.alt} loading={stage.num === '01' ? 'eager' : 'lazy'} />
-            </div>
-            <div className="bcd-stage-right">
-              <span className="bcd-stage-num-right">{stage.num}</span>
-              <h3 className="bcd-stage-title">{stage.title}</h3>
-              <p className="bcd-stage-tagline">{stage.tagline}</p>
             </div>
           </article>
         ))}
