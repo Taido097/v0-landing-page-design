@@ -14,23 +14,24 @@ export const BUILDERS_COMPLETE_PATCH = `
   const TARGET_KEY = compact(TARGET_DESCRIPTION);
 
   function findCards() {
+    // Anchor on the leaf that holds exactly this card's description, then scope to that ONE service
+    // card. Framer wraps every service card in its own component container <li> ("framer-…-container")
+    // and ships a separate copy per breakpoint — the desktop copy carries an <img>, the phone copy has
+    // none. Climbing by image count (the old approach) overshot the image-less phone copy into the
+    // shared list and let the title rewrite land on a neighboring card (the Engineering card broke on
+    // mobile). closest('…-container') always stops at this card's own boundary, so it can never reach
+    // across into another card, on any breakpoint or mid-hydration; the phone copy converts too.
     const cards = [];
     const candidates = Array.from(document.querySelectorAll('*'));
     for (const candidate of candidates) {
       const key = compact(candidate.textContent);
       if (key !== SOURCE_KEY && key !== TARGET_KEY) continue;
-      let picked = null;
-      let node = candidate;
-      for (let depth = 0; node && depth < 9; depth += 1, node = node.parentElement) {
-        if (node === document.body || node === document.documentElement) break;
-        const text = compact(node.textContent);
-        if (!text.includes(SOURCE_KEY) && !text.includes(TARGET_KEY)) continue;
-        const imageCount = node.querySelectorAll?.('img').length || 0;
-        if (imageCount > 2) break;
-        picked = node;
-        if (imageCount === 1) break;
-      }
-      if (picked && !cards.includes(picked)) cards.push(picked);
+      if (Array.from(candidate.children).some((child) => compact(child.textContent) === key)) continue;
+      const card = (candidate.closest && (candidate.closest('li[class*="-container"]') || candidate.closest('[class*="-container"]'))) || null;
+      if (!card || cards.includes(card)) continue;
+      // Never accept a container that already spans more than one service card.
+      if (card.querySelectorAll('[class*="-container"]').length > 0 && card.querySelectorAll('img').length > 1) continue;
+      cards.push(card);
     }
     return cards;
   }
