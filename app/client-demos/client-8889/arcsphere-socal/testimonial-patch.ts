@@ -61,11 +61,25 @@ export const TESTIMONIAL_PATCH = `
     min-width: 320px;
     min-height: 570px;
     align-self: stretch;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    image-rendering: -webkit-optimize-contrast;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
     filter: none !important;
+  }
+
+  #nguyen-client-testimonial .ng-media-img {
+    flex: 1 1 0;
+    min-width: 0;
+    width: 50%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    image-rendering: -webkit-optimize-contrast;
+  }
+
+  #nguyen-client-testimonial .ng-media-img + .ng-media-img {
+    border-left: 1px solid var(--ng-line);
   }
 
   #nguyen-client-testimonial .ng-testimonial-content {
@@ -223,7 +237,9 @@ export const TESTIMONIAL_PATCH = `
     #nguyen-client-testimonial .ng-section-heading h2 { font-size: clamp(34px, 10.2vw, 48px); }
     #nguyen-client-testimonial .ng-section-heading p { margin-top: 17px; font-size: 14px; }
     #nguyen-client-testimonial .ng-testimonial-card { width: min(100%, 680px); flex-direction: column; border-radius: 6px; }
-    #nguyen-client-testimonial .ng-testimonial-media { min-height: 320px; aspect-ratio: 4 / 3; }
+    #nguyen-client-testimonial .ng-testimonial-media { min-height: 0; aspect-ratio: auto; flex-direction: column; }
+    #nguyen-client-testimonial .ng-media-img { width: 100%; height: auto; aspect-ratio: 16 / 10; }
+    #nguyen-client-testimonial .ng-media-img + .ng-media-img { border-left: none; border-top: 1px solid var(--ng-line); }
     #nguyen-client-testimonial .ng-testimonial-content { padding: 34px 24px 0; }
     #nguyen-client-testimonial .ng-testimonial-title { font-size: clamp(30px, 9vw, 42px); }
     #nguyen-client-testimonial .ng-quote { margin-top: 22px; padding: 0 18px; }
@@ -233,7 +249,6 @@ export const TESTIMONIAL_PATCH = `
   @media (max-width: 480px) {
     #nguyen-client-testimonial .ng-section-heading h2 { font-size: 35px; }
     #nguyen-client-testimonial .ng-section-heading p { font-size: 13px; }
-    #nguyen-client-testimonial .ng-testimonial-media { min-height: 270px; }
     #nguyen-client-testimonial .ng-client-logo-cell { min-height: 72px; padding: 12px 8px; }
     #nguyen-client-testimonial .ng-client-logo-img { max-height: 52px; }
   }
@@ -250,7 +265,7 @@ export const TESTIMONIAL_PATCH = `
     ['/nguyen-testimonial/sage_coffee_co.png', 'Sage Coffee Co.'],
     ['/nguyen-testimonial/urban_cutz_barbershop.png', 'Urban Cutz Barbershop'],
     ['/nguyen-testimonial/luxe_boutique.png', 'Luxe Boutique'],
-    ['/nguyen-testimonial/crumbl_cookies.png', 'Crumbl Cookies'],
+    ['/nguyen-testimonial/hasaki_beauty_skincare.png', 'Hasaki Beauty & Skincare'],
     ['/nguyen-testimonial/vitality_wellness.png', 'Vitality Wellness'],
     ['/nguyen-testimonial/district_eatery.png', 'District Eatery']
   ];
@@ -284,13 +299,17 @@ export const TESTIMONIAL_PATCH = `
 
   function createSection() {
     const origin = window.location.origin;
-    const mediaImg = origin + '/nguyen-testimonial/restaurant_image.png';
+    const restaurantImg = origin + '/nguyen-testimonial/restaurant_image.png';
+    const hasakiImg = origin + '/nguyen-testimonial/hasaki_storefront.jpg';
     const section = document.createElement('section');
     section.id = SECTION_ID;
     section.setAttribute('aria-label', 'What our clients say');
     section.innerHTML = [
       '<div class="ng-testimonial-card">',
-        '<div class="ng-testimonial-media ng-reveal" role="img" aria-label="Restaurant interior"></div>',
+        '<div class="ng-testimonial-media ng-reveal">',
+          '<img class="ng-media-img" src="' + restaurantImg + '" alt="Restaurant interior" decoding="async">',
+          '<img class="ng-media-img" src="' + hasakiImg + '" alt="Hasaki Beauty & Skincare storefront" decoding="async">',
+        '</div>',
         '<div class="ng-testimonial-content ng-reveal">',
           '<div class="ng-stars" aria-label="5 out of 5 stars">★★★★★</div>',
           '<h3 class="ng-testimonial-title">Game-Changing Experience</h3>',
@@ -307,14 +326,6 @@ export const TESTIMONIAL_PATCH = `
         '</div>',
       '</div>'
     ].join('');
-
-    const media = section.querySelector('.ng-testimonial-media');
-    if (media) {
-      media.style.backgroundImage = 'linear-gradient(180deg, rgba(35,26,20,.01), rgba(35,26,20,.05)), url("' + mediaImg + '")';
-      media.style.backgroundSize = 'cover';
-      media.style.backgroundPosition = 'center';
-      media.style.backgroundRepeat = 'no-repeat';
-    }
 
     return section;
   }
