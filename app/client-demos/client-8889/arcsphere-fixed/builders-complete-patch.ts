@@ -12,6 +12,8 @@ export const BUILDERS_COMPLETE_PATCH = `
   const THUMBNAIL = window.location.origin + '/client-8889/residential/detail/builders-complete-04-framing-complete.webp';
   const SOURCE_KEY = compact(SOURCE_DESCRIPTION);
   const TARGET_KEY = compact(TARGET_DESCRIPTION);
+  const BUILDERS_MARKER = 'data-nguyen-builders-complete';
+  const BUILDERS_SELECTOR = '[' + BUILDERS_MARKER + '="true"]';
 
   function findCards() {
     const cards = [];
@@ -105,13 +107,42 @@ export const BUILDERS_COMPLETE_PATCH = `
     }
   }
 
+  function clearHiddenDisplay(el) {
+    if (!el || !el.style) return false;
+    if (el.style.getPropertyValue('display') !== 'none') return false;
+    el.style.removeProperty('display');
+    return true;
+  }
+
+  function revealBuildersVisibility(card) {
+    clearHiddenDisplay(card);
+
+    // The base ArcSphere layer may have hidden a tighter child container before this patch claims the
+    // service row. Clear only hidden nodes that still belong to the Builders source/target content.
+    card.querySelectorAll('[style]').forEach((el) => {
+      const text = compact(el.textContent);
+      if (!text.includes(SOURCE_KEY) && !text.includes(TARGET_KEY)) return;
+      clearHiddenDisplay(el);
+    });
+
+    // On some Framer breakpoint copies the base layer's hidden node is one wrapper above the node this
+    // patch identifies as the card. Once our marker is installed, safely repair only ancestors that
+    // actually contain the marked Builders card; never force a display type, just remove display:none.
+    let ancestor = card.parentElement;
+    for (let depth = 0; ancestor && depth < 4; depth += 1, ancestor = ancestor.parentElement) {
+      if (ancestor === document.body || ancestor === document.documentElement) break;
+      if (!ancestor.querySelector(BUILDERS_SELECTOR)) continue;
+      clearHiddenDisplay(ancestor);
+    }
+  }
+
   function patchCard(card) {
     replaceDescription(card);
     replaceTitle(card);
     swapThumbnail(card);
-    card.style.removeProperty('display');
+    card.setAttribute(BUILDERS_MARKER, 'true');
+    revealBuildersVisibility(card);
     card.style.setProperty('cursor', 'pointer', 'important');
-    card.setAttribute('data-nguyen-builders-complete', 'true');
     card.setAttribute('data-nguyen-link', TARGET_URL);
     card.setAttribute('data-nguyen-card-url', TARGET_URL);
   }
@@ -126,7 +157,7 @@ export const BUILDERS_COMPLETE_PATCH = `
     window.__nguyenBuildersCompleteRouting = true;
     document.addEventListener('click', (event) => {
       const start = event.target && event.target.nodeType === Node.TEXT_NODE ? event.target.parentElement : event.target;
-      const card = start && start.closest ? start.closest('[data-nguyen-builders-complete="true"]') : null;
+      const card = start && start.closest ? start.closest(BUILDERS_SELECTOR) : null;
       if (!card) return;
       event.preventDefault();
       event.stopPropagation();
@@ -145,6 +176,31 @@ export const BUILDERS_COMPLETE_PATCH = `
     timer = setTimeout(patch, 120);
   });
   if (document.body) observer.observe(document.body, { childList: true, subtree: true, characterData: true });
-  setTimeout(() => { patch(); observer.disconnect(); }, 61000);
+
+  // The base Concept 1 patch and Framer hydration can reapply only an inline display:none after the
+  // Builders text is already correct. That style-only mutation is invisible to the content observer
+  // above, so repair it separately and only when the changed node is the marked card, inside it, or an
+  // ancestor containing it. This prevents the refresh race without touching neighboring service rows.
+  const visibilityObserver = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      if (mutation.type !== 'attributes' || mutation.attributeName !== 'style') continue;
+      const el = mutation.target;
+      if (!el || el.nodeType !== Node.ELEMENT_NODE) continue;
+      if (el.style.getPropertyValue('display') !== 'none') continue;
+      const isBuildersScope =
+        el.matches?.(BUILDERS_SELECTOR) ||
+        el.closest?.(BUILDERS_SELECTOR) ||
+        el.querySelector?.(BUILDERS_SELECTOR);
+      if (!isBuildersScope) continue;
+      clearHiddenDisplay(el);
+    }
+  });
+  if (document.body) visibilityObserver.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['style'] });
+
+  setTimeout(() => {
+    patch();
+    observer.disconnect();
+    visibilityObserver.disconnect();
+  }, 61000);
 })();
 </script>`;
