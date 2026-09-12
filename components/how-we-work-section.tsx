@@ -90,14 +90,84 @@ function useScrollReveal<T extends HTMLElement>() {
 }
 
 function DemoCard({ demo, index }: { demo: ShowcaseDemo; index: number }) {
+  const previewRef = useRef<HTMLDivElement | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const rafRef = useRef<number>(0);
+  const [inView, setInView] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  // Only animate while the card is actually on screen.
+  useEffect(() => {
+    const el = previewRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting && entry.intersectionRatio > 0.1),
+      { threshold: [0, 0.1, 0.4] },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // The demo's own animation: gently auto-scroll the live page top → down → loop.
+  useEffect(() => {
+    cancelAnimationFrame(rafRef.current);
+
+    const frame = iframeRef.current;
+    const win = frame?.contentWindow;
+    const doc = frame?.contentDocument;
+    if (!inView || !loaded || !frame || !win || !doc) return;
+
+    const prefersReduced =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) return;
+
+    win.scrollTo(0, 0);
+    const holdTop = 650;
+    const scrollDuration = 9000;
+    const holdBottom = 950;
+    const cycle = holdTop + scrollDuration + holdBottom;
+    const startedAt = performance.now();
+    const ease = (t: number) => 0.5 - Math.cos(Math.PI * t) / 2;
+    const target = () =>
+      Math.max(0, doc.documentElement.scrollHeight - win.innerHeight) * 0.6;
+
+    const tick = (now: number) => {
+      const elapsed = (now - startedAt) % cycle;
+      const tgt = target();
+      if (elapsed < holdTop) win.scrollTo(0, 0);
+      else if (elapsed < holdTop + scrollDuration)
+        win.scrollTo(0, tgt * ease((elapsed - holdTop) / scrollDuration));
+      else win.scrollTo(0, tgt);
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [inView, loaded]);
+
+  useEffect(() => () => cancelAnimationFrame(rafRef.current), []);
+
   return (
     <>
-      <div className="demo-showcase-preview">
+      <div ref={previewRef} className="demo-showcase-preview">
         <img
           src={demo.mobileImage}
           alt={`${demo.name} website preview`}
           decoding="async"
           loading="lazy"
+          className={`demo-showcase-poster${loaded ? ' is-loaded' : ''}`}
+        />
+        <iframe
+          ref={iframeRef}
+          src={demo.href}
+          title={`${demo.name} live demo preview`}
+          loading="lazy"
+          onLoad={() => setLoaded(true)}
+          tabIndex={-1}
+          aria-hidden="true"
+          className="demo-showcase-live"
         />
         <Link
           href={demo.href}
@@ -316,6 +386,9 @@ export function HowWeWorkSection() {
         .demo-showcase-preview img{display:block;width:100%;height:100%;object-fit:cover;object-position:top center}
         .demo-showcase-card{position:absolute;left:50%;top:50%;z-index:5;width:min(72%,1060px);min-width:760px;overflow:hidden;background:#fff;box-shadow:0 34px 90px rgba(0,0,0,.24);transform:translate3d(-50%,-50%,0)}
         .demo-showcase-preview{position:relative;height:clamp(540px,64vh,700px);overflow:hidden;background:#fff}
+        .demo-showcase-live{position:absolute;left:0;top:0;z-index:1;width:200%;max-width:none;height:200%;transform:scale(.5);transform-origin:top left;border:0;background:#fff;pointer-events:none}
+        .demo-showcase-poster{position:absolute;inset:0;z-index:2;transition:opacity .6s ease}
+        .demo-showcase-poster.is-loaded{opacity:0}
         .demo-showcase-info{display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:126px;padding:25px 32px 27px;background:#fff}
         .demo-showcase-title{font-size:clamp(20px,2vw,28px);font-weight:500;line-height:1;letter-spacing:-.045em}
         .demo-showcase-industry{margin-top:8px;font-size:15px;color:rgba(18,18,18,.52)}
