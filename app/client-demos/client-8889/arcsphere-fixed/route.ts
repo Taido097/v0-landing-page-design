@@ -180,12 +180,109 @@ const PROCESS_PATCH = `
 })();
 </script>`;
 
+// The base service interceptor is installed before the later Concept 1 project-card routers. Mark the
+// entire Engineering service row with the correct destination at this earlier layer, so every click
+// target in the row (including its arrow) resolves to Engineering before any stale Commercial href or
+// broad project-card classification can run.
+const ENGINEERING_ROUTE_GUARD_PATCH = `
+<script id="nguyen-fixed-engineering-route-guard">
+(() => {
+  if (!window.location.pathname.includes('/client-demos/client-8889/arcsphere-socal')) return;
+
+  const compact = (value) => (value || '').replace(/\\s+/g, '').toLowerCase();
+  const TARGET_URL = window.location.origin + '/client-demos/client-8889/residential/services/engineering-approvals';
+  const DESCRIPTION_KEYS = [
+    'Optimizing layouts to improve functionality, circulation, and spatial flow.',
+    'Structural engineering, MEP, Title 24, permitting, and plan-check support coordinated from design through approval.'
+  ].map(compact);
+  const TITLE_KEYS = new Set([
+    compact('ENGINEERING'),
+    compact('Existing-Condition Survey & Business Layout')
+  ]);
+
+  function hasExactTitle(row) {
+    const nodes = [row, ...row.querySelectorAll('h1,h2,h3,h4,h5,h6,p,span,div')];
+    return nodes.some((node) => {
+      const key = compact(node.textContent);
+      if (!TITLE_KEYS.has(key)) return false;
+      return !Array.from(node.children || []).some((child) => compact(child.textContent) === key);
+    });
+  }
+
+  function isEngineeringRow(row) {
+    if (!row || !row.isConnected) return false;
+    if (row.parentElement?.getAttribute('data-framer-name') !== 'service_list') return false;
+    const text = compact(row.textContent);
+    return DESCRIPTION_KEYS.some((key) => text.includes(key)) || hasExactTitle(row);
+  }
+
+  function rowFor(start) {
+    if (!start || !start.closest) return null;
+
+    const li = start.closest('li');
+    if (isEngineeringRow(li)) return li;
+
+    const list = start.closest('[data-framer-name="service_list"]');
+    if (!list) return null;
+    let row = start;
+    while (row && row.parentElement && row.parentElement !== list) row = row.parentElement;
+    return isEngineeringRow(row) ? row : null;
+  }
+
+  function markRow(row) {
+    if (!row || !isEngineeringRow(row)) return;
+    row.setAttribute('data-nguyen-engineering-route-guard', 'true');
+    row.setAttribute('data-nguyen-link', TARGET_URL);
+    row.setAttribute('data-nguyen-card-url', TARGET_URL);
+    row.style.setProperty('cursor', 'pointer', 'important');
+    row.querySelectorAll('a').forEach((anchor) => {
+      anchor.setAttribute('href', TARGET_URL);
+      anchor.setAttribute('data-nguyen-link', TARGET_URL);
+      anchor.setAttribute('data-nguyen-card-url', TARGET_URL);
+      anchor.removeAttribute('target');
+      anchor.removeAttribute('rel');
+    });
+  }
+
+  function markEngineeringRows() {
+    document.querySelectorAll('[data-framer-name="service_list"]').forEach((list) => {
+      Array.from(list.children).forEach(markRow);
+    });
+  }
+
+  if (!window.__nguyenFixedEngineeringRouteGuard) {
+    window.__nguyenFixedEngineeringRouteGuard = true;
+    document.addEventListener('click', (event) => {
+      const start = event.target && event.target.nodeType === Node.TEXT_NODE ? event.target.parentElement : event.target;
+      const row = start?.closest?.('[data-nguyen-engineering-route-guard="true"]') || rowFor(start);
+      if (!row) return;
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+      window.location.href = TARGET_URL;
+    }, true);
+  }
+
+  markEngineeringRows();
+  window.addEventListener('load', markEngineeringRows, { once: true });
+  [50, 150, 300, 700, 1500, 3000, 6000, 12000, 20000, 40000, 60000].forEach((delay) => setTimeout(markEngineeringRows, delay));
+
+  let timer;
+  const observer = new MutationObserver(() => {
+    clearTimeout(timer);
+    timer = setTimeout(markEngineeringRows, 80);
+  });
+  if (document.body) observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+  setTimeout(() => observer.disconnect(), 61000);
+})();
+</script>`;
+
 export async function GET() {
   const response = await getBaseConcept();
   if (!response.ok) return response;
 
   const html = await response.text();
-  const patched = html.replace('</body>', `${PROCESS_PATCH}${BUILDERS_COMPLETE_PATCH}</body>`);
+  const patched = html.replace('</body>', `${PROCESS_PATCH}${BUILDERS_COMPLETE_PATCH}${ENGINEERING_ROUTE_GUARD_PATCH}</body>`);
 
   const headers = new Headers(response.headers);
   headers.set('Content-Type', 'text/html; charset=utf-8');
