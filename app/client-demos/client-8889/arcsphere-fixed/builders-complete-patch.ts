@@ -13,35 +13,24 @@ export const BUILDERS_COMPLETE_PATCH = `
   const SOURCE_KEY = compact(SOURCE_DESCRIPTION);
   const TARGET_KEY = compact(TARGET_DESCRIPTION);
 
-  // A single service card holds one title and (on desktop/tablet) its own image; the surrounding row
-  // of sibling cards, or a section/main, is too broad to patch. Caps the climb below so it never
-  // escapes the one card — same guard the Engineering card patch uses on this services section.
-  function isTooBroad(el) {
-    if (!el || !el.isConnected) return true;
-    if (el === document.body || el === document.documentElement) return true;
-    if (el.matches && el.matches('body, main, header, footer, nav')) return true;
-    if (el.getAttribute && el.getAttribute('data-framer-name') === 'content') return true;
-    if (el.querySelector && el.querySelector('header, footer, section')) return true;
-    if ((el.querySelectorAll ? el.querySelectorAll('h1,h2,h3,h4,h5,h6').length : 0) > 1) return true;
-    if ((el.querySelectorAll ? el.querySelectorAll('img').length : 0) > 2) return true;
-    return false;
-  }
-
   function findCards() {
-    // Framer ships one DOM copy of this card per breakpoint (desktop / tablet / phone). Anchor on the
-    // card's unique description text and climb to the OUTERMOST node still inside the single-card
-    // boundary (isTooBroad caps the climb). Never anchor on an <img>: the phone copy has no image, so
-    // the old image-seeking climb overshot into the sibling-card row and left the phone card
-    // unconverted — the "new service not updated on mobile" symptom.
     const cards = [];
     const candidates = Array.from(document.querySelectorAll('*'));
     for (const candidate of candidates) {
       const key = compact(candidate.textContent);
       if (key !== SOURCE_KEY && key !== TARGET_KEY) continue;
+      let picked = null;
       let node = candidate;
-      while (node.parentElement && !isTooBroad(node.parentElement)) node = node.parentElement;
-      if (isTooBroad(node)) continue;
-      if (!cards.includes(node)) cards.push(node);
+      for (let depth = 0; node && depth < 9; depth += 1, node = node.parentElement) {
+        if (node === document.body || node === document.documentElement) break;
+        const text = compact(node.textContent);
+        if (!text.includes(SOURCE_KEY) && !text.includes(TARGET_KEY)) continue;
+        const imageCount = node.querySelectorAll?.('img').length || 0;
+        if (imageCount > 2) break;
+        picked = node;
+        if (imageCount === 1) break;
+      }
+      if (picked && !cards.includes(picked)) cards.push(picked);
     }
     return cards;
   }
@@ -94,23 +83,9 @@ export const BUILDERS_COMPLETE_PATCH = `
       title = leafText.find((el) => /construction|supervision|management|guidance|permit/i.test(normalize(el.textContent))) || leafText[0] || null;
     }
     if (title) {
-      // The phone copy can carry a second title line (an extra leaf with the same original text); once
-      // the primary title is located, convert every other leaf inside this card that still holds that
-      // original text so no stale copy is left behind on mobile.
-      const originalTitle = normalize(title.textContent);
-      if (originalTitle !== TARGET_TITLE) title.textContent = TARGET_TITLE;
+      if (normalize(title.textContent) !== TARGET_TITLE) title.textContent = TARGET_TITLE;
       title.style.setProperty('white-space', 'normal', 'important');
       title.style.setProperty('overflow-wrap', 'normal', 'important');
-      if (originalTitle && originalTitle !== TARGET_TITLE) {
-        card.querySelectorAll('h1,h2,h3,h4,h5,h6,p,span,div').forEach((el) => {
-          if (el === title) return;
-          if (normalize(el.textContent) !== originalTitle) return;
-          if (Array.from(el.children).some((child) => normalize(child.textContent) === originalTitle)) return;
-          el.textContent = TARGET_TITLE;
-          el.style.setProperty('white-space', 'normal', 'important');
-          el.style.setProperty('overflow-wrap', 'normal', 'important');
-        });
-      }
     }
   }
 
