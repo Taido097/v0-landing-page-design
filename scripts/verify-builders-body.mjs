@@ -24,26 +24,17 @@ if (!page.includes('builders-complete-07-finished-home.webp')) {
   throw new Error('Final Completion does not reference the finished-home asset.');
 }
 
-if (fs.existsSync(staticFinishedPath)) {
-  throw new Error('Broken static finished-home asset still exists and would shadow the image route.');
+if (!fs.existsSync(staticFinishedPath)) {
+  throw new Error('Finished-home static asset is missing from public assets.');
 }
 
-if (!fs.existsSync(routePath)) {
-  throw new Error('Finished-home image route is missing.');
+const finished = fs.readFileSync(staticFinishedPath);
+if (finished.length < 16 || finished.subarray(0, 4).toString('ascii') !== 'RIFF' || finished.subarray(8, 12).toString('ascii') !== 'WEBP') {
+  throw new Error('Finished-home static asset is not a valid WebP image.');
 }
 
-const base64 = Array.from({ length: 6 }, (_, index) => {
-  const chunkPath = `${chunkDir}/part${index + 1}.ts`;
-  if (!fs.existsSync(chunkPath)) throw new Error(`Missing finished-home image chunk: part${index + 1}.ts`);
-  const source = fs.readFileSync(chunkPath, 'utf8');
-  const match = source.match(/^export default '([A-Za-z0-9+/=]+)';\s*$/);
-  if (!match) throw new Error(`Invalid finished-home image chunk: part${index + 1}.ts`);
-  return match[1];
-}).join('');
-
-const finished = Buffer.from(base64, 'base64');
-if (finished.length !== 28694 || finished.subarray(0, 4).toString('ascii') !== 'RIFF' || finished.subarray(8, 12).toString('ascii') !== 'WEBP') {
-  throw new Error('Finished-home route payload is not the expected valid WebP image.');
+if (fs.existsSync(routePath) || fs.existsSync(chunkDir)) {
+  throw new Error('Legacy finished-home image route/chunks still exist; the image should be served directly from public assets.');
 }
 
 for (const footerMarker of [
