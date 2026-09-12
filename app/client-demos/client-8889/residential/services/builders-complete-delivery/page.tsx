@@ -97,7 +97,7 @@ const CSS = `
 .bcd .nrd-foot-img{width:100%;aspect-ratio:16/6;overflow:hidden;background:#e7e0d5}
 .bcd .nrd-foot-img img{width:100%;height:100%;object-fit:cover;display:block}
 @media(max-width:1000px){.bcd-stage{grid-template-columns:minmax(230px,.8fr) minmax(0,1.45fr);gap:30px;min-height:300px}.bcd-stage-left{padding-left:86px}.bcd-stage-left::before{left:46px}.bcd-stage-left::after{left:39px}.bcd-stage-copy{max-width:28ch}}
-@media(max-width:940px){.bcd .nrd-foot-main{grid-template-columns:1fr}}
+@media(max-width:940px){.bcd .nrd-foot-main{grid-template-columns:1fr}.bcd .nrd-foot-cols{justify-content:start}}
 @media(max-width:720px){.bcd .nrd-banner-cap{grid-template-columns:1fr}.bcd .nrd-banner-cap span:nth-child(2),.bcd .nrd-banner-cap span:nth-child(3){display:none}.bcd-journey{width:100%;padding:0 20px}.bcd-stage{grid-template-columns:1fr;gap:16px;min-height:0}.bcd-stage+.bcd-stage{margin-top:48px}.bcd-stage-left{padding:0 0 0 58px;min-height:118px}.bcd-stage-left::before{left:23px;top:-24px;bottom:-24px}.bcd-stage:first-child .bcd-stage-left::before{top:50%}.bcd-stage:last-child .bcd-stage-left::before{bottom:auto;height:50%}.bcd-stage-left::after{left:16px}.bcd-stage-num-left{left:0;font-size:17px}.bcd-stage-title{font-size:25px}.bcd-stage-copy{max-width:36ch}.bcd-stage-media{min-height:0;aspect-ratio:4/3}.bcd-cta{padding-left:8px;padding-right:8px}.bcd .nrd-foot-bottom{flex-direction:column;align-items:flex-start;gap:20px}}
 `;
 

@@ -38,9 +38,9 @@ test('the banner sits full-bleed above the content shell, replacing the old spli
   const banner = src.indexOf('<HeroBanner')
   const shell = src.indexOf('<div className="bcd-shell">')
   assert.ok(banner !== -1 && shell !== -1 && banner < shell, 'HeroBanner must render before the .bcd-shell wrapper')
-  // The static split hero (image column + tag) is gone; a single-column intro block remains.
+  // The static split hero (image column + tag) is gone; the page now uses the STAGES journey layout.
   assert.doesNotMatch(src, /<section className="bcd-hero">/)
   assert.doesNotMatch(src, /className="bcd-hero-media"/)
-  assert.match(src, /<section className="bcd-intro">/)
-  assert.match(src, /<h2 className="bcd-intro-h">/)
+  assert.match(src, /className="bcd-journey"/)
+  assert.match(src, /className="bcd-stage"/)
 })
