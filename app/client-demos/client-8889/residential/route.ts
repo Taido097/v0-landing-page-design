@@ -691,6 +691,62 @@ const SQFT_GUIDE_PATCH = `
 })();
 </script>`;
 
+// The residential page renders Framer's own footer, which still carries the template's placeholder
+// contact details. This corrects that text in place only. It deliberately does NOT touch the
+// footer's nav, layout or visibility — an earlier attempt reused the homepage's footer-nav patch,
+// whose absolute positioning is tuned to a different footer, and that blanked the footer at every
+// breakpoint. Everything here is scoped inside <footer> and only ever rewrites text.
+const FOOTER_CONTACT_PATCH = `
+<script id="nguyen-residential-footer-contact">
+(() => {
+  const NEW_PHONE = '(714) 707-8889  ·  (209) 233-8888';
+  const NEW_ADDR = '7171 Warner Ave., Ste. B, Huntington Beach, CA 92647';
+  const NEW_EMAIL = 'info@nguyenarchitecture.com';
+  const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
+  // Placeholder phones matched on digits, so formatting differences do not break the match.
+  const PHONE_DIGITS = ['971559876543', '6281234567890'];
+  // "Dubai, UAE" as Framer ships it, plus the form the client rebrand rewrites it to.
+  const ADDR_KEYS = ['dubai,uae', 'southerncalifornia,uae'];
+  const EMAIL_RE = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}/g;
+
+  function fix(footer) {
+    const walker = document.createTreeWalker(footer, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+      const raw = node.nodeValue;
+      if (!raw || !raw.trim()) continue;
+      const key = compact(raw);
+      if (PHONE_DIGITS.some((d) => key.replace(/\\D/g, '').indexOf(d) !== -1)) {
+        if (raw !== NEW_PHONE) node.nodeValue = NEW_PHONE;
+        continue;
+      }
+      if (ADDR_KEYS.indexOf(key) !== -1) {
+        if (raw !== NEW_ADDR) node.nodeValue = NEW_ADDR;
+        continue;
+      }
+      if (raw.indexOf('@') !== -1) {
+        EMAIL_RE.lastIndex = 0;
+        const next = raw.replace(EMAIL_RE, NEW_EMAIL);
+        if (next !== raw) node.nodeValue = next;
+      }
+    }
+    footer.querySelectorAll('a[href^="mailto:"]').forEach((a) => {
+      if ((a.getAttribute('href') || '').indexOf(NEW_EMAIL) === -1) a.setAttribute('href', 'mailto:' + NEW_EMAIL);
+    });
+  }
+
+  const run = () => document.querySelectorAll('footer').forEach(fix);
+  run();
+  window.addEventListener('load', run, { once: true });
+  [400, 1000, 2000, 4000, 7000, 12000].forEach((t) => setTimeout(run, t));
+  // Framer re-renders the footer during hydration; debounce so a mobile scroll cannot thrash it.
+  let timer;
+  const observer = new MutationObserver(() => { clearTimeout(timer); timer = setTimeout(run, 200); });
+  if (document.body) observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+  setTimeout(() => observer.disconnect(), 30000);
+})();
+</script>`;
+
 async function getSource() {
   let lastError: unknown = null;
   for (let attempt = 0; attempt < 3; attempt += 1) {
@@ -721,7 +777,9 @@ export async function GET() {
       html = html.replace(/href=["']mailto:[^"']+["']/gi, 'href="mailto:info@nguyenarchitecture.com"');
     }
 
-    html = html.replace('</body>', `${CLIENT_REBRAND}${SQFT_GUIDE_PATCH}</body>`);
+    // Mobile only — desktop already gets the contact details corrected server-side above.
+    const footerContact = mobile ? FOOTER_CONTACT_PATCH : '';
+    html = html.replace('</body>', `${CLIENT_REBRAND}${SQFT_GUIDE_PATCH}${footerContact}</body>`);
     return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'private, no-store' } });
   } catch {
     return new Response('<!doctype html><html><body style="font-family:Arial,sans-serif;padding:40px">Residential page is temporarily unavailable. Please refresh in a moment.</body></html>', { status: 502, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
