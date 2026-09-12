@@ -1260,10 +1260,12 @@ footer > .nguyen-footer-links > a:focus-visible { text-decoration: underline !im
 
   function patchFooterNav() {
     document.querySelectorAll('footer').forEach(hideLegacyNavGroups);
-    document.querySelectorAll('footer [data-framer-name="footer-links"]').forEach((original) => {
-      const footer = original.closest('footer');
-      original.setAttribute('aria-hidden', 'true');
-      original.setAttribute('inert', '');
+    // Framer ships one footer copy per breakpoint; only the desktop copy typically carries
+    // data-framer-name="footer-links". Iterate all footers so the mobile copy also gets a nav.
+    document.querySelectorAll('footer').forEach((footer) => {
+      if (getComputedStyle(footer).display === 'none') return;
+      const original = footer.querySelector('[data-framer-name="footer-links"]');
+      if (original) { original.setAttribute('aria-hidden', 'true'); original.setAttribute('inert', ''); }
       if (getComputedStyle(footer).position === 'static') footer.style.position = 'relative';
       let nav = footer.querySelector(':scope > .nguyen-footer-links');
       if (!nav) {
@@ -1283,10 +1285,12 @@ footer > .nguyen-footer-links > a:focus-visible { text-decoration: underline !im
       const heading = footer.querySelector('h3, h2');
       const mobile = window.innerWidth <= 809;
       const getInTouch = findFooterText(footer, 'GET IN TOUCH');
-      const reference = (mobile ? getInTouch || heading || original : heading || original).getBoundingClientRect();
+      const refEl = mobile ? (getInTouch || heading || original) : (heading || original);
+      if (!refEl) return;
+      const reference = refEl.getBoundingClientRect();
       if (mobile) {
         const leftReference = heading || getInTouch || original;
-        const left = Math.max(20, leftReference.getBoundingClientRect().left - bounds.left);
+        const left = leftReference ? Math.max(20, leftReference.getBoundingClientRect().left - bounds.left) : 24;
         nav.style.setProperty('--footer-nav-mobile-top', Math.max(0, reference.bottom - bounds.top + 42) + 'px');
         nav.style.setProperty('--footer-nav-mobile-left', left + 'px');
       } else {
