@@ -1107,40 +1107,43 @@ const FOOTER_PATCH = `
 (() => {
   const normalize = (v) => (v || '').replace(/\\s+/g, ' ').trim();
   const compact = (v) => normalize(v).replace(/\\s+/g, '').toLowerCase();
-  const OLD_PHONE = compact('+62 812 3456 7890');
   const NEW_PHONE = '(714) 707-8889  ·  (209) 233-8888';
-
-  const OLD_ADDR = compact('Dubai-Based Architecture And Interior Design Studio');
   const NEW_ADDR = '7171 Warner Ave., Ste. B, Huntington Beach, CA 92647';
+  const NEW_EMAIL = 'info@nguyenarchitecture.com';
+  // Match both old placeholder phone formats (Indonesian +62 and UAE +971).
+  const PHONE_PATTERNS = ['6281234567890', '971559876543'];
+  // Match both old address formats: long tagline and short "Dubai, UAE".
+  const ADDR_KEYS = ['basedarchitectureandinteriordesignstudio', 'dubai,uae', 'dubai,'];
 
-  const ADDR_KEY = 'basedarchitectureandinteriordesignstudio';
-  const PHONE_DIGITS = '6281234567890';
+  function isPhoneNode(key) {
+    return PHONE_PATTERNS.some((p) => key.indexOf(p) !== -1);
+  }
+  function isAddrEl(text) {
+    return ADDR_KEYS.some((k) => text.indexOf(k) !== -1);
+  }
 
   function patchFooter() {
-    // Phone: the original '+62 812 3456 7890' text node -> two lines. Match on the digits so formatting
-    // or a leading '+' doesn't break it. Runs across every breakpoint copy via the tree walker.
+    // Phone: match on digits so formatting differences don't break it.
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     let node;
     while ((node = walker.nextNode())) {
       const key = compact(node.nodeValue);
-      if (key === OLD_PHONE || key.indexOf(PHONE_DIGITS) !== -1) {
-        const parent = node.parentElement;
-        if (parent && !parent.querySelector('[data-nguyen-footer-phone]')) {
-          parent.innerHTML = '';
-          const wrap = document.createElement('span');
-          wrap.setAttribute('data-nguyen-footer-phone', '1');
-          wrap.appendChild(document.createTextNode(NEW_PHONE));
-          parent.appendChild(wrap);
-        }
+      if (!isPhoneNode(key)) continue;
+      const parent = node.parentElement;
+      if (parent && !parent.querySelector('[data-nguyen-footer-phone]')) {
+        parent.innerHTML = '';
+        const wrap = document.createElement('span');
+        wrap.setAttribute('data-nguyen-footer-phone', '1');
+        wrap.appendChild(document.createTextNode(NEW_PHONE));
+        parent.appendChild(wrap);
       }
     }
 
-    // Address: the studio tagline — the base layer already rewrote 'Dubai' -> 'Huntington Beach, CA'
-    // inside it, so match the stable tail instead of the original 'Dubai-Based...' string. Replace the
-    // tightest element that still wraps the tagline (works whether it's one text node or split letters).
+    // Address: match both the long tagline and the short "Dubai, UAE" placeholder.
     document.querySelectorAll('div,span,p,a,h1,h2,h3,h4,h5,h6,li').forEach((el) => {
-      if (compact(el.textContent).indexOf(ADDR_KEY) === -1) return;
-      if (Array.from(el.children).some((c) => compact(c.textContent).indexOf(ADDR_KEY) !== -1)) return;
+      const text = compact(el.textContent);
+      if (!isAddrEl(text)) return;
+      if (Array.from(el.children).some((c) => isAddrEl(compact(c.textContent)))) return;
       if (normalize(el.textContent) !== NEW_ADDR) el.textContent = NEW_ADDR;
     });
 
@@ -1156,11 +1159,13 @@ const FOOTER_PATCH = `
       if (curr !== next) el.textContent = next;
     });
 
-    // Fix email link: correct href, reduce font size so full address is never clipped, no decoration.
+    // Email: fix href AND displayed text for any old placeholder address.
     document.querySelectorAll('a[href^="mailto:"]').forEach((a) => {
       if (!a.getAttribute('href').includes('nguyenarchitecture.com')) {
-        a.setAttribute('href', 'mailto:info@nguyenarchitecture.com');
+        a.setAttribute('href', 'mailto:' + NEW_EMAIL);
       }
+      const displayed = (a.textContent || '').trim();
+      if (displayed && displayed !== NEW_EMAIL && displayed.includes('@')) a.textContent = NEW_EMAIL;
       a.style.setProperty('color', 'inherit', 'important');
       a.style.setProperty('text-decoration', 'none', 'important');
       a.style.setProperty('font-size', 'clamp(11px,1vw,13px)', 'important');
