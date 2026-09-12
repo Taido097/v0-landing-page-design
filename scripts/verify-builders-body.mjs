@@ -26,4 +26,9 @@ if (!fs.existsSync(finishedPath)) {
   throw new Error('Finished-home asset is missing from public assets.');
 }
 
+const finished = fs.readFileSync(finishedPath);
+if (finished.length < 16 || finished.subarray(0, 4).toString('ascii') !== 'RIFF' || finished.subarray(8, 12).toString('ascii') !== 'WEBP') {
+  throw new Error('Finished-home asset is not a valid WebP file.');
+}
+
 console.log('Builders body regression check passed.');
