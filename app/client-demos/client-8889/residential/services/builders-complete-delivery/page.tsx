@@ -47,7 +47,7 @@ const STAGES = [
     num: '05',
     title: 'Final Completion',
     body: 'We conduct final inspections, address any punch list items, and deliver a move-in-ready space built to last.',
-    src: `${BASE}/builders-complete-07-finished-home.webp`,
+    src: `${BASE}/builders-complete-07-finished-home.webp?v=finished-20260912`,
     alt: 'Finished modern coastal home after construction completion',
   },
 ];
