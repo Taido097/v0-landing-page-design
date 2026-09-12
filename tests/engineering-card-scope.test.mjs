@@ -6,12 +6,13 @@ const routeSource = readFileSync(
   new URL("../app/client-demos/client-8889/arcsphere-socal/route.ts", import.meta.url),
   "utf8",
 )
+const fixedRouteSource = readFileSync(
+  new URL("../app/client-demos/client-8889/arcsphere-fixed/route.ts", import.meta.url),
+  "utf8",
+)
 
 const engineeringPatch = routeSource.match(
   /const ENGINEERING_SERVICE_PATCH = `([\s\S]*?)`\n\nconst PROJECT_CARDS_PATCH/,
-)?.[1]
-const projectCardsPatch = routeSource.match(
-  /const PROJECT_CARDS_PATCH = `([\s\S]*?)`\n\nconst DESIGN_PANELS_PATCH/,
 )?.[1]
 
 test("phone-width hiding is limited to media explicitly marked on the Engineering card", () => {
@@ -84,15 +85,13 @@ test("first click after a fresh load routes without waiting for the card to be m
   assert.match(engineeringPatch, /if \(isTooBroad\(el\)\) break/)
 })
 
-test("Engineering claims the full Framer service-list row so its arrow cannot inherit Commercial routing", () => {
-  assert.ok(engineeringPatch)
-  assert.match(engineeringPatch, /closest\('li'\)/)
-  assert.match(engineeringPatch, /parentElement\?\.getAttribute\('data-framer-name'\) === 'service_list'/)
-})
-
-test("Featured Project card routing never classifies service-list rows", () => {
-  assert.ok(projectCardsPatch)
-  assert.match(projectCardsPatch, /closest\('\[data-framer-name="service_list"\]'\)/)
+test("an early fixed-layer guard claims the whole Engineering service-list row before Commercial routers", () => {
+  assert.match(fixedRouteSource, /const ENGINEERING_ROUTE_GUARD_PATCH = `/)
+  assert.match(fixedRouteSource, /engineering-approvals/)
+  assert.match(fixedRouteSource, /data-framer-name[^\n]*service_list/)
+  assert.match(fixedRouteSource, /closest\('li'\)/)
+  assert.match(fixedRouteSource, /stopImmediatePropagation/)
+  assert.match(fixedRouteSource, /\$\{BUILDERS_COMPLETE_PATCH\}\$\{ENGINEERING_ROUTE_GUARD_PATCH\}/)
 })
 
 test("the Engineering title is rewritten server-side so React hydrates with ENGINEERING", () => {
