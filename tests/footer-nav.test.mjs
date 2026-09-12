@@ -3,9 +3,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 const source = readFileSync(new URL('../app/client-demos/client-8889/arcsphere-socal/route.ts', import.meta.url), 'utf8');
-// The footer patches are shared between the homepage and residential proxies.
-const footerSource = readFileSync(new URL('../app/client-demos/client-8889/footer-patch.ts', import.meta.url), 'utf8');
-const patch = footerSource.split('export const FOOTER_NAV_PATCH = `')[1];
+const patch = source.split('const FOOTER_NAV_PATCH = `')[1].split('const ICON_BAR_PATCH')[0];
 test('footer has an independent five-link navigation, not animated text matching', () => {
   assert.match(patch, /createElement\('nav'\)/);
   assert.match(patch, /\['home', 'services', 'projects', 'process', 'contact'\]/);

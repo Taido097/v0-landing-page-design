@@ -1,7 +1,5 @@
 import { headers } from 'next/headers';
 
-import { FOOTER_PATCH, FOOTER_NAV_PATCH } from '../footer-patch';
-
 const SOURCE_URL = 'https://arcsphere-studio.framer.website/projects/serenity-villa';
 const BASE_URL = 'https://arcsphere-studio.framer.website/';
 
@@ -723,7 +721,7 @@ export async function GET() {
       html = html.replace(/href=["']mailto:[^"']+["']/gi, 'href="mailto:info@nguyenarchitecture.com"');
     }
 
-    html = html.replace('</body>', `${CLIENT_REBRAND}${SQFT_GUIDE_PATCH}${FOOTER_PATCH}${FOOTER_NAV_PATCH}</body>`);
+    html = html.replace('</body>', `${CLIENT_REBRAND}${SQFT_GUIDE_PATCH}</body>`);
     return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'private, no-store' } });
   } catch {
     return new Response('<!doctype html><html><body style="font-family:Arial,sans-serif;padding:40px">Residential page is temporarily unavailable. Please refresh in a moment.</body></html>', { status: 502, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
