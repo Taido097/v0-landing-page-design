@@ -1256,6 +1256,19 @@ footer > .nguyen-footer-links > a:focus-visible { text-decoration: underline !im
       el.style.setProperty('visibility', 'hidden', 'important');
       el.style.setProperty('pointer-events', 'none', 'important');
     });
+    // Fallback for mobile: when nav + social + legal share a parent the group approach finds nothing.
+    // Hide each individual legacy nav link by its exact text label instead.
+    if (matches.length === 0) {
+      footer.querySelectorAll('a,span,div,p').forEach((el) => {
+        if (el.closest('.nguyen-footer-links')) return;
+        if (!LEGACY_NAV_LABELS.includes(compact(el.textContent))) return;
+        if (Array.from(el.children).some((c) => LEGACY_NAV_LABELS.includes(compact(c.textContent)))) return;
+        el.setAttribute('aria-hidden', 'true');
+        el.setAttribute('inert', '');
+        el.style.setProperty('visibility', 'hidden', 'important');
+        el.style.setProperty('pointer-events', 'none', 'important');
+      });
+    }
   }
 
   function patchFooterNav() {
