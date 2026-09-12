@@ -167,6 +167,33 @@ export function HowWeWorkSection() {
   const sceneRefs = useRef<Array<HTMLDivElement | null>>([]);
   const headerReveal = useScrollReveal<HTMLDivElement>();
   const benefitsReveal = useScrollReveal<HTMLDivElement>();
+  const showcaseRef = useRef<HTMLDivElement>(null);
+  const [showcaseRevealed, setShowcaseRevealed] = useState(false);
+
+  useEffect(() => {
+    if (isMobile === null) return;
+
+    const el = showcaseRef.current;
+    if (!el) return;
+
+    if (typeof IntersectionObserver === 'undefined') {
+      setShowcaseRevealed(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShowcaseRevealed(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0, rootMargin: '0px 0px -22% 0px' },
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [isMobile]);
 
   useEffect(() => {
     const media = window.matchMedia('(max-width: 560px)');
@@ -296,6 +323,15 @@ export function HowWeWorkSection() {
         .demo-showcase-category{position:absolute;left:24px;bottom:24px;z-index:30;border:1px solid rgba(255,255,255,.9);border-radius:999px;background:rgba(0,0,0,.24);padding:11px 20px;color:#fff;font-size:12px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
         .view-all-demos-button{border-radius:0!important}
 
+        /* Scroll-in entrance for the demo showcase. Opacity on the sticky stage
+           is safe (transform on it/its ancestors would break position:sticky).
+           The card rises via its own transform, which the scroll JS never touches
+           (that drives .demo-showcase-scene, the card's ancestor). */
+        .demo-showcase-reveal .demo-showcase-stage{opacity:0;transition:opacity .9s cubic-bezier(.22,1,.36,1)}
+        .demo-showcase-reveal.is-revealed .demo-showcase-stage{opacity:1}
+        .demo-showcase-reveal .demo-showcase-card{opacity:0;transform:translate3d(-50%,calc(-50% + 46px),0);transition:opacity .8s ease,transform 1s cubic-bezier(.22,1,.36,1)}
+        .demo-showcase-reveal.is-revealed .demo-showcase-card{opacity:1;transform:translate3d(-50%,-50%,0)}
+
         @media(max-width:1100px) and (min-width:901px){
           .demo-showcase-stage{min-height:720px}
           .demo-showcase-card{width:76%;min-width:670px}
@@ -331,7 +367,11 @@ export function HowWeWorkSection() {
           .mobile-demo-scene .demo-showcase-category{left:10px;bottom:12px;padding:8px 12px;font-size:9px;backdrop-filter:none;-webkit-backdrop-filter:none}
         }
 
-        @media(prefers-reduced-motion:reduce){.demo-showcase-scene{will-change:auto}}
+        @media(prefers-reduced-motion:reduce){
+          .demo-showcase-scene{will-change:auto}
+          .demo-showcase-reveal .demo-showcase-stage{opacity:1!important;transition:none!important}
+          .demo-showcase-reveal .demo-showcase-card{opacity:1!important;transform:translate3d(-50%,-50%,0)!important;transition:none!important}
+        }
       `}</style>
 
       <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8">
@@ -351,6 +391,10 @@ export function HowWeWorkSection() {
             </Link>
           </div>
 
+          <div
+            ref={showcaseRef}
+            className={`demo-showcase-reveal${showcaseRevealed ? ' is-revealed' : ''}`}
+          >
           {isMobile === false && (
             <div ref={stackRef} className="demo-showcase-scroll">
               <div ref={stageRef} className="demo-showcase-stage">
@@ -391,6 +435,7 @@ export function HowWeWorkSection() {
               ))}
             </div>
           )}
+          </div>
 
           <div className="flex justify-center py-16 sm:py-20">
             <Link href="/demos" style={{ borderRadius: 0 }} className="view-all-demos-button group inline-flex min-w-[190px] items-center justify-center gap-3 !rounded-none bg-black px-7 py-4 text-xs font-semibold uppercase tracking-[0.04em] text-white transition-colors duration-300 hover:bg-black/80">
