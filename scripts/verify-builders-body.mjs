@@ -31,4 +31,15 @@ if (finished.length < 16 || finished.subarray(0, 4).toString('ascii') !== 'RIFF'
   throw new Error('Finished-home asset is not a valid WebP file.');
 }
 
+for (const footerMarker of [
+  '<footer className="nrd-foot">',
+  'Open to new projects and collaborations that shape meaningful spaces.',
+  'NGUYEN Architecture &amp; Engineering',
+  '/client-8889/residential/footer-main-1728.jpg?v=footer-hq-20260901',
+]) {
+  if (!page.includes(footerMarker)) {
+    throw new Error(`Builders page is missing the standard footer marker: ${footerMarker}`);
+  }
+}
+
 console.log('Builders body regression check passed.');
