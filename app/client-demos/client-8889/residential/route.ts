@@ -691,58 +691,102 @@ const SQFT_GUIDE_PATCH = `
 })();
 </script>`;
 
-// The residential page renders Framer's own footer, which still carries the template's placeholder
-// contact details. This corrects that text in place only. It deliberately does NOT touch the
-// footer's nav, layout or visibility — an earlier attempt reused the homepage's footer-nav patch,
-// whose absolute positioning is tuned to a different footer, and that blanked the footer at every
-// breakpoint. Everything here is scoped inside <footer> and only ever rewrites text.
-const FOOTER_CONTACT_PATCH = `
-<script id="nguyen-residential-footer-contact">
+// In-place text patching of Framer's own footer proved unreliable on mobile, so on mobile we hide
+// Framer's footer entirely and drop in a clone of the commercial service page's footer
+// (residential/services/[slug]/page.tsx) instead. The markup and styles mirror that footer 1:1;
+// everything is scoped under #nguyen-injected-footer so it cannot leak, and the whole patch ships
+// on mobile only, so desktop is untouched.
+const FOOTER_REPLACE_PATCH = `
+<style id="nguyen-residential-footer-replace-styles">
+/* Hide Framer's own footer on mobile. The injected clone below is a <div>, not a <footer>, so this
+   rule never touches it. */
+footer { display: none !important; }
+#nguyen-injected-footer{--bg:#efece5;--ink:#1f1c19;--muted:#6f675e;--soft:#8a8177;--line:#e0d9cc;--gold:#b3894f;
+  background:var(--bg);color:var(--ink);position:relative;z-index:1;
+  font-family:"Inter","Inter Display",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+#nguyen-injected-footer *{box-sizing:border-box}
+#nguyen-injected-footer a{color:inherit;text-decoration:none}
+#nguyen-injected-footer .nrd-shell{width:min(1200px,100%);margin:0 auto;padding:0 clamp(20px,4vw,56px)}
+#nguyen-injected-footer .nrd-foot{margin-top:0;border-top:1px solid var(--line);padding:clamp(40px,5vw,72px) 0 0;overflow:hidden}
+#nguyen-injected-footer .nrd-foot-main{display:grid;grid-template-columns:1fr;gap:clamp(28px,4vw,56px);align-items:start}
+#nguyen-injected-footer .nrd-foot-head{font-size:clamp(26px,3.4vw,40px);line-height:1.2;font-weight:500;letter-spacing:-.035em;text-transform:uppercase;margin:0;max-width:14em;color:#4f4742}
+#nguyen-injected-footer a.nrd-foot-cta{display:inline-block;margin-top:clamp(20px,2.4vw,30px);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;border-bottom:1px solid var(--ink);padding-bottom:6px;color:var(--ink)}
+#nguyen-injected-footer .nrd-foot-cols{display:grid;grid-template-columns:minmax(150px,220px);justify-content:start}
+#nguyen-injected-footer .nrd-foot-col{display:flex;flex-direction:column;gap:clamp(16px,1.55vw,24px)}
+#nguyen-injected-footer .nrd-foot-col a{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+#nguyen-injected-footer .nrd-foot-bottom{display:flex;flex-direction:column;align-items:flex-start;gap:20px;margin-top:clamp(34px,4vw,52px);padding-top:clamp(22px,2.6vw,32px);border-top:1px solid var(--line)}
+#nguyen-injected-footer .nrd-foot-copy{font-size:11.5px;color:var(--soft);letter-spacing:.02em;margin:0}
+#nguyen-injected-footer .nrd-marquee{overflow:hidden;white-space:nowrap;margin:clamp(30px,4vw,56px) 0 clamp(24px,3vw,40px)}
+#nguyen-injected-footer .nrd-marquee-track{display:inline-flex;align-items:center;animation:nrd-inj-scroll 40s linear infinite;will-change:transform}
+#nguyen-injected-footer .nrd-marquee-track span{flex:none;white-space:nowrap;font-size:clamp(64px,23vw,340px);line-height:.9;font-weight:800;letter-spacing:-.04em;text-transform:uppercase;color:#4f4742}
+#nguyen-injected-footer .nrd-marquee-track span::after{content:"·";padding:0 .3em;color:#4f4742}
+@keyframes nrd-inj-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){#nguyen-injected-footer .nrd-marquee-track{animation:none}}
+#nguyen-injected-footer .nrd-foot-img{width:100%;aspect-ratio:16/6;overflow:hidden;background:#e7e0d5}
+#nguyen-injected-footer .nrd-foot-img img{width:100%;height:100%;object-fit:cover;display:block}
+</style>
+<script id="nguyen-residential-footer-replace">
 (() => {
-  const NEW_PHONE = '(714) 707-8889  ·  (209) 233-8888';
-  const NEW_ADDR = '7171 Warner Ave., Ste. B, Huntington Beach, CA 92647';
-  const NEW_EMAIL = 'info@nguyenarchitecture.com';
-  const compact = (v) => (v || '').replace(/\\s+/g, '').toLowerCase();
-  // Placeholder phones matched on digits, so formatting differences do not break the match.
-  const PHONE_DIGITS = ['971559876543', '6281234567890'];
-  // "Dubai, UAE" as Framer ships it, plus the form the client rebrand rewrites it to.
-  const ADDR_KEYS = ['dubai,uae', 'southerncalifornia,uae'];
-  const EMAIL_RE = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}/g;
+  const ORIGIN = window.location.origin;
+  const HOME = ORIGIN + '/client-demos/client-8889/arcsphere-socal';
+  const CONTACT = ORIGIN + '/client-demos/client-8889/residential/contact';
+  const IMG = ORIGIN + '/client-8889/residential/footer-main-1728.jpg?v=footer-hq-20260901';
+  const marquee = Array.from({ length: 6 }).map(() => '<span>NGUYEN Architecture &amp; Engineering</span>').join('');
+  const HTML = ''
+    + '<div class="nrd-foot">'
+    +   '<div class="nrd-shell">'
+    +     '<div class="nrd-foot-main">'
+    +       '<div class="nrd-foot-lead">'
+    +         '<h2 class="nrd-foot-head">Open to new projects and collaborations that shape meaningful spaces.</h2>'
+    +         '<a class="nrd-foot-cta" href="' + CONTACT + '">Start a Project</a>'
+    +       '</div>'
+    +       '<div class="nrd-foot-cols"><div class="nrd-foot-col">'
+    +         '<a href="' + HOME + '">Home</a>'
+    +         '<a href="' + HOME + '#services">Services</a>'
+    +         '<a href="' + HOME + '#featured-projects">Projects</a>'
+    +         '<a href="' + HOME + '">Process</a>'
+    +         '<a href="' + CONTACT + '">Contact</a>'
+    +       '</div></div>'
+    +     '</div>'
+    +     '<div class="nrd-foot-bottom"><p class="nrd-foot-copy">© 2026 NGUYEN ARCHITECTURE. All Rights Reserved.</p></div>'
+    +   '</div>'
+    +   '<div class="nrd-marquee" aria-hidden="true"><div class="nrd-marquee-track">' + marquee + '</div></div>'
+    +   '<div class="nrd-foot-img"><img src="' + IMG + '" alt="NGUYEN residential architecture" /></div>'
+    + '</div>';
 
-  function fix(footer) {
-    const walker = document.createTreeWalker(footer, NodeFilter.SHOW_TEXT);
-    let node;
-    while ((node = walker.nextNode())) {
-      const raw = node.nodeValue;
-      if (!raw || !raw.trim()) continue;
-      const key = compact(raw);
-      if (PHONE_DIGITS.some((d) => key.replace(/\\D/g, '').indexOf(d) !== -1)) {
-        if (raw !== NEW_PHONE) node.nodeValue = NEW_PHONE;
-        continue;
+  function insert() {
+    if (document.getElementById('nguyen-injected-footer')) return;
+    const foot = document.createElement('div');
+    foot.id = 'nguyen-injected-footer';
+    foot.innerHTML = HTML;
+    const main = document.getElementById('main');
+    if (main && main.parentNode) main.parentNode.insertBefore(foot, main.nextSibling);
+    else document.body.appendChild(foot);
+  }
+
+  // CSS hides semantic <footer>s; this also hides a footer built as a Framer-named <div>.
+  function hideFramerFooter() {
+    document.querySelectorAll('[data-framer-name]').forEach((el) => {
+      if (el.closest('#nguyen-injected-footer')) return;
+      if (!/footer/i.test(el.getAttribute('data-framer-name') || '')) return;
+      let top = el, p = el.parentElement;
+      while (p && p !== document.body) {
+        if (/footer/i.test(p.getAttribute('data-framer-name') || '')) top = p;
+        p = p.parentElement;
       }
-      if (ADDR_KEYS.indexOf(key) !== -1) {
-        if (raw !== NEW_ADDR) node.nodeValue = NEW_ADDR;
-        continue;
-      }
-      if (raw.indexOf('@') !== -1) {
-        EMAIL_RE.lastIndex = 0;
-        const next = raw.replace(EMAIL_RE, NEW_EMAIL);
-        if (next !== raw) node.nodeValue = next;
-      }
-    }
-    footer.querySelectorAll('a[href^="mailto:"]').forEach((a) => {
-      if ((a.getAttribute('href') || '').indexOf(NEW_EMAIL) === -1) a.setAttribute('href', 'mailto:' + NEW_EMAIL);
+      top.style.setProperty('display', 'none', 'important');
     });
   }
 
-  const run = () => document.querySelectorAll('footer').forEach(fix);
+  const run = () => { hideFramerFooter(); insert(); };
   run();
   window.addEventListener('load', run, { once: true });
-  [400, 1000, 2000, 4000, 7000, 12000].forEach((t) => setTimeout(run, t));
-  // Framer re-renders the footer during hydration; debounce so a mobile scroll cannot thrash it.
+  [300, 800, 1800, 3500, 6000, 10000].forEach((t) => setTimeout(run, t));
+  // Framer keeps re-rendering during hydration; debounce so a mobile scroll cannot thrash it.
   let timer;
   const observer = new MutationObserver(() => { clearTimeout(timer); timer = setTimeout(run, 200); });
-  if (document.body) observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+  if (document.body) observer.observe(document.body, { childList: true, subtree: true });
   setTimeout(() => observer.disconnect(), 30000);
 })();
 </script>`;
@@ -777,9 +821,10 @@ export async function GET() {
       html = html.replace(/href=["']mailto:[^"']+["']/gi, 'href="mailto:info@nguyenarchitecture.com"');
     }
 
-    // Mobile only — desktop already gets the contact details corrected server-side above.
-    const footerContact = mobile ? FOOTER_CONTACT_PATCH : '';
-    html = html.replace('</body>', `${CLIENT_REBRAND}${SQFT_GUIDE_PATCH}${footerContact}</body>`);
+    // Mobile only — replace Framer's footer with a clone of the commercial page footer. Desktop
+    // keeps Framer's footer, corrected server-side above.
+    const footerReplace = mobile ? FOOTER_REPLACE_PATCH : '';
+    html = html.replace('</body>', `${CLIENT_REBRAND}${SQFT_GUIDE_PATCH}${footerReplace}</body>`);
     return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'private, no-store' } });
   } catch {
     return new Response('<!doctype html><html><body style="font-family:Arial,sans-serif;padding:40px">Residential page is temporarily unavailable. Please refresh in a moment.</body></html>', { status: 502, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
