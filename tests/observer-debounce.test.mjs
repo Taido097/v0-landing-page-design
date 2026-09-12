@@ -2,10 +2,14 @@ import assert from "node:assert/strict"
 import { readFileSync } from "node:fs"
 import test from "node:test"
 
-const routeSource = readFileSync(
-  new URL("../app/client-demos/client-8889/arcsphere-socal/route.ts", import.meta.url),
-  "utf8",
-)
+// The footer patches live in a shared module so the homepage and residential proxies inject the
+// same footer; both sources carry observers that must stay debounced.
+const routeSource = [
+  "../app/client-demos/client-8889/arcsphere-socal/route.ts",
+  "../app/client-demos/client-8889/footer-patch.ts",
+]
+  .map((path) => readFileSync(new URL(path, import.meta.url), "utf8"))
+  .join("\n")
 
 // Long-lived body/subtree observers that re-scan the DOM (querySelectorAll, getBoundingClientRect,
 // getComputedStyle, tree walks) must be debounced. Running them on every mutation batch that Framer
