@@ -681,9 +681,28 @@ const ENGINEERING_SERVICE_PATCH = `
 
   if (!window.__nguyenEngineeringRouting) {
     window.__nguyenEngineeringRouting = true;
+    const engStart = (event) => {
+      const t = event.target && event.target.nodeType === Node.TEXT_NODE ? event.target.parentElement : event.target;
+      return t && engineeringRowFor(t) ? t : null;
+    };
+    // Framer opens its card-detail overlay on the PRESS gesture (pointerdown / mousedown / touchstart),
+    // which fires before 'click' — so the junk template modal (SPACE PLANNING / Dubai / AED) popped up
+    // before the navigate-on-click below could run. Swallow the press on the Engineering row so the
+    // overlay never opens, then navigate on 'click'. touchstart is not preventDefault'd, or the browser
+    // won't synthesize the click we navigate on; stopImmediatePropagation blocks Framer's own listener.
+    ['pointerdown', 'mousedown'].forEach((type) => document.addEventListener(type, (event) => {
+      if (!engStart(event)) return;
+      event.stopPropagation();
+      if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+      event.preventDefault();
+    }, true));
+    document.addEventListener('touchstart', (event) => {
+      if (!engStart(event)) return;
+      event.stopPropagation();
+      if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+    }, true);
     document.addEventListener('click', (event) => {
-      const start = event.target && event.target.nodeType === Node.TEXT_NODE ? event.target.parentElement : event.target;
-      if (!start || !engineeringRowFor(start)) return;
+      if (!engStart(event)) return;
       event.preventDefault();
       event.stopPropagation();
       if (event.stopImmediatePropagation) event.stopImmediatePropagation();
