@@ -1,5 +1,6 @@
 import { GET as getBaseConcept } from "../arcsphere/route"
 import { BUILDERS_COMPLETE_PATCH } from "./builders-complete-patch"
+import { FORM_SERVICE_DROPDOWN_PATCH } from "./form-service-dropdown-patch"
 
 const PROCESS_PATCH = `
 <script id="nguyen-process-service-style-patch">
@@ -282,7 +283,7 @@ export async function GET() {
   if (!response.ok) return response;
 
   const html = await response.text();
-  const patched = html.replace('</body>', `${PROCESS_PATCH}${BUILDERS_COMPLETE_PATCH}${ENGINEERING_ROUTE_GUARD_PATCH}</body>`);
+  const patched = html.replace('</body>', `${PROCESS_PATCH}${BUILDERS_COMPLETE_PATCH}${ENGINEERING_ROUTE_GUARD_PATCH}${FORM_SERVICE_DROPDOWN_PATCH}</body>`);
 
   const headers = new Headers(response.headers);
   headers.set('Content-Type', 'text/html; charset=utf-8');
