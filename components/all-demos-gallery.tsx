@@ -4,16 +4,17 @@ import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-type DemoCategory = 'All' | 'Portfolio' | 'Scheduling' | 'Restaurant' | 'Custom Website';
+type DemoCategory = 'All' | 'Recently Added' | 'Portfolio' | 'Scheduling' | 'Restaurant' | 'Custom Website';
 
 type Demo = {
   name: string;
-  category: Exclude<DemoCategory, 'All'>;
+  category: Exclude<DemoCategory, 'All' | 'Recently Added'>;
   industry: string;
   href: string;
+  recentlyAdded?: boolean;
 };
 
-const categories: DemoCategory[] = ['All', 'Portfolio', 'Scheduling', 'Restaurant', 'Custom Website'];
+const categories: DemoCategory[] = ['All', 'Recently Added', 'Portfolio', 'Scheduling', 'Restaurant', 'Custom Website'];
 
 const demos: Demo[] = [
   { name: 'Luna Frame Studio', category: 'Portfolio', industry: 'Photography studio', href: '/portfolio/photography-studio' },
@@ -32,7 +33,7 @@ const demos: Demo[] = [
   { name: 'Foodee', category: 'Restaurant', industry: 'Food & restaurant', href: '/portfolio/foodee-restaurant' },
   { name: 'Refit', category: 'Custom Website', industry: 'Construction & renovation', href: '/portfolio/refit-construction' },
   { name: 'LeapFly', category: 'Custom Website', industry: 'Landscaping & lawn care', href: '/portfolio/leapfly-landscaping' },
-  { name: 'NGUYEN Architecture & Engineering', category: 'Custom Website', industry: 'Architecture & Engineering', href: '/client-demos/client-8889/arcsphere-socal' },
+  { name: 'NGUYEN Architecture & Engineering', category: 'Custom Website', industry: 'Architecture & Engineering', href: '/client-demos/client-8889/arcsphere-socal', recentlyAdded: true },
 ];
 
 const snapshot = (path: string) =>
@@ -246,7 +247,11 @@ export function AllDemosGallery() {
     return () => media.removeEventListener?.('change', sync);
   }, []);
 
-  const visibleDemos = activeCategory === 'All' ? demos : demos.filter((demo) => demo.category === activeCategory);
+  const visibleDemos = activeCategory === 'All'
+    ? demos
+    : activeCategory === 'Recently Added'
+      ? demos.filter((demo) => demo.recentlyAdded)
+      : demos.filter((demo) => demo.category === activeCategory);
 
   useEffect(() => {
     setActiveMobileRow(0);
@@ -257,7 +262,11 @@ export function AllDemosGallery() {
       <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div className="flex gap-2 overflow-x-auto border-y border-black/10 py-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {categories.map((category) => {
-            const count = category === 'All' ? demos.length : demos.filter((demo) => demo.category === category).length;
+            const count = category === 'All'
+              ? demos.length
+              : category === 'Recently Added'
+                ? demos.filter((demo) => demo.recentlyAdded).length
+                : demos.filter((demo) => demo.category === category).length;
             const active = category === activeCategory;
 
             return (
