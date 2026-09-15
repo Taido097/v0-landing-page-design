@@ -2,6 +2,7 @@ import fs from 'node:fs';
 
 const gallerySource = fs.readFileSync('components/all-demos-gallery.tsx', 'utf8');
 const selectedSource = fs.readFileSync('components/how-we-work-section.tsx', 'utf8');
+const pricingSource = fs.readFileSync('components/pricing-section.tsx', 'utf8');
 
 const galleryRequirements = [
   ['embedded preview wake helper', /function setEmbeddedPreviewRunning\(/],
@@ -34,6 +35,14 @@ const selectedForbidden = [
   ['old homepage Salonix demo', /name: 'Salonix'[\s\S]*href: '\/portfolio\/salon-spa'/],
 ];
 
+const pricingRequirements = [
+  ['starter package single-page wording', /name: 'Starter'[\s\S]*features: \[[\s\S]*'Single-page website'/],
+];
+
+const pricingForbidden = [
+  ['old starter up-to-5-pages wording', /name: 'Starter'[\s\S]*features: \[[\s\S]*'Up to 5 pages'/],
+];
+
 const missingGallery = galleryRequirements
   .filter(([, pattern]) => !pattern.test(gallerySource))
   .map(([name]) => name);
@@ -43,11 +52,17 @@ const missingSelected = selectedRequirements
 const forbiddenSelected = selectedForbidden
   .filter(([, pattern]) => pattern.test(selectedSource))
   .map(([name]) => name);
-const missing = [...missingGallery, ...missingSelected, ...forbiddenSelected];
+const missingPricing = pricingRequirements
+  .filter(([, pattern]) => !pattern.test(pricingSource))
+  .map(([name]) => name);
+const forbiddenPricing = pricingForbidden
+  .filter(([, pattern]) => pattern.test(pricingSource))
+  .map(([name]) => name);
+const missing = [...missingGallery, ...missingSelected, ...forbiddenSelected, ...missingPricing, ...forbiddenPricing];
 
 if (missing.length) {
-  console.error(`Live preview regression check failed: ${missing.join(', ')}`);
+  console.error(`Live preview and pricing regression check failed: ${missing.join(', ')}`);
   process.exit(1);
 }
 
-console.log('Live portfolio and homepage selected preview regression checks passed.');
+console.log('Live portfolio, homepage selected preview, and pricing regression checks passed.');
