@@ -56,16 +56,247 @@ const benefits = [
   { number: '04', title: 'Built for Local Businesses', description: 'The goal is not just a pretty site. The goal is to help customers trust you, call you, and request your service.' },
 ];
 
-function DemoCard({ demo, index }: { demo: ShowcaseDemo; index: number }) {
+const SELECTED_PREVIEW_PAUSE_STYLE_ID = 'designedbytd-selected-preview-pause';
+const selectedPausedAnimations = new WeakMap<Document, Animation[]>();
+
+function setSelectedPreviewRunning(frame: HTMLIFrameElement, running: boolean) {
+  try {
+    const doc = frame.contentDocument;
+    if (!doc) return;
+
+    const pauseStyle = doc.getElementById(SELECTED_PREVIEW_PAUSE_STYLE_ID);
+    const videos = Array.from(doc.querySelectorAll('video'));
+
+    if (!running) {
+      if (!pauseStyle) {
+        const style = doc.createElement('style');
+        style.id = SELECTED_PREVIEW_PAUSE_STYLE_ID;
+        style.textContent = `
+          *, *::before, *::after {
+            animation-play-state: paused !important;
+          }
+        `;
+        doc.head?.appendChild(style);
+      }
+
+      const runningAnimations = typeof doc.getAnimations === 'function'
+        ? doc.getAnimations().filter((animation) => animation.playState === 'running')
+        : [];
+      selectedPausedAnimations.set(doc, runningAnimations);
+      runningAnimations.forEach((animation) => animation.pause());
+      videos.forEach((video) => video.pause());
+      return;
+    }
+
+    pauseStyle?.remove();
+    selectedPausedAnimations.get(doc)?.forEach((animation) => {
+      if (animation.playState === 'paused') animation.play();
+    });
+    selectedPausedAnimations.delete(doc);
+
+    videos.forEach((video) => {
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      video.autoplay = true;
+      video.setAttribute('muted', '');
+      video.setAttribute('playsinline', '');
+      video.setAttribute('autoplay', '');
+      void video.play().catch(() => undefined);
+    });
+  } catch {
+    // Selected demo previews are same-origin. Fail safely if a route changes later.
+  }
+}
+
+function LiveShowcasePreview({
+  demo,
+  shouldMount,
+  running,
+}: {
+  demo: ShowcaseDemo;
+  shouldMount: boolean;
+  running: boolean;
+}) {
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const rafRef = useRef<number>(0);
+  const paintTimerRef = useRef<number>(0);
+  const [loaded, setLoaded] = useState(false);
+  const [painted, setPainted] = useState(false);
+
+  useEffect(() => {
+    if (!shouldMount) {
+      setLoaded(false);
+      setPainted(false);
+      cancelAnimationFrame(rafRef.current);
+      window.clearTimeout(paintTimerRef.current);
+    }
+  }, [shouldMount]);
+
+  useEffect(() => {
+    cancelAnimationFrame(rafRef.current);
+
+    const frame = iframeRef.current;
+    const win = frame?.contentWindow;
+    const doc = frame?.contentDocument;
+    const canRun = Boolean(frame && win && doc && running && loaded && painted);
+
+    if (!frame || !win || !doc) return;
+
+    setSelectedPreviewRunning(frame, canRun);
+    if (!canRun) {
+      win.scrollTo(0, 0);
+      return;
+    }
+
+    doc.documentElement.style.scrollBehavior = 'auto';
+    if (doc.body) doc.body.style.scrollBehavior = 'auto';
+    win.scrollTo(0, 0);
+
+    const holdAtTop = 420;
+    const scrollDuration = 9200;
+    const holdAtBottom = 750;
+    const cycleDuration = holdAtTop + scrollDuration + holdAtBottom;
+    const startedAt = performance.now();
+    const frameInterval = 1000 / 30;
+    const ease = (t: number) => 0.5 - Math.cos(Math.PI * t) / 2;
+    let lastFrameAt = 0;
+    let targetScroll = 0;
+    let targetReadAt = 0;
+    let mediaWakeAt = startedAt;
+
+    const readTarget = () => {
+      const maxScroll = Math.max(
+        0,
+        doc.documentElement.scrollHeight - win.innerHeight,
+        doc.body ? doc.body.scrollHeight - win.innerHeight : 0,
+      );
+      targetScroll = maxScroll * 0.62;
+    };
+
+    readTarget();
+
+    const tick = (now: number) => {
+      if (iframeRef.current !== frame) return;
+
+      if (now - lastFrameAt < frameInterval) {
+        rafRef.current = requestAnimationFrame(tick);
+        return;
+      }
+      lastFrameAt = now;
+
+      if (now - targetReadAt >= 700) {
+        readTarget();
+        targetReadAt = now;
+      }
+
+      if (now - mediaWakeAt >= 1200) {
+        setSelectedPreviewRunning(frame, true);
+        mediaWakeAt = now;
+      }
+
+      const elapsed = (now - startedAt) % cycleDuration;
+      if (elapsed < holdAtTop) {
+        win.scrollTo(0, 0);
+      } else if (elapsed < holdAtTop + scrollDuration) {
+        const progress = (elapsed - holdAtTop) / scrollDuration;
+        win.scrollTo(0, targetScroll * ease(progress));
+      } else {
+        win.scrollTo(0, targetScroll);
+      }
+
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      setSelectedPreviewRunning(frame, false);
+    };
+  }, [loaded, painted, running]);
+
+  useEffect(() => () => {
+    const frame = iframeRef.current;
+    if (frame) setSelectedPreviewRunning(frame, false);
+    cancelAnimationFrame(rafRef.current);
+    window.clearTimeout(paintTimerRef.current);
+  }, []);
+
+  const handleLoad = () => {
+    setLoaded(true);
+    setPainted(false);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        paintTimerRef.current = window.setTimeout(() => setPainted(true), 140);
+      });
+    });
+  };
+
   return (
     <>
-      <div className="demo-showcase-preview">
-        <img
-          src={demo.mobileImage}
-          alt={`${demo.name} website preview`}
-          decoding="async"
-          loading="lazy"
+      <img
+        src={demo.mobileImage}
+        alt={`${demo.name} website preview`}
+        decoding="async"
+        loading="lazy"
+        className={`selected-preview-snapshot absolute inset-0 z-[2] h-full w-full transition-opacity duration-300 ${
+          shouldMount && painted ? 'opacity-0' : 'opacity-100'
+        }`}
+      />
+      {shouldMount && (
+        <iframe
+          ref={iframeRef}
+          src={demo.href}
+          title={`${demo.name} live website preview`}
+          loading="eager"
+          onLoad={handleLoad}
+          allow="autoplay; fullscreen"
+          tabIndex={-1}
+          aria-hidden="true"
+          className="pointer-events-none absolute left-0 top-0 z-[1] border-0 bg-white"
+          style={{
+            width: '200%',
+            maxWidth: 'none',
+            height: '200%',
+            transform: 'scale(.5)',
+            transformOrigin: 'top left',
+            opacity: loaded ? 1 : 0,
+          }}
         />
+      )}
+    </>
+  );
+}
+
+function DemoCard({
+  demo,
+  index,
+  shouldMount,
+  running,
+}: {
+  demo: ShowcaseDemo;
+  index: number;
+  shouldMount: boolean;
+  running: boolean;
+}) {
+  const previewRef = useRef<HTMLDivElement | null>(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const node = previewRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting && entry.intersectionRatio > 0.12),
+      { threshold: [0, 0.12, 0.35] },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <>
+      <div ref={previewRef} className="demo-showcase-preview">
+        <LiveShowcasePreview demo={demo} shouldMount={shouldMount} running={running && inView} />
         <Link
           href={demo.href}
           aria-label={`Open ${demo.name} demo`}
@@ -85,26 +316,43 @@ function DemoCard({ demo, index }: { demo: ShowcaseDemo; index: number }) {
   );
 }
 
-function MobileDemoScene({
-  demo,
-  index,
-}: {
-  demo: ShowcaseDemo;
-  index: number;
-}) {
+function MobileDemoScene({ demo, index }: { demo: ShowcaseDemo; index: number }) {
   const fit = demo.mobileFit ?? 'cover';
-
   const slug = demo.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const sceneRef = useRef<HTMLElement | null>(null);
+  const [nearView, setNearView] = useState(false);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const node = sceneRef.current;
+    if (!node) return;
+
+    const preloadObserver = new IntersectionObserver(
+      ([entry]) => setNearView(entry.isIntersecting),
+      { rootMargin: '180px 0px 180px 0px', threshold: 0 },
+    );
+    const activeObserver = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting && entry.intersectionRatio > 0.16),
+      { threshold: [0, 0.16, 0.45] },
+    );
+
+    preloadObserver.observe(node);
+    activeObserver.observe(node);
+    return () => {
+      preloadObserver.disconnect();
+      activeObserver.disconnect();
+    };
+  }, []);
 
   return (
-    <article className={`mobile-demo-scene mobile-demo-scene-${slug}`}>
+    <article ref={sceneRef} className={`mobile-demo-scene mobile-demo-scene-${slug}`}>
       <div className="mobile-demo-background" aria-hidden="true">
         <img src={demo.mobileImage} alt="" decoding="async" loading="lazy" />
       </div>
 
       <div className="mobile-demo-card">
         <div className={`mobile-demo-preview mobile-demo-preview-${fit}`}>
-          <img src={demo.mobileImage} alt={`${demo.name} website preview`} decoding="async" loading="lazy" />
+          <LiveShowcasePreview demo={demo} shouldMount={nearView} running={inView} />
           <Link
             href={demo.href}
             aria-label={`Open ${demo.name} demo`}
@@ -130,6 +378,8 @@ function MobileDemoScene({
 export function HowWeWorkSection() {
   const [isVisible, setIsVisible] = useState(false);
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
+  const [desktopActiveIndex, setDesktopActiveIndex] = useState(0);
+  const [desktopIncomingIndex, setDesktopIncomingIndex] = useState(1);
   const stackRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const sceneRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -188,6 +438,8 @@ export function HowWeWorkSection() {
       const activeScene = sceneRefs.current[activeIndex];
       if (activeScene) activeScene.style.transform = 'translate3d(0,0,0)';
 
+      setDesktopActiveIndex(activeIndex);
+      setDesktopIncomingIndex(incomingIndex);
       renderedActiveIndex = activeIndex;
       renderedIncomingIndex = incomingIndex;
       lastIncomingTransform = '';
@@ -334,7 +586,14 @@ export function HowWeWorkSection() {
                       <div className="demo-showcase-bg" aria-hidden="true">
                         <img src={demo.mobileImage} alt="" decoding="async" loading="lazy" />
                       </div>
-                      <div className="demo-showcase-card"><DemoCard demo={demo} index={index} /></div>
+                      <div className="demo-showcase-card">
+                        <DemoCard
+                          demo={demo}
+                          index={index}
+                          shouldMount={index === desktopActiveIndex || index === desktopIncomingIndex}
+                          running={index === desktopActiveIndex}
+                        />
+                      </div>
                       <span className="demo-showcase-category">{demo.category}</span>
                     </div>
                   </div>
@@ -346,11 +605,7 @@ export function HowWeWorkSection() {
           {isMobile === true && (
             <div className="mobile-demo-stack">
               {demos.map((demo, index) => (
-                <MobileDemoScene
-                  key={demo.href}
-                  demo={demo}
-                  index={index}
-                />
+                <MobileDemoScene key={demo.href} demo={demo} index={index} />
               ))}
             </div>
           )}
