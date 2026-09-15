@@ -10,7 +10,7 @@ const plans = [
     price: '$500+',
     description: 'Perfect for a simple local business website',
     features: [
-      'Up to 5 pages',
+      'Single-page website',
       'Mobile responsive',
       'Contact form',
       'Basic SEO setup',
