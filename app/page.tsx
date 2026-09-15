@@ -7,6 +7,7 @@ import { PricingSection } from '@/components/pricing-section';
 import { FAQSection } from '@/components/faq-section';
 import { CTASection } from '@/components/cta-section';
 import { Footer } from '@/components/footer';
+import { AdaptiveRuntimeOptimizer } from '@/components/adaptive-runtime-optimizer';
 
 export const dynamic = 'force-static';
 
@@ -80,6 +81,7 @@ export default function Home() {
           }
         }
       `}</style>
+      <AdaptiveRuntimeOptimizer />
       <Header />
       <main className="flex flex-col">
         <HeroSection />
