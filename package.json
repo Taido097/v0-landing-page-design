@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node scripts/verify-builders-body.mjs && node scripts/verify-live-previews.mjs",
+    "prebuild": "node scripts/verify-builders-body.mjs && node scripts/verify-live-previews.mjs && node scripts/verify-adaptive-runtime.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint ."
