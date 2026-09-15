@@ -3,9 +3,10 @@ import fs from 'node:fs';
 const read = (path) => (fs.existsSync(path) ? fs.readFileSync(path, 'utf8') : '');
 
 const runtime = read('components/use-adaptive-runtime-budget.ts');
+const optimizer = read('components/adaptive-runtime-optimizer.tsx');
 const hero = read('components/hero-section.tsx');
-const selected = read('components/how-we-work-section.tsx');
-const allDemos = read('components/all-demos-gallery.tsx');
+const home = read('app/page.tsx');
+const demosPage = read('app/demos/page.tsx');
 
 const requirements = [
   ['shared runtime hook', runtime, /export function useAdaptiveRuntimeBudget\(/],
@@ -15,9 +16,13 @@ const requirements = [
   ['frame timing sampling', runtime, /requestAnimationFrame/],
   ['monotonic downgrade', runtime, /Math\.max\(state\.levelIndex/],
   ['hero runtime budget', hero, /useAdaptiveRuntimeBudget/],
-  ['selected demos runtime budget', selected, /useAdaptiveRuntimeBudget/],
-  ['all demos runtime budget', allDemos, /useAdaptiveRuntimeBudget/],
-  ['hidden tab preview gating', selected + allDemos, /documentVisible/],
+  ['shared optimizer runtime budget', optimizer, /useAdaptiveRuntimeBudget/],
+  ['selected demos managed by optimizer', optimizer, /demo-showcase-preview/],
+  ['all demos managed by optimizer', optimizer, /live demo preview/],
+  ['hidden tab preview gating', optimizer, /documentVisible/],
+  ['far iframe suspension', optimizer, /about:blank/],
+  ['homepage optimizer mount', home, /<AdaptiveRuntimeOptimizer \/>/],
+  ['demos page optimizer mount', demosPage, /<AdaptiveRuntimeOptimizer \/>/],
 ];
 
 const missing = requirements
