@@ -32,6 +32,7 @@ const demos: Demo[] = [
   { name: 'Foodee', category: 'Restaurant', industry: 'Food & restaurant', href: '/portfolio/foodee-restaurant' },
   { name: 'Refit', category: 'Custom Website', industry: 'Construction & renovation', href: '/portfolio/refit-construction' },
   { name: 'LeapFly', category: 'Custom Website', industry: 'Landscaping & lawn care', href: '/portfolio/leapfly-landscaping' },
+  { name: 'NGUYEN Architecture & Engineering', category: 'Custom Website', industry: 'Architecture & Engineering', href: '/client-demos/client-8889/arcsphere-socal' },
 ];
 
 const snapshot = (path: string) =>
