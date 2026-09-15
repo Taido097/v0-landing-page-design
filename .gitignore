@@ -13,6 +13,9 @@ node_modules/
 # TypeScript incremental build cache
 *.tsbuildinfo
 
+# Personal local permissions (auto-approval for trades) — never commit
+.claude/settings.local.json
+
 # Trading agent — never commit any credential/secret material
 TRADING_AGENT/**/secrets*
 TRADING_AGENT/**/*credential*

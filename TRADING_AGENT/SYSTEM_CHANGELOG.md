@@ -18,6 +18,22 @@ Format:
 
 ---
 
+## 2026-09-15 — Owner pre-approved equity order tools (autonomous placement)
+- Type: execution, tools
+- Change: Per owner ("add pre-approval for every trade"), created a git-ignored
+  .claude/settings.local.json allowing mcp__Robin__review_equity_order,
+  place_equity_order, cancel_equity_order without a per-order prompt. Options and
+  crypto order tools intentionally excluded. File git-ignored so it is never
+  committed to the repo.
+- Reason: Owner wants tomorrow's scheduled micro-live setup to execute
+  hands-off.
+- Evidence / trigger: Owner instruction.
+- Risk impact: Enables autonomous real-order placement, bounded by RISK_RULES §9
+  (1 whole share, mandatory stop, liquid equities only) and the pre-trade gate.
+  Caveat: a separate transaction-safety classifier may still intervene; if it
+  does, the order will pause for live approval (safe failure).
+- Owner approval: Explicit. Options/crypto/margin remain unapproved.
+
 ## 2026-09-15 — Micro-live APPROVED for real $20; learn-every-trade reaffirmed
 - Type: risk-engine, execution, broker
 - Change: Owner funded the Agentic account with $20 (verified: $20.01 buying
