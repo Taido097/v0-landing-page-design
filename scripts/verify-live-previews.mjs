@@ -11,7 +11,7 @@ const requirements = [
   ['animation pause style', /animation-play-state: paused !important/],
   ['near-viewport state for desktop mounting', /const \[nearView, setNearView\] = useState\(false\)/],
   ['desktop iframe mounting gated by near viewport', /const shouldMountIframe = isMobile \? mobileActive : nearView/],
-  ['desktop preview preload margin', /rootMargin: '40% 0px 40% 0px'/],
+  ['desktop preview preload margin', /rootMargin: '180px 0px 180px 0px'/],
   ['30fps auto-scroll throttle', /const frameInterval = 1000 \/ 30[\s\S]*now - lastFrameAt < frameInterval/],
   ['snapshot fallback available on desktop', /<img[\s\S]*src=\{snapshot\(demo\.href\)\}[\s\S]*shouldMountIframe && painted/],
 ];
