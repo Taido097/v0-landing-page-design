@@ -76,7 +76,10 @@ function suspendFrame(entry: ManagedFrame) {
   if (entry.suspended || !entry.frame.isConnected) return;
 
   const currentSrc = entry.frame.getAttribute('src');
-  if (currentSrc && currentSrc !== 'about:blank') entry.originalSrc = currentSrc;
+  if (currentSrc && currentSrc !== 'about:blank') {
+    entry.originalSrc = currentSrc;
+    entry.frame.dataset.adaptiveOriginalSrc = currentSrc;
+  }
   pauseEmbeddedWork(entry.frame);
 
   const snapshot = getSnapshot(entry.frame);
@@ -93,6 +96,7 @@ function restoreFrame(entry: ManagedFrame) {
   }
 
   const snapshot = getSnapshot(entry.frame);
+  const restoreSrc = entry.frame.dataset.adaptiveOriginalSrc || entry.originalSrc;
   const finishRestore = () => {
     entry.frame.style.removeProperty('opacity');
     if (snapshot) snapshot.style.removeProperty('opacity');
@@ -100,7 +104,8 @@ function restoreFrame(entry: ManagedFrame) {
   };
 
   entry.frame.addEventListener('load', finishRestore, { once: true });
-  entry.frame.setAttribute('src', entry.originalSrc);
+  entry.frame.setAttribute('src', restoreSrc);
+  entry.originalSrc = restoreSrc;
   entry.suspended = false;
 }
 
@@ -114,9 +119,14 @@ export function AdaptiveRuntimeOptimizer() {
 
     const register = (frame: HTMLIFrameElement) => {
       if (!isManagedPreview(frame) || frames.has(frame)) return;
-      const src = frame.getAttribute('src');
-      if (!src) return;
-      frames.set(frame, { frame, originalSrc: src, suspended: false });
+      const currentSrc = frame.getAttribute('src');
+      const originalSrc = frame.dataset.adaptiveOriginalSrc || currentSrc;
+      if (!originalSrc) return;
+      frames.set(frame, {
+        frame,
+        originalSrc,
+        suspended: currentSrc === 'about:blank',
+      });
       observer?.observe(frame);
     };
 
@@ -193,9 +203,6 @@ export function AdaptiveRuntimeOptimizer() {
       window.removeEventListener('scroll', scheduleReconcile);
       window.removeEventListener('resize', scheduleReconcile);
       if (reconcileTimer) window.clearTimeout(reconcileTimer);
-      frames.forEach((entry) => {
-        if (entry.suspended && entry.frame.isConnected) restoreFrame(entry);
-      });
       frames.clear();
     };
   }, [documentVisible, frameIntervalMs, maxNearPreviews, preloadMarginPx]);
