@@ -5,7 +5,7 @@
 > intent and status; it is NOT the brokerage record (that comes from
 > reconciliation).
 
-**Last updated:** 2026-09-11 (initial scaffold)
+**Last updated:** 2026-09-15 (Robinhood connected — read-only verification)
 
 ---
 
@@ -13,23 +13,26 @@
 
 | Field                     | Value                                             |
 | ------------------------- | ------------------------------------------------- |
-| Development phase         | **Phase 1 — architecture & memory (in progress)** |
-| Trading mode              | **NOT TRADING** (no live, no paper yet)           |
+| Development phase         | **Phase 1 done → Phase 8a (read-only connect) verified** |
+| Trading mode              | **NOT TRADING** (read-only; no live/paper orders) |
 | Drawdown mode             | n/a (no capital deployed)                          |
 | SAFE MODE                 | Inactive                                          |
-| Robinhood connection      | **Not connected** (design stage only)             |
+| Robinhood connection      | **Connected — READ-ONLY** via Robin MCP connector |
+| Tradable account          | "Agentic" ••••4713 (individual, limited_margin)   |
 | Live trading authorized?  | **NO** — owner approval not given                 |
 | `STOP LIVE TRADING` flag  | Not set                                           |
 
-## Capital
+## Capital (Agentic account ••••4713, as of 2026-09-15)
 
 | Field                     | Value                     |
 | ------------------------- | ------------------------- |
-| Account equity            | Unknown (not connected)   |
-| Buying power              | Unknown                   |
+| Account total value       | $0.01                     |
+| Account equity            | $0.00                     |
+| Cash                      | $0.01                     |
+| Buying power              | $0.01                     |
 | Open positions            | 0                         |
 | Open orders               | 0                         |
-| Cash                      | Unknown                   |
+| Status                    | **UNFUNDED** — cannot size or trade until funded |
 
 ## Active Strategies
 
@@ -58,6 +61,7 @@
 
 | Field                     | Value              |
 | ------------------------- | ------------------ |
-| Last reconciliation       | Never (not connected) |
-| Internal vs broker match? | n/a                |
+| Last reconciliation       | 2026-09-15 (read-only) |
+| Internal vs broker match? | **Yes** — both empty (0 positions, 0 orders); internal journals empty |
 | Discrepancies open        | 0                  |
+| Notes                     | Account is limited_margin; per RISK_RULES we operate cash-only, no margin/leverage, until owner approves otherwise |

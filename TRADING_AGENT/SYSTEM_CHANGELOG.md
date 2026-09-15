@@ -18,6 +18,22 @@ Format:
 
 ---
 
+## 2026-09-15 — Robinhood connected (read-only), Phase 8a verification
+- Type: broker
+- Change: Connected via the Robin MCP connector. Identified the single
+  agent-tradable account ("Agentic" ••••4713, individual limited_margin).
+  Performed read-only reconciliation: portfolio total value $0.01, cash $0.01,
+  buying power $0.01, 0 equity positions, 0 open orders. Internal journals are
+  empty → internal state matches broker state (both empty). Recorded in
+  CURRENT_STATE.md.
+- Reason: Owner connected the broker; begin Phase 8a (read-only connection
+  verification) per design/ROBINHOOD_INTEGRATION.md.
+- Evidence / trigger: Owner: "let use the robin connector."
+- Risk impact: None — read-only. No orders placed. Account is UNFUNDED so no
+  trade is possible regardless. No credentials stored in repo.
+- Owner approval: Connection approved by owner. Live trading NOT approved;
+  remain read-only. Margin/leverage NOT approved — operate cash-only.
+
 ## 2026-09-11 — Initial architecture scaffold (Phase 1)
 - Type: memory, rules, execution (design only)
 - Change: Created `TRADING_AGENT/` structure — CORE_RULES, RISK_RULES,
