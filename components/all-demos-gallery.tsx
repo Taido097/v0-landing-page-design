@@ -65,6 +65,60 @@ const recentlyAddedDemos = [...demos].sort(
 const snapshot = (path: string) =>
   `https://image.thum.io/get/width/1000/crop/750/noanimate/wait/2/https://designedbytd.com${path}`;
 
+const PREVIEW_PAUSE_STYLE_ID = 'designedbytd-gallery-preview-pause';
+const pausedAnimations = new WeakMap<Document, Animation[]>();
+
+function setEmbeddedPreviewRunning(frame: HTMLIFrameElement, running: boolean) {
+  try {
+    const doc = frame.contentDocument;
+    if (!doc) return;
+
+    const pauseStyle = doc.getElementById(PREVIEW_PAUSE_STYLE_ID);
+    const videos = Array.from(doc.querySelectorAll('video'));
+
+    if (!running) {
+      if (!pauseStyle) {
+        const style = doc.createElement('style');
+        style.id = PREVIEW_PAUSE_STYLE_ID;
+        style.textContent = `
+          *, *::before, *::after {
+            animation-play-state: paused !important;
+          }
+        `;
+        doc.head?.appendChild(style);
+      }
+
+      const runningAnimations = typeof doc.getAnimations === 'function'
+        ? doc.getAnimations().filter((animation) => animation.playState === 'running')
+        : [];
+
+      pausedAnimations.set(doc, runningAnimations);
+      runningAnimations.forEach((animation) => animation.pause());
+      videos.forEach((video) => video.pause());
+      return;
+    }
+
+    pauseStyle?.remove();
+    pausedAnimations.get(doc)?.forEach((animation) => {
+      if (animation.playState === 'paused') animation.play();
+    });
+    pausedAnimations.delete(doc);
+
+    videos.forEach((video) => {
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      video.autoplay = true;
+      video.setAttribute('muted', '');
+      video.setAttribute('playsinline', '');
+      video.setAttribute('autoplay', '');
+      void video.play().catch(() => undefined);
+    });
+  } catch {
+    // Portfolio previews are same-origin. Fail safely if a route ever becomes cross-origin.
+  }
+}
+
 function AutoScrollDemoCard({
   demo,
   index,
@@ -126,7 +180,10 @@ function AutoScrollDemoCard({
     const doc = frame?.contentDocument;
     const canAnimate = shouldMountIframe && inView && loaded && (!isMobile || painted);
 
-    if (!canAnimate || !frame || !win || !doc) return;
+    if (!frame || !win || !doc) return;
+
+    setEmbeddedPreviewRunning(frame, canAnimate);
+    if (!canAnimate) return;
 
     doc.documentElement.style.scrollBehavior = 'auto';
     if (doc.body) doc.body.style.scrollBehavior = 'auto';
@@ -138,6 +195,7 @@ function AutoScrollDemoCard({
     const cycleDuration = holdAtTop + scrollDuration + holdAtBottom;
     const startedAt = performance.now();
     const ease = (t: number) => 0.5 - Math.cos(Math.PI * t) / 2;
+    let mediaWakeAt = startedAt;
 
     const getTarget = () => {
       const maxScroll = Math.max(
@@ -152,6 +210,11 @@ function AutoScrollDemoCard({
       const elapsed = (now - startedAt) % cycleDuration;
       const target = getTarget();
 
+      if (now - mediaWakeAt >= 1200) {
+        setEmbeddedPreviewRunning(frame, true);
+        mediaWakeAt = now;
+      }
+
       if (elapsed < holdAtTop) {
         win.scrollTo(0, 0);
       } else if (elapsed < holdAtTop + scrollDuration) {
@@ -165,7 +228,10 @@ function AutoScrollDemoCard({
     };
 
     rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      setEmbeddedPreviewRunning(frame, false);
+    };
   }, [demo.name, inView, loaded, painted, isMobile, shouldMountIframe]);
 
   useEffect(() => {
@@ -179,6 +245,8 @@ function AutoScrollDemoCard({
 
   useEffect(() => {
     return () => {
+      const frame = iframeRef.current;
+      if (frame) setEmbeddedPreviewRunning(frame, false);
       cancelAnimationFrame(rafRef.current);
       window.clearTimeout(paintTimerRef.current);
     };
@@ -228,6 +296,7 @@ function AutoScrollDemoCard({
               title={`${demo.name} live demo preview`}
               loading={isMobile ? 'eager' : 'lazy'}
               onLoad={handleIframeLoad}
+              allow="autoplay; fullscreen"
               tabIndex={-1}
               aria-hidden="true"
               className="pointer-events-none absolute left-0 top-0 z-[1] border-0 bg-white"
