@@ -27,6 +27,11 @@ const selectedRequirements = [
   ['selected demo 30fps auto-scroll throttle', /const frameInterval = 1000 \/ 30[\s\S]*now - lastFrameAt < frameInterval/],
   ['desktop selected demo active state', /desktopActiveIndex/],
   ['desktop selected demo preload state', /desktopIncomingIndex/],
+  ['homepage selected NGUYEN demo', /name: 'NGUYEN Architecture & Engineering'[\s\S]*category: 'Custom Website'[\s\S]*industry: 'Architecture & Engineering'[\s\S]*href: '\/client-demos\/client-8889\/arcsphere-socal'/],
+];
+
+const selectedForbidden = [
+  ['old homepage Salonix demo', /name: 'Salonix'[\s\S]*href: '\/portfolio\/salon-spa'/],
 ];
 
 const missingGallery = galleryRequirements
@@ -35,7 +40,10 @@ const missingGallery = galleryRequirements
 const missingSelected = selectedRequirements
   .filter(([, pattern]) => !pattern.test(selectedSource))
   .map(([name]) => name);
-const missing = [...missingGallery, ...missingSelected];
+const forbiddenSelected = selectedForbidden
+  .filter(([, pattern]) => pattern.test(selectedSource))
+  .map(([name]) => name);
+const missing = [...missingGallery, ...missingSelected, ...forbiddenSelected];
 
 if (missing.length) {
   console.error(`Live preview regression check failed: ${missing.join(', ')}`);
