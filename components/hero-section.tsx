@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { AnimatedDemoPreview } from '@/components/animated-demo-preview';
+import { useAdaptiveRuntimeBudget } from '@/components/use-adaptive-runtime-budget';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import type { MouseEvent, TouchEvent } from 'react';
@@ -61,6 +62,8 @@ const projects: Project[] = [
 export function HeroSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [heroInView, setHeroInView] = useState(true);
+  const heroRef = useRef<HTMLElement | null>(null);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const suppressClickRef = useRef(false);
   const pointerFrameRef = useRef<number>(0);
@@ -69,6 +72,8 @@ export function HeroSection() {
     clientX: number;
     clientY: number;
   } | null>(null);
+  const { documentVisible } = useAdaptiveRuntimeBudget();
+  const runtimeActive = documentVisible && heroInView;
 
   useEffect(() => {
     const media = window.matchMedia('(max-width: 767px)');
@@ -77,6 +82,22 @@ export function HeroSection() {
     media.addEventListener?.('change', sync);
     return () => media.removeEventListener?.('change', sync);
   }, []);
+
+  useEffect(() => {
+    const node = heroRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setHeroInView(entry.isIntersecting && entry.intersectionRatio > 0.05),
+      { threshold: [0, 0.05, 0.25] },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!runtimeActive) cancelAnimationFrame(pointerFrameRef.current);
+  }, [runtimeActive]);
 
   useEffect(() => {
     return () => cancelAnimationFrame(pointerFrameRef.current);
@@ -95,7 +116,7 @@ export function HeroSection() {
   const activeProject = projects[activeIndex];
 
   const handlePointerMove = (event: MouseEvent<HTMLElement>) => {
-    if (isMobile) return;
+    if (isMobile || !runtimeActive) return;
 
     pointerSampleRef.current = {
       element: event.currentTarget,
@@ -154,6 +175,7 @@ export function HeroSection() {
 
   return (
     <section
+      ref={heroRef}
       id="hero"
       onMouseMove={handlePointerMove}
       className="showcase-hero relative overflow-hidden bg-black pb-20 pt-28 font-sans text-white"
@@ -217,7 +239,7 @@ export function HeroSection() {
               key={project.name}
               project={project}
               active={index === activeIndex}
-              playVideo
+              playVideo={runtimeActive}
             />
           ))
         )}
@@ -269,7 +291,7 @@ export function HeroSection() {
               className="group showcase-left-card block w-full text-left opacity-90 transition-opacity duration-300 hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
               aria-label={`Show ${projects[previousIndex].name}`}
             >
-              <WebsiteCard project={projects[previousIndex]} position="side" />
+              <WebsiteCard project={projects[previousIndex]} position="side" runtimeActive={runtimeActive} />
             </button>
           </div>
 
@@ -281,7 +303,7 @@ export function HeroSection() {
                 className="group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
                 aria-label={`Open ${activeProject.name} demo`}
               >
-                <WebsiteCard project={activeProject} position="center" onComplete={advanceDemo} />
+                <WebsiteCard project={activeProject} position="center" runtimeActive={runtimeActive} onComplete={advanceDemo} />
               </Link>
             </div>
           </div>
@@ -293,7 +315,7 @@ export function HeroSection() {
               className="group showcase-right-card block w-full text-left opacity-90 transition-opacity duration-300 hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
               aria-label={`Show ${projects[nextIndex].name}`}
             >
-              <WebsiteCard project={projects[nextIndex]} position="side" />
+              <WebsiteCard project={projects[nextIndex]} position="side" runtimeActive={runtimeActive} />
             </button>
           </div>
         </div>
@@ -367,10 +389,12 @@ function HeroBackground({ project, active, playVideo }: { project: Project; acti
 function WebsiteCard({
   project,
   position,
+  runtimeActive,
   onComplete,
 }: {
   project: Project;
   position: 'center' | 'side';
+  runtimeActive: boolean;
   onComplete?: () => void;
 }) {
   return (
@@ -379,7 +403,7 @@ function WebsiteCard({
       name={project.name}
       image={project.image}
       href={project.href}
-      isCenter={position === 'center'}
+      isCenter={position === 'center' && runtimeActive}
       onComplete={onComplete}
     />
   );
