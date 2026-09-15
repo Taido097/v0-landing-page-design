@@ -5,8 +5,26 @@
 > Per `CORE_RULES.md`, the agent may tighten any of these autonomously but may
 > NEVER loosen them without owner approval logged in `SYSTEM_CHANGELOG.md`.
 
-**Version:** 1.0 (provisional)
+**Version:** 1.1 (provisional)
 **Status:** NOT approved for live capital
+
+---
+
+## 0. Simulation vs Live Equity — HARD SEPARATION
+
+Per owner direction (2026-09-15), practice is run at a realistic notional while
+real capital stays tiny. These two numbers are **never** mixed:
+
+| Basis                | Equity     | Used for                                   |
+| -------------------- | ---------- | ------------------------------------------ |
+| **Paper / Shadow**   | **$20,000**| all simulated sizing, statistics, learning |
+| **Real / Live**      | **$20** (real broker) | any real order sizing — ALWAYS |
+
+- Simulated sizing uses $20,000. This feeds `PAPER_TRADES.csv` / shadow logs only.
+- **A live order is ALWAYS sized from the real broker equity at that moment**
+  (currently $20). The $20,000 figure must never touch a live order. Doing so
+  would breach the max-loss and buying-power limits and is a hard rule violation.
+- Never blend paper and live records (they live in separate files).
 
 ---
 

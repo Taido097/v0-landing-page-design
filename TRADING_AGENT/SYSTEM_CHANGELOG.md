@@ -18,6 +18,19 @@ Format:
 
 ---
 
+## 2026-09-15 — Shadow trading enabled; $20,000 simulation basis
+- Type: risk-engine, execution (simulation only)
+- Change: Per owner direction, set a HARD separation between simulation equity
+  ($20,000, for paper/shadow sizing & statistics) and real/live equity ($20 real
+  broker). Live orders are ALWAYS sized from real broker equity; the $20,000
+  figure may never size a live order. Entered SHADOW mode (Phase 6): find
+  setups, freeze snapshots, log hypothetical results — no orders sent.
+- Reason: Owner: "treat it like 20,000" and "use shadow trading."
+- Evidence / trigger: Owner instruction.
+- Risk impact: None to real capital — shadow is read-only, zero orders.
+- Owner approval: Shadow trading + $20,000 simulation basis approved. Live
+  trading still NOT approved.
+
 ## 2026-09-15 — Robinhood connected (read-only), Phase 8a verification
 - Type: broker
 - Change: Connected via the Robin MCP connector. Identified the single

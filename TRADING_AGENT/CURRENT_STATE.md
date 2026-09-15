@@ -13,8 +13,9 @@
 
 | Field                     | Value                                             |
 | ------------------------- | ------------------------------------------------- |
-| Development phase         | **Phase 1 done → Phase 8a (read-only connect) verified** |
-| Trading mode              | **NOT TRADING** (read-only; no live/paper orders) |
+| Development phase         | **Phase 6 — SHADOW TRADING** (read-only connect verified) |
+| Trading mode              | **SHADOW** — hypothetical trades logged, **no orders sent** |
+| Simulation equity         | **$20,000** (paper/shadow sizing basis; owner-set)   |
 | Drawdown mode             | n/a (no capital deployed)                          |
 | SAFE MODE                 | Inactive                                          |
 | Robinhood connection      | **Connected — READ-ONLY** via Robin MCP connector |
