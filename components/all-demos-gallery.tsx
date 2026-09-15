@@ -137,11 +137,31 @@ function AutoScrollDemoCard({
   const rafRef = useRef<number>(0);
   const paintTimerRef = useRef<number>(0);
   const [inView, setInView] = useState(false);
+  const [nearView, setNearView] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [painted, setPainted] = useState(false);
   const mobileRow = Math.floor(index / 2);
   const mobileActive = isMobile && activeMobileRow === mobileRow;
-  const shouldMountIframe = !isMobile || mobileActive;
+  const shouldMountIframe = isMobile ? mobileActive : nearView;
+  const previewPlaying = shouldMountIframe && inView && painted;
+
+  useEffect(() => {
+    if (isMobile) {
+      setNearView(false);
+      return;
+    }
+
+    const card = cardRef.current;
+    if (!card) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setNearView(entry.isIntersecting),
+      { rootMargin: '180px 0px 180px 0px', threshold: 0 },
+    );
+
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, [isMobile]);
 
   useEffect(() => {
     const card = cardRef.current;
@@ -195,6 +215,8 @@ function AutoScrollDemoCard({
     const cycleDuration = holdAtTop + scrollDuration + holdAtBottom;
     const startedAt = performance.now();
     const ease = (t: number) => 0.5 - Math.cos(Math.PI * t) / 2;
+    const frameInterval = 1000 / 30;
+    let lastFrameAt = startedAt - frameInterval;
     let mediaWakeAt = startedAt;
 
     const getTarget = () => {
@@ -207,10 +229,16 @@ function AutoScrollDemoCard({
     };
 
     const tick = (now: number) => {
+      if (now - lastFrameAt < frameInterval) {
+        rafRef.current = requestAnimationFrame(tick);
+        return;
+      }
+      lastFrameAt = now;
+
       const elapsed = (now - startedAt) % cycleDuration;
       const target = getTarget();
 
-      if (now - mediaWakeAt >= 1200) {
+      if (now - mediaWakeAt >= 2200) {
         setEmbeddedPreviewRunning(frame, true);
         mediaWakeAt = now;
       }
@@ -277,24 +305,22 @@ function AutoScrollDemoCard({
         className="block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black"
       >
         <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-black/10 bg-[#ececec] shadow-[0_1px_0_rgba(0,0,0,.03)] transition-transform duration-300 ease-out group-hover:-translate-y-0.5 sm:rounded-2xl">
-          {isMobile && (
-            <img
-              src={snapshot(demo.href)}
-              alt={`${demo.name} website preview`}
-              loading="lazy"
-              decoding="async"
-              className={`absolute inset-0 z-[2] h-full w-full object-cover object-top transition-opacity duration-300 ease-out ${
-                mobileActive && painted ? 'opacity-0' : 'opacity-100'
-              }`}
-            />
-          )}
+          <img
+            src={snapshot(demo.href)}
+            alt={`${demo.name} website preview`}
+            loading="lazy"
+            decoding="async"
+            className={`absolute inset-0 z-[2] h-full w-full object-cover object-top transition-opacity duration-300 ease-out ${
+              shouldMountIframe && painted ? 'opacity-0' : 'opacity-100'
+            }`}
+          />
 
           {shouldMountIframe && (
             <iframe
               ref={iframeRef}
               src={demo.href}
               title={`${demo.name} live demo preview`}
-              loading={isMobile ? 'eager' : 'lazy'}
+              loading="eager"
               onLoad={handleIframeLoad}
               allow="autoplay; fullscreen"
               tabIndex={-1}
@@ -306,14 +332,14 @@ function AutoScrollDemoCard({
                 height: '200%',
                 transform: 'scale(.5)',
                 transformOrigin: 'top left',
-                opacity: isMobile && !loaded ? 0 : 1,
+                opacity: loaded ? 1 : 0,
               }}
             />
           )}
 
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] flex items-center justify-between border-t border-white/15 bg-black/72 px-2 py-1.5 text-[7px] uppercase tracking-[.08em] text-white/70 backdrop-blur-md sm:px-4 sm:py-2.5 sm:text-[10px] sm:tracking-[.14em]">
-            <span>{mobileActive && painted || !isMobile ? 'Live demo' : 'Preview'}</span>
-            <span>{mobileActive && painted || !isMobile ? 'Auto-scroll' : 'Scroll to play'}</span>
+            <span>{previewPlaying ? 'Live demo' : 'Preview'}</span>
+            <span>{previewPlaying ? 'Auto-scroll' : 'Scroll to play'}</span>
           </div>
         </div>
 
