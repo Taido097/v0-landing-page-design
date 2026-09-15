@@ -11,6 +11,7 @@ type AnimatedDemoPreviewProps = {
   image: string;
   href: string;
   isCenter: boolean;
+  runtimeActive?: boolean;
   onComplete?: () => void;
 };
 
@@ -48,13 +49,19 @@ function setEmbeddedPreviewPaused(frame: HTMLIFrameElement, paused: boolean) {
   }
 }
 
-export function AnimatedDemoPreview({ name, href, isCenter, onComplete }: AnimatedDemoPreviewProps) {
+export function AnimatedDemoPreview({
+  name,
+  href,
+  isCenter,
+  runtimeActive = true,
+  onComplete,
+}: AnimatedDemoPreviewProps) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const rafRef = useRef<number>(0);
   const completedRef = useRef(false);
   const [inView, setInView] = useState(false);
-  const running = isCenter && inView;
+  const running = isCenter && inView && runtimeActive;
 
   useEffect(() => {
     const node = rootRef.current;
