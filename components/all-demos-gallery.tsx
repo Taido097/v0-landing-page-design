@@ -35,6 +35,33 @@ const demos: Demo[] = [
   { name: 'NGUYEN Architecture & Engineering', category: 'Custom Website', industry: 'Architecture & Engineering', href: '/client-demos/client-8889/arcsphere-socal' },
 ];
 
+const recentlyAddedOrder = [
+  'NGUYEN Architecture & Engineering',
+  'Orkan',
+  'Matchioo',
+  'DesignedbyTD Studio',
+  'Akjo',
+  'LeapFly',
+  'Refit',
+  'Éclat Aesthetics',
+  'Dentalo',
+  'Foodee',
+  'Fuel',
+  'JORGE',
+  'Alex Kabiru',
+  'Luna Frame Studio',
+  'Beanro Coffee',
+  'Salonix',
+  'Qitchen Sushi',
+] as const;
+
+const recentlyAddedRank = new Map(recentlyAddedOrder.map((name, index) => [name, index]));
+const recentlyAddedDemos = [...demos].sort(
+  (a, b) =>
+    (recentlyAddedRank.get(a.name as (typeof recentlyAddedOrder)[number]) ?? Number.MAX_SAFE_INTEGER) -
+    (recentlyAddedRank.get(b.name as (typeof recentlyAddedOrder)[number]) ?? Number.MAX_SAFE_INTEGER),
+);
+
 const snapshot = (path: string) =>
   `https://image.thum.io/get/width/1000/crop/750/noanimate/wait/2/https://designedbytd.com${path}`;
 
@@ -246,9 +273,11 @@ export function AllDemosGallery() {
     return () => media.removeEventListener?.('change', sync);
   }, []);
 
-  const visibleDemos = activeCategory === 'All' || activeCategory === 'Recently Added'
+  const visibleDemos = activeCategory === 'All'
     ? demos
-    : demos.filter((demo) => demo.category === activeCategory);
+    : activeCategory === 'Recently Added'
+      ? recentlyAddedDemos
+      : demos.filter((demo) => demo.category === activeCategory);
 
   useEffect(() => {
     setActiveMobileRow(0);
