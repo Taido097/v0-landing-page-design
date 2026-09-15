@@ -11,6 +11,7 @@ type Demo = {
   category: Exclude<DemoCategory, 'All' | 'Recently Added'>;
   industry: string;
   href: string;
+  previewHref?: string;
 };
 
 const categories: DemoCategory[] = ['All', 'Recently Added', 'Portfolio', 'Scheduling', 'Restaurant', 'Custom Website'];
@@ -32,7 +33,7 @@ const demos: Demo[] = [
   { name: 'Foodee', category: 'Restaurant', industry: 'Food & restaurant', href: '/portfolio/foodee-restaurant' },
   { name: 'Refit', category: 'Custom Website', industry: 'Construction & renovation', href: '/portfolio/refit-construction' },
   { name: 'LeapFly', category: 'Custom Website', industry: 'Landscaping & lawn care', href: '/portfolio/leapfly-landscaping' },
-  { name: 'NGUYEN Architecture & Engineering', category: 'Custom Website', industry: 'Architecture & Engineering', href: '/client-demos/client-8889/arcsphere-socal' },
+  { name: 'NGUYEN Architecture & Engineering', category: 'Custom Website', industry: 'Architecture & Engineering', href: '/client-demos/client-8889/arcsphere-socal', previewHref: '/client-demos/client-8889/arcsphere-socal-preview' },
 ];
 
 const recentlyAddedOrder = [
@@ -156,12 +157,12 @@ function AutoScrollDemoCard({
 
     const observer = new IntersectionObserver(
       ([entry]) => setNearView(entry.isIntersecting),
-      { rootMargin: '180px 0px 180px 0px', threshold: 0 },
+      { rootMargin: demo.previewHref ? '900px 0px 900px 0px' : '180px 0px 180px 0px', threshold: 0 },
     );
 
     observer.observe(card);
     return () => observer.disconnect();
-  }, [isMobile]);
+  }, [demo.previewHref, isMobile]);
 
   useEffect(() => {
     const card = cardRef.current;
@@ -282,18 +283,14 @@ function AutoScrollDemoCard({
 
   const handleIframeLoad = () => {
     setLoaded(true);
-
-    if (!isMobile) {
-      setPainted(true);
-      return;
-    }
-
     setPainted(false);
+    const paintDelay = demo.previewHref ? 420 : 140;
+
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         paintTimerRef.current = window.setTimeout(() => {
           setPainted(true);
-        }, 140);
+        }, paintDelay);
       });
     });
   };
@@ -306,9 +303,9 @@ function AutoScrollDemoCard({
       >
         <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-black/10 bg-[#ececec] shadow-[0_1px_0_rgba(0,0,0,.03)] transition-transform duration-300 ease-out group-hover:-translate-y-0.5 sm:rounded-2xl">
           <img
-            src={snapshot(demo.href)}
+            src={snapshot(demo.previewHref ?? demo.href)}
             alt={`${demo.name} website preview`}
-            loading="lazy"
+            loading={demo.previewHref ? 'eager' : 'lazy'}
             decoding="async"
             className={`absolute inset-0 z-[2] h-full w-full object-cover object-top transition-opacity duration-300 ease-out ${
               shouldMountIframe && painted ? 'opacity-0' : 'opacity-100'
@@ -318,7 +315,7 @@ function AutoScrollDemoCard({
           {shouldMountIframe && (
             <iframe
               ref={iframeRef}
-              src={demo.href}
+              src={demo.previewHref ?? demo.href}
               title={`${demo.name} live demo preview`}
               loading="eager"
               onLoad={handleIframeLoad}
@@ -333,6 +330,7 @@ function AutoScrollDemoCard({
                 transform: 'scale(.5)',
                 transformOrigin: 'top left',
                 opacity: loaded ? 1 : 0,
+                willChange: 'opacity, transform',
               }}
             />
           )}
@@ -366,6 +364,13 @@ export function AllDemosGallery() {
     sync();
     media.addEventListener?.('change', sync);
     return () => media.removeEventListener?.('change', sync);
+  }, []);
+
+  useEffect(() => {
+    demos.forEach((demo) => {
+      if (!demo.previewHref) return;
+      void fetch(demo.previewHref, { cache: 'force-cache', credentials: 'same-origin' }).catch(() => undefined);
+    });
   }, []);
 
   const visibleDemos = activeCategory === 'All'
