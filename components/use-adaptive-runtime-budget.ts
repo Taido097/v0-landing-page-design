@@ -22,8 +22,8 @@ type NavigatorWithMemory = Navigator & {
 
 const profiles = [
   { level: 'full', preloadMarginPx: 360, maxNearPreviews: 2, frameIntervalMs: 1000 / 30 },
-  { level: 'balanced', preloadMarginPx: 220, maxNearPreviews: 1, frameIntervalMs: 1000 / 28 },
-  { level: 'constrained', preloadMarginPx: 120, maxNearPreviews: 1, frameIntervalMs: 1000 / 24 },
+  { level: 'balanced', preloadMarginPx: 260, maxNearPreviews: 1, frameIntervalMs: 40 },
+  { level: 'constrained', preloadMarginPx: 180, maxNearPreviews: 1, frameIntervalMs: 50 },
 ] as const;
 
 const serverSnapshot: AdaptiveRuntimeBudget = {
@@ -40,6 +40,7 @@ let state: RuntimeState = {
 let publicSnapshot: AdaptiveRuntimeBudget = serverSnapshot;
 let initialized = false;
 let rafId = 0;
+let monitorTimer = 0;
 let lastFrameAt = 0;
 let frameSamples: number[] = [];
 const listeners = new Set<() => void>();
@@ -97,13 +98,26 @@ function initialLevelFromBrowser() {
 
 function stopFrameMonitor() {
   if (rafId) cancelAnimationFrame(rafId);
+  if (monitorTimer) window.clearTimeout(monitorTimer);
   rafId = 0;
+  monitorTimer = 0;
   lastFrameAt = 0;
   frameSamples = [];
 }
 
+function scheduleNextMonitor(delay = 3500) {
+  if (state.levelIndex >= 2 || document.visibilityState !== 'visible' || monitorTimer) return;
+  monitorTimer = window.setTimeout(() => {
+    monitorTimer = 0;
+    startFrameMonitor();
+  }, delay);
+}
+
 function startFrameMonitor() {
-  if (rafId || document.visibilityState !== 'visible') return;
+  if (rafId || monitorTimer || document.visibilityState !== 'visible' || state.levelIndex >= 2) return;
+
+  lastFrameAt = 0;
+  frameSamples = [];
 
   const tick = (now: number) => {
     if (document.visibilityState !== 'visible') {
@@ -117,7 +131,7 @@ function startFrameMonitor() {
     }
     lastFrameAt = now;
 
-    if (frameSamples.length >= 90) {
+    if (frameSamples.length >= 72) {
       const sorted = [...frameSamples].sort((a, b) => a - b);
       const average = frameSamples.reduce((total, value) => total + value, 0) / frameSamples.length;
       const p75 = sorted[Math.floor(sorted.length * 0.75)] ?? average;
@@ -128,7 +142,12 @@ function startFrameMonitor() {
       } else if (average > 22 || p75 > 27) {
         applyLevel(1);
       }
+
+      rafId = 0;
+      lastFrameAt = 0;
       frameSamples = [];
+      scheduleNextMonitor();
+      return;
     }
 
     rafId = requestAnimationFrame(tick);
