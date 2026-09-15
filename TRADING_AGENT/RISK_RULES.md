@@ -127,6 +127,31 @@ deteriorates.
 
 ---
 
+## 9. Micro-Live Policy — the real $20 account (APPROVED 2026-09-15)
+
+Real account: "Agentic" ••••4713. Real equity ≈ $20 (fully at-risk learning
+capital, per owner). Percentage sizing (§1) is unusable at this size, so the
+micro-live account runs on an absolute-dollar policy — **but still with a real
+protective stop**, so per-trade risk stays small:
+
+| Rule | Value |
+| ---- | ----- |
+| Instruments | Liquid U.S. equities only. No options, margin, crypto. |
+| Share affordability | Trade names priced so **1 whole share ≤ ~$19** (leaves buffer), so a broker-held stop order (whole-share, regular hours) is possible. |
+| Position | **1 whole share** at a time, single open position. |
+| Per-trade risk | (entry − stop) × shares. Target absolute risk **$0.15–$0.50** per trade. |
+| Protective stop | **Mandatory, broker-held** at the invalidation level. No stop → no trade. |
+| Reward/risk | ≥ 2:1. |
+| Max at-risk (account) | The $20 ceiling. Stop trading for the session after a loss; reassess after 2 consecutive losses. |
+| Data/gate | Full pre-trade gate + frozen snapshot still apply (design/PRE_TRADE_RISK_GATE.md). |
+
+Key point: risk is the stop distance, not the whole position. A $12 share with a
+$11.80 stop risks **$0.20**, not $12. This keeps "low risk" real even at $20.
+
+The $20,000 figure (§0) NEVER sizes a live order. Live sizing uses real equity.
+
+---
+
 **Approval block (to be completed before live):**
 - [ ] Owner has reviewed all numbers above
 - [ ] Account size confirmed

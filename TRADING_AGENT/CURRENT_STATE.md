@@ -13,9 +13,10 @@
 
 | Field                     | Value                                             |
 | ------------------------- | ------------------------------------------------- |
-| Development phase         | **Phase 6 — SHADOW TRADING** (read-only connect verified) |
-| Trading mode              | **SHADOW** — hypothetical trades logged, **no orders sent** |
+| Development phase         | **Phase 9 — MICRO-LIVE** (real $20) + shadow in parallel |
+| Trading mode              | **MICRO-LIVE ARMED** — go live on next valid setup (tomorrow's open) |
 | Simulation equity         | **$20,000** (paper/shadow sizing basis; owner-set)   |
+| Live authorization        | **YES — micro-live approved 2026-09-15**; $20 fully at-risk (owner) |
 | Drawdown mode             | n/a (no capital deployed)                          |
 | SAFE MODE                 | Inactive                                          |
 | Robinhood connection      | **Connected — READ-ONLY** via Robin MCP connector |
@@ -29,11 +30,11 @@
 | ------------------------- | ------------------------- |
 | Account total value       | $0.01                     |
 | Account equity            | $0.00                     |
-| Cash                      | $0.01                     |
-| Buying power              | $0.01                     |
+| Cash                      | $20.01 ($20 deposit)      |
+| Buying power              | $20.01                    |
 | Open positions            | 0                         |
 | Open orders               | 0                         |
-| Status                    | **UNFUNDED** — cannot size or trade until funded |
+| Status                    | **FUNDED — armed for micro-live** on next valid setup |
 
 ## Active Strategies
 

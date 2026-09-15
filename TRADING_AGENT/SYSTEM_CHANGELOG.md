@@ -18,6 +18,25 @@ Format:
 
 ---
 
+## 2026-09-15 — Micro-live APPROVED for real $20; learn-every-trade reaffirmed
+- Type: risk-engine, execution, broker
+- Change: Owner funded the Agentic account with $20 (verified: $20.01 buying
+  power) and explicitly authorized live trading with the $20 treated as fully
+  at-risk learning capital. Added §9 Micro-Live Policy to RISK_RULES.md:
+  liquid equities only, 1 whole share of a name priced so 1 share ≤ ~$19,
+  mandatory broker-held protective stop, per-trade risk $0.15–$0.50 (stop
+  distance), reward/risk ≥ 2:1, single position, no options/margin/crypto.
+  Entered MICRO-LIVE ARMED; will take the first valid setup at the next open
+  (2026-09-16). Reaffirmed: every trade gets a frozen snapshot + post-trade
+  review + LESSONS/MISTAKES update ("learn from every trade").
+- Reason: Owner: "also trade my 20$", "yea" (confirming $20 fully at-risk +
+  run next session live), "make sure to learn from every trade."
+- Evidence / trigger: Owner instructions; funds verified via get_portfolio.
+- Risk impact: Real capital now at risk, bounded to $20 with per-trade stops.
+  No trade taken today (no valid setup mid-afternoon; would breach rule #2).
+- Owner approval: MICRO-LIVE approved by owner for the $20 account. Margin/
+  options/crypto still NOT approved. $20,000 basis remains simulation-only.
+
 ## 2026-09-15 — Shadow trading enabled; $20,000 simulation basis
 - Type: risk-engine, execution (simulation only)
 - Change: Per owner direction, set a HARD separation between simulation equity
