@@ -9,6 +9,7 @@ type ShowcaseDemo = {
   category: 'Portfolio' | 'Scheduling' | 'Restaurant' | 'Custom Website';
   industry: string;
   href: string;
+  previewHref?: string;
   mobileImage: string;
   mobileFit?: 'cover' | 'contain';
 };
@@ -36,7 +37,8 @@ const demos: ShowcaseDemo[] = [
     category: 'Custom Website',
     industry: 'Architecture & Engineering',
     href: '/client-demos/client-8889/arcsphere-socal',
-    mobileImage: snapshot('/client-demos/client-8889/arcsphere-socal', 3),
+    previewHref: '/client-demos/client-8889/arcsphere-socal-preview',
+    mobileImage: snapshot('/client-demos/client-8889/arcsphere-socal-preview', 1),
   },
   {
     name: 'AKJO',
@@ -153,12 +155,14 @@ function LiveShowcasePreview({
     win.scrollTo(0, 0);
 
     const holdAtTop = 420;
-    const scrollDuration = 9200;
+    const scrollDuration = demo.previewHref ? 9800 : 9200;
     const holdAtBottom = 750;
     const cycleDuration = holdAtTop + scrollDuration + holdAtBottom;
     const startedAt = performance.now();
     const frameInterval = 1000 / 30;
     const ease = (t: number) => 0.5 - Math.cos(Math.PI * t) / 2;
+    const targetRefreshInterval = demo.previewHref ? 1800 : 700;
+    const mediaWakeInterval = demo.previewHref ? 2600 : 1200;
     let lastFrameAt = 0;
     let targetScroll = 0;
     let targetReadAt = 0;
@@ -170,7 +174,7 @@ function LiveShowcasePreview({
         doc.documentElement.scrollHeight - win.innerHeight,
         doc.body ? doc.body.scrollHeight - win.innerHeight : 0,
       );
-      targetScroll = maxScroll * 0.62;
+      targetScroll = maxScroll * (demo.previewHref ? 0.5 : 0.62);
     };
 
     readTarget();
@@ -184,12 +188,12 @@ function LiveShowcasePreview({
       }
       lastFrameAt = now;
 
-      if (now - targetReadAt >= 700) {
+      if (now - targetReadAt >= targetRefreshInterval) {
         readTarget();
         targetReadAt = now;
       }
 
-      if (now - mediaWakeAt >= 1200) {
+      if (now - mediaWakeAt >= mediaWakeInterval) {
         setSelectedPreviewRunning(frame, true);
         mediaWakeAt = now;
       }
@@ -212,7 +216,7 @@ function LiveShowcasePreview({
       cancelAnimationFrame(rafRef.current);
       setSelectedPreviewRunning(frame, false);
     };
-  }, [loaded, painted, running]);
+  }, [demo.previewHref, loaded, painted, running]);
 
   useEffect(() => () => {
     const frame = iframeRef.current;
@@ -224,9 +228,10 @@ function LiveShowcasePreview({
   const handleLoad = () => {
     setLoaded(true);
     setPainted(false);
+    const paintDelay = demo.previewHref ? 420 : 140;
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        paintTimerRef.current = window.setTimeout(() => setPainted(true), 140);
+        paintTimerRef.current = window.setTimeout(() => setPainted(true), paintDelay);
       });
     });
   };
@@ -237,7 +242,7 @@ function LiveShowcasePreview({
         src={demo.mobileImage}
         alt={`${demo.name} website preview`}
         decoding="async"
-        loading="lazy"
+        loading={demo.previewHref ? 'eager' : 'lazy'}
         className={`selected-preview-snapshot absolute inset-0 z-[2] h-full w-full transition-opacity duration-300 ${
           shouldMount && painted ? 'opacity-0' : 'opacity-100'
         }`}
@@ -245,7 +250,7 @@ function LiveShowcasePreview({
       {shouldMount && (
         <iframe
           ref={iframeRef}
-          src={demo.href}
+          src={demo.previewHref ?? demo.href}
           title={`${demo.name} live website preview`}
           loading="eager"
           onLoad={handleLoad}
@@ -260,6 +265,7 @@ function LiveShowcasePreview({
             transform: 'scale(.5)',
             transformOrigin: 'top left',
             opacity: loaded ? 1 : 0,
+            willChange: 'opacity, transform',
           }}
         />
       )}
@@ -328,7 +334,7 @@ function MobileDemoScene({ demo, index }: { demo: ShowcaseDemo; index: number })
 
     const preloadObserver = new IntersectionObserver(
       ([entry]) => setNearView(entry.isIntersecting),
-      { rootMargin: '180px 0px 180px 0px', threshold: 0 },
+      { rootMargin: demo.previewHref ? '700px 0px 700px 0px' : '180px 0px 180px 0px', threshold: 0 },
     );
     const activeObserver = new IntersectionObserver(
       ([entry]) => setInView(entry.isIntersecting && entry.intersectionRatio > 0.16),
@@ -341,12 +347,12 @@ function MobileDemoScene({ demo, index }: { demo: ShowcaseDemo; index: number })
       preloadObserver.disconnect();
       activeObserver.disconnect();
     };
-  }, []);
+  }, [demo.previewHref]);
 
   return (
     <article ref={sceneRef} className={`mobile-demo-scene mobile-demo-scene-${slug}`}>
       <div className="mobile-demo-background" aria-hidden="true">
-        <img src={demo.mobileImage} alt="" decoding="async" loading="lazy" />
+        <img src={demo.mobileImage} alt="" decoding="async" loading={demo.previewHref ? 'eager' : 'lazy'} />
       </div>
 
       <div className="mobile-demo-card">
@@ -384,6 +390,13 @@ export function HowWeWorkSection() {
   const sceneRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   useEffect(() => setIsVisible(true), []);
+
+  useEffect(() => {
+    demos.forEach((demo) => {
+      if (!demo.previewHref) return;
+      void fetch(demo.previewHref, { cache: 'force-cache', credentials: 'same-origin' }).catch(() => undefined);
+    });
+  }, []);
 
   useEffect(() => {
     const media = window.matchMedia('(max-width: 560px)');
@@ -583,13 +596,13 @@ export function HowWeWorkSection() {
                   >
                     <div className="demo-showcase-scene-content">
                       <div className="demo-showcase-bg" aria-hidden="true">
-                        <img src={demo.mobileImage} alt="" decoding="async" loading="lazy" />
+                        <img src={demo.mobileImage} alt="" decoding="async" loading={demo.previewHref ? 'eager' : 'lazy'} />
                       </div>
                       <div className="demo-showcase-card">
                         <DemoCard
                           demo={demo}
                           index={index}
-                          shouldMount={index === desktopActiveIndex || index === desktopIncomingIndex}
+                          shouldMount={Boolean(demo.previewHref) || index === desktopActiveIndex || index === desktopIncomingIndex}
                           running={index === desktopActiveIndex}
                         />
                       </div>
