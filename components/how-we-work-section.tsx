@@ -32,12 +32,11 @@ const demos: ShowcaseDemo[] = [
     mobileImage: snapshot('/portfolio/auto-repair-shop'),
   },
   {
-    name: 'Salonix',
-    category: 'Scheduling',
-    industry: 'Hair & beauty salon',
-    href: '/portfolio/salon-spa',
-    mobileImage: snapshot('/portfolio/salon-spa', 3),
-    mobileFit: 'contain',
+    name: 'NGUYEN Architecture & Engineering',
+    category: 'Custom Website',
+    industry: 'Architecture & Engineering',
+    href: '/client-demos/client-8889/arcsphere-socal',
+    mobileImage: snapshot('/client-demos/client-8889/arcsphere-socal', 3),
   },
   {
     name: 'AKJO',
