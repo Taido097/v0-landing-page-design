@@ -17,7 +17,7 @@ const requirements = [
   ['monotonic downgrade', runtime, /Math\.max\(state\.levelIndex/],
   ['hero runtime budget', hero, /useAdaptiveRuntimeBudget/],
   ['shared optimizer runtime budget', optimizer, /useAdaptiveRuntimeBudget/],
-  ['selected demos managed by optimizer', optimizer, /demo-showcase-preview/],
+  ['selected demos excluded from global optimizer', optimizer, /frame\.closest\('\.demo-showcase-preview, \.mobile-demo-preview'\)\) return false;/],
   ['all demos managed by optimizer', optimizer, /live demo preview/],
   ['hidden tab preview gating', optimizer, /documentVisible/],
   ['far iframe suspension', optimizer, /about:blank/],
