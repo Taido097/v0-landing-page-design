@@ -13,7 +13,7 @@ const savedAnimations = new WeakMap<Document, Animation[]>();
 
 function isManagedPreview(frame: HTMLIFrameElement) {
   if (frame.closest('.demo-preview')) return false;
-  if (frame.closest('.demo-showcase-preview, .mobile-demo-preview')) return true;
+  if (frame.closest('.demo-showcase-preview, .mobile-demo-preview')) return false;
   return frame.title.toLowerCase().endsWith('live demo preview');
 }
 
