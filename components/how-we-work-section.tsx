@@ -243,8 +243,8 @@ function LiveShowcasePreview({
         alt={`${demo.name} website preview`}
         decoding="async"
         loading={demo.previewHref ? 'eager' : 'lazy'}
-        className={`selected-preview-snapshot absolute inset-0 z-[2] h-full w-full transition-opacity duration-300 ${
-          shouldMount && painted ? 'opacity-0' : 'opacity-100'
+        className={`selected-preview-snapshot absolute inset-0 z-[2] h-full w-full ${running ? 'transition-opacity duration-300' : 'transition-none'} ${
+          shouldMount && painted && running ? 'opacity-0' : 'opacity-100'
         }`}
       />
       {shouldMount && (
@@ -264,8 +264,9 @@ function LiveShowcasePreview({
             height: '200%',
             transform: 'scale(.5)',
             transformOrigin: 'top left',
-            opacity: loaded ? 1 : 0,
-            willChange: 'opacity, transform',
+            opacity: loaded && running ? 1 : 0,
+            visibility: running ? 'visible' : 'hidden',
+            willChange: running ? 'opacity, transform' : 'auto',
           }}
         />
       )}
@@ -385,6 +386,8 @@ export function HowWeWorkSection() {
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
   const [desktopActiveIndex, setDesktopActiveIndex] = useState(0);
   const [desktopIncomingIndex, setDesktopIncomingIndex] = useState(1);
+  const [desktopScrollActive, setDesktopScrollActive] = useState(false);
+  const [desktopSettledIndex, setDesktopSettledIndex] = useState(0);
   const stackRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const sceneRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -410,11 +413,14 @@ export function HowWeWorkSection() {
     if (isMobile !== false) return;
 
     let frame = 0;
+    let settleTimer = 0;
     let stickyTop = 0;
     let stackStart = 0;
     let maxTravel = 1;
     let stageHeight = 0;
     let gap = 24;
+    let latestPosition = 0;
+    let scrollActive = false;
     let renderedActiveIndex = -1;
     let renderedIncomingIndex = -1;
     let lastIncomingTransform = '';
@@ -463,6 +469,7 @@ export function HowWeWorkSection() {
 
       const travelled = Math.min(maxTravel, Math.max(0, window.scrollY + stickyTop - stackStart));
       const position = (travelled / maxTravel) * (demos.length - 1);
+      latestPosition = position;
       const activeIndex = Math.min(demos.length - 1, Math.max(0, Math.floor(position)));
       const incomingIndex = Math.min(demos.length - 1, activeIndex + 1);
 
@@ -486,6 +493,29 @@ export function HowWeWorkSection() {
       if (!frame) frame = window.requestAnimationFrame(updateStack);
     };
 
+    const settlePreview = () => {
+      settleTimer = 0;
+      scrollActive = false;
+      setDesktopScrollActive(false);
+      const settledIndex = Math.min(demos.length - 1, Math.max(0, Math.round(latestPosition)));
+      setDesktopSettledIndex(settledIndex);
+    };
+
+    const handleScroll = () => {
+      if (!scrollActive) {
+        scrollActive = true;
+        setDesktopScrollActive(true);
+      }
+      if (settleTimer) window.clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(() => {
+        setDesktopScrollActive(false);
+        setDesktopSettledIndex(Math.min(demos.length - 1, Math.max(0, Math.round(latestPosition))));
+        settleTimer = 0;
+        scrollActive = false;
+      }, 180);
+      requestUpdate();
+    };
+
     const remeasure = () => {
       measureStack();
       renderedActiveIndex = -1;
@@ -496,14 +526,16 @@ export function HowWeWorkSection() {
 
     measureStack();
     updateStack();
-    window.addEventListener('scroll', requestUpdate, { passive: true });
+    setDesktopSettledIndex(Math.min(demos.length - 1, Math.max(0, Math.round(latestPosition))));
+    window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('resize', remeasure, { passive: true });
     window.addEventListener('load', remeasure, { once: true });
     return () => {
-      window.removeEventListener('scroll', requestUpdate);
+      window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', remeasure);
       window.removeEventListener('load', remeasure);
       if (frame) window.cancelAnimationFrame(frame);
+      if (settleTimer) window.clearTimeout(settleTimer);
     };
   }, [isMobile]);
 
@@ -602,8 +634,8 @@ export function HowWeWorkSection() {
                         <DemoCard
                           demo={demo}
                           index={index}
-                          shouldMount={Boolean(demo.previewHref) || index === desktopActiveIndex || index === desktopIncomingIndex}
-                          running={index === desktopActiveIndex}
+                          shouldMount={index === desktopSettledIndex}
+                          running={index === desktopSettledIndex && !desktopScrollActive}
                         />
                       </div>
                       <span className="demo-showcase-category">{demo.category}</span>
