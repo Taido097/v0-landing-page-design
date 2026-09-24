@@ -61,7 +61,7 @@ const nguyenPreviewRequirements = [
   ['dedicated NGUYEN preview route exists', /import \{ GET as getFullDemo \} from "\.\.\/arcsphere-socal\/route"/],
   ['preview route strips card routing work', /nguyen-socal-card-routing/],
   ['preview route strips CTA routing work', /nguyen-socal-hero-cta-patch/],
-  ['NGUYEN selected preview self-scroll is opt-in only', /searchParams\.get\('selectedAutoplay'\) === '1'/],
+  ['NGUYEN selected preview self-scroll is opt-in only', /searchParams\.get\('selectedAutoplay'\) !== '1'/],
   ['NGUYEN selected preview self-scroll uses its own scrolling element', /document\.scrollingElement[\s\S]*requestAnimationFrame[\s\S]*scrollTop =/],
   ['preview route is cacheable', /Cache-Control[\s\S]*public, max-age=30, s-maxage=300, stale-while-revalidate=300/],
   ['preview route is not indexed', /X-Robots-Tag[\s\S]*noindex, nofollow/],
