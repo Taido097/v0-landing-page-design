@@ -8,8 +8,8 @@ const INTERACTION_ONLY_SCRIPT_IDS = [
 const SELECTED_AUTOPLAY_PATCH = `
 <script id="nguyen-socal-selected-autoplay">
 (() => {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('selectedAutoplay') !== '1') return;
+  const searchParams = new URLSearchParams(window.location.search);
+  if (searchParams.get('selectedAutoplay') !== '1') return;
 
   const holdAtTop = 450;
   const scrollDuration = 9800;
