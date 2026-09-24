@@ -164,9 +164,9 @@ function LiveShowcasePreview({
     const cycleDuration = holdAtTop + scrollDuration + holdAtBottom;
     const startedAt = performance.now();
     const ease = (t: number) => 0.5 - Math.cos(Math.PI * t) / 2;
-    const targetRefreshAt = startedAt + (demo.previewHref ? 1800 : 1100);
+    const targetRefreshDeadline = startedAt + 6000;
+    let nextTargetRefreshAt = startedAt + (demo.previewHref ? 500 : 900);
     let targetScroll = 0;
-    let refreshedTarget = false;
 
     const readTarget = () => {
       const maxScroll = Math.max(
@@ -183,9 +183,9 @@ function LiveShowcasePreview({
     const tick = (now: number) => {
       if (iframeRef.current !== frame) return;
 
-      if (!refreshedTarget && now >= targetRefreshAt) {
+      if (now <= targetRefreshDeadline && (targetScroll <= 1 || now >= nextTargetRefreshAt)) {
         readTarget();
-        refreshedTarget = true;
+        nextTargetRefreshAt = now + (demo.previewHref ? 500 : 900);
       }
 
       const elapsed = (now - startedAt) % cycleDuration;
