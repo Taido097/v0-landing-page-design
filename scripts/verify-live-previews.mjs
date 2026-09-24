@@ -44,7 +44,7 @@ const selectedRequirements = [
   ['selected desktop scroll idle debounce', /window\.setTimeout\(\(\) => \{[\s\S]*setDesktopScrollActive\(false\)[\s\S]*setDesktopSettledIndex/],
   ['selected desktop fully unmounts iframe while page scrolls', /shouldMount=\{index === desktopSettledIndex && !desktopScrollActive\}/],
   ['selected settled demo starts promptly after scroll ends', /\}, 120\);[\s\S]*setDesktopSettledIndex/],
-  ['selected NGUYEN live preview uses full demo route', /name: 'NGUYEN Architecture & Engineering'[\s\S]*liveHref: '\/client-demos\/client-8889\/arcsphere-socal'/],
+  ['selected NGUYEN live preview uses lightweight preview route', /name: 'NGUYEN Architecture & Engineering'[\s\S]*previewHref: '\/client-demos\/client-8889\/arcsphere-socal-preview'/],
   ['selected NGUYEN does not pause Framer during startup', /const isNguyenLivePreview = Boolean\(demo\.liveHref\)[\s\S]*if \(!running\) \{[\s\S]*setSelectedPreviewRunning\(frame, false\)[\s\S]*if \(!loaded \|\| !painted\) \{[\s\S]*if \(!isNguyenLivePreview\) setSelectedPreviewRunning\(frame, false\)/],
   ['selected desktop pauses live iframe during page scroll', /running=\{index === desktopSettledIndex && !desktopScrollActive\}/],
   ['selected snapshot covers paused iframe', /shouldMount && painted && running \? 'opacity-0' : 'opacity-100'/],
