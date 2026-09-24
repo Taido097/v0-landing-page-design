@@ -45,6 +45,7 @@ const selectedRequirements = [
   ['selected desktop fully unmounts iframe while page scrolls', /shouldMount=\{index === desktopSettledIndex && !desktopScrollActive\}/],
   ['selected settled demo starts promptly after scroll ends', /\}, 120\);[\s\S]*setDesktopSettledIndex/],
   ['selected NGUYEN live preview uses lightweight preview route', /name: 'NGUYEN Architecture & Engineering'[\s\S]*previewHref: '\/client-demos\/client-8889\/arcsphere-socal-preview'/],
+  ['selected NGUYEN requests self-scrolling preview mode', /src=\{demo\.previewHref \? `\$\{demo\.previewHref\}\?selectedAutoplay=1` : demo\.href\}/],
   ['selected NGUYEN does not pause Framer during startup', /const isNguyenPreview = Boolean\(demo\.previewHref\)[\s\S]*if \(!running\) \{[\s\S]*setSelectedPreviewRunning\(frame, false\)[\s\S]*if \(!loaded \|\| !painted\) \{[\s\S]*if \(!isNguyenPreview\) setSelectedPreviewRunning\(frame, false\)/],
   ['selected desktop pauses live iframe during page scroll', /running=\{index === desktopSettledIndex && !desktopScrollActive\}/],
   ['selected snapshot covers paused iframe', /shouldMount && painted && running \? 'opacity-0' : 'opacity-100'/],
@@ -60,6 +61,8 @@ const nguyenPreviewRequirements = [
   ['dedicated NGUYEN preview route exists', /import \{ GET as getFullDemo \} from "\.\.\/arcsphere-socal\/route"/],
   ['preview route strips card routing work', /nguyen-socal-card-routing/],
   ['preview route strips CTA routing work', /nguyen-socal-hero-cta-patch/],
+  ['NGUYEN selected preview self-scroll is opt-in only', /searchParams\.get\('selectedAutoplay'\) === '1'/],
+  ['NGUYEN selected preview self-scroll uses its own scrolling element', /document\.scrollingElement[\s\S]*requestAnimationFrame[\s\S]*scrollTop =/],
   ['preview route is cacheable', /Cache-Control[\s\S]*public, max-age=30, s-maxage=300, stale-while-revalidate=300/],
   ['preview route is not indexed', /X-Robots-Tag[\s\S]*noindex, nofollow/],
 ];
