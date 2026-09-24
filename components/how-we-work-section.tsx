@@ -395,9 +395,18 @@ export function HowWeWorkSection() {
   useEffect(() => setIsVisible(true), []);
 
   useEffect(() => {
+    const desktop = window.matchMedia('(min-width: 561px)').matches;
+
     demos.forEach((demo) => {
-      if (!demo.previewHref) return;
-      void fetch(demo.previewHref, { cache: 'force-cache', credentials: 'same-origin' }).catch(() => undefined);
+      if (desktop) {
+        const image = new window.Image();
+        image.decoding = 'async';
+        image.src = demo.mobileImage;
+      }
+
+      if (demo.previewHref) {
+        void fetch(demo.previewHref, { cache: 'force-cache', credentials: 'same-origin' }).catch(() => undefined);
+      }
     });
   }, []);
 
