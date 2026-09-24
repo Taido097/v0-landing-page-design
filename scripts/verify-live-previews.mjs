@@ -41,6 +41,7 @@ const selectedRequirements = [
   ['selected desktop scroll activity gate', /const \[desktopScrollActive, setDesktopScrollActive\] = useState\(false\)/],
   ['selected desktop uses eased animation position', /let targetPosition = 0[\s\S]*let animatedPosition = 0[\s\S]*Math\.exp\(-[\s\S]*requestAnimationFrame/],
   ['selected desktop settled live preview', /const \[desktopSettledIndex, setDesktopSettledIndex\] = useState\(0\)/],
+  ['desktop selected preview does not use redundant intersection gate', /<LiveShowcasePreview demo=\{demo\} shouldMount=\{shouldMount\} running=\{running\} \/>/],
   ['selected desktop scroll idle debounce', /window\.setTimeout\(\(\) => \{[\s\S]*setDesktopScrollActive\(false\)[\s\S]*setDesktopSettledIndex/],
   ['selected desktop fully unmounts iframe while page scrolls', /shouldMount=\{index === desktopSettledIndex && !desktopScrollActive\}/],
   ['selected settled demo starts promptly after scroll ends', /\}, 120\);[\s\S]*setDesktopSettledIndex/],
