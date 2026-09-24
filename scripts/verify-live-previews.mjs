@@ -39,7 +39,7 @@ const selectedRequirements = [
   ['selected desktop scroll activity gate', /const \[desktopScrollActive, setDesktopScrollActive\] = useState\(false\)/],
   ['selected desktop settled live preview', /const \[desktopSettledIndex, setDesktopSettledIndex\] = useState\(0\)/],
   ['selected desktop scroll idle debounce', /window\.setTimeout\(\(\) => \{[\s\S]*setDesktopScrollActive\(false\)[\s\S]*setDesktopSettledIndex/],
-  ['selected desktop mounts only settled iframe', /shouldMount=\{index === desktopSettledIndex\}/],
+  ['selected desktop fully unmounts iframe while page scrolls', /shouldMount=\{index === desktopSettledIndex && !desktopScrollActive\}/],
   ['selected desktop pauses live iframe during page scroll', /running=\{index === desktopSettledIndex && !desktopScrollActive\}/],
   ['selected snapshot covers paused iframe', /shouldMount && painted && running \? 'opacity-0' : 'opacity-100'/],
   ['selected iframe hidden while paused', /visibility: running \? 'visible' : 'hidden'/],
