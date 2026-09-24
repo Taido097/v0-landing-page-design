@@ -45,6 +45,7 @@ const selectedRequirements = [
   ['selected iframe hidden while paused', /visibility: running \? 'visible' : 'hidden'/],
   ['homepage selected NGUYEN demo', /name: 'NGUYEN Architecture & Engineering'[\s\S]*category: 'Custom Website'[\s\S]*industry: 'Architecture & Engineering'[\s\S]*href: '\/client-demos\/client-8889\/arcsphere-socal'[\s\S]*previewHref: '\/client-demos\/client-8889\/arcsphere-socal-preview'/],
   ['homepage warms dedicated previews', /fetch\(demo\.previewHref, \{ cache: 'force-cache', credentials: 'same-origin' \}\)/],
+  ['selected desktop preloads all snapshot images', /new window\.Image\(\)[\s\S]*image\.src = demo\.mobileImage/],
   ['selected preview keeps snapshot visible through heavy preview paint', /const paintDelay = demo\.previewHref \? 420 : 140/],
   ['mobile NGUYEN preload margin', /rootMargin: demo\.previewHref \? '700px 0px 700px 0px' : '180px 0px 180px 0px'/],
 ];
