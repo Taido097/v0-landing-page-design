@@ -634,7 +634,7 @@ export function HowWeWorkSection() {
                         <DemoCard
                           demo={demo}
                           index={index}
-                          shouldMount={index === desktopSettledIndex}
+                          shouldMount={index === desktopSettledIndex && !desktopScrollActive}
                           running={index === desktopSettledIndex && !desktopScrollActive}
                         />
                       </div>
