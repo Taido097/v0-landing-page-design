@@ -34,6 +34,7 @@ const selectedRequirements = [
   ['selected demo muted inline autoplay handling', /video\.muted = true[\s\S]*video\.playsInline = true[\s\S]*video\.autoplay = true/],
   ['selected demo snapshot fallback', /src=\{demo\.mobileImage\}[\s\S]*selected-preview-snapshot/],
   ['selected demo auto-scroll follows requestAnimationFrame smoothly', /const tick = \(now: number\) => \{[\s\S]*win\.scrollTo\(0, targetScroll \* ease\(progress\)\)[\s\S]*requestAnimationFrame\(tick\)/],
+  ['selected heavy demo refreshes scroll target until layout is ready', /const targetRefreshDeadline = startedAt \+ 6000[\s\S]*if \(now <= targetRefreshDeadline && \(targetScroll <= 1 \|\| now >= nextTargetRefreshAt\)\)[\s\S]*readTarget\(\)/],
   ['selected demo avoids repeated media wake work during auto-scroll', /setSelectedPreviewRunning\(frame, true\);[\s\S]*const tick = \(now: number\)/],
   ['desktop selected demo active state', /desktopActiveIndex/],
   ['desktop selected demo preload state', /desktopIncomingIndex/],
