@@ -369,6 +369,8 @@ export function HowWeWorkSection() {
   const [desktopIncomingIndex, setDesktopIncomingIndex] = useState(1);
   const [desktopScrollActive, setDesktopScrollActive] = useState(false);
   const [desktopSettledIndex, setDesktopSettledIndex] = useState(0);
+  const [warmNguyenPreview, setWarmNguyenPreview] = useState(false);
+  const nguyenWarmDoneRef = useRef(false);
   const stackRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const sceneRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -398,6 +400,25 @@ export function HowWeWorkSection() {
     media.addEventListener?.('change', sync);
     return () => media.removeEventListener?.('change', sync);
   }, []);
+
+  useEffect(() => {
+    if (isMobile !== false || nguyenWarmDoneRef.current) return;
+
+    const node = stackRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting || nguyenWarmDoneRef.current) return;
+        setWarmNguyenPreview(true);
+        observer.disconnect();
+      },
+      { rootMargin: '1200px 0px 1200px 0px', threshold: 0 },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [isMobile]);
 
   useEffect(() => {
     if (isMobile !== false) return;
@@ -562,6 +583,20 @@ export function HowWeWorkSection() {
 
   return (
     <section id="process" className="scroll-mt-24 border-t border-black/10 bg-[#fafafa] py-20 text-[#121212] sm:py-24 lg:py-28">
+      {isMobile === false && warmNguyenPreview && (
+        <iframe
+          src="/client-demos/client-8889/arcsphere-socal-preview?selectedAutoplay=1"
+          title="NGUYEN preview preloader"
+          loading="eager"
+          tabIndex={-1}
+          aria-hidden="true"
+          onLoad={() => {
+            nguyenWarmDoneRef.current = true;
+            setWarmNguyenPreview(false);
+          }}
+          className="pointer-events-none fixed -left-[9999px] top-0 h-px w-px opacity-0"
+        />
+      )}
       <style>{`
         .demo-showcase-scroll{position:relative;height:2920px}
         .demo-showcase-stage{position:sticky;top:56px;height:calc(100vh - 56px);min-height:780px;max-height:1080px;overflow:hidden;isolation:isolate;background:#fafafa}
