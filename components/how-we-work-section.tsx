@@ -280,24 +280,10 @@ function DemoCard({
   shouldMount: boolean;
   running: boolean;
 }) {
-  const previewRef = useRef<HTMLDivElement | null>(null);
-  const [inView, setInView] = useState(false);
-
-  useEffect(() => {
-    const node = previewRef.current;
-    if (!node) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setInView(entry.isIntersecting && entry.intersectionRatio > 0.12),
-      { threshold: [0, 0.12, 0.35] },
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <>
-      <div ref={previewRef} className="demo-showcase-preview">
-        <LiveShowcasePreview demo={demo} shouldMount={shouldMount} running={running && inView} />
+      <div className="demo-showcase-preview">
+        <LiveShowcasePreview demo={demo} shouldMount={shouldMount} running={running} />
         <Link
           href={demo.href}
           aria-label={`Open ${demo.name} demo`}
