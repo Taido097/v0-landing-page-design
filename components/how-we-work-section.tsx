@@ -159,14 +159,10 @@ function LiveShowcasePreview({
     const holdAtBottom = 750;
     const cycleDuration = holdAtTop + scrollDuration + holdAtBottom;
     const startedAt = performance.now();
-    const frameInterval = 1000 / 30;
     const ease = (t: number) => 0.5 - Math.cos(Math.PI * t) / 2;
-    const targetRefreshInterval = demo.previewHref ? 1800 : 700;
-    const mediaWakeInterval = demo.previewHref ? 2600 : 1200;
-    let lastFrameAt = 0;
+    const targetRefreshAt = startedAt + (demo.previewHref ? 1800 : 1100);
     let targetScroll = 0;
-    let targetReadAt = 0;
-    let mediaWakeAt = startedAt;
+    let refreshedTarget = false;
 
     const readTarget = () => {
       const maxScroll = Math.max(
@@ -178,24 +174,14 @@ function LiveShowcasePreview({
     };
 
     readTarget();
+    setSelectedPreviewRunning(frame, true);
 
     const tick = (now: number) => {
       if (iframeRef.current !== frame) return;
 
-      if (now - lastFrameAt < frameInterval) {
-        rafRef.current = requestAnimationFrame(tick);
-        return;
-      }
-      lastFrameAt = now;
-
-      if (now - targetReadAt >= targetRefreshInterval) {
+      if (!refreshedTarget && now >= targetRefreshAt) {
         readTarget();
-        targetReadAt = now;
-      }
-
-      if (now - mediaWakeAt >= mediaWakeInterval) {
-        setSelectedPreviewRunning(frame, true);
-        mediaWakeAt = now;
+        refreshedTarget = true;
       }
 
       const elapsed = (now - startedAt) % cycleDuration;
@@ -429,6 +415,9 @@ export function HowWeWorkSection() {
     let stageHeight = 0;
     let gap = 24;
     let latestPosition = 0;
+    let targetPosition = 0;
+    let animatedPosition = 0;
+    let lastAnimationAt = 0;
     let scrollActive = false;
     let renderedActiveIndex = -1;
     let renderedIncomingIndex = -1;
@@ -472,13 +461,13 @@ export function HowWeWorkSection() {
       lastIncomingTransform = '';
     };
 
-    const updateStack = () => {
-      frame = 0;
-      if (!stackRef.current || !stageRef.current) return;
-
+    const readTargetPosition = () => {
       const travelled = Math.min(maxTravel, Math.max(0, window.scrollY + stickyTop - stackStart));
-      const position = (travelled / maxTravel) * (demos.length - 1);
-      latestPosition = position;
+      targetPosition = (travelled / maxTravel) * (demos.length - 1);
+      latestPosition = targetPosition;
+    };
+
+    const renderPosition = (position: number) => {
       const activeIndex = Math.min(demos.length - 1, Math.max(0, Math.floor(position)));
       const incomingIndex = Math.min(demos.length - 1, activeIndex + 1);
 
@@ -490,7 +479,7 @@ export function HowWeWorkSection() {
 
       const localProgress = Math.min(1, Math.max(0, position - (incomingIndex - 1)));
       const translateY = (1 - localProgress) * (stageHeight + gap);
-      const nextTransform = `translate3d(0,${translateY}px,0)`;
+      const nextTransform = `translate3d(0,${translateY.toFixed(2)}px,0)`;
 
       if (nextTransform !== lastIncomingTransform) {
         incomingScene.style.transform = nextTransform;
@@ -498,8 +487,32 @@ export function HowWeWorkSection() {
       }
     };
 
+    const animateStack = (now: number) => {
+      frame = 0;
+      if (!stackRef.current || !stageRef.current) return;
+
+      if (!lastAnimationAt) lastAnimationAt = now;
+      const delta = Math.min(48, Math.max(0, now - lastAnimationAt));
+      lastAnimationAt = now;
+
+      const smoothing = 1 - Math.exp(-delta / 42);
+      animatedPosition += (targetPosition - animatedPosition) * smoothing;
+
+      if (Math.abs(targetPosition - animatedPosition) < 0.001) {
+        animatedPosition = targetPosition;
+      }
+
+      renderPosition(animatedPosition);
+
+      if (Math.abs(targetPosition - animatedPosition) >= 0.001) {
+        frame = window.requestAnimationFrame(animateStack);
+      } else {
+        lastAnimationAt = 0;
+      }
+    };
+
     const requestUpdate = () => {
-      if (!frame) frame = window.requestAnimationFrame(updateStack);
+      if (!frame) frame = window.requestAnimationFrame(animateStack);
     };
 
     const settlePreview = () => {
@@ -511,6 +524,7 @@ export function HowWeWorkSection() {
     };
 
     const handleScroll = () => {
+      readTargetPosition();
       if (!scrollActive) {
         scrollActive = true;
         setDesktopScrollActive(true);
@@ -521,12 +535,13 @@ export function HowWeWorkSection() {
         setDesktopSettledIndex(Math.min(demos.length - 1, Math.max(0, Math.round(latestPosition))));
         settleTimer = 0;
         scrollActive = false;
-      }, 180);
+      }, 240);
       requestUpdate();
     };
 
     const remeasure = () => {
       measureStack();
+      readTargetPosition();
       renderedActiveIndex = -1;
       renderedIncomingIndex = -1;
       lastIncomingTransform = '';
@@ -534,7 +549,9 @@ export function HowWeWorkSection() {
     };
 
     measureStack();
-    updateStack();
+    readTargetPosition();
+    animatedPosition = targetPosition;
+    renderPosition(animatedPosition);
     setDesktopSettledIndex(Math.min(demos.length - 1, Math.max(0, Math.round(latestPosition))));
     window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('resize', remeasure, { passive: true });
