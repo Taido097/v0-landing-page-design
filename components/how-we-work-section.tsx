@@ -10,7 +10,6 @@ type ShowcaseDemo = {
   industry: string;
   href: string;
   previewHref?: string;
-  liveHref?: string;
   mobileImage: string;
   mobileFit?: 'cover' | 'contain';
 };
@@ -39,7 +38,6 @@ const demos: ShowcaseDemo[] = [
     industry: 'Architecture & Engineering',
     href: '/client-demos/client-8889/arcsphere-socal',
     previewHref: '/client-demos/client-8889/arcsphere-socal-preview',
-    liveHref: '/client-demos/client-8889/arcsphere-socal',
     mobileImage: snapshot('/client-demos/client-8889/arcsphere-socal-preview', 1),
   },
   {
@@ -116,12 +114,10 @@ function LiveShowcasePreview({
   demo,
   shouldMount,
   running,
-  sourceHref,
 }: {
   demo: ShowcaseDemo;
   shouldMount: boolean;
   running: boolean;
-  sourceHref?: string;
 }) {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const rafRef = useRef<number>(0);
@@ -144,15 +140,22 @@ function LiveShowcasePreview({
     const frame = iframeRef.current;
     const win = frame?.contentWindow;
     const doc = frame?.contentDocument;
-    const canRun = Boolean(frame && win && doc && running && loaded && painted);
+    const isNguyenPreview = Boolean(demo.previewHref);
 
     if (!frame || !win || !doc) return;
 
-    setSelectedPreviewRunning(frame, canRun);
-    if (!canRun) {
+    if (!running) {
+      setSelectedPreviewRunning(frame, false);
       win.scrollTo(0, 0);
       return;
     }
+
+    if (!loaded || !painted) {
+      if (!isNguyenPreview) setSelectedPreviewRunning(frame, false);
+      return;
+    }
+
+    setSelectedPreviewRunning(frame, true);
 
     doc.documentElement.style.scrollBehavior = 'auto';
     if (doc.body) doc.body.style.scrollBehavior = 'auto';
@@ -206,7 +209,7 @@ function LiveShowcasePreview({
       cancelAnimationFrame(rafRef.current);
       setSelectedPreviewRunning(frame, false);
     };
-  }, [demo.previewHref, loaded, painted, running, sourceHref]);
+  }, [demo.previewHref, loaded, painted, running]);
 
   useEffect(() => () => {
     const frame = iframeRef.current;
@@ -240,7 +243,7 @@ function LiveShowcasePreview({
       {shouldMount && (
         <iframe
           ref={iframeRef}
-          src={sourceHref ?? demo.previewHref ?? demo.href}
+          src={demo.previewHref ?? demo.href}
           title={`${demo.name} live website preview`}
           loading="eager"
           onLoad={handleLoad}
@@ -292,7 +295,7 @@ function DemoCard({
   return (
     <>
       <div ref={previewRef} className="demo-showcase-preview">
-        <LiveShowcasePreview demo={demo} shouldMount={shouldMount} running={running && inView} sourceHref={demo.liveHref} />
+        <LiveShowcasePreview demo={demo} shouldMount={shouldMount} running={running && inView} />
         <Link
           href={demo.href}
           aria-label={`Open ${demo.name} demo`}
