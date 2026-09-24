@@ -10,6 +10,7 @@ type ShowcaseDemo = {
   industry: string;
   href: string;
   previewHref?: string;
+  liveHref?: string;
   mobileImage: string;
   mobileFit?: 'cover' | 'contain';
 };
@@ -38,6 +39,7 @@ const demos: ShowcaseDemo[] = [
     industry: 'Architecture & Engineering',
     href: '/client-demos/client-8889/arcsphere-socal',
     previewHref: '/client-demos/client-8889/arcsphere-socal-preview',
+    liveHref: '/client-demos/client-8889/arcsphere-socal',
     mobileImage: snapshot('/client-demos/client-8889/arcsphere-socal-preview', 1),
   },
   {
@@ -114,10 +116,12 @@ function LiveShowcasePreview({
   demo,
   shouldMount,
   running,
+  sourceHref,
 }: {
   demo: ShowcaseDemo;
   shouldMount: boolean;
   running: boolean;
+  sourceHref?: string;
 }) {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const rafRef = useRef<number>(0);
@@ -202,7 +206,7 @@ function LiveShowcasePreview({
       cancelAnimationFrame(rafRef.current);
       setSelectedPreviewRunning(frame, false);
     };
-  }, [demo.previewHref, loaded, painted, running]);
+  }, [demo.previewHref, loaded, painted, running, sourceHref]);
 
   useEffect(() => () => {
     const frame = iframeRef.current;
@@ -236,7 +240,7 @@ function LiveShowcasePreview({
       {shouldMount && (
         <iframe
           ref={iframeRef}
-          src={demo.previewHref ?? demo.href}
+          src={sourceHref ?? demo.previewHref ?? demo.href}
           title={`${demo.name} live website preview`}
           loading="eager"
           onLoad={handleLoad}
@@ -288,7 +292,7 @@ function DemoCard({
   return (
     <>
       <div ref={previewRef} className="demo-showcase-preview">
-        <LiveShowcasePreview demo={demo} shouldMount={shouldMount} running={running && inView} />
+        <LiveShowcasePreview demo={demo} shouldMount={shouldMount} running={running && inView} sourceHref={demo.liveHref} />
         <Link
           href={demo.href}
           aria-label={`Open ${demo.name} demo`}
@@ -535,7 +539,7 @@ export function HowWeWorkSection() {
         setDesktopSettledIndex(Math.min(demos.length - 1, Math.max(0, Math.round(latestPosition))));
         settleTimer = 0;
         scrollActive = false;
-      }, 240);
+      }, 120);
       requestUpdate();
     };
 
