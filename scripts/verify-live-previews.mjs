@@ -29,7 +29,7 @@ const galleryRequirements = [
 const selectedRequirements = [
   ['selected demo live preview component', /function LiveShowcasePreview\(/],
   ['selected demo wake helper', /function setSelectedPreviewRunning\(/],
-  ['selected demo live iframe', /<iframe[\s\S]*src=\{sourceHref \?\? demo\.previewHref \?\? demo\.href\}/],
+  ['selected demo live iframe', /<iframe[\s\S]*src=\{demo\.previewHref \?\? demo\.href\}/],
   ['selected demo autoplay permission', /allow="autoplay; fullscreen"/],
   ['selected demo muted inline autoplay handling', /video\.muted = true[\s\S]*video\.playsInline = true[\s\S]*video\.autoplay = true/],
   ['selected demo snapshot fallback', /src=\{demo\.mobileImage\}[\s\S]*selected-preview-snapshot/],
