@@ -157,6 +157,8 @@ function LiveShowcasePreview({
 
     setSelectedPreviewRunning(frame, true);
 
+    if (isNguyenPreview) return;
+
     doc.documentElement.style.scrollBehavior = 'auto';
     if (doc.body) doc.body.style.scrollBehavior = 'auto';
     win.scrollTo(0, 0);
@@ -243,7 +245,7 @@ function LiveShowcasePreview({
       {shouldMount && (
         <iframe
           ref={iframeRef}
-          src={demo.previewHref ?? demo.href}
+          src={demo.previewHref ? `${demo.previewHref}?selectedAutoplay=1` : demo.href}
           title={`${demo.name} live website preview`}
           loading="eager"
           onLoad={handleLoad}
