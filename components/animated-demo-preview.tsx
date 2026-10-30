@@ -11,7 +11,6 @@ type AnimatedDemoPreviewProps = {
   image: string;
   href: string;
   isCenter: boolean;
-  runtimeActive?: boolean;
   onComplete?: () => void;
 };
 
@@ -49,20 +48,13 @@ function setEmbeddedPreviewPaused(frame: HTMLIFrameElement, paused: boolean) {
   }
 }
 
-export function AnimatedDemoPreview({
-  name,
-  href,
-  isCenter,
-  runtimeActive = true,
-  onComplete,
-}: AnimatedDemoPreviewProps) {
+export function AnimatedDemoPreview({ name, href, isCenter, onComplete }: AnimatedDemoPreviewProps) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const rafRef = useRef<number>(0);
   const completedRef = useRef(false);
   const [inView, setInView] = useState(false);
-  const visualCenter = isCenter || Boolean(onComplete);
-  const running = isCenter && inView && runtimeActive;
+  const running = isCenter && inView;
 
   useEffect(() => {
     const node = rootRef.current;
@@ -197,7 +189,7 @@ export function AnimatedDemoPreview({
     <div
       ref={rootRef}
       className={`demo-preview relative overflow-hidden border border-white/20 bg-[#111] shadow-[0_30px_80px_rgba(0,0,0,.42)] ${
-        visualCenter
+        isCenter
           ? 'h-[300px] rounded-[1.35rem] sm:h-[350px] lg:h-[400px]'
           : 'h-[225px] rounded-[1.1rem] sm:h-[270px] lg:h-[310px]'
       }`}
@@ -212,7 +204,7 @@ export function AnimatedDemoPreview({
           tabIndex={-1}
           aria-hidden="true"
           loading="lazy"
-          sandbox={visualCenter ? undefined : 'allow-same-origin'}
+          sandbox={isCenter ? undefined : 'allow-same-origin'}
           className="pointer-events-none absolute left-0 top-0 border-0 bg-black"
           style={{
             width: '200%',
@@ -227,7 +219,7 @@ export function AnimatedDemoPreview({
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-40 flex items-center justify-between border-t border-white/10 bg-black/72 px-4 py-2.5 text-[8px] uppercase tracking-[.14em] text-white/65 backdrop-blur-md sm:px-5">
         <span>{name}</span>
         <span className="inline-flex items-center gap-1.5 text-white/85">
-          {visualCenter ? 'Real demo · auto scroll' : 'Real demo · paused'}
+          {isCenter ? 'Real demo · auto scroll' : 'Real demo · paused'}
           <ArrowUpRight className="h-3 w-3" />
         </span>
       </div>
