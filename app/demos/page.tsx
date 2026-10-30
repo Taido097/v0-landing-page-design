@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { AllDemosGallery } from '@/components/all-demos-gallery';
-import { AdaptiveRuntimeOptimizer } from '@/components/adaptive-runtime-optimizer';
 
 export const dynamic = 'force-static';
 
@@ -32,7 +31,6 @@ export const metadata: Metadata = {
 export default function DemosPage() {
   return (
     <>
-      <AdaptiveRuntimeOptimizer />
       <Header />
       <main className="min-h-screen bg-[#fafafa] text-[#121212]">
         <section className="pt-32 sm:pt-36 lg:pt-40">
