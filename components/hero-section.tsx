@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import type { CSSProperties } from 'react';
+import { useEffect, useState } from 'react';
 
 type HeroCard = {
   name: string;
@@ -26,13 +27,127 @@ const cards: HeroCard[] = [
 
 export function HeroSection() {
   const center = (cards.length - 1) / 2;
+  const [count, setCount] = useState(0);
+  const [skipIntro, setSkipIntro] = useState(false);
+
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let seen = false;
+    try {
+      seen = sessionStorage.getItem('td-intro-seen') === '1';
+    } catch {
+      seen = false;
+    }
+
+    if (reduce || seen) {
+      setSkipIntro(true);
+      setCount(100);
+      return;
+    }
+
+    try {
+      sessionStorage.setItem('td-intro-seen', '1');
+    } catch {
+      // ignore storage failures
+    }
+
+    const start = performance.now();
+    const duration = 1700;
+    let raf = 0;
+    const tick = (now: number) => {
+      const progress = Math.min(1, (now - start) / duration);
+      setCount(Math.round(progress * 100));
+      if (progress < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   return (
     <section
       id="hero"
       className="relative overflow-hidden bg-[#f7f6f4] pt-28 pb-16 text-[#121212] sm:pt-32 lg:pt-36"
     >
+      <div className={`intro-overlay${skipIntro ? ' intro-skip' : ''}`} aria-hidden="true">
+        <div className="intro-inner">
+          <span className="intro-word">DesignedbyTD Studio</span>
+          <span className="intro-count">{String(count).padStart(3, '0')}<i>%</i></span>
+          <span className="intro-bar"><i /></span>
+        </div>
+      </div>
+
       <style>{`
+        .intro-overlay {
+          position: fixed;
+          inset: 0;
+          z-index: 9999;
+          background: #0e0e0e;
+          color: #fff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          animation: introReveal .9s cubic-bezier(.76, 0, .24, 1) 2s forwards;
+        }
+        .intro-overlay.intro-skip { display: none; }
+        .intro-inner {
+          width: min(78vw, 360px);
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 18px;
+          opacity: 0;
+          animation: introTextIn .7s ease .1s forwards;
+        }
+        .intro-word {
+          font-size: clamp(15px, 2.4vw, 19px);
+          font-weight: 500;
+          letter-spacing: -.01em;
+        }
+        .intro-count {
+          display: flex;
+          align-items: flex-start;
+          font-size: clamp(56px, 12vw, 120px);
+          font-weight: 600;
+          line-height: .9;
+          letter-spacing: -.05em;
+          font-variant-numeric: tabular-nums;
+        }
+        .intro-count i {
+          font-size: .28em;
+          font-style: normal;
+          margin-top: .35em;
+          margin-left: .12em;
+          opacity: .6;
+        }
+        .intro-bar {
+          width: 100%;
+          height: 2px;
+          background: rgba(255,255,255,.16);
+          overflow: hidden;
+        }
+        .intro-bar i {
+          display: block;
+          height: 100%;
+          background: #fff;
+          transform-origin: left center;
+          transform: scaleX(0);
+          animation: introFill 1.7s cubic-bezier(.4, 0, .1, 1) forwards;
+        }
+        @keyframes introReveal {
+          99%  { visibility: visible; transform: translateY(-105%); }
+          100% { visibility: hidden; transform: translateY(-105%); pointer-events: none; }
+        }
+        @keyframes introTextIn {
+          from { opacity: 0; transform: translateY(14px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes introFill {
+          to { transform: scaleX(1); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .intro-overlay { display: none; }
+        }
+
         .ekon-stage {
           position: relative;
           height: 540px;
@@ -96,7 +211,7 @@ export function HeroSection() {
           opacity: 1;
           transform: var(--final);
           animation: ekonRise 1.1s cubic-bezier(.16, 1, .3, 1) both;
-          animation-delay: var(--delay);
+          animation-delay: calc(var(--introDelay, 0ms) + var(--delay));
         }
         @media (prefers-reduced-motion: reduce) {
           .ekon-card { animation: none; }
@@ -136,7 +251,11 @@ export function HeroSection() {
         </div>
       </div>
 
-      <div className="ekon-stage mx-auto mt-14 w-full max-w-[1280px] px-4 sm:mt-16 sm:px-6 lg:px-8" aria-label="Featured website demos">
+      <div
+        className="ekon-stage mx-auto mt-14 w-full max-w-[1280px] px-4 sm:mt-16 sm:px-6 lg:px-8"
+        aria-label="Featured website demos"
+        style={{ ['--introDelay']: skipIntro ? '0ms' : '2000ms' } as CSSProperties}
+      >
         {cards.map((card, index) => {
           const offset = index - center;
           // Arched "smile": center sits lowest/front, sides lift and tilt outward.
