@@ -14,12 +14,13 @@ type HeroCard = {
 };
 
 // Static screenshots of the live demos, shown as an arched row in the hero.
+// Kept small so they decode fast and don't jank the load-in animation.
 const shot = (path: string) =>
-  `https://image.thum.io/get/width/900/crop/640/noanimate/wait/2/https://designedbytd.com${path}`;
+  `https://image.thum.io/get/width/600/crop/430/noanimate/wait/2/https://designedbytd.com${path}`;
 
 const cards: HeroCard[] = [
   { name: 'Orkan', tag: 'Photography', href: '/portfolio/orkan', image: shot('/portfolio/orkan') },
-  { name: 'Forma', tag: 'Creative studio', href: '/portfolio/forma-studio', image: 'https://image.thum.io/get/width/900/crop/640/noanimate/wait/3/https://forma-design-studio.framer.website/' },
+  { name: 'Forma', tag: 'Creative studio', href: '/portfolio/forma-studio', image: 'https://image.thum.io/get/width/600/crop/430/noanimate/wait/3/https://forma-design-studio.framer.website/' },
   { name: 'Fuel', tag: 'Creative agency', href: '/portfolio/fuel-agency', image: shot('/portfolio/fuel-agency') },
   { name: 'Akjo', tag: 'Portfolio', href: '/portfolio/akjo-portfolio', image: shot('/portfolio/akjo-portfolio') },
   { name: 'Jorge', tag: 'Personal brand', href: '/portfolio/jorge-portfolio', image: shot('/portfolio/jorge-portfolio') },
@@ -165,9 +166,11 @@ export function HeroSection() {
           border-radius: 18px;
           overflow: hidden;
           background: #e9e7e3;
-          box-shadow: 0 30px 70px rgba(18, 18, 18, .18), 0 2px 6px rgba(18,18,18,.08);
-          transition: transform 1.05s cubic-bezier(.19, 1, .22, 1), opacity .9s ease;
-          will-change: transform, opacity;
+          box-shadow: 0 14px 34px rgba(18, 18, 18, .14);
+          transition: box-shadow .3s ease;
+          will-change: transform;
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
           outline: 1px solid rgba(18,18,18,.06);
           outline-offset: -1px;
         }
@@ -198,7 +201,7 @@ export function HeroSection() {
           opacity: .72;
         }
         .ekon-card:hover {
-          box-shadow: 0 40px 90px rgba(18,18,18,.26), 0 2px 6px rgba(18,18,18,.1);
+          box-shadow: 0 26px 60px rgba(18,18,18,.22);
         }
 
         /* Staggered load-in: each card stays hidden until its delay, then rises
@@ -269,7 +272,9 @@ export function HeroSection() {
           const zIndex = 50 - Math.abs(offset) * 10;
 
           const finalTransform = `translate3d(${x}px, ${y}px, ${depth}px) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg) scale(${scale})`;
-          const startTransform = `translate3d(${x * 0.55}px, ${y + 180}px, ${depth - 80}px) rotateY(${rotateY}deg) rotateZ(${rotateZ * 0.35}deg) scale(${scale * 0.72})`;
+          // Keep rotation identical in both keyframes so only position + scale
+          // animate — the GPU handles that cheaply, no shadow re-raster.
+          const startTransform = `translate3d(${x}px, ${y + 120}px, ${depth}px) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg) scale(${scale * 0.86})`;
 
           return (
             <Link
