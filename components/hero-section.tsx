@@ -28,7 +28,6 @@ const cards: HeroCard[] = [
 
 export function HeroSection() {
   const center = (cards.length - 1) / 2;
-  const [count, setCount] = useState(0);
   const [skipIntro, setSkipIntro] = useState(false);
 
   useEffect(() => {
@@ -42,7 +41,6 @@ export function HeroSection() {
 
     if (reduce || seen) {
       setSkipIntro(true);
-      setCount(100);
       return;
     }
 
@@ -51,17 +49,6 @@ export function HeroSection() {
     } catch {
       // ignore storage failures
     }
-
-    const start = performance.now();
-    const duration = 1700;
-    let raf = 0;
-    const tick = (now: number) => {
-      const progress = Math.min(1, (now - start) / duration);
-      setCount(Math.round(progress * 100));
-      if (progress < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
   }, []);
 
   return (
@@ -77,7 +64,7 @@ export function HeroSection() {
         </div>
         <div className="intro-inner">
           <span className="intro-word">DesignedbyTD Studio</span>
-          <span className="intro-count">{String(count).padStart(3, '0')}<i>%</i></span>
+          <span className="intro-count"><b /><i>%</i></span>
           <span className="intro-bar"><i /></span>
         </div>
       </div>
@@ -136,6 +123,14 @@ export function HeroSection() {
           letter-spacing: -.05em;
           font-variant-numeric: tabular-nums;
         }
+        .intro-count b {
+          font-weight: inherit;
+          animation: introCount 1.6s linear .1s forwards;
+        }
+        .intro-count b::after {
+          content: counter(introNum);
+          counter-reset: introNum var(--introNum);
+        }
         .intro-count i {
           font-size: .28em;
           font-style: normal;
@@ -172,6 +167,14 @@ export function HeroSection() {
         }
         @keyframes introClear {
           to { visibility: hidden; }
+        }
+        @property --introNum {
+          syntax: "<integer>";
+          inherits: false;
+          initial-value: 0;
+        }
+        @keyframes introCount {
+          to { --introNum: 100; }
         }
         @media (prefers-reduced-motion: reduce) {
           .intro-overlay { display: none; }
@@ -302,8 +305,8 @@ export function HeroSection() {
             // Cards sit around a tilted 3D ring: each is rotated around the
             // centre and pushed out along its radius, so they curve away like a
             // loop. The ring's rotateX tilt gives the oval, read-from-above look.
-            const angle = offset * 25; // degrees apart around the ring
-            const radius = 560;
+            const angle = offset * 36; // degrees apart — wide enough to sit edge-to-edge
+            const radius = 580;
             const scale = 1 - Math.abs(offset) * 0.04;
             const zIndex = 50 - Math.abs(offset) * 10;
 
