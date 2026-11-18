@@ -70,6 +70,11 @@ export function HeroSection() {
       className="relative overflow-hidden bg-[#f7f6f4] pt-28 pb-16 text-[#121212] sm:pt-32 lg:pt-36"
     >
       <div className={`intro-overlay${skipIntro ? ' intro-skip' : ''}`} aria-hidden="true">
+        <div className="intro-panels">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <span key={i} className="intro-panel" style={{ ['--p']: `${i * 85}ms` } as CSSProperties} />
+          ))}
+        </div>
         <div className="intro-inner">
           <span className="intro-word">DesignedbyTD Studio</span>
           <span className="intro-count">{String(count).padStart(3, '0')}<i>%</i></span>
@@ -82,22 +87,40 @@ export function HeroSection() {
           position: fixed;
           inset: 0;
           z-index: 9999;
-          background: #0e0e0e;
           color: #fff;
           display: flex;
           align-items: center;
           justify-content: center;
-          animation: introReveal .9s cubic-bezier(.76, 0, .24, 1) 2s forwards;
+          background: transparent;
+          pointer-events: none;
+          animation: introClear .01s linear 3.1s forwards;
         }
         .intro-overlay.intro-skip { display: none; }
+        .intro-panels {
+          position: absolute;
+          inset: 0;
+          display: flex;
+        }
+        .intro-panel {
+          flex: 1 1 0;
+          height: 100%;
+          background: #0e0e0e;
+          transform: translateY(0);
+          will-change: transform;
+          animation: introPanelUp .78s cubic-bezier(.76, 0, .24, 1) forwards;
+          animation-delay: calc(1.95s + var(--p));
+          /* hide hairline gaps between panels */
+          box-shadow: 1px 0 0 #0e0e0e, -1px 0 0 #0e0e0e;
+        }
         .intro-inner {
+          position: relative;
+          z-index: 2;
           width: min(78vw, 360px);
           display: flex;
           flex-direction: column;
           align-items: flex-start;
           gap: 18px;
-          opacity: 0;
-          animation: introTextIn .7s ease .1s forwards;
+          animation: introText 2.1s ease forwards;
         }
         .intro-word {
           font-size: clamp(15px, 2.4vw, 19px);
@@ -134,16 +157,21 @@ export function HeroSection() {
           transform: scaleX(0);
           animation: introFill 1.7s cubic-bezier(.4, 0, .1, 1) forwards;
         }
-        @keyframes introReveal {
-          99%  { visibility: visible; transform: translateY(-105%); }
-          100% { visibility: hidden; transform: translateY(-105%); pointer-events: none; }
+        @keyframes introPanelUp {
+          to { transform: translateY(-101%); }
         }
-        @keyframes introTextIn {
-          from { opacity: 0; transform: translateY(14px); }
-          to   { opacity: 1; transform: translateY(0); }
+        @keyframes introText {
+          0%   { opacity: 0; transform: translateY(14px); }
+          10%  { opacity: 1; transform: translateY(0); }
+          80%  { opacity: 1; transform: translateY(0); }
+          92%  { opacity: 0; transform: translateY(-10px); }
+          100% { opacity: 0; transform: translateY(-10px); }
         }
         @keyframes introFill {
           to { transform: scaleX(1); }
+        }
+        @keyframes introClear {
+          to { visibility: hidden; }
         }
         @media (prefers-reduced-motion: reduce) {
           .intro-overlay { display: none; }
