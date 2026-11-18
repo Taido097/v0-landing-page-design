@@ -125,11 +125,11 @@ export function HeroSection() {
         }
         .intro-count b {
           font-weight: inherit;
+          counter-reset: introNum var(--introNum);
           animation: introCount 1.6s linear .1s forwards;
         }
         .intro-count b::after {
           content: counter(introNum);
-          counter-reset: introNum var(--introNum);
         }
         .intro-count i {
           font-size: .28em;
