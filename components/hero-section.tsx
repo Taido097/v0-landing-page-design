@@ -179,18 +179,27 @@ export function HeroSection() {
 
         .ekon-stage {
           position: relative;
-          height: 540px;
-          perspective: 1700px;
-          perspective-origin: 50% 38%;
+          height: 560px;
+          perspective: 1500px;
+          perspective-origin: 50% 44%;
         }
+        .ekon-ring {
+          position: absolute;
+          inset: 0;
+          transform-style: preserve-3d;
+          transform: rotateX(8deg);
+        }
+        @media (max-width: 1100px) { .ekon-ring { transform: rotateX(8deg) scale(.82); } }
+        @media (max-width: 760px)  { .ekon-stage { height: 460px; } .ekon-ring { transform: rotateX(7deg) scale(.6); } }
+        @media (max-width: 480px)  { .ekon-stage { height: 420px; } .ekon-ring { transform: rotateX(6deg) scale(.46); } }
         .ekon-card {
           position: absolute;
           top: 50%;
           left: 50%;
-          width: clamp(240px, 24vw, 360px);
+          width: clamp(260px, 26vw, 380px);
           aspect-ratio: 16 / 11;
-          margin-left: calc(clamp(240px, 24vw, 360px) / -2);
-          margin-top: calc(clamp(240px, 24vw, 360px) * 11 / 16 / -2);
+          margin-left: calc(clamp(260px, 26vw, 380px) / -2);
+          margin-top: calc(clamp(260px, 26vw, 380px) * 11 / 16 / -2);
           border-radius: 18px;
           overflow: hidden;
           background: #e9e7e3;
@@ -287,45 +296,45 @@ export function HeroSection() {
         aria-label="Featured website demos"
         style={{ ['--introDelay']: skipIntro ? '0ms' : '2000ms' } as CSSProperties}
       >
-        {cards.map((card, index) => {
-          const offset = index - center;
-          // Arched "smile": center sits lowest/front, sides lift and tilt outward.
-          const spread = 210; // horizontal distance between neighbours
-          const x = offset * spread;
-          const y = (offset * offset) * -26; // sides rise
-          const rotateZ = offset * 5.2;
-          const rotateY = offset * -11;
-          const scale = 1 - Math.abs(offset) * 0.06;
-          const depth = -Math.abs(offset) * 90;
-          const zIndex = 50 - Math.abs(offset) * 10;
+        <div className="ekon-ring">
+          {cards.map((card, index) => {
+            const offset = index - center;
+            // Cards sit around a tilted 3D ring: each is rotated around the
+            // centre and pushed out along its radius, so they curve away like a
+            // loop. The ring's rotateX tilt gives the oval, read-from-above look.
+            const angle = offset * 25; // degrees apart around the ring
+            const radius = 560;
+            const scale = 1 - Math.abs(offset) * 0.04;
+            const zIndex = 50 - Math.abs(offset) * 10;
 
-          const finalTransform = `translate3d(${x}px, ${y}px, ${depth}px) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg) scale(${scale})`;
-          // Keep rotation identical in both keyframes so only position + scale
-          // animate — the GPU handles that cheaply, no shadow re-raster.
-          const startTransform = `translate3d(${x}px, ${y + 120}px, ${depth}px) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg) scale(${scale * 0.86})`;
+            // Same function order in both keyframes so only translateZ / lift /
+            // scale animate (cheap on the GPU); the rotation stays fixed.
+            const finalTransform = `translateY(0px) rotateY(${angle}deg) translateZ(${radius}px) scale(${scale})`;
+            const startTransform = `translateY(150px) rotateY(${angle}deg) translateZ(${radius * 0.62}px) scale(${scale * 0.8})`;
 
-          return (
-            <Link
-              key={card.name}
-              href={card.href}
-              prefetch={false}
-              className="ekon-card focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
-              style={{
-                zIndex,
-                ['--final']: finalTransform,
-                ['--start']: startTransform,
-                ['--delay']: `${index * 130}ms`,
-              } as CSSProperties}
-              aria-label={`Open ${card.name} demo`}
-            >
-              <img src={card.image} alt={`${card.name} website preview`} loading="eager" decoding="async" />
-              <span className="ekon-card-label">
-                <span>{card.name}</span>
-                <span>{card.tag}</span>
-              </span>
-            </Link>
-          );
-        })}
+            return (
+              <Link
+                key={card.name}
+                href={card.href}
+                prefetch={false}
+                className="ekon-card focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+                style={{
+                  zIndex,
+                  ['--final']: finalTransform,
+                  ['--start']: startTransform,
+                  ['--delay']: `${index * 130}ms`,
+                } as CSSProperties}
+                aria-label={`Open ${card.name} demo`}
+              >
+                <img src={card.image} alt={`${card.name} website preview`} loading="eager" decoding="async" />
+                <span className="ekon-card-label">
+                  <span>{card.name}</span>
+                  <span>{card.tag}</span>
+                </span>
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
