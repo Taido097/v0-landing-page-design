@@ -140,55 +140,37 @@ function AutoScrollDemoCard({
   const rafRef = useRef<number>(0);
   const paintTimerRef = useRef<number>(0);
   const [inView, setInView] = useState(false);
-  const [nearView, setNearView] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [painted, setPainted] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const mobileRow = Math.floor(index / 2);
   const mobileActive = isMobile && activeMobileRow === mobileRow;
-  const shouldMountIframe = isMobile ? mobileActive : nearView;
-  const previewPlaying = shouldMountIframe && inView && painted;
+  // Desktop: only the hovered card mounts/plays a live preview, so at most one
+  // iframe runs at a time (keeps the gallery smooth). Mobile keeps scroll-to-play.
+  const shouldMountIframe = isMobile ? mobileActive : hovered;
+  const previewPlaying = isMobile ? mobileActive && inView && painted : hovered && painted;
 
+  // Mobile only: track which row is centered so it becomes the active preview.
+  // Desktop plays on hover and needs no scroll observer.
   useEffect(() => {
-    if (isMobile) {
-      setNearView(false);
-      return;
-    }
+    if (!isMobile) return;
 
-    const card = cardRef.current;
-    if (!card) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setNearView(entry.isIntersecting),
-      { rootMargin: demo.previewHref ? '900px 0px 900px 0px' : '180px 0px 180px 0px', threshold: 0 },
-    );
-
-    observer.observe(card);
-    return () => observer.disconnect();
-  }, [demo.previewHref, isMobile]);
-
-  useEffect(() => {
     const card = cardRef.current;
     if (!card) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (isMobile) {
-          const rect = entry.boundingClientRect;
-          const viewportCenter = window.innerHeight / 2;
-          const cardCenter = rect.top + rect.height / 2;
-          const closeToCenter = Math.abs(cardCenter - viewportCenter) < Math.min(window.innerHeight * 0.32, 260);
+        const rect = entry.boundingClientRect;
+        const viewportCenter = window.innerHeight / 2;
+        const cardCenter = rect.top + rect.height / 2;
+        const closeToCenter = Math.abs(cardCenter - viewportCenter) < Math.min(window.innerHeight * 0.32, 260);
 
-          if (entry.isIntersecting && closeToCenter) {
-            setActiveMobileRow(mobileRow);
-          }
-          setInView(entry.isIntersecting && closeToCenter);
-        } else {
-          setInView(entry.isIntersecting && entry.intersectionRatio > 0.12);
+        if (entry.isIntersecting && closeToCenter) {
+          setActiveMobileRow(mobileRow);
         }
+        setInView(entry.isIntersecting && closeToCenter);
       },
-      isMobile
-        ? { rootMargin: '-18% 0px -18% 0px', threshold: [0, 0.2, 0.5, 0.8] }
-        : { threshold: [0, 0.12, 0.35] },
+      { rootMargin: '-18% 0px -18% 0px', threshold: [0, 0.2, 0.5, 0.8] },
     );
 
     observer.observe(card);
@@ -201,7 +183,7 @@ function AutoScrollDemoCard({
     const frame = iframeRef.current;
     const win = frame?.contentWindow;
     const doc = frame?.contentDocument;
-    const canAnimate = shouldMountIframe && inView && loaded && (!isMobile || painted);
+    const canAnimate = shouldMountIframe && loaded && (isMobile ? inView && painted : hovered);
 
     if (!frame || !win || !doc) return;
 
@@ -230,6 +212,10 @@ function AutoScrollDemoCard({
       );
       return maxScroll * 0.62;
     };
+    // Reading scrollHeight forces a layout, so cache the target and only refresh
+    // it about once a second instead of every animation frame.
+    let cachedTarget = getTarget();
+    let targetRefreshAt = startedAt;
 
     const tick = (now: number) => {
       if (now - lastFrameAt < frameInterval) {
@@ -239,7 +225,11 @@ function AutoScrollDemoCard({
       lastFrameAt = now;
 
       const elapsed = (now - startedAt) % cycleDuration;
-      const target = getTarget();
+      if (now - targetRefreshAt > 1000) {
+        cachedTarget = getTarget();
+        targetRefreshAt = now;
+      }
+      const target = cachedTarget;
 
       if (now - mediaWakeAt >= 2200) {
         setEmbeddedPreviewRunning(frame, true);
@@ -263,7 +253,7 @@ function AutoScrollDemoCard({
       cancelAnimationFrame(rafRef.current);
       setEmbeddedPreviewRunning(frame, false);
     };
-  }, [demo.name, inView, loaded, painted, isMobile, shouldMountIframe]);
+  }, [demo.name, inView, loaded, painted, hovered, isMobile, shouldMountIframe]);
 
   useEffect(() => {
     if (!shouldMountIframe) {
@@ -298,7 +288,12 @@ function AutoScrollDemoCard({
   };
 
   return (
-    <article ref={cardRef} className="group min-w-0">
+    <article
+      ref={cardRef}
+      className="group min-w-0"
+      onMouseEnter={() => { if (!isMobile) setHovered(true); }}
+      onMouseLeave={() => { if (!isMobile) setHovered(false); }}
+    >
       <Link
         href={demo.href}
         className="block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black"
@@ -339,7 +334,7 @@ function AutoScrollDemoCard({
 
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] flex items-center justify-between border-t border-white/15 bg-black/72 px-2 py-1.5 text-[7px] uppercase tracking-[.08em] text-white/70 backdrop-blur-md sm:px-4 sm:py-2.5 sm:text-[10px] sm:tracking-[.14em]">
             <span>{previewPlaying ? 'Live demo' : 'Preview'}</span>
-            <span>{previewPlaying ? 'Auto-scroll' : 'Scroll to play'}</span>
+            <span>{previewPlaying ? 'Auto-scroll' : isMobile ? 'Scroll to play' : 'Hover to play'}</span>
           </div>
         </div>
 
@@ -415,7 +410,7 @@ export function AllDemosGallery() {
 
         <div className="flex items-center justify-between border-b border-black/10 py-6 text-xs text-black/45">
           <span>{visibleDemos.length} demos</span>
-          <span>{isMobile ? 'Two live previews per row' : 'Live previews · auto-scroll'}</span>
+          <span>{isMobile ? 'Two live previews per row' : 'Hover a demo to play'}</span>
         </div>
 
         <div className="grid grid-cols-2 gap-x-3 gap-y-7 pt-6 md:gap-x-5 md:gap-y-10 lg:grid-cols-3">
