@@ -59,7 +59,9 @@ const pricingRequirements = [
 ];
 
 const pricingForbidden = [
-  ['old starter up-to-5-pages wording', /name: 'Starter'[\s\S]*features: \[[\s\S]*'Up to 5 pages'/],
+  // Scope to the Starter block only (stop at the next `name: '` entry) so the
+  // Professional plan legitimately using 'Up to 5 pages' is not flagged.
+  ['old starter up-to-5-pages wording', /name: 'Starter'(?:(?!name: ')[\s\S])*?'Up to 5 pages'/],
 ];
 
 const missingGallery = galleryRequirements
