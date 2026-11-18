@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import type { CSSProperties } from 'react';
 
 type HeroCard = {
   name: string;
@@ -25,18 +25,7 @@ const cards: HeroCard[] = [
 ];
 
 export function HeroSection() {
-  const [entered, setEntered] = useState(false);
   const center = (cards.length - 1) / 2;
-
-  useEffect(() => {
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce) {
-      setEntered(true);
-      return;
-    }
-    const id = requestAnimationFrame(() => requestAnimationFrame(() => setEntered(true)));
-    return () => cancelAnimationFrame(id);
-  }, []);
 
   return (
     <section
@@ -97,6 +86,22 @@ export function HeroSection() {
           box-shadow: 0 40px 90px rgba(18,18,18,.26), 0 2px 6px rgba(18,18,18,.1);
         }
 
+        /* Staggered load-in: each card stays hidden until its delay, then rises
+           and settles into the arch. Plays on every page load. */
+        @keyframes ekonRise {
+          0%   { opacity: 0; transform: var(--start); }
+          100% { opacity: 1; transform: var(--final); }
+        }
+        .ekon-card {
+          opacity: 1;
+          transform: var(--final);
+          animation: ekonRise 1.1s cubic-bezier(.16, 1, .3, 1) both;
+          animation-delay: var(--delay);
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .ekon-card { animation: none; }
+        }
+
         @media (max-width: 900px) {
           .ekon-stage { height: 460px; perspective: 1200px; }
           .ekon-card { width: clamp(190px, 52vw, 280px); margin-left: calc(clamp(190px, 52vw, 280px) / -2); margin-top: calc(clamp(190px, 52vw, 280px) * 11 / 16 / -2); }
@@ -145,7 +150,7 @@ export function HeroSection() {
           const zIndex = 50 - Math.abs(offset) * 10;
 
           const finalTransform = `translate3d(${x}px, ${y}px, ${depth}px) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg) scale(${scale})`;
-          const startTransform = `translate3d(${x * 0.6}px, ${y + 150}px, ${depth - 60}px) rotateY(${rotateY}deg) rotateZ(${rotateZ * 0.4}deg) scale(${scale * 0.8})`;
+          const startTransform = `translate3d(${x * 0.55}px, ${y + 180}px, ${depth - 80}px) rotateY(${rotateY}deg) rotateZ(${rotateZ * 0.35}deg) scale(${scale * 0.72})`;
 
           return (
             <Link
@@ -155,10 +160,10 @@ export function HeroSection() {
               className="ekon-card focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
               style={{
                 zIndex,
-                opacity: entered ? 1 : 0,
-                transform: entered ? finalTransform : startTransform,
-                transitionDelay: entered ? `${index * 95}ms` : '0ms',
-              }}
+                ['--final']: finalTransform,
+                ['--start']: startTransform,
+                ['--delay']: `${index * 130}ms`,
+              } as CSSProperties}
               aria-label={`Open ${card.name} demo`}
             >
               <img src={card.image} alt={`${card.name} website preview`} loading="eager" decoding="async" />
