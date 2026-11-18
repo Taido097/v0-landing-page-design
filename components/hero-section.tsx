@@ -91,13 +91,14 @@ export function HeroSection() {
         .intro-panel {
           flex: 1 1 0;
           height: 100%;
-          background: #0e0e0e;
-          transform: translateY(0);
+          background: #000;
+          transform-origin: top center;
+          transform: scaleY(1);
           will-change: transform;
-          animation: introPanelUp .78s cubic-bezier(.76, 0, .24, 1) forwards;
+          animation: introPanelUp .82s cubic-bezier(.76, 0, .24, 1) forwards;
           animation-delay: calc(1.95s + var(--p));
           /* hide hairline gaps between panels */
-          box-shadow: 1px 0 0 #0e0e0e, -1px 0 0 #0e0e0e;
+          box-shadow: 1px 0 0 #000, -1px 0 0 #000;
         }
         .intro-inner {
           position: relative;
@@ -153,7 +154,7 @@ export function HeroSection() {
           animation: introFill 1.7s cubic-bezier(.4, 0, .1, 1) forwards;
         }
         @keyframes introPanelUp {
-          to { transform: translateY(-101%); }
+          to { transform: scaleY(0); }
         }
         @keyframes introText {
           0%   { opacity: 0; transform: translateY(14px); }
