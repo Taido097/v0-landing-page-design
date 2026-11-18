@@ -23,7 +23,6 @@ const cards: HeroCard[] = [
   { name: 'Forma', tag: 'Creative studio', href: '/portfolio/forma-studio', image: 'https://image.thum.io/get/width/600/crop/430/noanimate/wait/3/https://forma-design-studio.framer.website/' },
   { name: 'Fuel', tag: 'Creative agency', href: '/portfolio/fuel-agency', image: shot('/portfolio/fuel-agency') },
   { name: 'Akjo', tag: 'Portfolio', href: '/portfolio/akjo-portfolio', image: shot('/portfolio/akjo-portfolio') },
-  { name: 'Jorge', tag: 'Personal brand', href: '/portfolio/jorge-portfolio', image: shot('/portfolio/jorge-portfolio') },
 ];
 
 export function HeroSection() {
@@ -269,10 +268,10 @@ export function HeroSection() {
             const offset = index - center;
             // Spiral ribbon: cards rotate around the centre (depth) AND rise/fall
             // in height, so the band winds like a spiral instead of a flat ring.
-            const angle = offset * 32;              // turn around the axis (depth)
-            const radius = 540;
-            const lift = offset * offset * -34 + offset * 12; // arch up at the sides + slight spiral lean
-            const scale = 1 - Math.abs(offset) * 0.04;
+            const angle = offset * 34;              // turn around the axis (depth)
+            const radius = 560;
+            const lift = offset * offset * -46 + offset * 26; // steeper arch + stronger spiral lean
+            const scale = 1 - Math.abs(offset) * 0.05;
             const zIndex = 50 - Math.abs(offset) * 10;
 
             // Same function order in both keyframes so only translateZ / entrance
