@@ -267,18 +267,18 @@ export function HeroSection() {
         <div className="ekon-ring">
           {cards.map((card, index) => {
             const offset = index - center;
-            // Cards sit around a tilted 3D ring: each is rotated around the
-            // centre and pushed out along its radius, so they curve away like a
-            // loop. The ring's rotateX tilt gives the oval, read-from-above look.
-            const angle = offset * 36; // degrees apart — wide enough to sit edge-to-edge
-            const radius = 580;
+            // Spiral ribbon: cards rotate around the centre (depth) AND rise/fall
+            // in height, so the band winds like a spiral instead of a flat ring.
+            const angle = offset * 32;              // turn around the axis (depth)
+            const radius = 540;
+            const lift = offset * offset * -34 + offset * 12; // arch up at the sides + slight spiral lean
             const scale = 1 - Math.abs(offset) * 0.04;
             const zIndex = 50 - Math.abs(offset) * 10;
 
-            // Same function order in both keyframes so only translateZ / lift /
-            // scale animate (cheap on the GPU); the rotation stays fixed.
-            const finalTransform = `translateY(0px) rotateY(${angle}deg) translateZ(${radius}px) scale(${scale})`;
-            const startTransform = `translateY(150px) rotateY(${angle}deg) translateZ(${radius * 0.62}px) scale(${scale * 0.8})`;
+            // Same function order in both keyframes so only translateZ / entrance
+            // lift / scale animate (cheap on the GPU); rotation stays fixed.
+            const finalTransform = `translateY(${lift}px) rotateY(${angle}deg) translateZ(${radius}px) scale(${scale})`;
+            const startTransform = `translateY(${lift + 150}px) rotateY(${angle}deg) translateZ(${radius * 0.62}px) scale(${scale * 0.8})`;
 
             return (
               <Link
