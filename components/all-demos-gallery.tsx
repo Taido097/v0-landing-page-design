@@ -65,8 +65,16 @@ const recentlyAddedDemos = [...demos].sort(
     (recentlyAddedRank.get(b.name as (typeof recentlyAddedOrder)[number]) ?? Number.MAX_SAFE_INTEGER),
 );
 
-const snapshot = (path: string) =>
-  `https://image.thum.io/get/width/1000/crop/750/noanimate/wait/2/https://designedbytd.com${path}`;
+const SNAPSHOT_OVERRIDES: Record<string, string> = {
+  // Forma isn't on the production domain yet, so screenshot the live template
+  // directly instead of a 404 on designedbytd.com.
+  '/portfolio/forma-studio': 'https://forma-design-studio.framer.website/',
+};
+
+const snapshot = (path: string) => {
+  const target = SNAPSHOT_OVERRIDES[path] ?? `https://designedbytd.com${path}`;
+  return `https://image.thum.io/get/width/1000/crop/750/noanimate/wait/2/${target}`;
+};
 
 const PREVIEW_PAUSE_STYLE_ID = 'designedbytd-gallery-preview-pause';
 const pausedAnimations = new WeakMap<Document, Animation[]>();
@@ -140,15 +148,35 @@ function AutoScrollDemoCard({
   const rafRef = useRef<number>(0);
   const paintTimerRef = useRef<number>(0);
   const [inView, setInView] = useState(false);
+  const [nearView, setNearView] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [painted, setPainted] = useState(false);
   const [hovered, setHovered] = useState(false);
   const mobileRow = Math.floor(index / 2);
   const mobileActive = isMobile && activeMobileRow === mobileRow;
-  // Desktop: only the hovered card mounts/plays a live preview, so at most one
-  // iframe runs at a time (keeps the gallery smooth). Mobile keeps scroll-to-play.
-  const shouldMountIframe = isMobile ? mobileActive : hovered;
+  // Desktop: light demos mount/play on hover (one iframe at a time = smooth).
+  // Heavy dedicated-preview demos (previewHref, e.g. NGUYEN) also preload near
+  // the viewport so they are ready to play instantly on hover. Mobile keeps
+  // scroll-to-play.
+  const shouldMountIframe = isMobile ? mobileActive : (hovered || nearView);
   const previewPlaying = isMobile ? mobileActive && inView && painted : hovered && painted;
+
+  // Desktop only, heavy previews only: preload near the viewport (kept paused
+  // until hover) so the heavy demo doesn't have to cold-load on hover.
+  useEffect(() => {
+    if (isMobile || !demo.previewHref) return;
+
+    const card = cardRef.current;
+    if (!card) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setNearView(entry.isIntersecting),
+      { rootMargin: '600px 0px 600px 0px', threshold: 0 },
+    );
+
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, [demo.previewHref, isMobile]);
 
   // Mobile only: track which row is centered so it becomes the active preview.
   // Desktop plays on hover and needs no scroll observer.
@@ -212,10 +240,6 @@ function AutoScrollDemoCard({
       );
       return maxScroll * 0.62;
     };
-    // Reading scrollHeight forces a layout, so cache the target and only refresh
-    // it about once a second instead of every animation frame.
-    let cachedTarget = getTarget();
-    let targetRefreshAt = startedAt;
 
     const tick = (now: number) => {
       if (now - lastFrameAt < frameInterval) {
@@ -225,11 +249,7 @@ function AutoScrollDemoCard({
       lastFrameAt = now;
 
       const elapsed = (now - startedAt) % cycleDuration;
-      if (now - targetRefreshAt > 1000) {
-        cachedTarget = getTarget();
-        targetRefreshAt = now;
-      }
-      const target = cachedTarget;
+      const target = getTarget();
 
       if (now - mediaWakeAt >= 2200) {
         setEmbeddedPreviewRunning(frame, true);
