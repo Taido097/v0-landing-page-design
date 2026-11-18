@@ -63,9 +63,10 @@ export function HeroSection() {
           ))}
         </div>
         <div className="intro-inner">
-          <span className="intro-word">DesignedbyTD Studio</span>
-          <span className="intro-count"><b /><i>%</i></span>
-          <span className="intro-bar"><i /></span>
+          <div className="intro-name">
+            <span className="intro-w" style={{ ['--wd']: '0.15s' } as CSSProperties}>DesignedbyTD</span>
+            <span className="intro-w" style={{ ['--wd']: '0.5s' } as CSSProperties}>Studio</span>
+          </div>
         </div>
       </div>
 
@@ -101,81 +102,44 @@ export function HeroSection() {
           box-shadow: 1px 0 0 #000, -1px 0 0 #000;
         }
         .intro-inner {
-          position: relative;
+          position: absolute;
+          inset: 0;
           z-index: 2;
-          width: min(78vw, 360px);
           display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 18px;
-          animation: introText 2.1s ease forwards;
+          align-items: center;
+          justify-content: center;
+          padding: 24px;
+          animation: introHold 2.1s ease forwards;
         }
-        .intro-word {
-          font-size: clamp(15px, 2.4vw, 19px);
-          font-weight: 500;
-          letter-spacing: -.01em;
-        }
-        .intro-count {
+        .intro-name {
           display: flex;
-          align-items: flex-start;
-          font-size: clamp(56px, 12vw, 120px);
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: .3em;
+          text-align: center;
+          font-size: clamp(30px, 7vw, 76px);
           font-weight: 600;
-          line-height: .9;
-          letter-spacing: -.05em;
-          font-variant-numeric: tabular-nums;
+          letter-spacing: -.045em;
+          line-height: 1;
         }
-        .intro-count b {
-          font-weight: inherit;
-          counter-reset: introNum var(--introNum);
-          animation: introCount 1.6s linear .1s forwards;
+        .intro-w {
+          display: inline-block;
+          opacity: 0;
+          transform: translateY(26px);
+          animation: introWord .7s cubic-bezier(.2, .8, .2, 1) var(--wd) forwards;
         }
-        .intro-count b::after {
-          content: counter(introNum);
-        }
-        .intro-count i {
-          font-size: .28em;
-          font-style: normal;
-          margin-top: .35em;
-          margin-left: .12em;
-          opacity: .6;
-        }
-        .intro-bar {
-          width: 100%;
-          height: 2px;
-          background: rgba(255,255,255,.16);
-          overflow: hidden;
-        }
-        .intro-bar i {
-          display: block;
-          height: 100%;
-          background: #fff;
-          transform-origin: left center;
-          transform: scaleX(0);
-          animation: introFill 1.7s cubic-bezier(.4, 0, .1, 1) forwards;
+        @keyframes introWord {
+          to { opacity: 1; transform: translateY(0); }
         }
         @keyframes introPanelUp {
           to { transform: scaleY(0); }
         }
-        @keyframes introText {
-          0%   { opacity: 0; transform: translateY(14px); }
-          10%  { opacity: 1; transform: translateY(0); }
-          80%  { opacity: 1; transform: translateY(0); }
-          92%  { opacity: 0; transform: translateY(-10px); }
-          100% { opacity: 0; transform: translateY(-10px); }
-        }
-        @keyframes introFill {
-          to { transform: scaleX(1); }
+        @keyframes introHold {
+          0%, 86% { opacity: 1; }
+          100%    { opacity: 0; }
         }
         @keyframes introClear {
           to { visibility: hidden; }
-        }
-        @property --introNum {
-          syntax: "<integer>";
-          inherits: false;
-          initial-value: 0;
-        }
-        @keyframes introCount {
-          to { --introNum: 100; }
         }
         @media (prefers-reduced-motion: reduce) {
           .intro-overlay { display: none; }
