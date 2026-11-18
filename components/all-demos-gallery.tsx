@@ -21,6 +21,7 @@ const demos: Demo[] = [
   { name: 'Orkan', category: 'Portfolio', industry: 'Cinematic photography portfolio', href: '/portfolio/orkan' },
   { name: 'Alex Kabiru', category: 'Portfolio', industry: 'Designer portfolio', href: '/portfolio/minimal-portfolio' },
   { name: 'Fuel', category: 'Portfolio', industry: 'Premium creative agency', href: '/portfolio/fuel-agency' },
+  { name: 'Forma', category: 'Portfolio', industry: 'Design & development agency', href: '/portfolio/forma-studio' },
   { name: 'JORGE', category: 'Portfolio', industry: 'Creative portfolio', href: '/portfolio/jorge-portfolio' },
   { name: 'Akjo', category: 'Portfolio', industry: 'Creative portfolio', href: '/portfolio/akjo-portfolio' },
   { name: 'Beanro Coffee', category: 'Restaurant', industry: 'Coffee shop', href: '/portfolio/auto-repair-shop' },
@@ -37,6 +38,7 @@ const demos: Demo[] = [
 ];
 
 const recentlyAddedOrder = [
+  'Forma',
   'NGUYEN Architecture & Engineering',
   'Orkan',
   'Matchioo',

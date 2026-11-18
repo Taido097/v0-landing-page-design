@@ -24,7 +24,7 @@ const plans = [
     price: '$1,000+',
     description: 'Great for businesses that want a stronger online presence',
     features: [
-      'Up to 10 pages',
+      'Up to 5 pages',
       'Custom homepage design',
       'Service pages',
       'Contact form',
