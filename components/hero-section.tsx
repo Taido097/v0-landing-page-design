@@ -1,13 +1,14 @@
 'use client';
 
 import type { CSSProperties } from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const introWords = ['DesignedbyTD', 'Studio'];
 
 export function HeroSection() {
   const [skipIntro, setSkipIntro] = useState(false);
   const [clock, setClock] = useState('');
+  const imgRef = useRef<HTMLImageElement | null>(null);
 
   useEffect(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -33,6 +34,34 @@ export function HeroSection() {
     tick();
     const id = window.setInterval(tick, 1000);
     return () => window.clearInterval(id);
+  }, []);
+
+  // Scroll-linked "snake" motion: the spiral drifts up and gently winds (rotate
+  // oscillation) as the page scrolls. Base over-scale keeps corners covered.
+  useEffect(() => {
+    const img = imgRef.current;
+    if (!img) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const y = window.scrollY || 0;
+      const ty = -y * 0.22;                 // drift up
+      const rot = Math.sin(y * 0.0045) * 2.4; // snaking wind
+      const sc = 1.1 + Math.min(y, 700) * 0.00018;
+      img.style.transform = `translate3d(0, ${ty}px, 0) rotate(${rot}deg) scale(${sc})`;
+    };
+    const onScroll = () => {
+      if (!raf) raf = window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (raf) window.cancelAnimationFrame(raf);
+    };
   }, []);
 
   const heroDelay = { ['--heroDelay']: skipIntro ? '0.1s' : '2.15s' } as CSSProperties;
@@ -116,8 +145,8 @@ export function HeroSection() {
 
         .hero-bg {
           opacity: 0;
-          transform: scale(1.06);
-          animation: heroBgIn 1.6s cubic-bezier(.16, 1, .3, 1) var(--heroDelay) forwards;
+          transform: scale(1.1);
+          animation: heroBgIn 1.4s ease var(--heroDelay) forwards;
           will-change: transform, opacity;
         }
         .hero-copy > * {
@@ -126,7 +155,7 @@ export function HeroSection() {
           animation: heroCopyIn .9s cubic-bezier(.16, 1, .3, 1) forwards;
           animation-delay: var(--cd);
         }
-        @keyframes heroBgIn { to { opacity: 1; transform: scale(1); } }
+        @keyframes heroBgIn { to { opacity: 1; } }
         @keyframes heroCopyIn { to { opacity: 1; transform: translateY(0); } }
         @media (prefers-reduced-motion: reduce) {
           .intro-overlay { display: none; }
@@ -136,6 +165,7 @@ export function HeroSection() {
 
       {/* full-bleed background image */}
       <img
+        ref={imgRef}
         src="/hero-feature.webp"
         alt="Selected website demos by DesignedbyTD"
         className="hero-bg absolute inset-0 h-full w-full object-cover object-center"
