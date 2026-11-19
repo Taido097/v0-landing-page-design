@@ -1,8 +1,5 @@
 'use client';
 
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
 import type { CSSProperties } from 'react';
 import { useEffect, useState } from 'react';
 
@@ -164,29 +161,6 @@ export function HeroSection() {
         >
           DesignedbyTD <span className="text-white/45">Studio®</span>
         </h1>
-        <p
-          className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-white/80 drop-shadow-[0_1px_16px_rgba(0,0,0,.35)] sm:text-lg"
-          style={{ ['--cd']: skipIntro ? '0.32s' : '2.37s' } as CSSProperties}
-        >
-          Custom, mobile-friendly websites for local businesses—built to look professional, load fast, and turn visitors into customers.
-        </p>
-        <div
-          className="mt-8 flex flex-col justify-center gap-3 sm:flex-row"
-          style={{ ['--cd']: skipIntro ? '0.44s' : '2.49s' } as CSSProperties}
-        >
-          <Button asChild size="lg" className="group rounded-none bg-white px-8 py-6 text-xs font-semibold tracking-[0.09em] text-black hover:bg-white/88">
-            <Link href="/contact" prefetch={false} className="flex items-center gap-3">
-              Start Your Project
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </Button>
-          <Button asChild size="lg" variant="outline" className="group rounded-none border-white/55 bg-white/5 px-8 py-6 text-xs font-semibold tracking-[0.09em] text-white backdrop-blur-sm hover:bg-white hover:text-black">
-            <Link href="/demos" prefetch={false} className="flex items-center gap-3">
-              Explore the Work
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </Button>
-        </div>
       </div>
 
       {/* bottom info bar */}
