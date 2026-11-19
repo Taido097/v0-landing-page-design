@@ -7,7 +7,6 @@ import { PricingSection } from '@/components/pricing-section';
 import { FAQSection } from '@/components/faq-section';
 import { CTASection } from '@/components/cta-section';
 import { Footer } from '@/components/footer';
-import { ScrollReveal } from '@/components/scroll-reveal';
 
 export const dynamic = 'force-static';
 
@@ -84,21 +83,11 @@ export default function Home() {
       <Header />
       <main className="flex flex-col">
         <HeroSection />
-        <ScrollReveal>
-          <PortfolioSection />
-        </ScrollReveal>
-        <ScrollReveal>
-          <HowWeWorkSection />
-        </ScrollReveal>
-        <ScrollReveal>
-          <PricingSection />
-        </ScrollReveal>
-        <ScrollReveal>
-          <FAQSection />
-        </ScrollReveal>
-        <ScrollReveal>
-          <CTASection />
-        </ScrollReveal>
+        <PortfolioSection />
+        <HowWeWorkSection />
+        <PricingSection />
+        <FAQSection />
+        <CTASection />
       </main>
       <Footer />
     </div>
