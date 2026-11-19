@@ -141,7 +141,7 @@ export function HeroSection() {
       <img
         src="/hero-feature-mobile.webp"
         alt="Selected website demos by DesignedbyTD"
-        className="hero-bg absolute inset-0 block h-full w-full object-cover object-center sm:hidden"
+        className="hero-bg absolute inset-0 block !h-full w-full object-cover object-center sm:hidden"
         style={heroDelay}
         loading="eager"
         decoding="async"
@@ -149,7 +149,7 @@ export function HeroSection() {
       <img
         src="/hero-feature.webp"
         alt="Selected website demos by DesignedbyTD"
-        className="hero-bg absolute inset-0 hidden h-full w-full object-cover object-center sm:block"
+        className="hero-bg absolute inset-0 hidden !h-full w-full object-cover object-center sm:block"
         style={heroDelay}
         loading="eager"
         decoding="async"
