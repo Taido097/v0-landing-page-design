@@ -147,9 +147,9 @@ export function HeroSection() {
 
       {/* centered copy */}
       <div className="hero-copy relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-24 text-center sm:px-6 lg:px-8">
-        <h1 className="max-w-5xl overflow-hidden pb-[0.14em] text-[clamp(2.8rem,8vw,6.4rem)] font-semibold leading-[0.92] tracking-[-0.055em] [text-shadow:0_2px_14px_rgba(0,0,0,.6),0_1px_3px_rgba(0,0,0,.5)]">
+        <h1 className="max-w-5xl overflow-hidden pb-[0.14em] text-[clamp(2.8rem,8vw,6.4rem)] font-semibold leading-[0.92] tracking-[-0.055em] drop-shadow-[0_2px_24px_rgba(0,0,0,.4)]">
           <span className="hero-reveal" style={{ ['--cd']: skipIntro ? '0.2s' : '2.25s' } as CSSProperties}>
-            DesignedbyTD <span className="text-white/70">Studio®</span>
+            DesignedbyTD <span className="text-white/45">Studio®</span>
           </span>
         </h1>
       </div>
