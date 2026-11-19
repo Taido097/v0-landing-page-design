@@ -120,15 +120,6 @@ export function HeroSection() {
           animation: heroBgIn 1.6s cubic-bezier(.16, 1, .3, 1) var(--heroDelay) forwards;
           will-change: transform, opacity;
         }
-        /* On phones the composite is wide, so cover crops the demos off the
-           sides. Show the whole image instead and nudge it up a touch so the
-           centered title doesn't sit on top of it. */
-        @media (max-width: 640px) {
-          .hero-bg {
-            object-fit: contain;
-            object-position: center 38%;
-          }
-        }
         .hero-reveal {
           display: inline-block;
           transform: translateY(115%);
@@ -144,18 +135,28 @@ export function HeroSection() {
         }
       `}</style>
 
-      {/* full-bleed background image */}
+      {/* desktop/tablet: full-bleed background image */}
       <img
         src="/hero-feature.webp"
         alt="Selected website demos by DesignedbyTD"
-        className="hero-bg absolute inset-0 h-full w-full object-cover object-center"
+        className="hero-bg absolute inset-0 hidden h-full w-full object-cover object-center sm:block"
+        style={heroDelay}
+        loading="eager"
+        decoding="async"
+      />
+
+      {/* mobile: image as a full-width block at the top */}
+      <img
+        src="/hero-feature.webp"
+        alt="Selected website demos by DesignedbyTD"
+        className="hero-bg relative z-10 mt-16 w-full shrink-0 object-contain sm:hidden"
         style={heroDelay}
         loading="eager"
         decoding="async"
       />
 
       {/* centered copy */}
-      <div className="hero-copy relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-16 text-center sm:px-6 sm:py-24 lg:px-8">
+      <div className="hero-copy relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-8 text-center sm:px-6 sm:py-24 lg:px-8">
         <h1 className="max-w-5xl overflow-hidden pb-[0.14em] text-[clamp(2rem,10vw,6.4rem)] font-semibold leading-[0.95] tracking-[-0.045em] drop-shadow-[0_2px_24px_rgba(0,0,0,.4)] sm:leading-[0.92] sm:tracking-[-0.055em]">
           <span className="hero-reveal" style={{ ['--cd']: skipIntro ? '0.2s' : '2.25s' } as CSSProperties}>
             DesignedbyTD <span className="text-white/45">Studio®</span>
