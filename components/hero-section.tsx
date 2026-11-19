@@ -164,7 +164,7 @@ export function HeroSection() {
       </div>
 
       {/* bottom info bar */}
-      <div className="relative z-10 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 px-4 py-4 text-center text-[10px] font-medium uppercase tracking-[0.1em] text-white/70 sm:justify-between sm:gap-x-6 sm:px-6 sm:text-[11px] sm:tracking-[0.14em] lg:px-8">
+      <div className="relative z-10 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 px-4 py-4 text-center text-[10px] font-medium uppercase tracking-[0.1em] text-black/80 sm:justify-between sm:gap-x-6 sm:px-6 sm:text-[11px] sm:tracking-[0.14em] lg:px-8">
         <span>Custom Website Studio</span>
         <span className="hidden sm:inline">Orange County, CA</span>
         <span suppressHydrationWarning>{clock || '—'}</span>
