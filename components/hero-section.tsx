@@ -3,7 +3,7 @@
 import type { CSSProperties } from 'react';
 import { useEffect, useState } from 'react';
 
-const introWords = ['DesignedbyTD', 'Studio'];
+const introWords = ['DesignedbyTD', 'Studio®'];
 
 export function HeroSection() {
   const [skipIntro, setSkipIntro] = useState(false);
