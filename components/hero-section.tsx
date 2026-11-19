@@ -135,18 +135,25 @@ export function HeroSection() {
         }
       `}</style>
 
-      {/* full-bleed background image: portrait spiral on phones, landscape
-          composite on wider screens. Fills the section on both. */}
-      <picture className="hero-bg absolute inset-0 block h-full w-full" style={heroDelay}>
-        <source media="(max-width: 640px)" srcSet="/hero-feature-mobile.webp" />
-        <img
-          src="/hero-feature.webp"
-          alt="Selected website demos by DesignedbyTD"
-          className="h-full w-full object-cover object-center"
-          loading="eager"
-          decoding="async"
-        />
-      </picture>
+      {/* full-bleed background image. Two sources so iOS Safari covers
+          reliably: portrait spiral on phones, landscape composite on wider
+          screens. Both fill the section with object-cover (no black bars). */}
+      <img
+        src="/hero-feature-mobile.webp"
+        alt="Selected website demos by DesignedbyTD"
+        className="hero-bg absolute inset-0 block h-full w-full object-cover object-center sm:hidden"
+        style={heroDelay}
+        loading="eager"
+        decoding="async"
+      />
+      <img
+        src="/hero-feature.webp"
+        alt="Selected website demos by DesignedbyTD"
+        className="hero-bg absolute inset-0 hidden h-full w-full object-cover object-center sm:block"
+        style={heroDelay}
+        loading="eager"
+        decoding="async"
+      />
 
       {/* centered copy (same title on mobile and desktop) */}
       <div className="hero-copy relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-24 text-center sm:px-6 lg:px-8">
