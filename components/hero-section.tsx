@@ -135,27 +135,42 @@ export function HeroSection() {
         }
       `}</style>
 
-      {/* full-bleed background image (fills the section) */}
+      {/* desktop/tablet: full-bleed background image with overlaid copy */}
       <img
         src="/hero-feature.webp"
         alt="Selected website demos by DesignedbyTD"
-        className="hero-bg absolute inset-0 h-full w-full object-cover object-center"
+        className="hero-bg absolute inset-0 hidden h-full w-full object-cover object-center sm:block"
         style={heroDelay}
         loading="eager"
         decoding="async"
       />
-
-      {/* centered copy */}
-      <div className="hero-copy relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-16 text-center sm:px-6 sm:py-24 lg:px-8">
-        <h1 className="max-w-5xl overflow-hidden pb-[0.14em] text-[clamp(2rem,10vw,6.4rem)] font-semibold leading-[0.95] tracking-[-0.045em] drop-shadow-[0_2px_24px_rgba(0,0,0,.4)] sm:leading-[0.92] sm:tracking-[-0.055em]">
+      <div className="hero-copy relative z-10 hidden flex-1 flex-col items-center justify-center px-4 py-24 text-center sm:flex sm:px-6 lg:px-8">
+        <h1 className="max-w-5xl overflow-hidden pb-[0.14em] text-[clamp(2.8rem,8vw,6.4rem)] font-semibold leading-[0.92] tracking-[-0.055em] drop-shadow-[0_2px_24px_rgba(0,0,0,.4)]">
           <span className="hero-reveal" style={{ ['--cd']: skipIntro ? '0.2s' : '2.25s' } as CSSProperties}>
             DesignedbyTD <span className="text-white/45">Studio®</span>
           </span>
         </h1>
       </div>
 
+      {/* mobile: image and title grouped and centered, no dark void */}
+      <div className="relative z-10 flex flex-1 flex-col items-center justify-center gap-5 px-4 pt-16 text-center sm:hidden">
+        <img
+          src="/hero-feature.webp"
+          alt="Selected website demos by DesignedbyTD"
+          className="hero-bg w-full object-contain"
+          style={heroDelay}
+          loading="eager"
+          decoding="async"
+        />
+        <h1 className="overflow-hidden pb-[0.12em] text-[clamp(1.6rem,8.5vw,2.6rem)] font-semibold leading-[1] tracking-[-0.04em]">
+          <span className="hero-reveal" style={{ ['--cd']: skipIntro ? '0.2s' : '2.25s' } as CSSProperties}>
+            DesignedbyTD <span className="text-white/55">Studio®</span>
+          </span>
+        </h1>
+      </div>
+
       {/* bottom info bar */}
-      <div className="relative z-10 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 px-4 py-4 text-center text-[10px] font-medium uppercase tracking-[0.1em] text-black/80 sm:justify-between sm:gap-x-6 sm:px-6 sm:text-[11px] sm:tracking-[0.14em] lg:px-8">
+      <div className="relative z-10 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 px-4 py-4 text-center text-[10px] font-medium uppercase tracking-[0.1em] text-white/70 sm:justify-between sm:gap-x-6 sm:px-6 sm:text-[11px] sm:tracking-[0.14em] sm:text-black/80 lg:px-8">
         <span>Custom Website Studio</span>
         <span className="hidden sm:inline">Orange County, CA</span>
         <span suppressHydrationWarning>{clock || '—'}</span>
