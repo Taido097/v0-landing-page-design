@@ -38,7 +38,7 @@ export function HeroSection() {
   const heroDelay = { ['--heroDelay']: skipIntro ? '0.1s' : '2.15s' } as CSSProperties;
 
   return (
-    <section id="hero" className="sticky top-0 z-0 flex h-auto flex-col overflow-hidden bg-white text-white sm:h-[100svh] sm:bg-[#0e0e0e]">
+    <section id="hero" className="sticky top-0 z-0 flex h-[100svh] flex-col overflow-hidden bg-white text-white sm:bg-[#0e0e0e]">
       <div className={`intro-overlay${skipIntro ? ' intro-skip' : ''}`} aria-hidden="true">
         <div className="intro-panels">
           {[0, 1, 2, 3, 4].map((i) => (
@@ -135,9 +135,12 @@ export function HeroSection() {
         .hero-mobile {
           container-type: inline-size;
           position: relative;
-          width: min(100%, 520px);
-          margin-inline: auto;
+          /* Fill the viewport height; width follows the illustration's aspect
+             ratio and is centred, so only the white side margins get cropped
+             and there is no empty space below the spiral. */
+          height: 100%;
           aspect-ratio: 969 / 1623;
+          max-width: none;
           /* Already fully visible behind the intro panels so they reveal the
              spiral directly instead of flashing the white background. */
           opacity: 1;
@@ -174,7 +177,7 @@ export function HeroSection() {
       {/* MOBILE: spiral hero assembled from the illustration slices, with the
           small two-line studio title in the white center ribbon. The top bar
           (logo + MENU) and navigation come from the site Header. */}
-      <div className="relative z-10 w-full px-4 pb-6 pt-16 sm:hidden">
+      <div className="relative z-10 flex h-full w-full items-center justify-center overflow-hidden sm:hidden">
         <div className="hero-mobile" style={heroDelay}>
           <img className="m-part orkan" src="/mobile-hero/orkan.png" alt="Orkan website demo" loading="eager" decoding="async" />
           <img className="m-part forma" src="/mobile-hero/forma.png" alt="Forma website demo" loading="eager" decoding="async" />
