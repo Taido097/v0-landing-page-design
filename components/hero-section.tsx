@@ -158,24 +158,21 @@ export function HeroSection() {
 
       {/* centered copy */}
       <div className="hero-copy relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-24 text-center sm:px-6 lg:px-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/60" style={{ ['--cd']: skipIntro ? '0.2s' : '2.25s' } as CSSProperties}>
-          DesignedbyTD Studio
-        </p>
         <h1
-          className="mt-5 max-w-4xl text-[clamp(2.6rem,6.4vw,5.2rem)] font-semibold leading-[0.94] tracking-[-0.05em] drop-shadow-[0_2px_24px_rgba(0,0,0,.35)]"
-          style={{ ['--cd']: skipIntro ? '0.32s' : '2.37s' } as CSSProperties}
+          className="max-w-5xl text-[clamp(2.8rem,8vw,6.4rem)] font-semibold leading-[0.92] tracking-[-0.055em] drop-shadow-[0_2px_24px_rgba(0,0,0,.4)]"
+          style={{ ['--cd']: skipIntro ? '0.2s' : '2.25s' } as CSSProperties}
         >
-          Make every visit count.
+          DesignedbyTD <span className="text-white/45">Studio®</span>
         </h1>
         <p
           className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-white/80 drop-shadow-[0_1px_16px_rgba(0,0,0,.35)] sm:text-lg"
-          style={{ ['--cd']: skipIntro ? '0.44s' : '2.49s' } as CSSProperties}
+          style={{ ['--cd']: skipIntro ? '0.32s' : '2.37s' } as CSSProperties}
         >
           Custom, mobile-friendly websites for local businesses—built to look professional, load fast, and turn visitors into customers.
         </p>
         <div
           className="mt-8 flex flex-col justify-center gap-3 sm:flex-row"
-          style={{ ['--cd']: skipIntro ? '0.56s' : '2.61s' } as CSSProperties}
+          style={{ ['--cd']: skipIntro ? '0.44s' : '2.49s' } as CSSProperties}
         >
           <Button asChild size="lg" className="group rounded-none bg-white px-8 py-6 text-xs font-semibold tracking-[0.09em] text-black hover:bg-white/88">
             <Link href="/contact" prefetch={false} className="flex items-center gap-3">
