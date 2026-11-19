@@ -120,17 +120,18 @@ export function HeroSection() {
           animation: heroBgIn 1.6s cubic-bezier(.16, 1, .3, 1) var(--heroDelay) forwards;
           will-change: transform, opacity;
         }
-        .hero-copy > * {
-          opacity: 0;
-          transform: translateY(22px);
-          animation: heroCopyIn .9s cubic-bezier(.16, 1, .3, 1) forwards;
-          animation-delay: var(--cd);
+        .hero-reveal {
+          display: inline-block;
+          transform: translateY(115%);
+          animation: heroReveal 1.1s cubic-bezier(.76, 0, .24, 1) var(--cd) forwards;
+          will-change: transform;
         }
         @keyframes heroBgIn { to { opacity: 1; transform: scale(1); } }
-        @keyframes heroCopyIn { to { opacity: 1; transform: translateY(0); } }
+        @keyframes heroReveal { to { transform: translateY(0); } }
         @media (prefers-reduced-motion: reduce) {
           .intro-overlay { display: none; }
-          .hero-bg, .hero-copy > * { opacity: 1; transform: none; animation: none; }
+          .hero-bg { opacity: 1; transform: none; animation: none; }
+          .hero-reveal { transform: none; animation: none; }
         }
       `}</style>
 
@@ -155,11 +156,10 @@ export function HeroSection() {
 
       {/* centered copy */}
       <div className="hero-copy relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-24 text-center sm:px-6 lg:px-8">
-        <h1
-          className="max-w-5xl text-[clamp(2.8rem,8vw,6.4rem)] font-semibold leading-[0.92] tracking-[-0.055em] drop-shadow-[0_2px_24px_rgba(0,0,0,.4)]"
-          style={{ ['--cd']: skipIntro ? '0.2s' : '2.25s' } as CSSProperties}
-        >
-          DesignedbyTD <span className="text-white/45">Studio®</span>
+        <h1 className="max-w-5xl overflow-hidden pb-[0.14em] text-[clamp(2.8rem,8vw,6.4rem)] font-semibold leading-[0.92] tracking-[-0.055em] drop-shadow-[0_2px_24px_rgba(0,0,0,.4)]">
+          <span className="hero-reveal" style={{ ['--cd']: skipIntro ? '0.2s' : '2.25s' } as CSSProperties}>
+            DesignedbyTD <span className="text-white/45">Studio®</span>
+          </span>
         </h1>
       </div>
 
