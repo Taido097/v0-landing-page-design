@@ -144,15 +144,6 @@ export function HeroSection() {
         loading="eager"
         decoding="async"
       />
-      {/* legibility scrim */}
-      <div
-        className="pointer-events-none absolute inset-0 z-[1]"
-        style={{
-          background:
-            'radial-gradient(ellipse 70% 60% at 50% 45%, rgba(0,0,0,.52) 0%, rgba(0,0,0,.28) 45%, rgba(0,0,0,.08) 72%, rgba(0,0,0,0) 100%), linear-gradient(to bottom, rgba(0,0,0,.28), rgba(0,0,0,.12) 30%, rgba(0,0,0,.2) 100%)',
-        }}
-        aria-hidden="true"
-      />
 
       {/* centered copy */}
       <div className="hero-copy relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-24 text-center sm:px-6 lg:px-8">
