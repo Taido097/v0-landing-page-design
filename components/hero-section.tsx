@@ -38,7 +38,7 @@ export function HeroSection() {
   const heroDelay = { ['--heroDelay']: skipIntro ? '0.1s' : '2.15s' } as CSSProperties;
 
   return (
-    <section id="hero" className="sticky top-0 z-0 flex h-auto flex-col overflow-hidden bg-[#0e0e0e] text-white sm:h-[100svh]">
+    <section id="hero" className="sticky top-0 z-0 flex h-[100svh] flex-col overflow-hidden bg-[#0e0e0e] text-white">
       <div className={`intro-overlay${skipIntro ? ' intro-skip' : ''}`} aria-hidden="true">
         <div className="intro-panels">
           {[0, 1, 2, 3, 4].map((i) => (
@@ -135,36 +135,24 @@ export function HeroSection() {
         }
       `}</style>
 
-      {/* desktop/tablet: full-bleed background image with overlaid copy */}
-      <img
-        src="/hero-feature.webp"
-        alt="Selected website demos by DesignedbyTD"
-        className="hero-bg absolute inset-0 hidden h-full w-full object-cover object-center sm:block"
-        style={heroDelay}
-        loading="eager"
-        decoding="async"
-      />
-      <div className="hero-copy relative z-10 hidden flex-1 flex-col items-center justify-center px-4 py-24 text-center sm:flex sm:px-6 lg:px-8">
-        <h1 className="max-w-5xl overflow-hidden pb-[0.14em] text-[clamp(2.8rem,8vw,6.4rem)] font-semibold leading-[0.92] tracking-[-0.055em] drop-shadow-[0_2px_24px_rgba(0,0,0,.4)]">
-          <span className="hero-reveal" style={{ ['--cd']: skipIntro ? '0.2s' : '2.25s' } as CSSProperties}>
-            DesignedbyTD <span className="text-white/45">Studio®</span>
-          </span>
-        </h1>
-      </div>
-
-      {/* mobile: image and title grouped and centered, no dark void */}
-      <div className="relative z-10 flex flex-col items-center gap-4 px-4 pb-2 pt-20 text-center sm:hidden">
+      {/* full-bleed background image: portrait spiral on phones, landscape
+          composite on wider screens. Fills the section on both. */}
+      <picture className="hero-bg absolute inset-0 block h-full w-full" style={heroDelay}>
+        <source media="(max-width: 640px)" srcSet="/hero-feature-mobile.webp" />
         <img
           src="/hero-feature.webp"
           alt="Selected website demos by DesignedbyTD"
-          className="hero-bg w-full object-contain"
-          style={heroDelay}
+          className="h-full w-full object-cover object-center"
           loading="eager"
           decoding="async"
         />
-        <h1 className="overflow-hidden pb-[0.12em] text-[clamp(1.6rem,8.5vw,2.6rem)] font-semibold leading-[1] tracking-[-0.04em]">
+      </picture>
+
+      {/* centered copy (same title on mobile and desktop) */}
+      <div className="hero-copy relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-24 text-center sm:px-6 lg:px-8">
+        <h1 className="max-w-5xl overflow-hidden pb-[0.14em] text-[clamp(2.8rem,8vw,6.4rem)] font-semibold leading-[0.92] tracking-[-0.055em] drop-shadow-[0_2px_24px_rgba(0,0,0,.4)]">
           <span className="hero-reveal" style={{ ['--cd']: skipIntro ? '0.2s' : '2.25s' } as CSSProperties}>
-            DesignedbyTD <span className="text-white/55">Studio®</span>
+            DesignedbyTD <span className="text-white/45">Studio®</span>
           </span>
         </h1>
       </div>
