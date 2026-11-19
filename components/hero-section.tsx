@@ -120,6 +120,15 @@ export function HeroSection() {
           animation: heroBgIn 1.6s cubic-bezier(.16, 1, .3, 1) var(--heroDelay) forwards;
           will-change: transform, opacity;
         }
+        /* On phones the composite is wide, so cover crops the demos off the
+           sides. Show the whole image instead and nudge it up a touch so the
+           centered title doesn't sit on top of it. */
+        @media (max-width: 640px) {
+          .hero-bg {
+            object-fit: contain;
+            object-position: center 38%;
+          }
+        }
         .hero-reveal {
           display: inline-block;
           transform: translateY(115%);
@@ -146,8 +155,8 @@ export function HeroSection() {
       />
 
       {/* centered copy */}
-      <div className="hero-copy relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-24 text-center sm:px-6 lg:px-8">
-        <h1 className="max-w-5xl overflow-hidden pb-[0.14em] text-[clamp(2.8rem,8vw,6.4rem)] font-semibold leading-[0.92] tracking-[-0.055em] drop-shadow-[0_2px_24px_rgba(0,0,0,.4)]">
+      <div className="hero-copy relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-16 text-center sm:px-6 sm:py-24 lg:px-8">
+        <h1 className="max-w-5xl overflow-hidden pb-[0.14em] text-[clamp(2rem,10vw,6.4rem)] font-semibold leading-[0.95] tracking-[-0.045em] drop-shadow-[0_2px_24px_rgba(0,0,0,.4)] sm:leading-[0.92] sm:tracking-[-0.055em]">
           <span className="hero-reveal" style={{ ['--cd']: skipIntro ? '0.2s' : '2.25s' } as CSSProperties}>
             DesignedbyTD <span className="text-white/45">Studio®</span>
           </span>
@@ -155,7 +164,7 @@ export function HeroSection() {
       </div>
 
       {/* bottom info bar */}
-      <div className="relative z-10 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-4 text-[11px] font-medium uppercase tracking-[0.14em] text-white/70 sm:px-6 lg:px-8">
+      <div className="relative z-10 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 px-4 py-4 text-center text-[10px] font-medium uppercase tracking-[0.1em] text-white/70 sm:justify-between sm:gap-x-6 sm:px-6 sm:text-[11px] sm:tracking-[0.14em] lg:px-8">
         <span>Custom Website Studio</span>
         <span className="hidden sm:inline">Orange County, CA</span>
         <span suppressHydrationWarning>{clock || '—'}</span>
