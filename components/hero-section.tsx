@@ -38,8 +38,10 @@ export function HeroSection() {
     return () => window.clearInterval(id);
   }, []);
 
+  const heroDelay = { ['--heroDelay']: skipIntro ? '0.1s' : '2.15s' } as CSSProperties;
+
   return (
-    <section id="hero" className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[#f7f6f4] text-[#121212]">
+    <section id="hero" className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[#0e0e0e] text-white">
       <div className={`intro-overlay${skipIntro ? ' intro-skip' : ''}`} aria-hidden="true">
         <div className="intro-panels">
           {[0, 1, 2, 3, 4].map((i) => (
@@ -114,60 +116,84 @@ export function HeroSection() {
         @keyframes introPanelUp { to { transform: scaleY(0); } }
         @keyframes introHold { 0%, 86% { opacity: 1; } 100% { opacity: 0; } }
         @keyframes introClear { to { visibility: hidden; } }
-        @media (prefers-reduced-motion: reduce) { .intro-overlay { display: none; } }
 
-        .hero-feature {
+        .hero-bg {
           opacity: 0;
-          transform: translateY(44px) scale(.97);
-          animation: heroUp 1.1s cubic-bezier(.16, 1, .3, 1) var(--heroDelay) forwards;
+          transform: scale(1.06);
+          animation: heroBgIn 1.6s cubic-bezier(.16, 1, .3, 1) var(--heroDelay) forwards;
           will-change: transform, opacity;
         }
-        @keyframes heroUp { to { opacity: 1; transform: translateY(0) scale(1); } }
+        .hero-copy > * {
+          opacity: 0;
+          transform: translateY(22px);
+          animation: heroCopyIn .9s cubic-bezier(.16, 1, .3, 1) forwards;
+          animation-delay: var(--cd);
+        }
+        @keyframes heroBgIn { to { opacity: 1; transform: scale(1); } }
+        @keyframes heroCopyIn { to { opacity: 1; transform: translateY(0); } }
         @media (prefers-reduced-motion: reduce) {
-          .hero-feature { opacity: 1; transform: none; animation: none; }
+          .intro-overlay { display: none; }
+          .hero-bg, .hero-copy > * { opacity: 1; transform: none; animation: none; }
         }
       `}</style>
 
-      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 pb-10 pt-28 text-center sm:px-6 sm:pt-32 lg:px-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-black/40">DesignedbyTD Studio</p>
-        <h1 className="mt-5 max-w-3xl text-[clamp(2.3rem,5.2vw,4.2rem)] font-semibold leading-[0.95] tracking-[-0.045em]">
+      {/* full-bleed background image */}
+      <img
+        src="/hero-feature.webp"
+        alt="Selected website demos by DesignedbyTD"
+        className="hero-bg absolute inset-0 h-full w-full object-cover object-center"
+        style={heroDelay}
+        loading="eager"
+        decoding="async"
+      />
+      {/* legibility scrim */}
+      <div
+        className="pointer-events-none absolute inset-0 z-[1]"
+        style={{
+          background:
+            'radial-gradient(ellipse 70% 60% at 50% 45%, rgba(0,0,0,.52) 0%, rgba(0,0,0,.28) 45%, rgba(0,0,0,.08) 72%, rgba(0,0,0,0) 100%), linear-gradient(to bottom, rgba(0,0,0,.28), rgba(0,0,0,.12) 30%, rgba(0,0,0,.2) 100%)',
+        }}
+        aria-hidden="true"
+      />
+
+      {/* centered copy */}
+      <div className="hero-copy relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-24 text-center sm:px-6 lg:px-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/60" style={{ ['--cd']: skipIntro ? '0.2s' : '2.25s' } as CSSProperties}>
+          DesignedbyTD Studio
+        </p>
+        <h1
+          className="mt-5 max-w-4xl text-[clamp(2.6rem,6.4vw,5.2rem)] font-semibold leading-[0.94] tracking-[-0.05em] drop-shadow-[0_2px_24px_rgba(0,0,0,.35)]"
+          style={{ ['--cd']: skipIntro ? '0.32s' : '2.37s' } as CSSProperties}
+        >
           Make every visit count.
         </h1>
-        <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-black/60 sm:text-lg">
+        <p
+          className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-white/80 drop-shadow-[0_1px_16px_rgba(0,0,0,.35)] sm:text-lg"
+          style={{ ['--cd']: skipIntro ? '0.44s' : '2.49s' } as CSSProperties}
+        >
           Custom, mobile-friendly websites for local businesses—built to look professional, load fast, and turn visitors into customers.
         </p>
-
-        <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-          <Button asChild size="lg" className="group rounded-none bg-[#121212] px-8 py-6 text-xs font-semibold tracking-[0.09em] text-white hover:bg-black/85">
+        <div
+          className="mt-8 flex flex-col justify-center gap-3 sm:flex-row"
+          style={{ ['--cd']: skipIntro ? '0.56s' : '2.61s' } as CSSProperties}
+        >
+          <Button asChild size="lg" className="group rounded-none bg-white px-8 py-6 text-xs font-semibold tracking-[0.09em] text-black hover:bg-white/88">
             <Link href="/contact" prefetch={false} className="flex items-center gap-3">
               Start Your Project
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </Button>
-          <Button asChild size="lg" variant="outline" className="group rounded-none border-black/20 bg-white px-8 py-6 text-xs font-semibold tracking-[0.09em] text-black hover:bg-black hover:text-white">
+          <Button asChild size="lg" variant="outline" className="group rounded-none border-white/55 bg-white/5 px-8 py-6 text-xs font-semibold tracking-[0.09em] text-white backdrop-blur-sm hover:bg-white hover:text-black">
             <Link href="/demos" prefetch={false} className="flex items-center gap-3">
               Explore the Work
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </Button>
         </div>
-
-        <div
-          className="hero-feature mt-10 w-full max-w-[1120px]"
-          style={{ ['--heroDelay']: skipIntro ? '0.1s' : '2.15s' } as CSSProperties}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/hero-feature.webp"
-            alt="Selected website demos by DesignedbyTD"
-            className="h-auto w-full"
-            loading="eager"
-            decoding="async"
-          />
-        </div>
       </div>
 
-      <div className="relative z-10 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-black/10 px-4 py-4 text-[11px] font-medium uppercase tracking-[0.14em] text-black/55 sm:px-6 lg:px-8">
+      {/* bottom info bar */}
+      <div className="relative z-10 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-4 text-[11px] font-medium uppercase tracking-[0.14em] text-white/70 sm:px-6 lg:px-8">
         <span>Custom Website Studio</span>
         <span className="hidden sm:inline">Orange County, CA</span>
         <span suppressHydrationWarning>{clock || '—'}</span>
