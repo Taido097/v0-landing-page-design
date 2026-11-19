@@ -203,9 +203,9 @@ export function HeroSection() {
 
       {/* desktop brand word in the negative space */}
       <div className="pointer-events-none absolute inset-0 z-10 hidden flex-1 sm:block">
-        <span className="absolute left-[63%] top-[45%] -translate-x-1/2 -translate-y-1/2 overflow-hidden whitespace-nowrap">
+        <span className="absolute left-[63%] top-[39%] -translate-x-1/2 -translate-y-1/2 overflow-hidden whitespace-nowrap">
           <span
-            className="hero-reveal text-[clamp(1.25rem,2vw,2rem)] font-bold leading-none tracking-[-0.03em] text-black"
+            className="hero-reveal text-[clamp(1.6rem,2.6vw,2.6rem)] font-bold leading-none tracking-[-0.03em] text-black"
             style={{ ['--cd']: skipIntro ? '0.2s' : '2.25s' } as CSSProperties}
           >
             DesignedbyTD Studio<sup className="text-[0.5em]">®</sup>
