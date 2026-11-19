@@ -38,7 +38,7 @@ export function HeroSection() {
   const heroDelay = { ['--heroDelay']: skipIntro ? '0.1s' : '2.15s' } as CSSProperties;
 
   return (
-    <section id="hero" className="sticky top-0 z-0 flex h-[100svh] flex-col overflow-hidden bg-white text-white sm:bg-[#0e0e0e]">
+    <section id="hero" className="sticky top-0 z-0 flex h-[100svh] flex-col overflow-hidden bg-white text-black">
       <div className={`intro-overlay${skipIntro ? ' intro-skip' : ''}`} aria-hidden="true">
         <div className="intro-panels">
           {[0, 1, 2, 3, 4].map((i) => (
@@ -190,27 +190,31 @@ export function HeroSection() {
         </div>
       </div>
 
-      {/* DESKTOP/TABLET: full-bleed background image with overlaid copy */}
+      {/* DESKTOP/TABLET: landscape spiral on white; brand word sits in the
+          white negative space to the right, matching the reference. */}
       <img
         src="/hero-feature.webp"
         alt="Selected website demos by DesignedbyTD"
-        className="hero-bg absolute inset-0 hidden !h-full w-full object-cover object-center sm:block"
+        className="hero-bg absolute inset-0 hidden !h-full w-full object-contain object-center sm:block"
         style={heroDelay}
         loading="eager"
         decoding="async"
       />
 
-      {/* desktop centered copy */}
-      <div className="hero-copy relative z-10 hidden flex-1 flex-col items-center justify-center px-4 py-24 text-center sm:flex sm:px-6 lg:px-8">
-        <h1 className="max-w-5xl overflow-hidden pb-[0.14em] text-[clamp(2.8rem,8vw,6.4rem)] font-semibold leading-[0.92] tracking-[-0.055em] drop-shadow-[0_2px_24px_rgba(0,0,0,.4)]">
-          <span className="hero-reveal" style={{ ['--cd']: skipIntro ? '0.2s' : '2.25s' } as CSSProperties}>
-            DesignedbyTD <span className="text-white/45">Studio®</span>
+      {/* desktop brand word in the negative space */}
+      <div className="pointer-events-none absolute inset-0 z-10 hidden flex-1 sm:block">
+        <span className="absolute left-[63%] top-[45%] -translate-x-1/2 -translate-y-1/2 overflow-hidden whitespace-nowrap">
+          <span
+            className="hero-reveal text-[clamp(1.25rem,2vw,2rem)] font-bold leading-none tracking-[-0.03em] text-black"
+            style={{ ['--cd']: skipIntro ? '0.2s' : '2.25s' } as CSSProperties}
+          >
+            DesignedbyTD Studio<sup className="text-[0.5em]">®</sup>
           </span>
-        </h1>
+        </span>
       </div>
 
       {/* desktop bottom info bar */}
-      <div className="relative z-10 hidden flex-wrap items-center justify-between gap-x-6 gap-y-1.5 px-4 py-4 text-[11px] font-medium uppercase tracking-[0.14em] text-black/80 sm:flex sm:px-6 lg:px-8">
+      <div className="relative z-10 mt-auto hidden flex-wrap items-center justify-between gap-x-6 gap-y-1.5 px-4 py-4 text-[11px] font-medium uppercase tracking-[0.14em] text-black/70 sm:flex sm:px-6 lg:px-8">
         <span>Custom Website Studio</span>
         <span className="hidden sm:inline">Orange County, CA</span>
         <span suppressHydrationWarning>{clock || '—'}</span>
