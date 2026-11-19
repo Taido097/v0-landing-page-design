@@ -9,6 +9,7 @@ export function HeroSection() {
   const [skipIntro, setSkipIntro] = useState(false);
   const [clock, setClock] = useState('');
   const imgRef = useRef<HTMLImageElement | null>(null);
+  const wrapRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -36,20 +37,25 @@ export function HeroSection() {
     return () => window.clearInterval(id);
   }, []);
 
-  // Scroll-linked "snake" motion: the spiral drifts up and gently winds (rotate
-  // oscillation) as the page scrolls. Base over-scale keeps corners covered.
+  // The hero is pinned (sticky) while you scroll through its tall container.
+  // Progress (0 -> 1) across that scroll drives the "snake": the image drifts up
+  // and winds, finishing just as the sticky releases and the next section rises.
   useEffect(() => {
     const img = imgRef.current;
-    if (!img) return;
+    const wrap = wrapRef.current;
+    if (!img || !wrap) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     let raf = 0;
     const update = () => {
       raf = 0;
-      const y = window.scrollY || 0;
-      const ty = -y * 0.22;                 // drift up
-      const rot = Math.sin(y * 0.0045) * 2.4; // snaking wind
-      const sc = 1.1 + Math.min(y, 700) * 0.00018;
+      const rect = wrap.getBoundingClientRect();
+      const total = Math.max(1, rect.height - window.innerHeight);
+      const progress = Math.min(1, Math.max(0, -rect.top / total));
+
+      const ty = -progress * window.innerHeight * 0.62;   // drift all the way up
+      const rot = Math.sin(progress * Math.PI * 1.6) * 3; // snaking wind over the scroll
+      const sc = 1.1 + progress * 0.1;
       img.style.transform = `translate3d(0, ${ty}px, 0) rotate(${rot}deg) scale(${sc})`;
     };
     const onScroll = () => {
@@ -58,8 +64,10 @@ export function HeroSection() {
 
     update();
     window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
     return () => {
       window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
       if (raf) window.cancelAnimationFrame(raf);
     };
   }, []);
@@ -67,7 +75,7 @@ export function HeroSection() {
   const heroDelay = { ['--heroDelay']: skipIntro ? '0.1s' : '2.15s' } as CSSProperties;
 
   return (
-    <section id="hero" className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[#0e0e0e] text-white">
+    <section id="hero" ref={wrapRef} className="relative h-[220vh] bg-[#0e0e0e] text-white">
       <div className={`intro-overlay${skipIntro ? ' intro-skip' : ''}`} aria-hidden="true">
         <div className="intro-panels">
           {[0, 1, 2, 3, 4].map((i) => (
@@ -163,42 +171,44 @@ export function HeroSection() {
         }
       `}</style>
 
-      {/* full-bleed background image */}
-      <img
-        ref={imgRef}
-        src="/hero-feature.webp"
-        alt="Selected website demos by DesignedbyTD"
-        className="hero-bg absolute inset-0 h-full w-full object-cover object-center"
-        style={heroDelay}
-        loading="eager"
-        decoding="async"
-      />
-      {/* legibility scrim */}
-      <div
-        className="pointer-events-none absolute inset-0 z-[1]"
-        style={{
-          background:
-            'radial-gradient(ellipse 70% 60% at 50% 45%, rgba(0,0,0,.52) 0%, rgba(0,0,0,.28) 45%, rgba(0,0,0,.08) 72%, rgba(0,0,0,0) 100%), linear-gradient(to bottom, rgba(0,0,0,.28), rgba(0,0,0,.12) 30%, rgba(0,0,0,.2) 100%)',
-        }}
-        aria-hidden="true"
-      />
+      <div className="sticky top-0 flex h-[100svh] flex-col overflow-hidden">
+        {/* full-bleed background image */}
+        <img
+          ref={imgRef}
+          src="/hero-feature.webp"
+          alt="Selected website demos by DesignedbyTD"
+          className="hero-bg absolute inset-0 h-full w-full object-cover object-center"
+          style={heroDelay}
+          loading="eager"
+          decoding="async"
+        />
+        {/* legibility scrim */}
+        <div
+          className="pointer-events-none absolute inset-0 z-[1]"
+          style={{
+            background:
+              'radial-gradient(ellipse 70% 60% at 50% 45%, rgba(0,0,0,.52) 0%, rgba(0,0,0,.28) 45%, rgba(0,0,0,.08) 72%, rgba(0,0,0,0) 100%), linear-gradient(to bottom, rgba(0,0,0,.28), rgba(0,0,0,.12) 30%, rgba(0,0,0,.2) 100%)',
+          }}
+          aria-hidden="true"
+        />
 
-      {/* centered copy */}
-      <div className="hero-copy relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-24 text-center sm:px-6 lg:px-8">
-        <h1
-          className="max-w-5xl text-[clamp(2.8rem,8vw,6.4rem)] font-semibold leading-[0.92] tracking-[-0.055em] drop-shadow-[0_2px_24px_rgba(0,0,0,.4)]"
-          style={{ ['--cd']: skipIntro ? '0.2s' : '2.25s' } as CSSProperties}
-        >
-          DesignedbyTD <span className="text-white/45">Studio®</span>
-        </h1>
-      </div>
+        {/* centered copy */}
+        <div className="hero-copy relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-24 text-center sm:px-6 lg:px-8">
+          <h1
+            className="max-w-5xl text-[clamp(2.8rem,8vw,6.4rem)] font-semibold leading-[0.92] tracking-[-0.055em] drop-shadow-[0_2px_24px_rgba(0,0,0,.4)]"
+            style={{ ['--cd']: skipIntro ? '0.2s' : '2.25s' } as CSSProperties}
+          >
+            DesignedbyTD <span className="text-white/45">Studio®</span>
+          </h1>
+        </div>
 
-      {/* bottom info bar */}
-      <div className="relative z-10 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-4 text-[11px] font-medium uppercase tracking-[0.14em] text-white/70 sm:px-6 lg:px-8">
-        <span>Custom Website Studio</span>
-        <span className="hidden sm:inline">Orange County, CA</span>
-        <span suppressHydrationWarning>{clock || '—'}</span>
-        <span>100% Custom Built</span>
+        {/* bottom info bar */}
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-4 text-[11px] font-medium uppercase tracking-[0.14em] text-white/70 sm:px-6 lg:px-8">
+          <span>Custom Website Studio</span>
+          <span className="hidden sm:inline">Orange County, CA</span>
+          <span suppressHydrationWarning>{clock || '—'}</span>
+          <span>100% Custom Built</span>
+        </div>
       </div>
     </section>
   );
