@@ -38,7 +38,7 @@ export function HeroSection() {
   const heroDelay = { ['--heroDelay']: skipIntro ? '0.1s' : '2.15s' } as CSSProperties;
 
   return (
-    <section id="hero" className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[#0e0e0e] text-white">
+    <section id="hero" className="sticky top-0 z-0 flex h-[100svh] flex-col overflow-hidden bg-[#0e0e0e] text-white">
       <div className={`intro-overlay${skipIntro ? ' intro-skip' : ''}`} aria-hidden="true">
         <div className="intro-panels">
           {[0, 1, 2, 3, 4].map((i) => (

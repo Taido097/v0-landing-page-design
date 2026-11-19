@@ -83,11 +83,15 @@ export default function Home() {
       <Header />
       <main className="flex flex-col">
         <HeroSection />
-        <PortfolioSection />
-        <HowWeWorkSection />
-        <PricingSection />
-        <FAQSection />
-        <CTASection />
+        {/* Sticky hero reveal: the hero stays pinned at top:0 while this block
+            slides up over it. Needs a solid background + higher stacking. */}
+        <div className="relative z-10 bg-white">
+          <PortfolioSection />
+          <HowWeWorkSection />
+          <PricingSection />
+          <FAQSection />
+          <CTASection />
+        </div>
       </main>
       <Footer />
     </div>
