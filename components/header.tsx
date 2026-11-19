@@ -87,7 +87,7 @@ export function Header() {
         </nav>
       ) : (
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
-          <Link href="/" prefetch={false} className="text-lg font-bold tracking-tight text-white">
+          <Link href="/" prefetch={false} className="text-lg font-bold tracking-tight text-black">
             DesignedbyTD Studio
           </Link>
 
@@ -97,7 +97,7 @@ export function Header() {
                 key={link.href}
                 href={link.href}
                 prefetch={false}
-                className="text-sm font-medium text-white/75 transition-colors duration-200 hover:text-white"
+                className="text-sm font-medium text-black/70 transition-colors duration-200 hover:text-black"
               >
                 {link.label}
               </Link>
@@ -107,7 +107,7 @@ export function Header() {
           <Link
             href="/contact"
             prefetch={false}
-            className="hidden rounded-md border border-white bg-white px-6 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-white/90 md:inline-flex"
+            className="hidden rounded-md border border-black bg-black px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-black/85 md:inline-flex"
           >
             Start Free
           </Link>
@@ -115,7 +115,7 @@ export function Header() {
           <button
             type="button"
             onClick={() => setIsMenuOpen(true)}
-            className="flex min-h-11 items-center gap-2 px-2 text-white transition-colors hover:bg-white/10 md:hidden"
+            className="flex min-h-11 items-center gap-2 px-2 text-black transition-colors hover:bg-black/5 md:hidden"
             aria-label="Open menu"
           >
             <Menu className="h-5 w-5" />
