@@ -138,10 +138,10 @@ export function HeroSection() {
           width: min(100%, 520px);
           margin-inline: auto;
           aspect-ratio: 969 / 1623;
-          opacity: 0;
-          animation: heroFade 1s ease var(--heroDelay) forwards;
+          /* Already fully visible behind the intro panels so they reveal the
+             spiral directly instead of flashing the white background. */
+          opacity: 1;
         }
-        @keyframes heroFade { to { opacity: 1; } }
         .hero-mobile .m-part { position: absolute; display: block; }
         .hero-mobile img.m-part { height: auto; }
         .hero-mobile .orkan { left: 0; top: 6.77757%; width: 100%; }
