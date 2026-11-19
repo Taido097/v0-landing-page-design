@@ -38,7 +38,7 @@ export function HeroSection() {
   const heroDelay = { ['--heroDelay']: skipIntro ? '0.1s' : '2.15s' } as CSSProperties;
 
   return (
-    <section id="hero" className="sticky top-0 z-0 flex h-[100svh] flex-col overflow-hidden bg-[#0e0e0e] text-white">
+    <section id="hero" className="sticky top-0 z-0 flex h-auto flex-col overflow-hidden bg-[#0e0e0e] text-white sm:h-[100svh]">
       <div className={`intro-overlay${skipIntro ? ' intro-skip' : ''}`} aria-hidden="true">
         <div className="intro-panels">
           {[0, 1, 2, 3, 4].map((i) => (
@@ -153,7 +153,7 @@ export function HeroSection() {
       </div>
 
       {/* mobile: image and title grouped and centered, no dark void */}
-      <div className="relative z-10 flex flex-1 flex-col items-center justify-center gap-5 px-4 pt-16 text-center sm:hidden">
+      <div className="relative z-10 flex flex-col items-center gap-4 px-4 pb-2 pt-20 text-center sm:hidden">
         <img
           src="/hero-feature.webp"
           alt="Selected website demos by DesignedbyTD"
