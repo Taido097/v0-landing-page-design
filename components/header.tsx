@@ -86,18 +86,18 @@ export function Header() {
           </Link>
         </nav>
       ) : (
-        <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
-          <Link href="/" prefetch={false} className="text-lg font-bold tracking-tight text-black">
+        <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+          <Link href="/" prefetch={false} className="text-sm font-bold tracking-tight text-black">
             DesignedbyTD Studio
           </Link>
 
-          <div className="hidden items-center gap-7 lg:gap-9 md:flex">
+          <div className="hidden items-center gap-5 lg:gap-7 md:flex">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 prefetch={false}
-                className="text-sm font-medium text-black/70 transition-colors duration-200 hover:text-black"
+                className="text-xs font-medium text-black/70 transition-colors duration-200 hover:text-black"
               >
                 {link.label}
               </Link>
@@ -107,7 +107,7 @@ export function Header() {
           <Link
             href="/contact"
             prefetch={false}
-            className="hidden rounded-md border border-black bg-black px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-black/85 md:inline-flex"
+            className="hidden rounded-md border border-black bg-black px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-black/85 md:inline-flex"
           >
             Start Free
           </Link>
